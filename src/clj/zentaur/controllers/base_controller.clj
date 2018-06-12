@@ -1,6 +1,6 @@
-(ns blog.controllers.base-controller
-  (:require [blog.models.posts :as modposts]
-            [blog.libs.helpers :as h]
+(ns zentaur.controllers.base-controller
+  (:require [zentaur.models.posts :as modposts]
+            [zentaur.libs.helpers :as h]
             [cognitect.transit :as t]
             [selmer.parser :as parser]
             [ring.util.http-response :as resp])

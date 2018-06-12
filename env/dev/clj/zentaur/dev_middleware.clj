@@ -1,4 +1,4 @@
-(ns blog.dev-middleware
+(ns zentaur.dev-middleware
   (:require [ring.middleware.reload :refer [wrap-reload]]
             [prone.middleware :refer [wrap-exceptions]]))
 

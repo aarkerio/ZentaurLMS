@@ -1,8 +1,8 @@
-(ns blog.controllers.uploads-controller
-  (:require [blog.models.uploads :as moduploads]
-            [blog.controllers.base-controller :as basec]
-            [blog.hiccup_templating.layout-view :as layout]
-            [blog.hiccup_templating.admin.uploads-view :as uploads-view]
+(ns zentaur.controllers.uploads-controller
+  (:require [zentaur.models.uploads :as moduploads]
+            [zentaur.controllers.base-controller :as basec]
+            [zentaur.hiccup_templating.layout-view :as layout]
+            [zentaur.hiccup_templating.admin.uploads-view :as uploads-view]
             [clojure.tools.logging :as log]
             [ring.util.http-response :as response]))
 

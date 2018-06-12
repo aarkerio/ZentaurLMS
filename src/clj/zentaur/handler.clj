@@ -1,9 +1,9 @@
-(ns blog.handler
-  (:require [blog.hiccup_templating.layout-view :as layout]
-            [blog.hiccup_templating.helpers-view :as helper-view]
-            [blog.middleware :as middleware]
-            [blog.routes.home :refer [base-routes]]
-            [blog.env :refer [defaults]]
+(ns zentaur.handler
+  (:require [zentaur.hiccup_templating.layout-view :as layout]
+            [zentaur.hiccup_templating.helpers-view :as helper-view]
+            [zentaur.middleware :as middleware]
+            [zentaur.routes.home :refer [base-routes]]
+            [zentaur.env :refer [defaults]]
             [mount.core :as mount]
             [compojure.route :as route]
             [compojure.core :refer [routes wrap-routes]]))

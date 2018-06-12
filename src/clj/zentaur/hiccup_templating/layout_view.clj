@@ -1,5 +1,5 @@
-(ns blog.hiccup_templating.layout-view
-  (:require [blog.hiccup_templating.helpers-view :as helpers]
+(ns zentaur.hiccup_templating.layout-view
+  (:require [zentaur.hiccup_templating.helpers-view :as helpers]
             [hiccup.form :as f]
             [hiccup.page :refer [html5 include-css include-js]]))
 
@@ -19,7 +19,7 @@
           (include-js  "//cdnjs.cloudflare.com/ajax/libs/tether/1.4.3/js/tether.min.js")
           (include-js  "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
           (include-css "/css/bootstrap.min.css")
-          (include-css "/css/blog.css")
+          (include-css "/css/zentaur.css")
           (include-css "/css/style.css")
           (include-js  "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js")
 		      (include-css "http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700,300&amp;subset=latin,latin-ext")

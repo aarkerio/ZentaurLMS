@@ -1,4 +1,4 @@
-(ns blog.hiccup_templating.posts-view
+(ns zentaur.hiccup_templating.posts-view
   (:require [hiccup.form :as f]
             [hiccup.core :as c]
             [clojure.tools.logging :as log]

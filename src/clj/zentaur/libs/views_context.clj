@@ -1,4 +1,4 @@
-(ns blog.libs.views_context
+(ns zentaur.libs.views_context
   (:require [ring.util.http-response :refer [content-type ok]]
             [ring.util.anti-forgery :refer [anti-forgery-field]]
             [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]))

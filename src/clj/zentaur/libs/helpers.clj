@@ -1,4 +1,4 @@
-(ns blog.libs.helpers
+(ns zentaur.libs.helpers
   (:require [clj-time.local :as l]
             [clj-time.format :as f]
             [ring.util.codec :as c]))

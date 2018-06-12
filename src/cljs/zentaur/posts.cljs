@@ -1,4 +1,4 @@
-(ns blog.posts)
+(ns zentaur.posts)
 
 (enable-console-print!)
 

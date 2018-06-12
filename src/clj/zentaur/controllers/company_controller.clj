@@ -1,7 +1,7 @@
-(ns blog.controllers.company-controller
-  (:require [blog.controllers.base-controller :as basec]
+(ns zentaur.controllers.company-controller
+  (:require [zentaur.controllers.base-controller :as basec]
             [clojure.tools.logging :as log]
-            [blog.hiccup_templating.layout-view :as layout]
+            [zentaur.hiccup_templating.layout-view :as layout]
             [ring.util.http-response :as response]))
 
 ;; Controller for static pages

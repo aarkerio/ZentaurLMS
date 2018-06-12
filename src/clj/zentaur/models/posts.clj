@@ -1,6 +1,6 @@
-(ns blog.models.posts
-  (:require [blog.db.core :as db]
-            [blog.env :as env]
+(ns zentaur.models.posts
+  (:require [zentaur.db.core :as db]
+            [zentaur.env :as env]
             [struct.core :as st]
             [clojure.tools.logging :as log]
             [slugify.core :refer [slugify]]

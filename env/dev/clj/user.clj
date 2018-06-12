@@ -1,12 +1,12 @@
 (ns user
   (:require [mount.core :as mount]
-            blog.core))
+            zentaur.core))
 
 (defn start []
-  (mount/start-without #'blog.core/repl-server))
+  (mount/start-without #'zentaur.core/repl-server))
 
 (defn stop []
-  (mount/stop-except #'blog.core/repl-server))
+  (mount/stop-except #'zentaur.core/repl-server))
 
 (defn restart []
   (stop)

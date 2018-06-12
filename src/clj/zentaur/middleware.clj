@@ -1,9 +1,9 @@
-(ns blog.middleware
-  (:require  [blog.config :refer [env]]
-             [blog.env :refer [defaults]]
-             [blog.hiccup_templating.layout-view :as layout]
-             [blog.hiccup_templating.helpers-view :as helper-view]
-             [blog.layout :refer [*app-context* error-page]]
+(ns zentaur.middleware
+  (:require  [zentaur.config :refer [env]]
+             [zentaur.env :refer [defaults]]
+             [zentaur.hiccup_templating.layout-view :as layout]
+             [zentaur.hiccup_templating.helpers-view :as helper-view]
+             [zentaur.layout :refer [*app-context* error-page]]
              [clojure.tools.logging :as log]
              [cognitect.transit :as transit]
              [hiccup.middleware :only (wrap-base-url)]

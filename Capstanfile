@@ -1,4 +1,3 @@
-
 #
 # Name of the base image. Capstan will download this automatically from
 # Cloudius S3 repository.
@@ -9,7 +8,7 @@ base: cloudius/osv-openjdk8
 #
 # The command line passed to OSv to start up the application.
 #
-cmdline: /java.so -jar /blog/app.jar
+cmdline: /java.so -jar /zentaur/app.jar
 
 #
 # The command to use to build the application.
@@ -24,5 +23,5 @@ cmdline: /java.so -jar /blog/app.jar
 # List of files that are included in the generated image.
 #
 files:
-  /blog/app.jar: ./target/uberjar/blog.jar
+  /zentaur/app.jar: ./target/uberjar/zentaur.jar
 

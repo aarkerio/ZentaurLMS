@@ -1,6 +1,6 @@
-(ns blog.core
-  (:require [blog.handler :as handler]
-            [blog.config :refer [env]]
+(ns zentaur.core
+  (:require [zentaur.handler :as handler]
+            [zentaur.config :refer [env]]
             [luminus.repl-server :as repl]
             [luminus.http-server :as http]
             [luminus-migrations.core :as migrations]
@@ -52,12 +52,12 @@
   (cond
     (some #{"init"} args)
     (do
-      (mount/start #'blog.config/env)
+      (mount/start #'zentaur.config/env)
       (migrations/init (select-keys env [:database-url :init-script]))
       (System/exit 0))
     (some #{"migrate" "rollback"} args)
     (do
-      (mount/start #'blog.config/env)
+      (mount/start #'zentaur.config/env)
       (migrations/migrate args (select-keys env [:database-url]))
       (System/exit 0))
     :else

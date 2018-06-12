@@ -1,4 +1,4 @@
-(ns blog.libs.sanitize
+(ns zentaur.libs.sanitize
   )
 
 ;; (def policy (html-policy :allow-elements ["a"]

@@ -1,9 +1,9 @@
-(ns blog.controllers.users-controller
-  (:require [blog.models.users :as modusers]
-            [blog.controllers.base-controller :as basec]
+(ns zentaur.controllers.users-controller
+  (:require [zentaur.models.users :as modusers]
+            [zentaur.controllers.base-controller :as basec]
             [clojure.tools.logging :as log]
-            [blog.hiccup_templating.layout-view :as layout]
-            [blog.hiccup_templating.admin.users-view :as users-view]
+            [zentaur.hiccup_templating.layout-view :as layout]
+            [zentaur.hiccup_templating.admin.users-view :as users-view]
             [ring.util.http-response :as response]))
 
 (defn admin-users [request]

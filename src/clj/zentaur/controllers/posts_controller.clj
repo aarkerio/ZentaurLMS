@@ -1,9 +1,9 @@
-(ns blog.controllers.posts-controller
-  (:require [blog.controllers.base-controller :as basec]
-            [blog.hiccup_templating.layout-view :as layout]
-            [blog.hiccup_templating.posts-view :as posts-view]
-            [blog.models.posts :as modposts]
-            [blog.libs.helpers :as h]
+(ns zentaur.controllers.posts-controller
+  (:require [zentaur.controllers.base-controller :as basec]
+            [zentaur.hiccup_templating.layout-view :as layout]
+            [zentaur.hiccup_templating.posts-view :as posts-view]
+            [zentaur.models.posts :as modposts]
+            [zentaur.libs.helpers :as h]
             [clj-time.local :as l]
             [clojure.tools.logging :as log]
             [ring.util.http-response :as response]

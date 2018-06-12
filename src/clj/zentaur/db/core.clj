@@ -1,10 +1,10 @@
-(ns blog.db.core
+(ns zentaur.db.core
   (:require
     [cheshire.core :refer [generate-string parse-string]]
     [clj-time.jdbc]
     [clojure.java.jdbc :as jdbc]
     [conman.core :as conman]
-    [blog.config :refer [env]]
+    [zentaur.config :refer [env]]
     [mount.core :refer [defstate]])
   (:import org.postgresql.util.PGobject
            java.sql.Array

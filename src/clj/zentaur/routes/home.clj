@@ -1,9 +1,9 @@
-(ns blog.routes.home
+(ns zentaur.routes.home
   (:require
-       [blog.controllers.posts-controller   :as cont-posts]
-       [blog.controllers.users-controller   :as cont-users]
-       [blog.controllers.uploads-controller  :as cont-uploads]
-       [blog.controllers.company-controller :as cont-company]
+       [zentaur.controllers.posts-controller   :as cont-posts]
+       [zentaur.controllers.users-controller   :as cont-users]
+       [zentaur.controllers.uploads-controller  :as cont-uploads]
+       [zentaur.controllers.company-controller :as cont-company]
        [compojure.core :refer [defroutes context GET POST PUT DELETE PATCH]]))
 
 (defroutes base-routes

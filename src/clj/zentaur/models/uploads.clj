@@ -1,5 +1,5 @@
-(ns blog.models.uploads
-  (:require [blog.db.core :as db]
+(ns zentaur.models.uploads
+  (:require [zentaur.db.core :as db]
             [struct.core :as st]
             [clojure.tools.logging :as log]
             [clojure.java.io :as io]

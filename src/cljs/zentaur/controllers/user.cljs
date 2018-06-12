@@ -1,7 +1,7 @@
-(ns blog.controllers.user
+(ns zentaur.controllers.user
 ;;  (:require
-;;    ;; [blog.util :as util]
-;;             ;; [blog.validation :as validation]
+;;    ;; [zentaur.util :as util]
+;;             ;; [zentaur.validation :as validation]
 ;;             ))
 )
 ;; (defn- update-account-details-validations
