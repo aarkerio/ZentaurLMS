@@ -1,2 +1,2 @@
-# ZentaurLMS
-Clojure/ClojureScript Learning Managament System
+# cmsclj
+Clojure based CMS
