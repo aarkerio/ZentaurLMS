@@ -1,6 +1,6 @@
-(ns blog.env
+(ns zentaur.env
   (:require [clojure.tools.logging :as log]
-            [blog.dev-middleware :refer [wrap-dev]]))
+            [zentaur.dev-middleware :refer [wrap-dev]]))
 
 (def secret-salt {:salt "1f1c42342bdc1ea6"})
 

@@ -1,7 +1,7 @@
 CREATE TABLE users(
    id serial PRIMARY KEY,
-   first_name VARCHAR(30) NOT NULL,
-   last_name VARCHAR(30) NOT NULL,
+   fname VARCHAR(30) NOT NULL,
+   lname VARCHAR(30) NOT NULL,
    uname VARCHAR(30) NOT NULL UNIQUE,
    email VARCHAR(30) NOT NULL,
    admin BOOLEAN NOT NULL DEFAULT false,
@@ -10,17 +10,17 @@ CREATE TABLE users(
    password VARCHAR(300)
  );
 
- -- first_name | character varying(30)  | not null
- -- last_name  | character varying(30)  | not null
+ -- fname | character varying(30)  | not null
+ -- lname  | character varying(30)  | not null
  -- email      | character varying(30)  | not null
  -- admin      | boolean                | not null Vorgabewert false
  -- last_login | time without time zone |
  -- is_active  | boolean                |
  -- password   | character varying(300) |  (hashers/derive "secretpassword")
 
-INSERT INTO users (first_name,
-  last_name,
-  uname
+INSERT INTO users (fname,
+  lname,
+  uname,
   email,
   admin,
   is_active,

@@ -37,7 +37,7 @@
                  [ring/ring-codec "1.1.0"]               ;;  encoding and decoding into formats used in web
                  [ring/ring-defaults "0.3.1"]            ;;  provide sensible Ring middleware defaults: wrap-multipart-params, wrap-params wrap-cookies, wrap-flash, etc.
                  [ring-middleware-format "0.7.2"]        ;;  Middleware json + transit requests
-                 [selmer "1.11.7"]
+                 [selmer "1.11.7"]                       ;;  Simple HTML Templates
                  [slugify "0.0.1"]]
   :min-lein-version "2.8.0"
   :jvm-opts ["-server" "-Dconf=.lein-env"]

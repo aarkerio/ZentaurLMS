@@ -1,4 +1,4 @@
-(ns blog.models.posts-spec
+(ns zentaur.models.posts-spec
   (:require [clojure.repl :as repl]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]

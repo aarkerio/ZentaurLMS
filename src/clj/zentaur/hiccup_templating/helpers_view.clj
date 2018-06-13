@@ -1,4 +1,4 @@
-(ns blog.hiccup_templating.helpers-view
+(ns zentaur.hiccup_templating.helpers-view
   (:require [hiccup.form :as f]
             [hiccup.element :refer [link-to]]))
 
