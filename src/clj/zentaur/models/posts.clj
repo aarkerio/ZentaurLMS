@@ -55,6 +55,8 @@
   (do
     (db/delete-post! params)))
 
+
+;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
 (defn admin-get-posts [user-id]
-  (db/admin-get-comments user-id))
+    (db/admin-get-posts {:user-id user-id}))
 

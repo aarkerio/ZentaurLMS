@@ -11,7 +11,7 @@
                  [com.cognitect/transit-cljs "0.8.243"]  ;; String -> Transit
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [compojure "1.6.0"]                     ;; routes for ring
-                 [conman "0.7.9"]                        ;; mount/unmount library
+                 [conman "0.7.9"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.11"]                        ;; Read properties, environments, configs, profiles
                  [domina "1.0.3"]                        ;; A DOM manipulation library for ClojureScript
                  [funcool/bide "1.6.0"]                  ;; A simple routing library for ClojureScript
@@ -26,12 +26,12 @@
                  [metosin/ring-http-response "0.9.0"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.11"]
                  [org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.126" :scope "provided"]
+                 [org.clojure/clojurescript "1.10.238" :scope "provided"]
                  [org.clojure/java.jdbc "0.7.1"]
                  [org.clojure/tools.cli "0.3.5"]
                  [org.clojure/tools.logging "0.4.0"]
                  [org.clojure/tools.reader "1.1.0"]
-                 [org.postgresql/postgresql "42.2.0"]
+                 [org.postgresql/postgresql "42.2.2"]
                  [reagent "0.8.0-alpha2"]                ;;  Minimalistic React for ClojureScript
                  [ring/ring-core "1.6.3"]                ;;  a very thin HTTP abstraction
                  [ring/ring-codec "1.1.0"]               ;;  encoding and decoding into formats used in web

@@ -1,4 +1,4 @@
-/*
+/****
   Structure: :name :command :result
   Type of commands
      :? = fetch (query)
@@ -8,12 +8,12 @@
     :affected or :n = number of rows affected (inserted/updated/deleted)
     :1 = one row
     :raw = passthrough an untouched result (default)
-*/
+***/
 
--- :name get-uploads :? :*
--- :doc retrieve uploads given the user id.
-SELECT id, filename, active, tags, user_id, created_at FROM uploads
-WHERE user_id = :user_id ORDER BY id DESC
+-- :name get-user-login :? :1
+-- :doc retrieve a user given the email and password.
+SELECT id, fname, lname, email, admin FROM users
+WHERE email = :email AND password = :password
 
 -- :name create-user! :! :n
 -- :doc creates a new user record
@@ -29,11 +29,6 @@ WHERE id = :id
 -- :name get-user :? :1
 -- :doc retrieve a user given the id.
 SELECT * FROM users WHERE id = :id
-
--- :name get-user-login :? :1
--- :doc retrieve a user given the email and password.
-SELECT id, fname, lname, email, admin FROM users
-WHERE email = :email AND password = :password
 
 -- :name delete-user! :! :n
 -- :doc delete a user given the id
@@ -56,11 +51,6 @@ VALUES (:filename, :active, :tags, :user_id, :created_at)
 -- :doc retrieve array posts given the id.
 SELECT id, title, body, active, discution, user_id, created_at FROM posts
 ORDER BY id DESC LIMIT 5
-
--- :name admin-get-comments :? :*
--- :doc retrieve array posts given the user id.
-SELECT id, title, body, active, discution, user_id, created_at FROM posts
-WHERE user_id = :user-id ORDER BY id
 
 -- :name get-post :? :1
 -- :doc retrieve a post given the id.
@@ -96,4 +86,12 @@ SELECT u.id AS user_id, u.fname, u.lname, c.id, c.comment, c.created_at
 FROM users AS u, comments AS c
 WHERE c.post_id = :id AND u.id=c.user_id ORDER BY c.id
 
+-- :name get-uploads :? :*
+-- :doc retrieve uploads given the user id.
+SELECT id, filename, active, tags, user_id, created_at FROM uploads
+WHERE user_id = :user-id ORDER BY id DESC
 
+-- :name admin-get-posts :? :*
+-- :doc retrieve array posts given the user id.
+SELECT id, title, body, active, discution, user_id, created_at FROM posts
+WHERE user_id = :user-id ORDER BY id
