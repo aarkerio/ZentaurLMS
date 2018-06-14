@@ -3,7 +3,7 @@
   :url "http://chipotle-software.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [buddy/buddy-auth "2.1.0"]              ;; Authentication
-                 [cheshire "5.8.0"]
+                 [cheshire "5.8.0"]                      ;; Clojure JSON and BSON encoding/decoding
                  [cider/cider-nrepl "0.16.0"]
                  [clj-time "0.14.0"]                     ;; date time-zone library
                  [cljs-ajax "0.7.3"]                     ;; Ajax
@@ -11,7 +11,7 @@
                  [com.cognitect/transit-cljs "0.8.243"]  ;; String -> Transit
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [compojure "1.6.0"]                     ;; routes for ring
-                 [conman "0.6.8"]                        ;; mount/unmount library
+                 [conman "0.7.9"]                        ;; mount/unmount library
                  [cprop "0.1.11"]                        ;; Read properties, environments, configs, profiles
                  [domina "1.0.3"]                        ;; A DOM manipulation library for ClojureScript
                  [funcool/bide "1.6.0"]                  ;; A simple routing library for ClojureScript
@@ -35,7 +35,8 @@
                  [reagent "0.8.0-alpha2"]                ;;  Minimalistic React for ClojureScript
                  [ring/ring-core "1.6.3"]                ;;  a very thin HTTP abstraction
                  [ring/ring-codec "1.1.0"]               ;;  encoding and decoding into formats used in web
-                 [ring/ring-defaults "0.3.1"]            ;;  provide sensible Ring middleware defaults: wrap-multipart-params, wrap-params wrap-cookies, wrap-flash, etc.
+                 [ring/ring-defaults "0.3.1"]            ;;  provide sensible Ring middleware defaults: wrap-multipart-params,
+                                                         ;;   wrap-params wrap-cookies, wrap-flash, etc.
                  [ring-middleware-format "0.7.2"]        ;;  Middleware json + transit requests
                  [selmer "1.11.7"]                       ;;  Simple HTML Templates
                  [slugify "0.0.1"]]
@@ -49,7 +50,7 @@
   :migratus {:store :database :classname "net.sf.log4jdbc.DriverSpy" :db ~(get (System/getenv) "DATABASE_URL")}
   :plugins [[lein-cprop "1.0.3"]
             [migratus-lein "0.5.2"]
-            [lein-cljsbuild "1.1.5"]
+            [lein-cljsbuild "1.1.7"]
             [lein-kibit "0.1.5"]       ;; rubocop for clojure
             [lein-immutant "2.1.0"]]
   :clean-targets ^{:protect false}

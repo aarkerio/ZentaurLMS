@@ -25,8 +25,9 @@
   (first
     (st/validate params upload-schema)))
 
-(defn get-uploads [user-id]
-     (db/get-uploads user-id))
+(defn get-uploads [user_id]
+  (log/info (str ">>> idddddddd ######## >>>>> " user_id))
+  (db/get-uploads user_id))
 
 (defn save-upload! [params]
   (if-let [errors (validate-upload params)]

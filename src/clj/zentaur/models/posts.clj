@@ -54,3 +54,7 @@
 (defn destroy [params]
   (do
     (db/delete-post! params)))
+
+(defn admin-get-posts [user-id]
+  (db/admin-get-comments user-id))
+

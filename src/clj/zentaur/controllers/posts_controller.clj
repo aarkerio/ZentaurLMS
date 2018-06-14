@@ -2,6 +2,7 @@
   (:require [zentaur.controllers.base-controller :as basec]
             [zentaur.hiccup_templating.layout-view :as layout]
             [zentaur.hiccup_templating.posts-view :as posts-view]
+            [zentaur.hiccup_templating.admin.posts-view :as admin-posts-view]
             [zentaur.models.posts :as modposts]
             [zentaur.libs.helpers :as h]
             [clj-time.local :as l]
@@ -9,12 +10,14 @@
             [ring.util.http-response :as response]
             [ring.util.request :refer [body-string]]))
 
+;; GET /posts
 (defn get-posts [request]
   (let [base     (basec/set-vars request)
         posts    (modposts/get-posts)]
     (layout/application
         (merge base {:title "Posts" :contents (posts-view/index posts) }))))
 
+;; POST /post/savecomment
 (defn save-comment [request]
   (let [body-params (:body-params request)
         identity    (:identity request)
@@ -26,6 +29,7 @@
       (assoc {} :created_at (l/local-now) :post_id post_id :comment comment :user_id user_id))
     (basec/json-response { :comment comment :created_at (h/format-time) :last_name (:last_name identity) } )))
 
+;; GET /posts/:id
 (defn single-post [request]
   (let [base     (basec/set-vars request)
         params   (:params request)
@@ -35,9 +39,7 @@
     (layout/application
        (merge base { :contents (posts-view/show post base comments) }))))
 
-(defn admin-posts [{session :session}]
-  (layout/application "admin/posts" { :identity (:identity session)}))
-
+;; POST /posts
 (defn save-post! [ {:keys [params]} ]
   (if-let [errors (modposts/validate-post params)]
     (-> (response/found "/posts")
@@ -50,9 +52,20 @@
         (assoc params :created_at (l/local-now) :active active :discution discution :user_id int_ui))
       (response/found "/posts")))))
 
+;; DELETE /posts
 (defn delete-post [{:keys [params]}]
   (do
     (let [newparams {:id (Integer/parseInt (get params :id))}]
       (modposts/destroy newparams)
       (response/ok "body"))))
+
+;;;;;;;;;;;;;;;;     ADMIN SECTION      ;;;;;;;;;;;;;;;;;;;;;;;
+
+;; GET /admin/posts
+(defn admin-posts [request]
+  (let [user-id  (-> request :identity :id)
+        posts    (modposts/get-posts user-id)]
+    (layout/application
+        (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts) }))))
+
 
