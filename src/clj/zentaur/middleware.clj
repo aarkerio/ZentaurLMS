@@ -84,9 +84,9 @@
     (try
       (handler req)
       (catch Throwable t
-        (log/error t)
+        (log/error (str "####### wrap-internal-error ########### >>>>>" t))
         (error-page {:status 500
-                     :title "Something very bad has happened!"
+                     :title "Etwas sehr Schlechtes ist passiert!"
                      :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
 (defn wrap-csrf [handler]
@@ -113,6 +113,6 @@
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)))
-      wrap-flash
+      (wrap-flash)
       (wrap-restful-format handler [:json :transit-json])
-      wrap-internal-error))
+      (wrap-internal-error)))

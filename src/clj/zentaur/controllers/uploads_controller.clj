@@ -17,9 +17,10 @@
     (layout/application (merge base {:title "Posts" :contents (admin-uploads-view/index files csrf-field) }))))
 
 ;; POST /admin/uploads
-(defn upload-file [params identity]
-  (let [user-id   (:id identity)]
-    ;; (log/info (str ">>> FILE >>>>> " params " root-path >>> " root-path " user-file >>> " (str rand5 "-" (:filename user-file))))
-    (model-upload/save-upload! params identity)
+(defn upload-file [request]
+  (let [user-id   (-> request :identity :id)
+        params    (-> request :params)]
+    (log/info (str ">>> REQUEST >>>>> " request ))
+    (model-upload/upload-file params user-id)
     (-> (response/found "/admin/uploads"))))
 

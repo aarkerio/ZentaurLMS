@@ -44,8 +44,8 @@ VALUES (:fname, :lname, :email, :pass)
 -- :name save-upload! :! :n
 -- :doc creates a new upload record
 INSERT INTO uploads
-(filename, active, tags, user_id, created_at)
-VALUES (:filename, :active, :tags, :user_id, :created_at)
+(filename, active, tags, user_id, created_at, hashvar)
+VALUES (:filename, :active, :tags, :user_id, :created_at, :hashvar)
 
 -- :name get-posts :? :*
 -- :doc retrieve array posts given the id.
