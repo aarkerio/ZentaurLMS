@@ -5,11 +5,15 @@
             [hiccup.element :only (link-to)]))
 
 (defn formatted-file [file]
-    [:div {:style "margin:3px; padding:4px; border: dotted gray 1px;"}
-        [:div (:filename file)]
-        [:div (:created_at file)]
-        [:div (:tags file)]
-        [:div [:a {:href "/admin/uploads/delete/{{(:id file)}}"} "Delete"]]])
+  (let [filename   (:filename file)
+        created_at (:created_at file)
+        tags       (:tags file)
+        id         (:id file)]
+  [:tr nil
+   ([:td nil filename]
+    [:td nil created_at]
+    [:td nil tags]
+    [:td nil [:a {:href "/admin/uploads/delete/{{id}}"} "Delete"]])]))
 
 (defn index [files csrf-field]
   (let [formatted-files (doall (for [file files]
@@ -24,5 +28,8 @@
            [:br " "]
            (f/text-field  { :class "form-control mr-sm-2" :placeholder "tags" } :tags)
            (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Datei hochladen"))]]
-    [:div formatted-files]]
-  ))
+    [:table nil
+      [:thead nil
+        [:tr nil ([:th nil "File"] [:th nil "Tags"] [:th nil "Created"] [:th nil "Delete"])]]
+      [:tbody nil
+       (formatted-files)]]]))
