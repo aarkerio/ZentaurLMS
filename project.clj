@@ -35,8 +35,8 @@
                  [reagent "0.8.1"]                       ;;  Minimalistic React for ClojureScript
                  [ring/ring-core "1.6.3"]                ;;  a very thin HTTP abstraction
                  [ring/ring-codec "1.1.0"]               ;;  encoding and decoding into formats used in web
-                 [ring/ring-defaults "0.3.2"]            ;;  provide Ring middleware defaults: wrap-multipart-params,
-                                                         ;;   wrap-params wrap-cookies, wrap-flash, etc.
+                 [ring/ring-defaults "0.3.2"]            ;;  Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
+                 [ring/ring-mock "0.3.2"]                ;; library for creating Ring request maps for testing purposes.
                  [ring-middleware-format "0.7.2"]        ;;  Middleware json + transit requests
                  [selmer "1.11.7"]                       ;;  Simple HTML Templates
                  [slugify "0.0.1"]]
