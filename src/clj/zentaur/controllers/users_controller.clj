@@ -12,7 +12,6 @@
 
 ;; GET /login
 (defn login-page [request]
-  (log/info (str ">>> request >>>>> " request))
   (let [base (basec/set-vars request)]
     (layout/application (merge base {:title "Login" :contents (users-view/login base) }))))
 

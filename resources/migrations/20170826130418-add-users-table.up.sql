@@ -31,4 +31,4 @@ INSERT INTO users (fname,
           'admin@example.com',
           true,
           true,
-          'bcrypt+sha512$572865bc1b45c7a696332ec879899e03$12$216ec77b706a69c93d9aaa761d39ba77b7043763038f0737');
+          'bcrypt+sha512$31663163343233343262646331656136$12$472ab1393ef857b0b30769ebe654e627c0b0a4a3847a6f4e');

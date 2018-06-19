@@ -34,7 +34,6 @@
     (assoc {} :user (db/get-user-login
                       { :password password-derived :email trimmed_email }))))
 
-
 (def post-schema
   [[:title st/required st/string]
    [:body
