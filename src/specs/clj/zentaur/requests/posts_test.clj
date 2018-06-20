@@ -3,6 +3,13 @@
             [your-app.core :refer :all]
             [ring.mock.request :as mock]))
 
+(s/def ::animal-id uuid?)
+(s/def ::animal-name
+  (s/and string? (fn [s] (> (count s) 0))))
+(s/def ::cuddly boolean?)
+(s/def ::animal
+  (s/keys :req [::animal-id ::animal-name ::cuddly])
+
 (deftest your-handler-test
   (is (= (your-handler (mock/request :get "/doc/10"))
          {:status  200
