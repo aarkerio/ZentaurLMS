@@ -10,15 +10,17 @@
         tags       (:tags file)
         id         (:id file)]
   [:tr
-   [:td filename]
-    [:td created_at]
+    [:td filename]
     [:td tags]
-    [:td [:a {:href "/admin/uploads/delete/{{id}}"} "Delete"]]]))
+    [:td created_at]
+    [:td [:a {:href "/admin/uploads/process/{{id}}"} "Process"]]
+    [:td [:a {:href "/admin/uploads/archive/{{id}}"} "Archive"]]]))
 
 (defn index [files csrf-field]
   (let [formatted-files (doall (for [file files]
                                  (formatted-file file)))]
     [:div nil
+      [:h1 nil "Tests"]
       [:div {:class "row"}
         [:div {:class "span12"}
           (f/form-to {:enctype "multipart/form-data" :class "form-inline my-2 my-lg-0"}
@@ -35,5 +37,5 @@
           [:th "Tags"]
           [:th "Created"]
           [:th "Delete"]]]
-      [:tbody formatted-files] ]] ))
+      [:tbody formatted-files] ]]))
 
