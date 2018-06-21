@@ -9,11 +9,11 @@
         created_at (:created_at file)
         tags       (:tags file)
         id         (:id file)]
-  [:tr nil
-   ([:td nil filename]
-    [:td nil created_at]
-    [:td nil tags]
-    [:td nil [:a {:href "/admin/uploads/delete/{{id}}"} "Delete"]])]))
+  [:tr
+   [:td filename]
+    [:td created_at]
+    [:td tags]
+    [:td [:a {:href "/admin/uploads/delete/{{id}}"} "Delete"]]]))
 
 (defn index [files csrf-field]
   (let [formatted-files (doall (for [file files]
@@ -27,15 +27,13 @@
              (f/file-upload { :class "form-control mr-sm-2" :placeholder "file" } :userfile)
              [:br " "]
              (f/text-field  { :class "form-control mr-sm-2" :placeholder "tags" } :tags)
-             (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Datei hochladen"))]]]
-    [:table nil
-      [:thead nil
-        [:tr nil ([:th nil "File"] [:th nil "Tags"] [:th nil "Created"] [:th nil "Delete"])]]
-     [:tbody nil "(formatted-files)"] ] ))
+             (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Datei hochladen"))]]
+    [:table {:class "some-classs"}
+      [:thead
+        [:tr
+          [:th "File"]
+          [:th "Tags"]
+          [:th "Created"]
+          [:th "Delete"]]]
+      [:tbody formatted-files] ]] ))
 
-
-
-(html [:table {:class "span12"}
-        [:thead nil
-          [:tr nil ([:th nil "File"] [:th nil "Tags"] [:th nil "Created"] [:th nil "Delete"])]]
-        [:tbody nil "(formatted-files)"] ] )
