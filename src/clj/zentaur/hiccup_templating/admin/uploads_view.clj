@@ -13,8 +13,8 @@
     [:td filename]
     [:td tags]
     [:td created_at]
-    [:td [:a {:href "/admin/uploads/process/{{id}}"} "Process"]]
-    [:td [:a {:href "/admin/uploads/archive/{{id}}"} "Archive"]]]))
+    [:td [:a {:href (str "/admin/uploads/process/" id)} "Process"]]
+    [:td [:a {:href (str "/admin/uploads/archive/" id)} "Archive"]]]))
 
 (defn index [files csrf-field]
   (let [formatted-files (doall (for [file files]
