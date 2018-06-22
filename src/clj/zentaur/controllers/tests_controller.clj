@@ -1,15 +1,18 @@
 (ns zentaur.controllers.tests-controller
-  (:require [zentaur.controllers.base-controller :as basec]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
+            [zentaur.controllers.base-controller :as basec]
+            [zentaur.models.tests :as model-test]
             [zentaur.hiccup_templating.layout-view :as layout]
+            [zentaur.hiccup_templating.tests-view :as tests-view]
             [ring.util.http-response :as response]))
 
-;; GET /admin/tests
+;; GET /tests
 (defn get-tests [request]
   (let [base     (basec/set-vars request)
-        posts    (model-post/admin-get-posts user-id)]
+        user-id  (-> request :identity :id)
+        posts    (model-test/admin-get-posts user-id)]
     (layout/application
-        (merge base {:title "Tests" :contents (posts-view/index posts) }))))
+        (merge base {:title "Tests" :contents (tests-view/index posts) }))))
 
 (defn get-admin [request]
   (let [base     (basec/set-vars request)]
@@ -22,8 +25,8 @@
 ;;;;;  ADMIN FUNCTIONS
 
 ;; GET /admin/tests
-(defn get-posts [request]
+(defn admin-tests [request]
   (let [base     (basec/set-vars request)
-        posts    (model-post/get-posts)]
+        posts    (model-test/get-posts)]
     (layout/application
-        (merge base {:title "Tests" :contents (test-view/index posts) }))))
+        (merge base {:title "Tests" :contents (tests-view/index posts) }))))

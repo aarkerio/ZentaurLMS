@@ -1,10 +1,11 @@
 (ns zentaur.routes.home
   (:require
-       [zentaur.controllers.posts-controller   :as cont-posts]
-       [zentaur.controllers.users-controller   :as cont-users]
-       [zentaur.controllers.uploads-controller  :as cont-uploads]
-       [zentaur.controllers.company-controller :as cont-company]
-       [compojure.core :refer [defroutes context GET POST PUT DELETE PATCH]]))
+    [zentaur.controllers.company-controller :as cont-company]
+    [zentaur.controllers.posts-controller   :as cont-posts]
+    [zentaur.controllers.tests-controller   :as cont-tests]
+    [zentaur.controllers.uploads-controller :as cont-uploads]
+    [zentaur.controllers.users-controller   :as cont-users]
+    [compojure.core :refer [defroutes context GET POST PUT DELETE PATCH]]))
 
 (defroutes base-routes
   (GET    "/"               request    (cont-posts/get-posts  request))

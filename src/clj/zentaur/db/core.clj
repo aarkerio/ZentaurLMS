@@ -18,7 +18,7 @@
            :start (conman/connect! {:classname "net.sf.log4jdbc.DriverSpy" :jdbc-url (env :database-url)})
            :stop (conman/disconnect! *db*))
 
-(conman/bind-connection *db* "sql/queries.sql")
+(conman/bind-connection *db* "sql/queries.sql" "sql/users_queries.sql" "sql/tests_queries.sql")
 
 (extend-protocol jdbc/IResultSetReadColumn
   Array

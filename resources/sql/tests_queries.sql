@@ -9,30 +9,30 @@
     :1 = one row
     :raw = passthrough an untouched result (default)
 */
--- :name cdreate-user! :! :n
--- :doc creates a new user record
-INSERT INTO users (id, fname, lname, email, pass)
+-- :name cdreate-test! :! :n
+-- :doc creates a new test record
+INSERT INTO tests (id, fname, lname, email, pass)
 VALUES (:id, :fname, :lname, :email, :pass)
 
--- :name upddate-user! :! :n
--- :doc update an existing user record
-UPDATE users
+-- :name upddate-test! :! :n
+-- :doc update an existing test record
+UPDATE tests
 SET fname = :fname, last_name = :last_name, email = :email
 WHERE id = :id
 
--- :name getd-user :? :1
--- :doc retrieve a user given the id.
-SELECT * FROM users
+-- :name getd-test :? :1
+-- :doc retrieve a test given the id.
+SELECT * FROM tests
 WHERE id = :id
 
--- :name getd-user-login :? :1
--- :doc retrieve a user given the email and password.
-SELECT id, fname, last_name, email, admin FROM users
+-- :name getd-test-login :? :1
+-- :doc retrieve a test given the email and password.
+SELECT id, fname, last_name, email, admin FROM tests
 WHERE email = :email AND password = :password
 
--- :name deleted-user! :! :n
--- :doc delete a user given the id
-DELETE FROM users
+-- :name deleted-test! :! :n
+-- :doc delete a test given the id
+DELETE FROM tests
 WHERE id = :id
 
 -- :name saved-message! :! :n
@@ -44,17 +44,17 @@ VALUES (:fname, :last_name, :email, :pass)
 -- :name saved-upload! :! :n
 -- :doc creates a new upload record
 INSERT INTO uploads
-(filename, active, tags, user_id, created_at)
-VALUES (:filename, :active, :tags, :user_id, :created_at)
+(filename, active, tags, test_id, created_at)
+VALUES (:filename, :active, :tags, :test_id, :created_at)
 
 -- :name getd-uploads :? :*
--- :doc retrieve uploads given the user id.
-SELECT id, filename, active, tags, user_id, created_at FROM uploads
-WHERE user_id = :user_id ORDER BY id DESC
+-- :doc retrieve uploads given the test id.
+SELECT id, filename, active, tags, test_id, created_at FROM uploads
+WHERE test_id = :test_id ORDER BY id DESC
 
 -- :name getd-posts :? :*
 -- :doc retrieve a post given the id.
-SELECT id, title, body, active, discution, user_id, created_at FROM posts
+SELECT id, title, body, active, discution, test_id, created_at FROM posts
 ORDER BY id DESC LIMIT 5
 
 -- :name getd-post :? :1
