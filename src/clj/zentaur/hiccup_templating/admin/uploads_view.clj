@@ -5,19 +5,37 @@
             [hiccup.element :only (link-to)]))
 
 (defn formatted-file [file]
-    [:div {:style "margin:3px; padding:4px; border: dotted gray 1px;"}
-        [:div (:filename file)]
-        [:div (:created_at file)]
-        [:div (:tags file)]
-        [:div [:a {:href "/admin/uploads/delete/{{(:id file)}}"} "Delete"]]])
+  (let [filename   (:filename file)
+        created_at (:created_at file)
+        tags       (:tags file)
+        id         (:id file)]
+  [:tr
+    [:td filename]
+    [:td tags]
+    [:td created_at]
+    [:td [:a {:href (str "/admin/uploads/process/" id)} "Process"]]
+    [:td [:a {:href (str "/admin/uploads/archive/" id)} "Archive"]]]))
 
-(defn index [files content]
+(defn index [files csrf-field]
   (let [formatted-files (doall (for [file files]
                                  (formatted-file file)))]
-  [:div {:class "row"}
-    [:div {:class "span12"}
-       (f/form-to [:post "/admin/uploads" {:enctype "multipart/form-data" :class "form-inline my-2 my-lg-0"}]
-           (f/hidden-field { :value (:csrf-field content)} "__anti-forgery-token")
-           (f/file-upload { :class "form-control mr-sm-2" :placeholder "file" } :userfile )
-           (f/text-field  { :class "form-control mr-sm-2" :placeholder "email" } :email)
-           (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Anmeldung"))]]))
+    [:div nil
+      [:h1 nil "Tests"]
+      [:div {:class "row"}
+        [:div {:class "span12"}
+          (f/form-to {:enctype "multipart/form-data" :class "form-inline my-2 my-lg-0"}
+             [:post "/admin/uploads"]
+             (f/hidden-field "__anti-forgery-token" csrf-field)
+             (f/file-upload { :class "form-control mr-sm-2" :placeholder "file" } :userfile)
+             [:br " "]
+             (f/text-field  { :class "form-control mr-sm-2" :placeholder "tags" } :tags)
+             (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Datei hochladen"))]]
+    [:table {:class "some-classs"}
+      [:thead
+        [:tr
+          [:th "File"]
+          [:th "Tags"]
+          [:th "Created"]
+          [:th "Delete"]]]
+      [:tbody formatted-files] ]]))
+

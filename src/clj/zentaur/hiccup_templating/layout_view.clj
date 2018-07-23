@@ -13,9 +13,9 @@
                             [:li {:class "nav-item"} [:a {:href "/logout" :class "nav-link"} "Logout"]] ))
 
   (html5 [:head
-          [:title (str ":: Partido Spinozista :: " (:title content))]
+          [:title (str ":: Zentaur :: Tests for you " (:title content))]
           [:meta {:http-equiv "Content-Type" :content "text/html;charset=utf-8"}]
-          [:link {:rel "shortcut icon" :href "/img/favicon.png"}]
+          [:link {:rel "shortcut icon" :href "/img/favicon.ico"}]
           (include-js  "//cdnjs.cloudflare.com/ajax/libs/tether/1.4.3/js/tether.min.js")
           (include-js  "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
           (include-css "/css/bootstrap.min.css")
@@ -43,8 +43,8 @@
                       (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Anmeldung")))]]
            [:div {:class "blog-header"}
              [:div {:class "container"}
-               [:h1 {:class "blog-title" :id "blogtitle"} "Partido Spinozista"]
-               [:p  {:class "lead blog-description"} "A nada le temen más los déspotas que a la razón."]]]
+               [:h1 {:class "blog-title" :id "blogtitle"} "Zentaur"]
+               [:p  {:class "lead blog-description"} "Thousands of questions ready to use."]]]
 
           [:div {:class "container"}  (:contents content)]]
 

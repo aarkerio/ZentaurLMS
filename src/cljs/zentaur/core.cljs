@@ -1,6 +1,6 @@
-(ns blog.core
-  (:require [blog.posts :as posts]
-            [blog.libs.sanitize :as s]
+(ns zentaur.core
+  (:require [zentaur.posts :as posts]
+            [zentaur.libs.sanitize :as s]
             [domina :as dom]
             [ajax.core :refer [GET POST DELETE]]
             [cognitect.transit :as t]

@@ -10,15 +10,17 @@
   (let [base (basec/set-vars request)]
     (layout/application (merge base { :contents "foo" } ))))
 
+;; GET /login
 (defn login-page [request]
-  (log/info (str ">>> request >>>>> " request))
   (let [base (basec/set-vars request)]
     (layout/application (merge base {:title "Login" :contents (users-view/login base) }))))
 
+;; POST /login
 (defn post-login
   ;; Login into the app
   [{{email "email" password "password"} :form-params session :session :as req}]
-  (let [user (modusers/get-user-by-email-and-password email password)]
+  (let [user (modusers/get-user-by-email-and-password email password)
+        _    (log/info (str ">>> password >>>>> " password))]
     ;; If authenticated
     (if-not (nil? (:user user))
       (do

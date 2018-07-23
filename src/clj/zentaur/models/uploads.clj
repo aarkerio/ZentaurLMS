@@ -26,7 +26,7 @@
     (st/validate params upload-schema)))
 
 (defn get-uploads [user-id]
-     (db/get-uploads user-id))
+  (db/get-uploads {:user-id user-id}))
 
 (defn save-upload! [params]
   (if-let [errors (validate-upload params)]
@@ -35,13 +35,15 @@
 (defn copy-file [source-path dest-path]
   (io/copy (io/file source-path) (io/file dest-path)))
 
-(defn upload-file [params identity]
+(defn upload-file [params user-id]
   (let [root-path (.getCanonicalPath (io/file "."))
         user-file (:userfile params)
-        user-id   (:id identity)
+        filename  (:filename user-file)
+        tempfile  (:tempfile user-file)
+        tags      (:tags params)
         rand5     (crypto.random/hex 5)]
-    ;; (log/info (str ">>> FILE >>>>> " params " root-path >>> " root-path " user-file >>> " (str rand5 "-" (:filename user-file))))
-    (copy-file (get user-file :tempfile) (str root-path "/resources/public/img/uploads/" (str rand5 "-" (:filename user-file))))
+    (copy-file tempfile (str root-path "/resources/public/uploads/" (str rand5 "-" filename)))
     (save-upload!
-       (assoc params :filename (str rand5 "-" (:filename user-file)) :created_at (l/local-now) :active true :user_id  user-id :tags "etwas tags"))))
+      (assoc params :filename (str rand5 "-" filename) :created_at (l/local-now) :hashvar rand5
+                    :active true :user_id user-id :tags tags))))
 

@@ -1,0 +1,8 @@
+;; WARNING
+;; The profiles.clj file is used for local environment variables, such as database credentials.
+;; This file is listed in .gitignore and will be excluded from version control by Git
+
+{:profiles/dev  {:env {:classname "net.sf.log4jdbc.DriverSpy" :database-url "jdbc:postgresql://localhost/zentaur_dev?user=zentaur&password=s0mepassw0rd"}}
+ :profiles/test {:env {:classname "net.sf.log4jdbc.DriverSpy" :database-url "jdbc:postgresql://localhost/zentaur_test?user=zentaur&password=s0mepassw0rd"}}}
+
+

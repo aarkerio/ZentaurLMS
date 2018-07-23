@@ -1,4 +1,4 @@
-(ns zentaur.models.posts
+(ns zentaur.models.tests
   (:require [zentaur.db.core :as db]
             [zentaur.env :as env]
             [struct.core :as st]

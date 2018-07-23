@@ -1,21 +1,35 @@
 (ns zentaur.controllers.uploads-controller
-  (:require [zentaur.models.uploads :as moduploads]
+  (:require [zentaur.models.uploads :as model-upload]
             [zentaur.controllers.base-controller :as basec]
             [zentaur.hiccup_templating.layout-view :as layout]
-            [zentaur.hiccup_templating.admin.uploads-view :as uploads-view]
+            [zentaur.hiccup_templating.admin.uploads-view :as admin-uploads-view]
             [clojure.tools.logging :as log]
             [ring.util.http-response :as response]))
 
-(defn admin-uploads [request]
-  (let [base     (basec/set-vars request)
-        user-id  (-> request :identity :id)
-        _        (log/info (str ">>> user-id >>>>> " user-id))
-        files    (moduploads/get-uploads user-id)]
-    (layout/application (merge base {:title "Posts" :contents (uploads-view/index files) }))))
 
-(defn upload-file [params identity]
-  (let [user-id   (:id identity)]
-    ;; (log/info (str ">>> FILE >>>>> " params " root-path >>> " root-path " user-file >>> " (str rand5 "-" (:filename user-file))))
-    (moduploads/save-upload! params identity)
-    (-> (response/found "/admin/images"))))
+;;;;;;;;;;;;;;;;;;;;;;;     ADMIN FUNCTIONS    ;;;;;;;;;;;;;;;;;;;;
+;; GET /admin/uploads
+(defn admin-uploads [request]
+  (let [base       (basec/set-vars request)
+        user-id    (-> request :identity :id)
+        csrf-field (:csrf-field base)
+        files      (model-upload/get-uploads user-id)]
+    (layout/application (merge base {:title "Posts" :contents (admin-uploads-view/index files csrf-field) }))))
+
+;; POST /admin/uploads
+(defn upload-file [request]
+  (let [user-id   (-> request :identity :id)
+        params    (-> request :params)]
+    (log/info (str ">>> REQUEST >>>>> " request ))
+    (model-upload/upload-file params user-id)
+    (-> (response/found "/admin/uploads"))))
+
+;; GET /admin/process
+(defn process [request]
+  (let [base      (basec/set-vars request)
+        user-id   (-> request :identity :id)
+        params    (-> request :params)
+        file      (model-upload/get-upload id)]
+    (log/info (str ">>> REQUEST >>>>> " request ))
+    (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process files csrf-field) }))))
 

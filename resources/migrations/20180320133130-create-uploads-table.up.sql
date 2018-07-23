@@ -8,6 +8,10 @@ CREATE TABLE uploads (
    active boolean NOT NULL DEFAULT true,
    user_id int NOT NULL REFERENCES users(id),
    tags varchar(100),
+   done boolean NOT NULL DEFAULT false,
+   json text,
+   content text,
+   hashvar varchar(250) NOT NULL,
    created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
    updated_at timestamp(0) with time zone
 );

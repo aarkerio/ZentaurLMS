@@ -1,2 +1,5 @@
-# cmsclj
-Clojure based CMS
+# Zentaur
+
+Clojure and ClojureScript LMS.
+
+MIT License.
