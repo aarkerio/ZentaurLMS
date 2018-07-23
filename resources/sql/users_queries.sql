@@ -35,31 +35,4 @@ WHERE email = :email AND password = :password
 DELETE FROM users
 WHERE id = :id
 
--- :name saved-message! :! :n
--- :doc creates a new message record
-INSERT INTO posts
-(fname, last_name, email, pass)
-VALUES (:fname, :last_name, :email, :pass)
-
--- :name saved-upload! :! :n
--- :doc creates a new upload record
-INSERT INTO uploads
-(filename, active, tags, user_id, created_at)
-VALUES (:filename, :active, :tags, :user_id, :created_at)
-
--- :name getd-uploads :? :*
--- :doc retrieve uploads given the user id.
-SELECT id, filename, active, tags, user_id, created_at FROM uploads
-WHERE user_id = :user_id ORDER BY id DESC
-
--- :name getd-posts :? :*
--- :doc retrieve a post given the id.
-SELECT id, title, body, active, discution, user_id, created_at FROM posts
-ORDER BY id DESC LIMIT 5
-
--- :name getd-post :? :1
--- :doc retrieve a post given the id.
-SELECT * FROM posts
-WHERE id = :id
-
 
