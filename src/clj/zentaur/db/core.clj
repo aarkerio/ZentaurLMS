@@ -18,14 +18,6 @@
            :start (conman/connect! {:classname "net.sf.log4jdbc.DriverSpy" :jdbc-url (env :database-url)})
            :stop (conman/disconnect! *db*))
 
-(defmacro rebind-connection []
-  (cons 'do
-    (->> (io/file (io/resource "sql"))
-     (file-seq)
-     (filter #(.isFile %))
-     (map #(str "sql/" (.getName %)))
-     (map #((fn [] `(conman/bind-connection *db* ~%)))))))
-
 (conman/bind-connection *db* "sql/queries.sql")
 
 (extend-protocol jdbc/IResultSetReadColumn

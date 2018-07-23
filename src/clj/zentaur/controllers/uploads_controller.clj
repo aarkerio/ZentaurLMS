@@ -27,9 +27,9 @@
 ;; GET /admin/process
 (defn process [request]
   (let [base      (basec/set-vars request)
-        user-id   (-> request :identity :id)
-        params    (-> request :params)
+        id        (-> request :identity :id)
+        csrf-field (:csrf-field base)
         file      (model-upload/get-upload id)]
     (log/info (str ">>> REQUEST >>>>> " request ))
-    (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process files csrf-field) }))))
+    (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process file csrf-field) }))))
 

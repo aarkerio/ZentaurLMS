@@ -28,6 +28,9 @@
 (defn get-uploads [user-id]
   (db/get-uploads {:user-id user-id}))
 
+(defn get-upload [id]
+  (db/get-upload {:id id}))
+
 (defn save-upload! [params]
   (if-let [errors (validate-upload params)]
       (db/save-upload! params)))

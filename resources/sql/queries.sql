@@ -62,8 +62,6 @@ WHERE c.post_id = :id AND u.id=c.user_id ORDER BY c.id
 SELECT id, title, body, active, discution, user_id, created_at FROM posts
 WHERE user_id = :user-id ORDER BY id
 
-/******************  UPLOADS ***/
-
 -- :name save-upload! :! :n
 -- :doc creates a new upload record
 INSERT INTO uploads
@@ -82,12 +80,12 @@ WHERE id = :id
 
 /******************* USERS ***/
 
--- :name cdreate-user! :! :n
+-- :name create-user! :! :n
 -- :doc creates a new user record
 INSERT INTO users (id, fname, lname, email, pass)
 VALUES (:id, :fname, :lname, :email, :pass)
 
--- :name upddate-user! :! :n
+-- :name update-user! :! :n
 -- :doc update an existing user record
 UPDATE users
 SET fname = :fname, last_name = :last_name, email = :email
@@ -98,12 +96,12 @@ WHERE id = :id
 SELECT * FROM users
 WHERE id = :id
 
--- :name getd-user-login :? :1
+-- :name get-user-login :? :1
 -- :doc retrieve a user given the email and password.
 SELECT id, fname, last_name, email, admin FROM users
 WHERE email = :email AND password = :password
 
--- :name deleted-user! :! :n
+-- :name delete-user! :! :n
 -- :doc delete a user given the id
 DELETE FROM users
 WHERE id = :id
