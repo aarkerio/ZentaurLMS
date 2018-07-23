@@ -88,17 +88,17 @@ VALUES (:id, :fname, :lname, :email, :pass)
 -- :name update-user! :! :n
 -- :doc update an existing user record
 UPDATE users
-SET fname = :fname, last_name = :last_name, email = :email
+SET fname = :fname, lname = :lname, email = :email
 WHERE id = :id
 
--- :name getd-user :? :1
+-- :name get-user :? :1
 -- :doc retrieve a user given the id.
 SELECT * FROM users
 WHERE id = :id
 
 -- :name get-user-login :? :1
 -- :doc retrieve a user given the email and password.
-SELECT id, fname, last_name, email, admin FROM users
+SELECT id, fname, lname, uname, email, admin FROM users
 WHERE email = :email AND password = :password
 
 -- :name delete-user! :! :n
@@ -113,23 +113,18 @@ WHERE id = :id
 INSERT INTO tests (id, fname, lname, email, pass)
 VALUES (:id, :fname, :lname, :email, :pass)
 
--- :name upddate-test! :! :n
+-- :name update-test! :! :n
 -- :doc update an existing test record
 UPDATE tests
 SET fname = :fname, last_name = :last_name, email = :email
 WHERE id = :id
 
--- :name getd-test :? :1
+-- :name get-test :? :1
 -- :doc retrieve a test given the id.
 SELECT * FROM tests
 WHERE id = :id
 
--- :name getd-test-login :? :1
--- :doc retrieve a test given the email and password.
-SELECT id, fname, last_name, email, admin FROM tests
-WHERE email = :email AND password = :password
-
--- :name deleted-test! :! :n
+-- :name delete-test! :! :n
 -- :doc delete a test given the id
 DELETE FROM tests
 WHERE id = :id

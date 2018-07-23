@@ -43,14 +43,8 @@
     [:div nil
       [:h1 nil "Import"]
       [:div {:class "row"}
-        [:div {:class "span12"}
-          (f/form-to {:enctype "multipart/form-data" :class "form-inline my-2 my-lg-0"}
-             [:post "/admin/uploads"]
-             (f/hidden-field "__anti-forgery-token" csrf-field)
-             (f/file-upload { :class "form-control mr-sm-2" :placeholder "file" } :userfile)
-             [:br " "]
-             (f/text-field  { :class "form-control mr-sm-2" :placeholder "tags" } :tags)
-             (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Datei hochladen"))]]
+       "asddasdasdasd"
+      ]
     [:table {:class "some-classs"}
       [:thead
         [:tr
