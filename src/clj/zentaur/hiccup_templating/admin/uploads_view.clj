@@ -13,7 +13,7 @@
     [:td filename]
     [:td tags]
     [:td created_at]
-    [:td [:a {:href (str "/admin/uploads/process/" id)} "Process"]]
+    [:td [:a {:href (str "/admin/process/" id)} "Process"]]
     [:td [:a {:href (str "/admin/uploads/archive/" id)} "Archive"]]]))
 
 (defn index [files csrf-field]
@@ -35,7 +35,11 @@
         [:tr
           [:th "File"]
           [:th "Tags"]
-          [:th "Created"]
+          [:th "md5"]
+	        [:th "Original Name"]
+          [:th "Process Done"]
+          [:th "Download"]
+          [:th "Uploaded Date"]
           [:th "Delete"]]]
       [:tbody formatted-files] ]]))
 
@@ -50,6 +54,38 @@
         [:tr
           [:th "File"]
           [:th "Tags"]
-          [:th "Created"]
-          [:th "Delete"]]]
+          [:th "md5"]
+	        [:th "Original Name"]
+          [:th "Process Done"]
+          [:th "Download"]
+          [:th "Uploaded Date"]
+          [:th "Archive"]]]
       [:tbody file] ]])
+
+
+
+    ;; Just an initial string as template
+    ;; (defn initial_json_string [origin]
+    ;;   %{ { "title": "Some title",
+    ;;     "description": "Some description",
+    ;;     "instructions": "",
+    ;;     "level": "1",
+    ;;     "lang": "en",
+    ;;     "origin": "#{origin}",
+    ;;     "tags": "tag_one, tag_two",
+    ;;     "status": "1",
+    ;;     "questions": [
+    ;;       {
+    ;;         "status": "1",
+    ;;         "qtype" : "1",
+    ;;         "hint" : "Some hint",
+    ;;         "explanation": "",
+    ;;         "question": "Some question",
+    ;;         "answers": [
+    ;;            { "answer": "", "correct": "false" },
+    ;;            { "answer": "", "correct": "false" }
+    ;;         ]
+    ;;      }
+    ;;     ] }
+    ;;   }
+    ;; )

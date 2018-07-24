@@ -24,7 +24,7 @@
     (model-upload/upload-file params user-id)
     (-> (response/found "/admin/uploads"))))
 
-;; GET /admin/process
+;; GET /admin/process/:id
 (defn process [request]
   (let [base      (basec/set-vars request)
         id        (-> request :identity :id)
@@ -33,3 +33,12 @@
     (log/info (str ">>> REQUEST >>>>> " request ))
     (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process file csrf-field) }))))
 
+
+;; GET /admin/archive/:id
+(defn archive [request]
+  (let [base      (basec/set-vars request)
+        id        (-> request :identity :id)
+        csrf-field (:csrf-field base)
+        file      (model-upload/get-upload id)]
+    (log/info (str ">>> REQUEST >>>>> " request ))
+    (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process file csrf-field) }))))
