@@ -4,17 +4,27 @@
             [clojure.tools.logging :as log]
             [hiccup.element :only (link-to)]))
 
+(defn extract? [id content]
+  (if (blank? content)
+    ([:a {:href (str "/admin/uploads/extract/" id)}  "Extract"])
+    (str "Done")))
+
 (defn formatted-file [file]
   (let [filename   (:filename file)
         created_at (:created_at file)
         tags       (:tags file)
+        content    (:content file)
+        done       (:done file)
         id         (:id file)]
   [:tr
     [:td filename]
     [:td tags]
+    [:td done]
     [:td created_at]
-    [:td [:a {:href (str "/admin/process/" id)} "Process"]]
-    [:td [:a {:href (str "/admin/uploads/archive/" id)} "Archive"]]]))
+    [:td [:a {:href (str "/admin/uploads/download/" id)} "Download"]]
+    [:td (extract? id content)]
+    [:td [:a {:href (str "/admin/uploads/process/" id)}  "Process"]]
+    [:td [:a {:href (str "/admin/uploads/archive/" id)}  "Archive"]]]))
 
 (defn index [files csrf-field]
   (let [formatted-files (doall (for [file files]
@@ -35,57 +45,28 @@
         [:tr
           [:th "File"]
           [:th "Tags"]
-          [:th "md5"]
-	        [:th "Original Name"]
-          [:th "Process Done"]
-          [:th "Download"]
+          [:th "Done"]
           [:th "Uploaded Date"]
-          [:th "Delete"]]]
+          [:th "Download"]
+          [:th "Extract"]
+          [:th "Process"]
+          [:th "Archive"]]]
       [:tbody formatted-files] ]]))
 
 (defn process [file csrf-field]
     [:div nil
       [:h1 nil "Import"]
       [:div {:class "row"}
-       "asddasdasdasd"
-      ]
-    [:table {:class "some-classs"}
-      [:thead
-        [:tr
-          [:th "File"]
-          [:th "Tags"]
-          [:th "md5"]
-	        [:th "Original Name"]
-          [:th "Process Done"]
-          [:th "Download"]
-          [:th "Uploaded Date"]
-          [:th "Archive"]]]
-      [:tbody file] ]])
+       "asddasdasdasd"]
+      [:div {:class "someclass"}
+        (f/submit-button {:class "btn" :id "save-button"}     "Save")
+        (f/submit-button {:class "btn" :id "test-button"}     "Test")
+        (f/submit-button {:class "btn" :id "multiple-button"} "Multiple Option")
+        (f/submit-button {:class "btn" :id "download-button"} "Download")
+        (f/submit-button {:class "btn" :id "export-button"}   "Export")]
+      [:div {:class "someclass"}
+       (f/text-area {:class "btn" :rows "20" :cols "100" :id "export-button"} "json-field" file)]
+      [:div {:class "someclass"}
+         file]
+        ])
 
-
-
-    ;; Just an initial string as template
-    ;; (defn initial_json_string [origin]
-    ;;   %{ { "title": "Some title",
-    ;;     "description": "Some description",
-    ;;     "instructions": "",
-    ;;     "level": "1",
-    ;;     "lang": "en",
-    ;;     "origin": "#{origin}",
-    ;;     "tags": "tag_one, tag_two",
-    ;;     "status": "1",
-    ;;     "questions": [
-    ;;       {
-    ;;         "status": "1",
-    ;;         "qtype" : "1",
-    ;;         "hint" : "Some hint",
-    ;;         "explanation": "",
-    ;;         "question": "Some question",
-    ;;         "answers": [
-    ;;            { "answer": "", "correct": "false" },
-    ;;            { "answer": "", "correct": "false" }
-    ;;         ]
-    ;;      }
-    ;;     ] }
-    ;;   }
-    ;; )

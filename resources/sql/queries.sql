@@ -62,21 +62,35 @@ WHERE c.post_id = :id AND u.id=c.user_id ORDER BY c.id
 SELECT id, title, body, active, discution, user_id, created_at FROM posts
 WHERE user_id = :user-id ORDER BY id
 
+/*******************  UPLOADS   ***/
+
 -- :name save-upload! :! :n
 -- :doc creates a new upload record
 INSERT INTO uploads
-(filename, active, tags, user_id, created_at)
-VALUES (:filename, :active, :tags, :user_id, :created_at)
+(filename, active, tags, user_id, created_at, hashvar, done)
+VALUES (:filename, :active, :tags, :user_id, :created_at, :hashvar, :done)
 
 -- :name get-uploads :? :*
 -- :doc retrieve uploads given the user id.
-SELECT id, filename, active, tags, user_id, created_at FROM uploads
+SELECT * FROM uploads
 WHERE user_id = :user-id ORDER BY id DESC
 
 -- :name get-upload :? :1
 -- :doc retrieve an upload file given the id.
 SELECT * FROM uploads
 WHERE id = :id
+
+-- :name clj-expr-generic-update :! :n
+/* :require [clojure.string :as string]
+            [hugsql.parameters :refer [identifier-param-quote]] */
+update :i:table set
+/*~
+(string/join ","
+  (for [[field _] (:updates params)]
+    (str (identifier-param-quote (name field) options)
+      " = :v:updates." (name field))))
+~*/
+where id = :id
 
 /******************* USERS ***/
 
