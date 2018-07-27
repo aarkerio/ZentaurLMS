@@ -10,9 +10,11 @@
                  [com.billpiel/sayid "0.0.15"]           ;; clojure debugger
                  [com.cognitect/transit-cljs "0.8.243"]  ;; String -> Transit
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
+                 [com.novemberain/pantomime "2.10.0"]
                  [compojure "1.6.0"]                     ;; routes for ring
                  [conman "0.7.9"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.11"]                        ;; Read properties, environments, configs, profiles
+                 [digest "1.4.8"]                        ;; Message digest library for Clojure.
                  [domina "1.0.3"]                        ;; A DOM manipulation library for ClojureScript
                  [funcool/bide "1.6.0"]                  ;; A simple routing library for ClojureScript
                  [funcool/struct "1.1.0"]                ;; database validation

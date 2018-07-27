@@ -11,7 +11,7 @@ CREATE TABLE uploads (
    done boolean NOT NULL DEFAULT false,
    json text,
    content text,
-   hashvar varchar(250) NOT NULL,
+   hashvar varchar(250) NOT NULL, -- MD5 file checksum
    created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
    updated_at timestamp(0) with time zone
 );
