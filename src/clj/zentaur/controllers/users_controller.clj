@@ -8,7 +8,7 @@
 
 (defn admin-users [request]
   (let [base (basec/set-vars request)]
-    (layout/application (merge base { :contents "foo" } ))))
+    (layout/application (merge base { :contents (users-view/index base) } ))))
 
 ;; GET /login
 (defn login-page [request]

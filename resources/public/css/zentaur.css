@@ -1,0 +1,17 @@
+/*
+ * Zentaur Globals
+ */
+
+@media (min-width: 48em) {
+  html {
+    font-size: 18px;
+  }
+}
+
+body {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  color: #555;
+}
+
+
+
