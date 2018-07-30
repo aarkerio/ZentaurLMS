@@ -5,8 +5,8 @@
             [hiccup.element :only (link-to)]))
 
 (defn extract? [id content]
-  (if (blank? content)
-    ([:a {:href (str "/admin/uploads/extract/" id)}  "Extract"])
+  (if (clojure.string/blank? content)
+    (c/html [:a {:href (str "/admin/uploads/extract/" id)} "Extract"])
     (str "Done")))
 
 (defn formatted-file [file]

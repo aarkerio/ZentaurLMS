@@ -35,7 +35,8 @@
   (db/get-uploads {:user-id user-id}))
 
 (defn get-upload [id]
-  (db/get-upload {:id id}))
+  (let [int-id (Integer/parseInt id)]
+    (db/get-upload {:id int-id})))
 
 (defn save-upload! [params]
   (if-let [errors (validate-upload params)]
@@ -84,13 +85,11 @@
     (save-upload!
       (assoc params :filename (str rand5 "-" filename) :created_at (l/local-now) :hashvar hashvar
                     :active true :user_id user-id :tags tags :done false))))
-(defn extract-text [id]
-  (str "extract-text"))
 
-(defn extract-textkk [id]
-  (let [db-record  (db/get-upload {:id id})
-        file       (:file db-record)
-        all-file   (extract/parse (str "path/" file))
+(defn extract-text [id]
+  (let [db-record  (get-upload id)
+        filename   (:filename db-record)
+        all-file   (extract/parse (str "resources/public/uploads/" filename))
         text       (:text all-file)]
         (db/clj-expr-generic-update {:table   "uploads"
                                      :updates {:content text}
@@ -99,12 +98,10 @@
   (let [id       (:id params)
         upload   (db/get-upload {:id id})
         _        (log/info (str ">>> upload >>>>> " upload))
-        all-file (extract/parse "test/resources/pdf/qrl.pdf")
-        text     (:text all-file)
-        ;; json (initial_json_string hashvar)
-        ]
+        all-file (extract/parse (str "resources/public/uploads/" (:filename upload)))
+        text     (:text all-file)]
     ;; (db/clj-expr-generic-update {:content text :json json :id id})
     (db/clj-expr-generic-update {:table "test"
-                               :updates {:name "X"}
-                               :id 3})))
+                                 :updates {:name "X"}
+                                 :id 3})))
 

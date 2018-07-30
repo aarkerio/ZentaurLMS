@@ -24,7 +24,7 @@
   (GET    "/admin/uploads/process/:id"  request   (cont-uploads/process request))
   (GET    "/admin/uploads/archive/:id"  request   (cont-uploads/archive request))
   (GET    "/admin/uploads/download/:id" request   (cont-uploads/archive request))
-  (GET    "/admin/uploads/extract/:id"  request   (cont-uploads/archive (:params request)))
+  (GET    "/admin/uploads/extract/:id"  request   (cont-uploads/extract (:params request)))
   (GET    "/admin/tests"                request   (cont-tests/admin-tests request))
   (GET    "/about"                      request   (cont-company/about-page request)))
 
