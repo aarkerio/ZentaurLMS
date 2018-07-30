@@ -39,6 +39,21 @@
     (log/info (str ">>> REQUEST >>>>> " file))
     (-> (response/found "/admin/uploads"))))
 
+(defn download
+  "GET /admin/uploads/download/:id"
+  [params]
+  (let [id       (-> params :id)
+        _        (log/info (str ">>> PARAM >>>>> " params))
+        upload   (model-upload/get-upload id)
+        filename (:filename upload)
+        body     (clojure.java.io/file (str "resources/public/uploads/" filename))]
+    {:status 200
+     :body body
+     :headers {"Content-Type" "application/pdf"
+               "Content-Length" (str (.length body))
+               "Cache-Control" "no-cache"
+               "Content-Disposition" (str "attachment; filename=" filename)}}))
+
 ;; GET /admin/uploads/archive/:id
 (defn archive [request]
   (let [base      (basec/set-vars request)

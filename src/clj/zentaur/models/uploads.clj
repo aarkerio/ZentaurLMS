@@ -86,7 +86,9 @@
       (assoc params :filename (str rand5 "-" filename) :created_at (l/local-now) :hashvar hashvar
                     :active true :user_id user-id :tags tags :done false))))
 
-(defn extract-text [id]
+(defn extract-text
+  "Convert PDF to txt and save it in the DB"
+  [id]
   (let [db-record  (get-upload id)
         filename   (:filename db-record)
         all-file   (extract/parse (str "resources/public/uploads/" filename))
@@ -94,7 +96,8 @@
         (db/clj-expr-generic-update {:table   "uploads"
                                      :updates {:content text}
                                      :id      (:id db-record)})))
-(defn backup-pdf-to-text [params]
+(defn download
+  [params]
   (let [id       (:id params)
         upload   (db/get-upload {:id id})
         _        (log/info (str ">>> upload >>>>> " upload))
