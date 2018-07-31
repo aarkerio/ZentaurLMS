@@ -1,4 +1,4 @@
-(ns blog.models.posts-test
+(ns zentaur.models.posts-test
   (:require [clojure.spec :as s]
             [clojure.test :as t]
             [clojure.spec.test :as stest]))

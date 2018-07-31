@@ -5,7 +5,6 @@
             [clojure.spec.test.alpha :as stest]
             [clojure.test :as t]))
 
-
 ;; (t/run-tests 'your.namespace 'some.other.namespace)
 
 (s/valid? #(> % 5) 10)
