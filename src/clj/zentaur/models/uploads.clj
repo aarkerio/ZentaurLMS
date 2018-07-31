@@ -108,3 +108,13 @@
                                  :updates {:name "X"}
                                  :id 3})))
 
+(defn download [id]
+  (let [upload-file  (get-upload id)
+        filename     (:filename upload-file)
+        body         (clojure.java.io/file (str "resources/public/uploads/" filename))]
+    {:status 200
+     :body body
+     :headers {"Content-Type" "application/pdf"
+               "Content-Length" (str (.length body))
+               "Cache-Control" "no-cache"
+               "Content-Disposition" (str "attachment; filename=" filename)}}))
