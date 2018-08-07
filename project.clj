@@ -101,7 +101,7 @@
           :id "dev"
           :source-paths ["src/cljs" "env/dev/cljs"]
           :figwheel {
-            :on-jsload "zentaur.app/main" }
+            :on-jsload "zentaur.app/main" }  ;; the path to the main function (launcher)
           :compiler {
             :main "zentaur.app"
             :asset-path "/js/out"

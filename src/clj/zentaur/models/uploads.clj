@@ -50,21 +50,21 @@
 (defn initial_json_string
   "Just an initial string as template"
   [origin]
-   (str "{ \"title\": \"Some title\",
-          \"description\": \"Some description\",
-          \"instructions\": \"\",
-          \"level\": \"1\",
-          \"lang\": \"en\",
-          \"origin\": \" " origin " \",
-          \"tags\": \"tag_one, tag_two\",
-          \"status\": \"1\",
-          \"questions\": [
-            {
-              \"status\": \"1\",
-              \"qtype\" : \"1\",
-              \"hint\" : \"Some hint\",
-              \"explanation\": \"\",
-              \"question\": \"Some question\",
+   (str "{ \"title\": \"Some title\",   \n
+          \"description\": \"Some description\", \n
+          \"instructions\": \"\",  \n
+          \"level\": \"1\",  \n
+          \"lang\": \"en\",   \n
+          \"origin\": \" " origin " \",  \n
+          \"tags\": \"tag_one, tag_two\",  \n
+          \"status\": \"1\",  \n
+          \"questions\": [  \n
+            {   \n
+              \"status\": \"1\",  \n
+              \"qtype\" : \"1\",   \n
+              \"hint\" : \"Some hint\",  \n
+              \"explanation\": \"\",  \n
+              \"question\": \"Some question\", \n
               \"answers\": [
                  { \"answer\": \"\", \"correct\": \"false\" },
                  { \"answer\": \"\", \"correct\": \"false\" }
@@ -96,7 +96,7 @@
         (db/clj-expr-generic-update {:table   "uploads"
                                      :updates {:content text}
                                      :id      (:id db-record)})))
-(defn download
+(defn bbb-download
   [params]
   (let [id       (:id params)
         upload   (db/get-upload {:id id})
@@ -108,13 +108,22 @@
                                  :updates {:name "X"}
                                  :id 3})))
 
+(defn- download-without-db
+  "GET /admin/uploads/download/:id"
+  [upload]
+  (let [filename (:filename upload)
+        body     (clojure.java.io/file (str "resources/public/uploads/" filename))]
+          {:status 200
+           :body body
+           :headers {"Content-Type" "application/pdf"
+                     "Content-Length" (str (.length body))
+                     "Cache-Control" "no-cache"
+                     "Content-Disposition" (str "attachment; filename=" filename)}}))
+
+(defn- get-upload-from-db [id]
+    (get-upload id))
+
 (defn download [id]
-  (let [upload-file  (get-upload id)
-        filename     (:filename upload-file)
-        body         (clojure.java.io/file (str "resources/public/uploads/" filename))]
-    {:status 200
-     :body body
-     :headers {"Content-Type" "application/pdf"
-               "Content-Length" (str (.length body))
-               "Cache-Control" "no-cache"
-               "Content-Disposition" (str "attachment; filename=" filename)}}))
+    (-> id
+        get-upload-from-db
+        download-without-db))

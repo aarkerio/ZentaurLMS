@@ -13,7 +13,7 @@
                             [:li {:class "nav-item"} [:a {:href "/logout" :class "nav-link"} "Logout"]] ))
 
   (html5 [:head
-          [:title (str ":: Zentaur :: Tests for you " (:title content))]
+          [:title (str ":: Zentaur :: Quizz Test for you " (:title content))]
           [:meta {:http-equiv "Content-Type" :content "text/html;charset=utf-8"}]
           [:link {:rel "shortcut icon" :href "/img/favicon.ico"}]
           (include-js  "//cdnjs.cloudflare.com/ajax/libs/tether/1.4.3/js/tether.min.js")

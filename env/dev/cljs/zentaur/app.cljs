@@ -7,8 +7,8 @@
 (devtools/install!)
 
 (defn main []
-   (println " >>>++++  I am in MAIN function!!")
-  (.log js/console " >>>>>  I am in MAIN FUNCTION!!!!!")
+  (println " >>>++++  I am in MAIN app function in the launcher file PATH: env/dev/cljs/zentaur/app.cljs !!")
+  ;; (.log js/console " >>>>>  I am in app MAIN FUNCTION!!!!!")
   (core/init))
 
 (main)

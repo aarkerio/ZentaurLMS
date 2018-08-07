@@ -53,7 +53,9 @@
           [:th "Archive"]]]
       [:tbody formatted-files] ]]))
 
-(defn process [file csrf-field]
+(defn process [upload csrf-field]
+  (let [text           (:content upload)
+        formatted-text (clojure.string/trim-newline text)]
     [:div nil
       [:h1 nil "Import"]
       [:div {:class "row"}
@@ -65,8 +67,7 @@
         (f/submit-button {:class "btn" :id "download-button"} "Download")
         (f/submit-button {:class "btn" :id "export-button"}   "Export")]
       [:div {:class "someclass"}
-       (f/text-area {:class "btn" :rows "20" :cols "100" :id "export-button"} "json-field" file)]
+       (f/text-area {:class "my-textarea" :rows "30" :cols "120" :id "export-button"} "json-field" formatted-text)]
       [:div {:class "someclass"}
-         file]
-        ])
+         formatted-text]]))
 

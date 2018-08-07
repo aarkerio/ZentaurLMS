@@ -716,3 +716,7 @@ textarea {
 	-webkit-transform: scale(1);
 	transform: scale(1);
 }
+
+.my-textarea{
+  text-align: left;
+ }
