@@ -53,7 +53,7 @@
   :plugins [[lein-cprop "1.0.3"]
             [migratus-lein "0.5.2"]
             [lein-cljsbuild "1.1.7"]
-            [lein-kibit "0.1.5"]       ;; rubocop for clojure
+            [lein-kibit "0.1.5"]           ;; rubocop for clojure
             [lein-immutant "2.1.0"]]
   :clean-targets ^{:protect false}
     [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
@@ -86,10 +86,11 @@
                      [doo "0.1.8"]                        ;; doo is a library and lein plugin to run cljs.test on different js environments.
                      [figwheel-sidecar "0.5.14"]
                      [funcool/bide "1.6.0"]               ;; A simple routing library for ClojureScript
+                     [midje "1.9.2"]                      ;; TDD for Clojure
                      [org.clojure/test.check "0.9.0"]
                      [pjstadig/humane-test-output "0.8.3"]
-                     [prone "1.1.4"]                     ;; Better exception reporting middleware for Ring.
-                     [ring/ring-mock "0.3.1"]            ;; Mocking request
+                     [prone "1.1.4"]                      ;; Better exception reporting middleware for Ring.
+                     [ring/ring-mock "0.3.1"]             ;; Mocking request
                      [ring/ring-devel "1.6.2"]]
       :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
                      [lein-doo "0.1.8"]
