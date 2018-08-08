@@ -1,5 +1,6 @@
 (ns zentaur.core
   (:require [zentaur.posts :as posts]
+            [zentaur.uploads :as uploads]
             [zentaur.libs.sanitize :as s]
             [domina :as dom]
             [ajax.core :refer [GET POST DELETE]]
@@ -62,15 +63,15 @@
                             (send-ajax comment post_id csrf-value))))))
 
 (defn ^:export init []
-  (.log js/console " >>>>>  I am in INITTTTT FUNCTION!!!!!")
-  ;; (add-listener :elem "blog-post-title" :event "click" :function "send-message")
-  (when-let [button (.getElementById js/document "button-save")]
-     (.log js/console (str "Button Existssssss!!!!!!>>>>>>>>>>>" button))
-     (listener-msg "button-save" ))
-  (let [current_url js/window.location.href inc? clojure.string/includes?]
+  (let [current_url (js/window.location.href)
+        _           (.log js/console (str ">>> CURRENT >>>>> " current_url))]
     (when (inc? current_url "about")
       (do
         (.log js/console (str "22222 URL ->>>" js/window.location.href))
+        (mount-components)))
+     (when (inc? current_url "uploads")
+      (do
+        (.log js/console (str "33333 URL ->>>" js/window.location.href))
         (mount-components)))))
 
 (defn set-country ([] (set-country "us" 98))
@@ -85,3 +86,5 @@
        (.alert js/window msg)
        (.preventDefault evt)))))
 
+(defn ^:uploads upload-functions []
+  (uploads/add-insert-json))

@@ -719,4 +719,8 @@ textarea {
 
 .my-textarea{
   text-align: left;
- }
+}
+
+.butn {
+  border: 1px line black;
+}

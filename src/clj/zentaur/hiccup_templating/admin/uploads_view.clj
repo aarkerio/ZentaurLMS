@@ -60,12 +60,13 @@
       [:h1 nil "Import"]
       [:div {:class "row"}
        "asddasdasdasd"]
-      [:div {:class "someclass"}
-        (f/submit-button {:class "btn" :id "save-button"}     "Save")
-        (f/submit-button {:class "btn" :id "test-button"}     "Test")
-        (f/submit-button {:class "btn" :id "multiple-button"} "Multiple Option")
-        (f/submit-button {:class "btn" :id "download-button"} "Download")
-        (f/submit-button {:class "btn" :id "export-button"}   "Export")]
+      [:div {:class "button-div"}
+        (f/submit-button {:class "butn" :id "save-button" :title "Test before!!"}  "Save")
+        (f/submit-button {:class "butn" :id "test-button"}  "Test")
+        (f/submit-button {:class "butn" :id "multiple-button"} "Multiple Option")
+        (f/submit-button {:class "butn" :id "download-button"} "Download")
+        (f/submit-button {:class "butn" :id "insert-button" :title "Insert basic json"}   "Insert")
+        (f/submit-button {:class "butn" :id "export-button"}   "Export")]
       [:div {:class "someclass"}
        (f/text-area {:class "my-textarea" :rows "30" :cols "120" :id "export-button"} "json-field" formatted-text)]
       [:div {:class "someclass"}

@@ -4,4 +4,5 @@
             [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]))
 
 (declare ^:dynamic *app-context*)
+
 ;; (parser/add-tag! :csrf-field (fn [_ _] (anti-forgery-field)))
