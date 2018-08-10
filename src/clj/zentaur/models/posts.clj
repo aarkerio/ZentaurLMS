@@ -33,8 +33,10 @@
 ;;          ACTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn get-posts []
-     (db/get-posts))
+(defn get-posts
+  "Get all published posts"
+  []
+   (db/get-posts))
 
 (defn get-post [id]
   (db/get-post id))
@@ -42,21 +44,27 @@
 (defn get-comments [id]
   (db/get-comments id))
 
-;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
-(defn save-post! [params]
-  (if-let [errors (validate-post params)]
-      (db/save-post! params)))
-
 (defn save-comment! [params]
   (if-let [errors (validate-post params)]
       (db/save-comment params)))
 
-(defn destroy [params]
-  (do
-    (db/delete-post! params)))
-
-
 ;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
+
 (defn admin-get-posts [user-id]
     (db/admin-get-posts {:user-id user-id}))
+
+;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
+(defn save-post! [params]
+  (log/info (str ">>> PARAM MODEL >>>>> " params))
+  (if-let [errors (validate-post params)]
+    (log/info (str ">>> Errros >>>>> " errors))
+    (let [slug      (slugify (:title params))
+          active    (contains? params :active)
+          discution (contains? params :discution)
+          int_ui    (Integer/parseInt (:user_id params))]
+      (db/save-post! (assoc params :active active :discution discution :user_id int_ui :slug slug)))))
+
+(defn destroy [id]
+  (do
+    (db/delete-post! {:id id})))
 

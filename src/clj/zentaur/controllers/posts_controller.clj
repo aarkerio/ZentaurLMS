@@ -10,7 +10,7 @@
             [ring.util.http-response :as response]
             [ring.util.request :refer [body-string]]))
 
-;; GET /posts
+;; GET  /   (index site)
 (defn get-posts [request]
   (let [base     (basec/set-vars request)
         posts    (model-post/get-posts)]
@@ -39,19 +39,6 @@
     (layout/application
        (merge base { :contents (posts-view/show post base comments) }))))
 
-;; POST /posts
-(defn save-post! [ {:keys [params]} ]
-  (if-let [errors (model-post/validate-post params)]
-    (-> (response/found "/posts")
-        (assoc :flash (assoc params :errors errors)))
-    (do
-      (let [active    (contains? params :active)
-            discution (contains? params :discution)
-            int_ui    (Integer/parseInt (get params :user_id))]
-      (model-post/save-post!
-        (assoc params :created_at (l/local-now) :active active :discution discution :user_id int_ui))
-      (response/found "/posts")))))
-
 ;; DELETE /posts
 (defn delete-post [{:keys [params]}]
   (do
@@ -68,6 +55,12 @@
         posts    (model-post/admin-get-posts user-id)]
     (layout/application
         (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts) }))))
+
+;; POST /admin/posts
+(defn save-post [params]
+  (if-let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))]
+    (assoc (response/found "/admin/posts") :flash (:errors errors))
+    (assoc (response/found "/admin/posts") :flash "Beiträge wurden erfolgreich gespeichert")))
 
 ;; GET /admin/posts/new
 (defn admin-new [request]

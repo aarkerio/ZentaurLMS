@@ -14,14 +14,14 @@
 
 -- :name save-message! :! :n
 -- :doc creates a new message record
-INSERT INTO posts
-(fname, lname, email, pass)
-VALUES (:fname, :lname, :email, :pass)
+INSERT INTO comments
+(title, body, tags, active, discution, slug)
+VALUES (:title, :body, :tags, :active, :discution, :slug)
 
 -- :name get-posts :? :*
 -- :doc retrieve array posts given the id.
-SELECT id, title, body, active, discution, user_id, created_at FROM posts
-ORDER BY id DESC LIMIT 5
+SELECT * FROM posts
+ORDER BY id DESC LIMIT 10
 
 -- :name get-post :? :1
 -- :doc retrieve a post given the id.
@@ -31,8 +31,8 @@ WHERE id = :id
 -- :name save-post! :! :n
 -- :doc creates a new post record
 INSERT INTO posts
-(title, body, active, discution, tags, user_id, created_at)
-VALUES (:title, :body, :active, :discution, :tags, :user_id, :created_at)
+(title, body, active, discution, tags, user_id, slug)
+VALUES (:title, :body, :active, :discution, :tags, :user_id, :slug)
 
 -- :name update-post! :! :n
 -- :doc update an existing user record
@@ -59,8 +59,9 @@ WHERE c.post_id = :id AND u.id=c.user_id ORDER BY c.id
 
 -- :name admin-get-posts :? :*
 -- :doc retrieve array posts given the user id.
-SELECT id, title, body, active, discution, user_id, created_at FROM posts
-WHERE user_id = :user-id ORDER BY id
+SELECT p.id, p.title, p.body, p.active, p.discution, p.user_id, p.created_at, p.slug, u.uname FROM posts as p, users as u
+WHERE p.user_id = 1 AND p.user_id = u.id
+ORDER BY id DESC
 
 /*******************  UPLOADS   ***/
 

@@ -44,7 +44,7 @@
            [:div {:class "blog-header"}
              [:div {:class "container"}
                [:h1 {:class "blog-title" :id "blogtitle"} "Zentaur"]
-               [:p  {:class "lead blog-description"} "Thousands of questions ready to use."]]]
+               [:p  {:class "lead blog-description"} "Tausende von Fragen bereit zu verwenden."]]]
 
           [:div {:class "container"}  (:contents content)]]
           [:footer {:class "blog-footer"}
