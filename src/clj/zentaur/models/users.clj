@@ -20,11 +20,20 @@
 
 (defn create-user! [user]
   (let [password (:password user)
-        user-id (uuid)]
+        user-id  (uuid)]
      (-> user
        (assoc :id user-id :password-hash (hashers/encrypt password env/secret-salt))
        (dissoc :password)
        (->> (swap! userstore assoc user-id)))))
+
+
+(defn create [user]
+  (let [password (:password user)
+        user-id  (uuid)]
+     (-> user
+       (assoc :id user-id :password-hash (hashers/encrypt password env/secret-salt))
+       (db/create-user))))
+
 
 (defn get-user [user-id]
   (get @userstore user-id))

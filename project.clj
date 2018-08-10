@@ -16,6 +16,7 @@
                  [cprop "0.1.11"]                        ;; Read properties, environments, configs, profiles
                  [digest "1.4.8"]                        ;; Message digest library for Clojure.
                  [domina "1.0.3"]                        ;; A DOM manipulation library for ClojureScript
+                 [factory-time "0.1.2"]                  ;; library for maintaining test data, similar to Fabricator for Ruby
                  [funcool/bide "1.6.0"]                  ;; A simple routing library for ClojureScript
                  [funcool/struct "1.1.0"]                ;; database validation
                  [hiccup "1.0.5"]                        ;; templates
