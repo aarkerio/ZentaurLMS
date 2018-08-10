@@ -96,8 +96,8 @@ where id = :id
 
 -- :name create-user! :! :n
 -- :doc creates a new user record
-INSERT INTO users (id, fname, lname, email, pass)
-VALUES (:id, :fname, :lname, :email, :pass)
+INSERT INTO users (id, fname, lname, email, password, admin, active)
+VALUES (:id, :fname, :lname, :email, :password, :admin, :active)
 
 -- :name update-user! :! :n
 -- :doc update an existing user record
@@ -109,6 +109,11 @@ WHERE id = :id
 -- :doc retrieve a user given the id.
 SELECT * FROM users
 WHERE id = :id
+
+-- :name get-users :? :*
+-- :doc retrieve all users given the active column.
+SELECT * FROM users
+WHERE active = :active ORDER BY id DESC
 
 -- :name get-user-login :? :1
 -- :doc retrieve a user given the email and password.

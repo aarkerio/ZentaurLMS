@@ -15,6 +15,7 @@
   (GET    "/tests/"                     request   (cont-tests/get-tests request))
   (DELETE "/posts/:id"                  request   (cont-posts/delete-post request))
   (GET    "/admin/posts"                request   (cont-posts/admin-posts request))
+  (GET    "/admin/posts/new"            request   (cont-posts/admin-new request))
   (GET    "/login"                      request   (cont-users/login-page request))
   (POST   "/login"                      request   (cont-users/post-login request))
   (GET    "/logout"                     request   (cont-users/clear-session! request))

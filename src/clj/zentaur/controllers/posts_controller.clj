@@ -69,3 +69,10 @@
     (layout/application
         (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts) }))))
 
+;; GET /admin/posts/new
+(defn admin-new [request]
+  (let [base     (basec/set-vars request)
+        user-id  (-> request :identity :id)]
+    (layout/application
+        (merge base {:title "New Post" :contents (admin-posts-view/new base user-id)}))))
+

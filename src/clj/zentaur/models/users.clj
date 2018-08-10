@@ -28,12 +28,10 @@
 
 
 (defn create [user]
-  (let [password (:password user)
-        user-id  (uuid)]
+  (let [password (:prepassword user)]
      (-> user
-       (assoc :id user-id :password-hash (hashers/encrypt password env/secret-salt))
-       (db/create-user))))
-
+       (assoc :password-hash (hashers/derive password env/secret-salt))
+       (db/create-user!))))
 
 (defn get-user [user-id]
   (get @userstore user-id))
@@ -42,6 +40,10 @@
   (let [password-derived (hashers/derive password env/secret-salt) trimmed_email (clojure.string/trim email)]
     (assoc {} :user (db/get-user-login
                       { :password password-derived :email trimmed_email }))))
+
+(defn get-users [active]
+  (db/get-users {:active active}))
+
 
 (def post-schema
   [[:title st/required st/string]
