@@ -18,7 +18,7 @@
                  [domina "1.0.3"]                        ;; A DOM manipulation library for ClojureScript
                  [factory-time "0.1.2"]                  ;; library for maintaining test data, similar to Fabricator for Ruby
                  [funcool/bide "1.6.0"]                  ;; A simple routing library for ClojureScript
-                 [funcool/struct "1.1.0"]                ;; database validation
+                 [funcool/struct "1.3.0"]                ;; database validation
                  [hiccup "1.0.5"]                        ;; templates
                  [org.immutant/web "2.1.10"]             ;; libraries Ring + Undertow
                  [luminus-migrations "0.4.2"]            ;; migratus esentially

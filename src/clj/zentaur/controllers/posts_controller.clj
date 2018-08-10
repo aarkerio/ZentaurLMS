@@ -6,6 +6,7 @@
             [zentaur.models.posts :as model-post]
             [zentaur.libs.helpers :as h]
             [clj-time.local :as l]
+            [clojure.string :as str]
             [clojure.tools.logging :as log]
             [ring.util.http-response :as response]
             [ring.util.request :refer [body-string]]))
@@ -15,7 +16,7 @@
   (let [base     (basec/set-vars request)
         posts    (model-post/get-posts)]
     (layout/application
-        (merge base {:title "Posts" :contents (posts-view/index posts) }))))
+        (merge base {:title "Posts" :contents (posts-view/index posts)}))))
 
 ;; POST /post/savecomment
 (defn save-comment [request]
@@ -48,6 +49,9 @@
 
 ;;;;;;;;;;;;;;;;     ADMIN SECTION      ;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn map-to-query-string [m]
+  (str/join " " (map (fn [[k v]] (str (name k) " " v)) m)))
+
 ;; GET /admin/posts
 (defn admin-posts [request]
   (let [base     (basec/set-vars request)
@@ -58,9 +62,10 @@
 
 ;; POST /admin/posts
 (defn save-post [params]
-  (if-let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))]
-    (assoc (response/found "/admin/posts") :flash (:errors errors))
-    (assoc (response/found "/admin/posts") :flash "Beiträge wurden erfolgreich gespeichert")))
+  (let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))]g
+    (if (contains? errors :flash)
+      (assoc (response/found "/admin/posts/new") :flash (map-to-query-string errors))
+      (assoc (response/found "/admin/posts") :flash "Beiträge wurden erfolgreich gespeichert"))))
 
 ;; GET /admin/posts/new
 (defn admin-new [request]

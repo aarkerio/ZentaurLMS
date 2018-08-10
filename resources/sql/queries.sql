@@ -20,7 +20,8 @@ VALUES (:title, :body, :tags, :active, :discution, :slug)
 
 -- :name get-posts :? :*
 -- :doc retrieve array posts given the id.
-SELECT * FROM posts
+SELECT p.id, p.title, p.body, p.active, p.discution, p.user_id, p.created_at, p.slug, u.uname FROM posts as p, users as u
+WHERE p.user_id = 1 AND p.user_id = u.id
 ORDER BY id DESC LIMIT 10
 
 -- :name get-post :? :1

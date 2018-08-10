@@ -10,11 +10,11 @@
 ;;    VALIDATIONS
 ;;;;;;;;;;;;;;;;;;;;;
 (def post-schema
-  [[:title st/required st/string]
-   [:body
-    st/required
-    st/string
-    {:body "message must contain at least 10 characters"
+  [[:title st/required st/string
+    {:title "title must contain at least 2 characters"
+     :validate #(> (count %) 1)}]
+   [:body st/required st/string
+    {:body "the body must contain at least 10 characters"
      :validate #(> (count %) 9)}]])
 
 (defn validate-post [params]
@@ -56,8 +56,8 @@
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn save-post! [params]
   (log/info (str ">>> PARAM MODEL >>>>> " params))
-  (if-let [errors (validate-post params)]
-    (log/info (str ">>> Errros >>>>> " errors))
+  (if-let [errors (-> params (validate-post))]
+    {:flash errors}
     (let [slug      (slugify (:title params))
           active    (contains? params :active)
           discution (contains? params :discution)
@@ -65,6 +65,5 @@
       (db/save-post! (assoc params :active active :discution discution :user_id int_ui :slug slug)))))
 
 (defn destroy [id]
-  (do
-    (db/delete-post! {:id id})))
+    (db/delete-post! {:id id}))
 

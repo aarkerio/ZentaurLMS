@@ -1,16 +1,41 @@
 (ns zentaur.hiccup_templating.admin.posts-view
   (:require [hiccup.form :as f]
             [hiccup.core :as c]
-            [zentaur.hiccup_templating.posts-view :as posts-view]
             [clojure.tools.logging :as log]
             [hiccup.element :only (link-to)]))
 
+(defn formatted-post [post]
+  (let [title      (:title post)
+        created_at (:created_at post)
+        tags       (:tags post)
+        discution  (:discution post)
+        publish    (:publish post)
+        id         (:id post)]
+  [:tr
+    [:td [:a {:href (str "/admin/posts/edit/" id)}  "Edit"]]
+    [:td title]
+    [:td tags]
+    [:td publish]
+    [:td created_at]
+    [:td [:a {:href (str "/admin/posts/delete/" id)}  "Delete"]]]))
+
+
 (defn index [posts]
   (let [formatted-posts (doall (for [post posts]
-                                 (posts-view/format-post post)))]
+                                 (formatted-post post)))]
     [:div {:id "cont"}
-      [:div {:id "content"} [:a {:class "btn btn-outline-primary" :href "/admin/posts/new"} "Neuer Beitrag"]]
-      [:div {:id "content"} formatted-posts]
+      [:div {:id "button-neuer"} [:a {:class "btn btn-outline-primary" :href "/admin/posts/new"} "Neuer Beitrag"]]
+      [:div {:id "content"}
+        [:table {:class "some-table-class"}
+          [:thead
+            [:tr
+              [:th "Edit"]
+              [:th "Title"]
+              [:th "Tags"]
+              [:th "Publish"]
+              [:th "Created"]
+              [:th "Delete"]]]
+          [:tbody formatted-posts]]]
       [:nav {:class "blog-pagination"}
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
         [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
