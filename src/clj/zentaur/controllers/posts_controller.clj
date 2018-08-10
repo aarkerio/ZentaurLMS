@@ -62,7 +62,7 @@
 
 ;; POST /admin/posts
 (defn save-post [params]
-  (let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))]g
+  (let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))]
     (if (contains? errors :flash)
       (assoc (response/found "/admin/posts/new") :flash (map-to-query-string errors))
       (assoc (response/found "/admin/posts") :flash "Beiträge wurden erfolgreich gespeichert"))))
