@@ -9,7 +9,7 @@ CREATE TABLE users(
    email VARCHAR(30) NOT NULL,
    admin BOOLEAN NOT NULL DEFAULT false,
    last_login TIME,
-   is_active BOOLEAN,
+   active BOOLEAN,
    password VARCHAR(300),
    created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
    updated_at timestamp(0) with time zone
@@ -28,7 +28,7 @@ INSERT INTO users (fname,
   uname,
   email,
   admin,
-  is_active,
+  active,
   password
 ) VALUES ('Manuel',
           'Montoya',

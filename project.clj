@@ -54,6 +54,7 @@
   :plugins [[lein-cprop "1.0.3"]
             [migratus-lein "0.5.2"]
             [lein-cljsbuild "1.1.7"]
+            [lein-figwheel "0.5.16"]
             [lein-kibit "0.1.5"]           ;; rubocop for clojure
             [lein-immutant "2.1.0"]]
   :clean-targets ^{:protect false}
