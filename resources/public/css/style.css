@@ -716,3 +716,18 @@ textarea {
 	-webkit-transform: scale(1);
 	transform: scale(1);
 }
+
+.my-textarea{
+  text-align: left;
+}
+
+.butn {
+  border: 1px line black;
+}
+.hidden-div {
+    width: 100%;
+    display: none;
+    visibility: hidden;
+    padding: 4px;
+    border: 1px dotted gray;
+}

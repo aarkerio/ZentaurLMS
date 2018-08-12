@@ -7,9 +7,9 @@
 (defn format-post
   ([post] (format-post post true))
   ([post view]
-   (let [div-blog   [:div {:class "blog-post"} [:h2 {:class "blog-post-title"} (:title post)]
-                      [:p {:class "blog-post-meta"} (:created_at post) [:a {:href "#"} "Mark"]]
-                      [:p {} (:body post)]]
+   (let [div-blog [:div {:class "blog-post"} [:h2 {:class "blog-post-title"} (:title post)]
+                    [:p {:class "blog-post-meta"} (:created_at post) [:a {:href "#"} (:uname post)]]
+                    [:p {} (:body post)]]
          view-link  (cond view (conj div-blog [:p [:a {:href (str "/post/" (:id post))} "View"]]))]
      (if (= view true)
        view-link

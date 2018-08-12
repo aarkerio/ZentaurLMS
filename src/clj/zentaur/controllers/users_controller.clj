@@ -1,25 +1,27 @@
 (ns zentaur.controllers.users-controller
-  (:require [zentaur.models.users :as modusers]
+  (:require [zentaur.models.users :as model-user]
             [zentaur.controllers.base-controller :as basec]
             [clojure.tools.logging :as log]
             [zentaur.hiccup_templating.layout-view :as layout]
             [zentaur.hiccup_templating.admin.users-view :as users-view]
             [ring.util.http-response :as response]))
 
+;; GET /admin/users
 (defn admin-users [request]
-  (let [base (basec/set-vars request)]
-    (layout/application (merge base { :contents (users-view/index base) } ))))
+  (let [base  (basec/set-vars request)
+        users (model-user/get-users true)]
+    (layout/application (merge base {:contents (users-view/index base users)} ))))
 
 ;; GET /login
 (defn login-page [request]
-  (let [base (basec/set-vars request)]
+  (let [base  (basec/set-vars request)]
     (layout/application (merge base {:title "Login" :contents (users-view/login base) }))))
 
 ;; POST /login
 (defn post-login
   ;; Login into the app
   [{{email "email" password "password"} :form-params session :session :as req}]
-  (let [user (modusers/get-user-by-email-and-password email password)
+  (let [user (model-user/get-user-by-email-and-password email password)
         _    (log/info (str ">>> password >>>>> " password))]
     ;; If authenticated
     (if-not (nil? (:user user))

@@ -1,5 +1,5 @@
-(ns ^:figwheel-no-load blog.app
-  (:require [blog.core :as core]))
+(ns ^:figwheel-no-load zentaur.app
+  (:require [zentaur.core :as core]))
 
 (enable-console-print!)
 

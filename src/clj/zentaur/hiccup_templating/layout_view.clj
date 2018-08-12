@@ -13,7 +13,7 @@
                             [:li {:class "nav-item"} [:a {:href "/logout" :class "nav-link"} "Logout"]] ))
 
   (html5 [:head
-          [:title (str ":: Zentaur :: Tests for you " (:title content))]
+          [:title (str ":: Zentaur :: Quizz Test for you " (:title content))]
           [:meta {:http-equiv "Content-Type" :content "text/html;charset=utf-8"}]
           [:link {:rel "shortcut icon" :href "/img/favicon.ico"}]
           (include-js  "//cdnjs.cloudflare.com/ajax/libs/tether/1.4.3/js/tether.min.js")
@@ -44,11 +44,11 @@
            [:div {:class "blog-header"}
              [:div {:class "container"}
                [:h1 {:class "blog-title" :id "blogtitle"} "Zentaur"]
-               [:p  {:class "lead blog-description"} "Thousands of questions ready to use."]]]
+               [:p  {:class "lead blog-description"} "Tausende von Fragen bereit zu verwenden."]]]
 
           [:div {:class "container"}  (:contents content)]]
-
           [:footer {:class "blog-footer"}
+            [:img {:src "/img/warning_clojure.png" :alt "Lisp" :title "Lisp"}]
             [:p "Chipotle Software &copy; 2018. MIT License."]
             [:p [:a {:href "#"} "Back to top"]]]
           (include-js "http://0.0.0.0:3449/js/app.js")

@@ -35,7 +35,8 @@
   (db/get-uploads {:user-id user-id}))
 
 (defn get-upload [id]
-  (db/get-upload {:id id}))
+  (let [int-id (Integer/parseInt id)]
+    (db/get-upload {:id int-id})))
 
 (defn save-upload! [params]
   (if-let [errors (validate-upload params)]
@@ -49,21 +50,21 @@
 (defn initial_json_string
   "Just an initial string as template"
   [origin]
-   (str "{ \"title\": \"Some title\",
-          \"description\": \"Some description\",
-          \"instructions\": \"\",
-          \"level\": \"1\",
-          \"lang\": \"en\",
-          \"origin\": \" " origin " \",
-          \"tags\": \"tag_one, tag_two\",
-          \"status\": \"1\",
-          \"questions\": [
-            {
-              \"status\": \"1\",
-              \"qtype\" : \"1\",
-              \"hint\" : \"Some hint\",
-              \"explanation\": \"\",
-              \"question\": \"Some question\",
+   (str "{ \"title\": \"Some title\",   \n
+          \"description\": \"Some description\", \n
+          \"instructions\": \"\",  \n
+          \"level\": \"1\",  \n
+          \"lang\": \"en\",   \n
+          \"origin\": \" " origin " \",  \n
+          \"tags\": \"tag_one, tag_two\",  \n
+          \"status\": \"1\",  \n
+          \"questions\": [  \n
+            {   \n
+              \"status\": \"1\",  \n
+              \"qtype\" : \"1\",   \n
+              \"hint\" : \"Some hint\",  \n
+              \"explanation\": \"\",  \n
+              \"question\": \"Some question\", \n
               \"answers\": [
                  { \"answer\": \"\", \"correct\": \"false\" },
                  { \"answer\": \"\", \"correct\": \"false\" }
@@ -84,27 +85,45 @@
     (save-upload!
       (assoc params :filename (str rand5 "-" filename) :created_at (l/local-now) :hashvar hashvar
                     :active true :user_id user-id :tags tags :done false))))
-(defn extract-text [id]
-  (str "extract-text"))
 
-(defn extract-textkk [id]
-  (let [db-record  (db/get-upload {:id id})
-        file       (:file db-record)
-        all-file   (extract/parse (str "path/" file))
+(defn extract-text
+  "Convert PDF to txt and save it in the DB"
+  [id]
+  (let [db-record  (get-upload id)
+        filename   (:filename db-record)
+        all-file   (extract/parse (str "resources/public/uploads/" filename))
         text       (:text all-file)]
         (db/clj-expr-generic-update {:table   "uploads"
                                      :updates {:content text}
                                      :id      (:id db-record)})))
-(defn backup-pdf-to-text [params]
+(defn bbb-download
+  [params]
   (let [id       (:id params)
         upload   (db/get-upload {:id id})
         _        (log/info (str ">>> upload >>>>> " upload))
-        all-file (extract/parse "test/resources/pdf/qrl.pdf")
-        text     (:text all-file)
-        ;; json (initial_json_string hashvar)
-        ]
+        all-file (extract/parse (str "resources/public/uploads/" (:filename upload)))
+        text     (:text all-file)]
     ;; (db/clj-expr-generic-update {:content text :json json :id id})
     (db/clj-expr-generic-update {:table "test"
-                               :updates {:name "X"}
-                               :id 3})))
+                                 :updates {:name "X"}
+                                 :id 3})))
 
+(defn- download-without-db
+  "GET /admin/uploads/download/:id"
+  [upload]
+  (let [filename (:filename upload)
+        body     (clojure.java.io/file (str "resources/public/uploads/" filename))]
+          {:status 200
+           :body body
+           :headers {"Content-Type" "application/pdf"
+                     "Content-Length" (str (.length body))
+                     "Cache-Control" "no-cache"
+                     "Content-Disposition" (str "attachment; filename=" filename)}}))
+
+(defn- get-upload-from-db [id]
+    (get-upload id))
+
+(defn download [id]
+    (-> id
+        get-upload-from-db
+        download-without-db))

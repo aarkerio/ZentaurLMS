@@ -1,15 +1,16 @@
 (ns zentaur.core
   (:require [zentaur.posts :as posts]
+            [zentaur.uploads :as uploads]
             [zentaur.libs.sanitize :as s]
             [domina :as dom]
+            [goog.dom :as gdom]
+            [cljs.loader :as loader]
             [ajax.core :refer [GET POST DELETE]]
-            [cognitect.transit :as t]
-            [bide.core :as r]))
-
-(def r (t/reader :json))
+            [bide.core :as r])
+  (:import [goog.events EventType]))
 
 (defn handler [response]
-  (let [parsed       (t/read r response)
+  (let [parsed       (str "t   /  read r response")
         __           (.log js/console (str ">>> PARSED >>>>> " (type parsed) ">>>>" parsed))
         comment      (get parsed "comment")
         created_at   (get parsed "created_at")
@@ -62,18 +63,19 @@
                             (send-ajax comment post_id csrf-value))))))
 
 (defn ^:export init []
-  (.log js/console " >>>>>  I am in INITTTTT FUNCTION!!!!!")
-  ;; (add-listener :elem "blog-post-title" :event "click" :function "send-message")
-  (when-let [button (.getElementById js/document "button-save")]
-     (.log js/console (str "Button Existssssss!!!!!!>>>>>>>>>>>" button))
-     (listener-msg "button-save" ))
-  (let [current_url js/window.location.href inc? clojure.string/includes?]
+  (let [current_url (js/window.location.href)
+        _           (.log js/console (str ">>> CURRENT >>>>> " current_url))]
     (when (inc? current_url "about")
       (do
         (.log js/console (str "22222 URL ->>>" js/window.location.href))
+        (mount-components)))
+     (when (inc? current_url "uploads")
+      (do
+        (.log js/console (str "33333 URL ->>>" js/window.location.href))
         (mount-components)))))
 
-(defn set-country ([] (set-country "us" 98))
+(defn set-country
+  ([] (set-country "us" 98))
   ([country code] (println country code)))
 
 (defn add-listener-ccc [elem event function]
@@ -85,3 +87,5 @@
        (.alert js/window msg)
        (.preventDefault evt)))))
 
+(defn ^:uploads upload-functions []
+  (uploads/add-insert-json))

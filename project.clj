@@ -7,8 +7,8 @@
                  [cider/cider-nrepl "0.16.0"]
                  [clj-time "0.14.0"]                     ;; date time-zone library
                  [cljs-ajax "0.7.3"]                     ;; Ajax
+                 [com.cognitect/transit-clj "0.8.309"]
                  [com.billpiel/sayid "0.0.15"]           ;; clojure debugger
-                 [com.cognitect/transit-cljs "0.8.243"]  ;; String -> Transit
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [com.novemberain/pantomime "2.10.0"]
                  [compojure "1.6.0"]                     ;; routes for ring
@@ -16,8 +16,9 @@
                  [cprop "0.1.11"]                        ;; Read properties, environments, configs, profiles
                  [digest "1.4.8"]                        ;; Message digest library for Clojure.
                  [domina "1.0.3"]                        ;; A DOM manipulation library for ClojureScript
+                 [factory-time "0.1.2"]                  ;; library for maintaining test data, similar to Fabricator for Ruby
                  [funcool/bide "1.6.0"]                  ;; A simple routing library for ClojureScript
-                 [funcool/struct "1.1.0"]                ;; database validation
+                 [funcool/struct "1.3.0"]                ;; database validation
                  [hiccup "1.0.5"]                        ;; templates
                  [org.immutant/web "2.1.10"]             ;; libraries Ring + Undertow
                  [luminus-migrations "0.4.2"]            ;; migratus esentially
@@ -28,7 +29,7 @@
                  [metosin/ring-http-response "0.9.0"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.11"]
                  [org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.238" :scope "provided"]
+                 [org.clojure/clojurescript "1.10.339" :scope "provided"]
                  [org.clojure/java.jdbc "0.7.1"]
                  [org.clojure/tools.cli "0.3.5"]
                  [org.clojure/tools.logging "0.4.0"]
@@ -53,7 +54,7 @@
   :plugins [[lein-cprop "1.0.3"]
             [migratus-lein "0.5.2"]
             [lein-cljsbuild "1.1.7"]
-            [lein-kibit "0.1.5"]       ;; rubocop for clojure
+            [lein-kibit "0.1.5"]           ;; rubocop for clojure
             [lein-immutant "2.1.0"]]
   :clean-targets ^{:protect false}
     [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
@@ -86,22 +87,22 @@
                      [doo "0.1.8"]                        ;; doo is a library and lein plugin to run cljs.test on different js environments.
                      [figwheel-sidecar "0.5.14"]
                      [funcool/bide "1.6.0"]               ;; A simple routing library for ClojureScript
+                     [midje "1.9.2"]                      ;; TDD for Clojure
                      [org.clojure/test.check "0.9.0"]
                      [pjstadig/humane-test-output "0.8.3"]
-                     [prone "1.1.4"]                     ;; Better exception reporting middleware for Ring.
-                     [ring/ring-mock "0.3.1"]            ;; Mocking request
+                     [prone "1.1.4"]                      ;; Better exception reporting middleware for Ring.
+                     [ring/ring-mock "0.3.1"]             ;; Mocking request
                      [ring/ring-devel "1.6.2"]]
       :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
                      [lein-doo "0.1.8"]
-                     [lein-figwheel "0.5.14"]
-                     [org.clojure/clojurescript "1.9.946"]]
+                     [lein-figwheel "0.5.14"]]
       :cljsbuild {
         :builds {
          :app {
           :id "dev"
           :source-paths ["src/cljs" "env/dev/cljs"]
           :figwheel {
-            :on-jsload "zentaur.app/main" }
+            :on-jsload "zentaur.app/main" }  ;; the path to the main function (launcher)
           :compiler {
             :main "zentaur.app"
             :asset-path "/js/out"

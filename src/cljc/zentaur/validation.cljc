@@ -1,4 +1,4 @@
-(ns blog.validation
+(ns zentaur.validation
   (:require [struct.core :as st]
             [clojure.string :as str]
             ))
