@@ -7,8 +7,8 @@
                  [cider/cider-nrepl "0.16.0"]
                  [clj-time "0.14.0"]                     ;; date time-zone library
                  [cljs-ajax "0.7.3"]                     ;; Ajax
+                 [com.cognitect/transit-clj "0.8.309"]
                  [com.billpiel/sayid "0.0.15"]           ;; clojure debugger
-                 [com.cognitect/transit-cljs "0.8.243"]  ;; String -> Transit
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [com.novemberain/pantomime "2.10.0"]
                  [compojure "1.6.0"]                     ;; routes for ring
@@ -29,7 +29,7 @@
                  [metosin/ring-http-response "0.9.0"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.11"]
                  [org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.238" :scope "provided"]
+                 [org.clojure/clojurescript "1.10.339" :scope "provided"]
                  [org.clojure/java.jdbc "0.7.1"]
                  [org.clojure/tools.cli "0.3.5"]
                  [org.clojure/tools.logging "0.4.0"]
@@ -95,8 +95,7 @@
                      [ring/ring-devel "1.6.2"]]
       :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
                      [lein-doo "0.1.8"]
-                     [lein-figwheel "0.5.14"]
-                     [org.clojure/clojurescript "1.9.946"]]
+                     [lein-figwheel "0.5.14"]]
       :cljsbuild {
         :builds {
          :app {

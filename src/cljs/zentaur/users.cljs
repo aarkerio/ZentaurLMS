@@ -13,3 +13,9 @@
     (loader/load :bar
       (fn []
         ((resolve 'bar.core/woz))))))
+
+(events/listen (gdom/getElement "button") EventType.CLICK
+  (fn [e]
+    (loader/load :bar
+      (fn []
+        ((resolve 'bar.core/woz))))))

@@ -3,14 +3,14 @@
             [zentaur.uploads :as uploads]
             [zentaur.libs.sanitize :as s]
             [domina :as dom]
+            [goog.dom :as gdom]
+            [cljs.loader :as loader]
             [ajax.core :refer [GET POST DELETE]]
-            [cognitect.transit :as t]
-            [bide.core :as r]))
-
-(def r (t/reader :json))
+            [bide.core :as r])
+  (:import [goog.events EventType]))
 
 (defn handler [response]
-  (let [parsed       (t/read r response)
+  (let [parsed       (str "t   /  read r response")
         __           (.log js/console (str ">>> PARSED >>>>> " (type parsed) ">>>>" parsed))
         comment      (get parsed "comment")
         created_at   (get parsed "created_at")
@@ -74,7 +74,8 @@
         (.log js/console (str "33333 URL ->>>" js/window.location.href))
         (mount-components)))))
 
-(defn set-country ([] (set-country "us" 98))
+(defn set-country
+  ([] (set-country "us" 98))
   ([country code] (println country code)))
 
 (defn add-listener-ccc [elem event function]
