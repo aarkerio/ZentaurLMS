@@ -20,7 +20,7 @@
                           (formatted-user user))]
     [:div {:class "content"}
       [:h1 {:id "root-app"} "Users and admins"]
-      [:div {:id "image"} [:a {:href "#image"} [:img {:src "/img/icon_add.png" :alt "Add" :title "Add"}]]]
+      [:div {:class "fooclass"} [:a {:href "#image"} [:img {:id "icon-add" :src "/img/icon_add.png" :alt "Add" :title "Add"}]]]
       [:div {:class "row"}
         [:div {:class "hidden-div" :id "divhide"}
           (f/form-to [:post "/admin/users/create" {:class "form-inline my-2 my-lg-0"}]

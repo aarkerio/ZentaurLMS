@@ -11,6 +11,7 @@ profiles.clj
 /.env
 .nrepl-port
 /log
+.rebel_readline_history
 resources/public/js/out/
 resources/public/img/images
 resources/public/js/

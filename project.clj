@@ -95,8 +95,7 @@
                      [ring/ring-mock "0.3.1"]             ;; Mocking request
                      [ring/ring-devel "1.6.2"]]
       :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
-                     [lein-doo "0.1.8"]
-                     [lein-figwheel "0.5.14"]]
+                     [lein-doo "0.1.8"]]
       :cljsbuild {
         :builds {
          :app {
