@@ -26,7 +26,6 @@
        (dissoc :password)
        (->> (swap! userstore assoc user-id)))))
 
-
 (defn create [user]
   (let [password (:prepassword user)]
      (-> user

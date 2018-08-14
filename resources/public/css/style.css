@@ -732,6 +732,7 @@ textarea {
 .myvisible {
     width: 100%;
     display: block;
-    padding: 4px;
+    padding: 8px;
     border: 1px dotted gray;
+    margin: 20px;
 }

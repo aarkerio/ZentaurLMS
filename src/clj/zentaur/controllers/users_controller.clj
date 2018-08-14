@@ -12,6 +12,15 @@
         users (model-user/get-users true)]
     (layout/application (merge base {:contents (users-view/index base users)} ))))
 
+;; POST /admin/users
+(defn create-user [request]
+  (let [user-id   (-> request :identity :id)
+        params    (-> request :params)]
+    (log/info (str ">>> REQUEST >>>>> " request ))
+    (model-user/create params)
+    (-> (response/found "/admin/uploads"))))
+
+
 ;; GET /login
 (defn login-page [request]
   (let [base  (basec/set-vars request)]

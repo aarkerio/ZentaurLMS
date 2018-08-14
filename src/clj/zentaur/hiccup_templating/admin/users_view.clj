@@ -23,13 +23,14 @@
       [:div {:class "fooclass"} [:a {:href "#image"} [:img {:id "icon-add" :src "/img/icon_add.png" :alt "Add" :title "Add"}]]]
       [:div {:class "row"}
         [:div {:class "hidden-div" :id "divhide"}
-          (f/form-to [:post "/admin/users/create" {:class "form-inline my-2 my-lg-0"}]
+          (f/form-to [:post "/admin/users/" {:class "form-inline my-2 my-lg-0"}]
             (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
             (f/text-field { :class "form-control mr-sm-2" :placeholder "First name" } :fname)
             (f/text-field { :class "form-control mr-sm-2" :placeholder "Last name" } :lname)
             (f/text-field { :class "form-control mr-sm-2" :placeholder "Username" } :uname)
             (f/text-field  { :class "form-control mr-sm-2" :placeholder "email" } :email)
             (f/text-field  { :class "form-control mr-sm-2" :placeholder "password" } :password)
+            [:div (f/label "published" "Admin") (f/check-box {:title "Admin user" :value "1"} "admin")]
             (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Einrechen"))]]
       [:table {:class "some-classs"}
         [:thead
