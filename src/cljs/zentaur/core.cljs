@@ -6,11 +6,17 @@
             [goog.events :as events])
   (:import [goog.events EventType]))
 
-(defn load-users []
+(defn- load-users []
   (events/listen (gdom/getElement "icon-add") EventType.CLICK
-       (fn [] (.log js/console (str ">>> VALUE >>>>>  #####   >>>>>   events/listen  in users ns")))))
+                 (fn [e]
+                   (let [divh      (gdom/getElement "divhide")
+                         divclass  (.-className divh)
+                         toggle   (if (= divclass "hidden-div") "visible" "hidden-div")]
+                     (do
+                       (.log js/console (str ">>> VALUE >>>>>  " e))
+                       (set! (.-className divh) toggle))))))
 
-(defn load-posts []
+(defn- load-posts []
   (events/listen (gdom/getElement "icon-add") EventType.CLICK
        (fn [] (.log js/console (str ">>> VALUE >>>>>  #####   >>>>>   events/listen  in users ns")))))
 

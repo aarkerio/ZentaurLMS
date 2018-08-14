@@ -727,7 +727,11 @@ textarea {
 .hidden-div {
     width: 100%;
     display: none;
-    visibility: hidden;
+}
+
+.myvisible {
+    width: 100%;
+    display: block;
     padding: 4px;
     border: 1px dotted gray;
 }
