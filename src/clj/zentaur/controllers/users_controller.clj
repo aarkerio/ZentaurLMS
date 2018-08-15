@@ -14,12 +14,11 @@
 
 ;; POST /admin/users
 (defn create-user [request]
-  (let [user-id   (-> request :identity :id)
-        params    (-> request :params)]
-    (log/info (str ">>> REQUEST >>>>> " request ))
-    (model-user/create params)
-    (-> (response/found "/admin/uploads"))))
-
+  (log/info (str ">>> REQUEST >>>>> " request))
+  (let [params       (-> request :params)
+        clean-params (dissoc params :__anti-forgery-token  :submit)]
+    (model-user/create clean-params)
+    (-> (response/found "/admin/users"))))
 
 ;; GET /login
 (defn login-page [request]

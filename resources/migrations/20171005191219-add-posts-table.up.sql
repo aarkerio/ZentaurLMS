@@ -6,7 +6,7 @@ CREATE TABLE posts (
    title varchar(250) NOT NULL,
    slug varchar(250) NOT NULL,
    body text NOT NULL,
-   active boolean NOT NULL DEFAULT true,
+   published boolean NOT NULL DEFAULT false,
    user_id int NOT NULL REFERENCES users(id),
    discution boolean NOT NULL DEFAULT TRUE,   -- Discution on entry, Actived/Desactived   1/0
    tags varchar(100),

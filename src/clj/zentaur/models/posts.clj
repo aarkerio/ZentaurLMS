@@ -36,7 +36,7 @@
 (defn get-posts
   "Get all published posts"
   []
-   (db/get-posts))
+  (db/get-posts))
 
 (defn get-post [id]
   (db/get-post id))
@@ -59,11 +59,18 @@
   (if-let [errors (-> params (validate-post))]
     {:flash errors}
     (let [slug      (slugify (:title params))
-          active    (contains? params :active)
+          published (contains? params :published)
           discution (contains? params :discution)
           int_ui    (Integer/parseInt (:user_id params))]
-      (db/save-post! (assoc params :active active :discution discution :user_id int_ui :slug slug)))))
+      (db/save-post! (assoc params :published published :discution discution :user_id int_ui :slug slug))
+      {})))
+
+(defn toggle [{:keys [id published]}]
+  (let [new-state (if (= published "true") false true)
+        int-id    (Integer/parseInt id)]
+    (db/toggle-post! {:id int-id :published new-state})))
 
 (defn destroy [id]
-    (db/delete-post! {:id id}))
+  (let [int-id (Integer/parseInt id)]
+    (db/delete-post! {:id int-id})))
 

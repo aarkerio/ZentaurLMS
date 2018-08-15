@@ -4,21 +4,14 @@
             [clojure.tools.logging :as log]
             [hiccup.element :only (link-to)]))
 
-(defn formatted-post [post]
-  (let [title      (:title post)
-        created_at (:created_at post)
-        tags       (:tags post)
-        discution  (:discution post)
-        publish    (:publish post)
-        id         (:id post)]
+(defn formatted-post [{:keys [title created_at tags discution published id]}]
   [:tr
     [:td [:a {:href (str "/admin/posts/edit/" id)}  "Edit"]]
     [:td title]
     [:td tags]
-    [:td publish]
+    [:td [:a {:href (str "/admin/posts/published/" id "/" published)}  published]]
     [:td created_at]
-    [:td [:a {:href (str "/admin/posts/delete/" id)}  "Delete"]]]))
-
+    [:td [:a {:href (str "/admin/posts/delete/" id)}  "Delete"]]])
 
 (defn index [posts]
   (let [formatted-posts (doall (for [post posts]

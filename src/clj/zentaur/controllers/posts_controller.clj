@@ -11,6 +11,9 @@
             [ring.util.http-response :as response]
             [ring.util.request :refer [body-string]]))
 
+(def msg-erfolg "Veränderung wurden erfolgreich gespeichert")
+(def msg-fehler "Etwas ging schief")
+
 ;; GET  /   (index site)
 (defn get-posts [request]
   (let [base     (basec/set-vars request)
@@ -40,12 +43,17 @@
     (layout/application
        (merge base { :contents (posts-view/show post base comments) }))))
 
-;; DELETE /posts
-(defn delete-post [{:keys [params]}]
+;;GET    "/admin/posts/publish/:id/:published"
+(defn toggle-published [params]
+  (model-post/toggle params)
+    (assoc (response/found "/admin/posts") :flash msg-erfolg))
+
+;; DELETE /posts/:id
+(defn delete-post [params]
   (do
-    (let [newparams {:id (Integer/parseInt (get params :id))}]
-      (model-post/destroy newparams)
-      (response/ok "body"))))
+    (let [id (params :id)]
+      (model-post/destroy id)
+      (assoc (response/found "/admin/posts") :flash msg-erfolg))))
 
 ;;;;;;;;;;;;;;;;     ADMIN SECTION      ;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -62,7 +70,8 @@
 
 ;; POST /admin/posts
 (defn save-post [params]
-  (let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))]
+  (let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))
+        _      (log/info (str ">>> ERRROS  >>>>> " errors))]
     (if (contains? errors :flash)
       (assoc (response/found "/admin/posts/new") :flash (map-to-query-string errors))
       (assoc (response/found "/admin/posts") :flash "Beiträge wurden erfolgreich gespeichert"))))
