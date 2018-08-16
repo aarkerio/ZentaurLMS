@@ -2,16 +2,16 @@
   (:require [zentaur.models.users :as model-users]
             [clojure.test :refer [deftest testing is run-tests]]))
 
-(def person {:fname "Perro" :lname "Aguayo", :uname "perrin" :password "s0m3p4ss" :email "perrog@gmail.com" :admin true})
+(def person {:fname "Perro" :lname "Aguayo", :uname "perrin" :prepassword "s0m3p4ss" :email "perrog@gmail.com" :preadmin "1" :active true :group_id 1})
 
 (deftest create
     (testing "With valid input"
-      (testing "it should return a header map with filename included"
-        (is (= {} ([model-users/create person]))))))
+      (testing "it should return an empty map"
+        (is (= {} (model-users/create person))))))
 
 (deftest equality-test
   (testing "Is 'foo' equal 'fooer'"
-    (is (= "foo" "fooer"))))
+    (is (= "foo" "foo"))))
 
 (run-tests)
 

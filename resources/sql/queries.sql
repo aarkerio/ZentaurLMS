@@ -103,8 +103,8 @@ where id = :id
 
 -- :name create-user! :! :n
 -- :doc creates a new user record
-INSERT INTO users (fname, lname, uname, email, password, admin, active)
-VALUES (:fname, :lname, :uname, :email, :password, :admin, :active)
+INSERT INTO users (fname, lname, uname, email, password, admin, active, group_id)
+VALUES (:fname, :lname, :uname, :email, :password, :admin, :active, :group_id)
 
 -- :name update-user! :! :n
 -- :doc update an existing user record

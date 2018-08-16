@@ -33,7 +33,7 @@
         clean-user   (dissoc user :prepassword)]
     (log/info (str ">>> clean-user >>>>> " clean-user))
      (-> clean-user
-       (assoc :password password :admin admin :active true)
+       (assoc :password password :admin admin :active true :group_id 1)
        (db/create-user!))))
 
 (defn get-user [user-id]
