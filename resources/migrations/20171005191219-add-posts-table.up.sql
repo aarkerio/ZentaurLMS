@@ -1,5 +1,6 @@
 -- ;; lein migratus create create-posts-table
 -- ;; lein run migrate
+-- ;; lein with-profile test run migrate
 
 CREATE TABLE posts (
    id serial PRIMARY KEY,

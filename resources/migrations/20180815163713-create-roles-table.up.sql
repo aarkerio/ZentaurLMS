@@ -6,4 +6,9 @@ CREATE TABLE roles (
    id serial PRIMARY KEY,
    name varchar(150) NOT NULL);
 
-ALTER TABLE users ADD COLUMN role_id int REFERENCES roles;
+INSERT INTO roles (name) VALUES ('Users');
+INSERT INTO roles (name) VALUES ('Teachers');
+INSERT INTO roles (name) VALUES ('Admins');
+INSERT INTO roles (name) VALUES ('Root');
+
+ALTER TABLE users ADD COLUMN role_id int REFERENCES roles NOT NULL default 3;

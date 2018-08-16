@@ -56,7 +56,8 @@
             [lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.16"]
             [lein-kibit "0.1.5"]           ;; rubocop for clojure
-            [lein-immutant "2.1.0"]]
+            [lein-immutant "2.1.0"]
+            [com.jakemccrary/lein-test-refresh "0.23.0"]]
   :clean-targets ^{:protect false}
     [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
   :aliases {"test-all" ["do" ["test"] ["specs"]]}
@@ -126,6 +127,7 @@
 
     :project/test {
       :resource-paths ["env/test/resources"]
+      :test-paths ["test" "src/test/clojure"]
       :cljsbuild {
         :builds {
           :test {

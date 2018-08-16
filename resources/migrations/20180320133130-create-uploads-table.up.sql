@@ -1,10 +1,10 @@
 -- ;; lein migratus create create-uploads-table
 -- ;; lein run migrate
+-- ;; lein with-profile test run migrate
 
 CREATE TABLE uploads (
    id serial PRIMARY KEY,
    filename varchar(250) NOT NULL,
-   hashvar varchar(250) NOT NULL,
    active boolean NOT NULL DEFAULT true,
    user_id int NOT NULL REFERENCES users(id),
    tags varchar(100),
