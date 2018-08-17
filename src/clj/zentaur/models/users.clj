@@ -48,3 +48,5 @@
 (defn get-users [active]
   (db/get-users {:active active}))
 
+(defn get-roles []
+  (db/get-roles))

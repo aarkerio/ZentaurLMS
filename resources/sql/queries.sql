@@ -154,3 +154,9 @@ WHERE id = :id
 -- :doc delete a test given the id
 DELETE FROM tests
 WHERE id = :id
+
+/**** ROLES   ****/
+
+-- :name get-roles :? :n
+-- :doc retrieve all roles.
+SELECT * FROM roles

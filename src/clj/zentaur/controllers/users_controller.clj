@@ -9,8 +9,9 @@
 ;; GET /admin/users
 (defn admin-users [request]
   (let [base  (basec/set-vars request)
-        users (model-user/get-users true)]
-    (layout/application (merge base {:contents (users-view/index base users)} ))))
+        users (model-user/get-users true)
+        roles (model-user/get-roles)]
+    (layout/application (merge base {:contents (users-view/index base users roles)} ))))
 
 ;; POST /admin/users
 (defn create-user [request]

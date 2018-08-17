@@ -15,7 +15,10 @@
      [:td [:a {:href (str "/admin/users/active/" id "/" active)}  "Active"]]
      [:td [:a {:href (str "/admin/users/delete/" id)}  "Delete"]]])
 
-(defn index [base users]
+;; (defn formatted-roles [roles]
+;;   )
+
+(defn index [base users roles]
   (let [formatted-users (for [user users]
                           (formatted-user user))]
     [:div {:class "content"}
@@ -25,11 +28,12 @@
         [:div {:class "hidden-div" :id "divhide"}
           (f/form-to [:post "/admin/users" {:class "form-inline my-2 my-lg-0"}]
             (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
-            (f/text-field { :class "form-control mr-sm-2" :placeholder "First name" } :fname)
-            (f/text-field { :class "form-control mr-sm-2" :placeholder "Last name" } :lname)
-            (f/text-field { :class "form-control mr-sm-2" :placeholder "Username" } :uname)
+            (f/text-field  { :class "form-control mr-sm-2" :placeholder "First name" } :fname)
+            (f/text-field  { :class "form-control mr-sm-2" :placeholder "Last name" } :lname)
+            (f/text-field  { :class "form-control mr-sm-2" :placeholder "Username" } :uname)
             (f/text-field  { :class "form-control mr-sm-2" :placeholder "email" } :email)
             (f/text-field  { :class "form-control mr-sm-2" :placeholder "prepassword" } :prepassword)
+            [:div (f/drop-down {:class "form-control mr-sm-2"} :roles {:gh "dasdas"  :kk "asdasdasd"})]
             [:div (f/label "Admin" "Admin") (f/check-box {:title "Admin user" :value "1"} "preadmin")]
             (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Einrechen"))]]
       [:table {:class "some-classs"}
