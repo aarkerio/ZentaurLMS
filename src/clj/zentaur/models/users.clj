@@ -29,11 +29,12 @@
 (defn create [user]
   (let [prepassword  (:prepassword user)
         password     (hashers/derive prepassword env/secret-salt)
+        role_id      (Integer/parseInt (:role_id user))
         admin        (contains? user :preadmin)
-        clean-user   (dissoc user :prepassword)]
-    (log/info (str ">>> clean-user >>>>> " clean-user))
+        clean-user   (dissoc user :prepassword :preadmin)]
+     (log/info (format ">>> whole data %s >>>>> " (merge clean-user {:password password :admin admin :active true :role_id role_id})))
      (-> clean-user
-       (assoc :password password :admin admin :active true :group_id 1)
+       (assoc :password password :admin admin :active true :role_id role_id)
        (db/create-user!))))
 
 (defn get-user [user-id]

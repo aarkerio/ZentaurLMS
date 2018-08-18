@@ -15,12 +15,16 @@
      [:td [:a {:href (str "/admin/users/active/" id "/" active)}  "Active"]]
      [:td [:a {:href (str "/admin/users/delete/" id)}  "Delete"]]])
 
-;; (defn formatted-roles [roles]
-;;   )
+(defn roles-options [roles]
+  (for [x roles]
+    (let [id   (:id x)
+          name (:name x)]
+      [:option {:value id} name])))
 
 (defn index [base users roles]
   (let [formatted-users (for [user users]
-                          (formatted-user user))]
+                          (formatted-user user))
+       options          (roles-options roles)]
     [:div {:class "content"}
       [:h1 {:id "root-app"} "Users and admins"]
       [:div {:class "fooclass"} [:a {:href "#image"} [:img {:id "icon-add" :src "/img/icon_add.png" :alt "Add" :title "Add"}]]]
@@ -33,7 +37,8 @@
             (f/text-field  { :class "form-control mr-sm-2" :placeholder "Username" } :uname)
             (f/text-field  { :class "form-control mr-sm-2" :placeholder "email" } :email)
             (f/text-field  { :class "form-control mr-sm-2" :placeholder "prepassword" } :prepassword)
-            [:div (f/drop-down {:class "form-control mr-sm-2"} :roles {:gh "dasdas"  :kk "asdasdasd"})]
+            [:div (c/html [:select {:class "form-control mr-sm-2" :name "role_id"}
+                          options])]
             [:div (f/label "Admin" "Admin") (f/check-box {:title "Admin user" :value "1"} "preadmin")]
             (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Einrechen"))]]
       [:table {:class "some-classs"}

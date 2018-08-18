@@ -103,8 +103,8 @@ where id = :id
 
 -- :name create-user! :! :n
 -- :doc creates a new user record
-INSERT INTO users (fname, lname, uname, email, password, admin, active, group_id)
-VALUES (:fname, :lname, :uname, :email, :password, :admin, :active, :group_id)
+INSERT INTO users (fname, lname, uname, email, password, admin, active, role_id)
+VALUES (:fname, :lname, :uname, :email, :password, :admin, :active, :role_id)
 
 -- :name update-user! :! :n
 -- :doc update an existing user record
@@ -157,6 +157,6 @@ WHERE id = :id
 
 /**** ROLES   ****/
 
--- :name get-roles :? :n
+-- :name get-roles :? :*
 -- :doc retrieve all roles.
 SELECT * FROM roles

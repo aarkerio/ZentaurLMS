@@ -10,18 +10,10 @@ CREATE TABLE users(
    admin BOOLEAN NOT NULL DEFAULT false,
    last_login TIME,
    active BOOLEAN,
-   password VARCHAR(300),
+   password VARCHAR(300) NOT NULL,
    created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
    updated_at timestamp(0) with time zone
  );
-
- -- fname | character varying(30)  | not null
- -- lname  | character varying(30)  | not null
- -- email      | character varying(30)  | not null
- -- admin      | boolean                | not null Vorgabewert false
- -- last_login | time without time zone |
- -- is_active  | boolean                |
- -- password   | character varying(300) |  (hashers/derive "secretpassword")
 
 INSERT INTO users (fname,
   lname,

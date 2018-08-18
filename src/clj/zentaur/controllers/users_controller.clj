@@ -11,6 +11,7 @@
   (let [base  (basec/set-vars request)
         users (model-user/get-users true)
         roles (model-user/get-roles)]
+    (log/info (str ">>> R******** >>>>> " roles))
     (layout/application (merge base {:contents (users-view/index base users roles)} ))))
 
 ;; POST /admin/users

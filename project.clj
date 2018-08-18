@@ -43,7 +43,7 @@
                  [selmer "1.11.7"]                       ;;  Simple HTML Templates
                  [slugify "0.0.1"]]
   :min-lein-version "2.8.0"
-  :jvm-opts ["-server" "-Dconf=.lein-env"]
+  :jvm-opts ["-server" "-Dconf=.lein-env" "-Dlogfile.path=.lein-env"]
   :source-paths ["src/clj" "src/cljc"]
   :test-paths ["src/specs"]
   :resource-paths ["resources" "target/cljsbuild"]
@@ -96,6 +96,7 @@
                      [ring/ring-devel "1.6.2"]]
       :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
                      [lein-doo "0.1.8"]]
+      :jvm-opts ["-Dlogfile.path=development"]
       :cljsbuild {
         :builds {
          :app {
@@ -125,6 +126,7 @@
     :project/test {
       :resource-paths ["env/test/resources"]
       :test-paths ["test" "src/test/clojure"]
+      :jvm-opts ["-Dlogfile.path=test"]
       :injections [(require 'pjstadig.humane-test-output)
                    (pjstadig.humane-test-output/activate!)]
       :cljsbuild {
