@@ -4,6 +4,7 @@
     [clj-time.jdbc]
     [clojure.java.jdbc :as jdbc]
     [conman.core :as conman]
+    [clojure.tools.logging :as log]
     [zentaur.config :refer [env]]
     [mount.core :refer [defstate]])
   (:import org.postgresql.util.PGobject
@@ -13,12 +14,14 @@
            [java.sql
             BatchUpdateException
             PreparedStatement]))
-
+(log/info (str ">>> ENV >>>>> " env))
 (defstate ^:dynamic *db*
            :start (conman/connect! {:classname "net.sf.log4jdbc.DriverSpy" :jdbc-url (env :database-url)})
            :stop (conman/disconnect! *db*))
 
 (conman/bind-connection *db* "sql/queries.sql")
+
+(log/info (str ">>> defstate >>>>> " *db*))
 
 (extend-protocol jdbc/IResultSetReadColumn
   Array

@@ -26,7 +26,7 @@
                  [metosin/compojure-api "1.1.11"]
                  [metosin/muuntaja "0.4.1"]              ;; library for fast http api format negotiation, encoding and decoding.
                  [metosin/ring-http-response "0.9.0"]    ;; Handling HTTP Statuses with Clojure(Script)
-                 [mount "0.1.11"]
+                 [mount "0.1.13"]                        ;; managing Clojure and ClojureScript app state
                  [org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.339" :scope "provided"]
                  [org.clojure/java.jdbc "0.7.1"]
@@ -77,7 +77,7 @@
          :aot :all
          :uberjar-name "zentaur.jar"
          :source-paths ["env/prod/clj"]
-         :resource-paths ["env/prod/resources"]}
+         :resource-paths ["env/prod/resources"]}  ;; uberjar ends
 
     :dev  [:project/dev :profiles/dev]
     :test [:project/dev :project/test :profiles/test]
@@ -125,7 +125,7 @@
 
     :project/test {
       :resource-paths ["env/test/resources"]
-      :test-paths ["test" "src/test/clojure"]
+      :test-paths ["test"]
       :jvm-opts ["-Dlogfile.path=test"]
       :injections [(require 'pjstadig.humane-test-output)
                    (pjstadig.humane-test-output/activate!)]
@@ -137,5 +137,5 @@
               :output-to "target/test.js"
               :main "zentaur.doo-runner"
               :optimizations :whitespace
-              :pretty-print true}}}}}
+              :pretty-print true}}}}}  ;; project/test ends
     })
