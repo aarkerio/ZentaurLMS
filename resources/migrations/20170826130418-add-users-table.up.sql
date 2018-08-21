@@ -6,7 +6,7 @@ CREATE TABLE users(
    fname VARCHAR(30) NOT NULL,
    lname VARCHAR(30) NOT NULL,
    uname VARCHAR(30) NOT NULL UNIQUE,
-   email VARCHAR(30) NOT NULL,
+   email VARCHAR(30) NOT NULL UNIQUE,
    admin BOOLEAN NOT NULL DEFAULT false,
    last_login TIME,
    active BOOLEAN,

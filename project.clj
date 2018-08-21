@@ -4,15 +4,15 @@
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [buddy/buddy-auth "2.1.0"]              ;; Authentication
                  [cheshire "5.8.0"]                      ;; Clojure JSON and BSON encoding/decoding
-                 [cider/cider-nrepl "0.16.0"]
+                 [cider/cider-nrepl "0.18.0"]
                  [clj-time "0.14.0"]                     ;; date time-zone library
                  [cljs-ajax "0.7.3"]                     ;; Ajax
                  [com.cognitect/transit-clj "0.8.309"]
                  [com.billpiel/sayid "0.0.15"]           ;; clojure debugger
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [com.novemberain/pantomime "2.10.0"]
-                 [compojure "1.6.0"]                     ;; routes for ring
-                 [conman "0.7.9"]                        ;; Luminus database connection management and SQL query generation library
+                 [compojure "1.6.1"]                     ;; routes for ring
+                 [conman "0.8.2"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.11"]                        ;; Read properties, environments, configs, profiles
                  [digest "1.4.8"]                        ;; Message digest library for Clojure.
                  [domina "1.0.3"]                        ;; A DOM manipulation library for ClojureScript
@@ -32,6 +32,7 @@
                  [org.clojure/java.jdbc "0.7.1"]
                  [org.clojure/tools.cli "0.3.5"]
                  [org.clojure/tools.logging "0.4.0"]
+                 [org.clojure/tools.nrepl "0.2.13"]
                  [org.clojure/tools.reader "1.1.0"]
                  [org.postgresql/postgresql "42.2.2"]
                  [reagent "0.8.1"]                       ;;  Minimalistic React for ClojureScript
@@ -43,14 +44,15 @@
                  [selmer "1.11.7"]                       ;;  Simple HTML Templates
                  [slugify "0.0.1"]]
   :min-lein-version "2.8.0"
-  :jvm-opts ["-server" "-Dconf=.lein-env" "-Dlogfile.path=.lein-env"]
+  :jvm-opts ["-server" "-Dconf=.lein-env"]
   :source-paths ["src/clj" "src/cljc"]
-  :test-paths ["src/specs"]
+  :test-paths ["test/clj"]
   :resource-paths ["resources" "target/cljsbuild"]
   :target-path "target/%s/"
   :main ^:skip-aot zentaur.core
   :migratus {:store :database :classname "net.sf.log4jdbc.DriverSpy" :db ~(get (System/getenv) "DATABASE_URL")}
-  :plugins [[lein-cprop "1.0.3"]
+  :plugins [[cider/cider-nrepl "0.18.0"]
+            [lein-cprop "1.0.3"]
             [migratus-lein "0.5.2"]
             [lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.16"]
@@ -88,12 +90,11 @@
                      [doo "0.1.8"]                        ;; doo is a library and lein plugin to run cljs.test on different js environments.
                      [figwheel-sidecar "0.5.14"]
                      [funcool/bide "1.6.0"]               ;; A simple routing library for ClojureScript
-                     [midje "1.9.2"]                      ;; TDD for Clojure
                      [org.clojure/test.check "0.9.0"]
                      [pjstadig/humane-test-output "0.8.3"]
                      [prone "1.1.4"]                      ;; Better exception reporting middleware for Ring.
                      [ring/ring-mock "0.3.1"]             ;; Mocking request
-                     [ring/ring-devel "1.6.2"]]
+                     [ring/ring-devel "1.6.3"]]
       :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
                      [lein-doo "0.1.8"]]
       :jvm-opts ["-Dlogfile.path=development"]
@@ -125,7 +126,7 @@
 
     :project/test {
       :resource-paths ["env/test/resources"]
-      :test-paths ["test"]
+      :test-paths ["test" "test/clj"]
       :jvm-opts ["-Dlogfile.path=test"]
       :injections [(require 'pjstadig.humane-test-output)
                    (pjstadig.humane-test-output/activate!)]

@@ -3,8 +3,8 @@
     [cheshire.core :refer [generate-string parse-string]]
     [clj-time.jdbc]
     [clojure.java.jdbc :as jdbc]
-    [conman.core :as conman]
     [clojure.tools.logging :as log]
+    [conman.core :as conman]
     [zentaur.config :refer [env]]
     [mount.core :refer [defstate]])
   (:import org.postgresql.util.PGobject
@@ -14,14 +14,15 @@
            [java.sql
             BatchUpdateException
             PreparedStatement]))
-(log/info (str ">>> ENV >>>>> " env))
 (defstate ^:dynamic *db*
-           :start (conman/connect! {:classname "net.sf.log4jdbc.DriverSpy" :jdbc-url (env :database-url)})
-           :stop (conman/disconnect! *db*))
+  :start (if-let [jdbc-url (env :database-url)]
+           (conman/connect! {:jdbc-url jdbc-url})
+           (do
+             (log/warn "database connection URL was not found, please set :database-url in your config, e.g: dev-config.edn")
+             *db*))
+  :stop (conman/disconnect! *db*))
 
 (conman/bind-connection *db* "sql/queries.sql")
-
-(log/info (str ">>> defstate >>>>> " *db*))
 
 (extend-protocol jdbc/IResultSetReadColumn
   Array
@@ -57,4 +58,3 @@
   (sql-value [value] (to-pg-json value))
   IPersistentVector
   (sql-value [value] (to-pg-json value)))
-
