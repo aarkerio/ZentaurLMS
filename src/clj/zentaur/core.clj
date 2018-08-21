@@ -11,9 +11,11 @@
             [cider.nrepl :refer (cider-nrepl-handler)])
   (:gen-class))
 
+;; https://github.com/clojure/tools.cli
 (def cli-options
   [["-p" "--port PORT" "Port number"
-    :parse-fn #(Integer/parseInt %)]])
+    :parse-fn #(Integer/parseInt %)
+    :validate [#(< 0 % 1000) "Must be a number between 0 and 1000"]]])
 
 (mount/defstate ^{:on-reload :noop}
                 http-server
@@ -45,7 +47,7 @@
                         (parse-opts cli-options)
                         mount/start-with-args
                         :started)]
-    (log/info component "started"))
+    (log/info component ">>>>>>>>>>>>>>> ZentaurLMS started ##########"))
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]

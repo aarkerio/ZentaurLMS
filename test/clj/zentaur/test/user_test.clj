@@ -2,7 +2,7 @@
   (:require [zentaur.models.users :as model-users]
             [clojure.test :refer [deftest testing is run-tests]]))
 
-(def person {:fname "Pdsferro" :lname "Samuel" :uname "samuel" :prepassword "s0m3p4ss" :email "samuel@gmail.com" :preadmin "1" :role_id "1"})
+(def person {:fname "Pdsferro" :lname "Samuel" :uname "77samdddl" :prepassword "s0m3p4ss" :email "77samu@gmail.com" :preadmin "1" :role_id "1"})
 
 (deftest create
     (testing "With valid input"

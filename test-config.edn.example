@@ -1,0 +1,8 @@
+;; WARNING
+;; The test-config.edn file is used for local environment variables, such as database credentials.
+;; This file is listed in .gitignore and will be excluded from version control by Git.
+
+{:port 3000
+ ; set your test database connection URL here
+ ; :database-url "postgresql://localhost/zentaur_test?user=db_user_name_here&password=db_user_password_here"
+}

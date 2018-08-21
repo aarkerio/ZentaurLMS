@@ -13,7 +13,7 @@
                  [com.novemberain/pantomime "2.10.0"]
                  [compojure "1.6.1"]                     ;; routes for ring
                  [conman "0.8.2"]                        ;; Luminus database connection management and SQL query generation library
-                 [cprop "0.1.11"]                        ;; Read properties, environments, configs, profiles
+                 [cprop "0.1.11"]                        ;; where all configuration properties converge
                  [digest "1.4.8"]                        ;; Message digest library for Clojure.
                  [domina "1.0.3"]                        ;; A DOM manipulation library for ClojureScript
                  [funcool/bide "1.6.0"]                  ;; A simple routing library for ClojureScript
@@ -44,7 +44,6 @@
                  [selmer "1.11.7"]                       ;;  Simple HTML Templates
                  [slugify "0.0.1"]]
   :min-lein-version "2.8.0"
-  :jvm-opts ["-server" "-Dconf=.lein-env"]
   :source-paths ["src/clj" "src/cljc"]
   :test-paths ["test/clj"]
   :resource-paths ["resources" "target/cljsbuild"]
@@ -81,10 +80,11 @@
          :source-paths ["env/prod/clj"]
          :resource-paths ["env/prod/resources"]}  ;; uberjar ends
 
-    :dev  [:project/dev :profiles/dev]
-    :test [:project/dev :project/test :profiles/test]
+    :dev  [:project/dev]
+    :test [:project/dev :project/test]
 
     :project/dev {
+      :jvm-opts ["-Dconf=dev-config.edn"]
       :dependencies [[binaryage/devtools "0.9.4"]
                      [com.cemerick/piggieback "0.2.2"]    ;; nREPL support for ClojureScript REPLs
                      [doo "0.1.8"]                        ;; doo is a library and lein plugin to run cljs.test on different js environments.
@@ -97,7 +97,6 @@
                      [ring/ring-devel "1.6.3"]]
       :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
                      [lein-doo "0.1.8"]]
-      :jvm-opts ["-Dlogfile.path=development"]
       :cljsbuild {
         :builds {
          :app {
@@ -126,8 +125,8 @@
 
     :project/test {
       :resource-paths ["env/test/resources"]
-      :test-paths ["test" "test/clj"]
-      :jvm-opts ["-Dlogfile.path=test"]
+      :jvm-opts ["-Dconf=test-config.edn"]
+      :test-paths ["test"]
       :injections [(require 'pjstadig.humane-test-output)
                    (pjstadig.humane-test-output/activate!)]
       :cljsbuild {
