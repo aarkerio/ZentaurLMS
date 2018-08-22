@@ -5,6 +5,7 @@
     [clojure.java.jdbc :as jdbc]
     [clojure.tools.logging :as log]
     [conman.core :as conman]
+    [clojure.java.io :as io]
     [zentaur.config :refer [env]]
     [mount.core :refer [defstate]])
   (:import org.postgresql.util.PGobject
@@ -22,8 +23,9 @@
              *db*))
   :stop (conman/disconnect! *db*))
 
-(conman/bind-connection *db* "sql/queries.sql")
+(conman/bind-connection *db* "sql/queries.sql" "sql/users.sql")
 
+;;;;;;;;;;;;;    EXTENSIONS   ;;;;;;;;;;;;;;;;;;;;;;;;;
 (extend-protocol jdbc/IResultSetReadColumn
   Array
   (result-set-read-column [v _ _] (vec (.getArray v)))
