@@ -1,5 +1,5 @@
-(ns zentaur.hiccup_templating.layout-view
-  (:require [zentaur.hiccup_templating.helpers-view :as helpers]
+(ns zentaur.hiccup.layout-view
+  (:require [zentaur.hiccup.helpers-view :as helpers]
             [hiccup.form :as f]
             [hiccup.page :refer [html5 include-css include-js]]))
 

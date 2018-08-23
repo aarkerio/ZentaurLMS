@@ -2,8 +2,8 @@
   (:require [zentaur.models.users :as model-user]
             [zentaur.controllers.base-controller :as basec]
             [clojure.tools.logging :as log]
-            [zentaur.hiccup_templating.layout-view :as layout]
-            [zentaur.hiccup_templating.admin.users-view :as users-view]
+            [zentaur.hiccup.layout-view :as layout]
+            [zentaur.hiccup.admin.users-view :as users-view]
             [ring.util.http-response :as response]))
 
 ;; GET /admin/users

@@ -736,3 +736,24 @@ textarea {
     border: 1px dotted gray;
     margin: 20px;
 }
+
+.blog-post {
+    border: 1px dotted gray;
+    padding: 10px;
+    margin: 10px;
+}
+
+.blog-post-meta {
+    font-size: 9pt;
+}
+
+.container {
+    margin: 12px;
+    padding: 10px;
+}
+
+.blog-footer{
+    clear: both;
+    margin: 12px;
+    padding: 10px;
+}

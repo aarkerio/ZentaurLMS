@@ -1,8 +1,8 @@
 (ns zentaur.middleware
   (:require  [zentaur.config :refer [env]]
              [zentaur.env :refer [defaults]]
-             [zentaur.hiccup_templating.layout-view :as layout]
-             [zentaur.hiccup_templating.helpers-view :as helper-view]
+             [zentaur.hiccup.layout-view :as layout]
+             [zentaur.hiccup.helpers-view :as helper-view]
              [zentaur.layout :refer [*app-context* error-page]]
              [clojure.tools.logging :as log]
              [cognitect.transit :as transit]

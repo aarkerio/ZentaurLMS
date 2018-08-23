@@ -26,7 +26,7 @@
   (GET    "/admin/uploads/download/:id" request   (cont-uploads/download (:params request)))
   (GET    "/admin/uploads/extract/:id"  request   (cont-uploads/extract  (:params request)))
   (GET    "/admin/tests"                request   (cont-tests/admin-tests request))
-  (GET    "/about"                      request   (cont-company/about-page request))
+  (GET    "/page/:page"                 request   (cont-company/load-page (:params request)))
   (GET    "/login"                      request   (cont-users/login-page request))
   (POST   "/login"                      request   (cont-users/post-login request))
   (GET    "/logout"                     request   (cont-users/clear-session! request)))

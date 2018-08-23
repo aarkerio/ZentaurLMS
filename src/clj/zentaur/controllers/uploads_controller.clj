@@ -1,8 +1,8 @@
 (ns zentaur.controllers.uploads-controller
   (:require [zentaur.models.uploads :as model-upload]
             [zentaur.controllers.base-controller :as basec]
-            [zentaur.hiccup_templating.layout-view :as layout]
-            [zentaur.hiccup_templating.admin.uploads-view :as admin-uploads-view]
+            [zentaur.hiccup.layout-view :as layout]
+            [zentaur.hiccup.admin.uploads-view :as admin-uploads-view]
             [clojure.tools.logging :as log]
             [ring.util.http-response :as response]))
 

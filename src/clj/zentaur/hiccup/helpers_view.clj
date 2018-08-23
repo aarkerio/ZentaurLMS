@@ -1,17 +1,23 @@
-(ns zentaur.hiccup_templating.helpers-view
-  (:require [hiccup.form :as f]
+(ns zentaur.hiccup.helpers-view
+  (:require [clj-time [format :as timef] [coerce :as timec]]
+            [hiccup.form :as f]
             [hiccup.element :refer [link-to]]))
+
+(def custom-formatter (timef/formatter "yyyy/MM/dd hh:mm"))
+
+(defn format-date [date]
+  (timef/unparse custom-formatter date))
 
 (defn index []
   [:div {:id "content"}
    [:h1 {:class "text-success"} "Hello Hiccup"]])
 
 (defn nav-links []
-    [[:li {:class "nav-item"} [:a {:class "nav-link" :href "/news"} "Nachrichten"]]
+    [[:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/news"} "Nachrichten"]]
      [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/vision"} "Unsere Vision"]]
-     [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/quienes-somos"} "Wer sind wir?"]]
+     [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/quienessomos"} "Wer sind wir?"]]
      [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/unete"} "Begleiten"]]
-     [:li {:class "nav-item"} [:a {:class "nav-link" :href "/about"} "Über uns" ]]])
+     [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/about"} "Über uns" ]]])
 
 (defn success-flash [msg]
             [:div.alert.notice.alert-success
@@ -70,12 +76,12 @@
    (link-to {:class "btn btn-primary"} "/" "Take me to Home")])
 
 (defn http-status [data]
-   [:div {:class "container-fluid"}
+  [:div {:class "container-fluid"}
     [:div {:class "row-fluid"}
-        [:div {:class "col-lg-12"}
-            [:div {:class "centering text-center"}
-                [:div {:class "text-center"}
-                    [:h1 [:span {:class "text-danger"} (str "Error:" (:status data))]]
-                    [:hr]
-                      [:h2 {:class "without-margin" } (:title data)]
-                      [:h4 {:class "text-danger" }   (:message data)]]]]]])
+      [:div {:class "col-lg-12"}
+        [:div {:class "centering text-center"}
+          [:div {:class "text-center"}
+            [:h1 [:span {:class "text-danger"} (str "Error:" (:status data))]]
+              [:hr]
+              [:h2 {:class "without-margin" } (:title data)]
+              [:h4 {:class "text-danger" }   (:message data)]]]]]])

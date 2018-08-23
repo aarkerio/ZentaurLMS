@@ -1,8 +1,8 @@
 (ns zentaur.controllers.posts-controller
   (:require [zentaur.controllers.base-controller :as basec]
-            [zentaur.hiccup_templating.layout-view :as layout]
-            [zentaur.hiccup_templating.posts-view :as posts-view]
-            [zentaur.hiccup_templating.admin.posts-view :as admin-posts-view]
+            [zentaur.hiccup.layout-view :as layout]
+            [zentaur.hiccup.posts-view :as posts-view]
+            [zentaur.hiccup.admin.posts-view :as admin-posts-view]
             [zentaur.models.posts :as model-post]
             [zentaur.libs.helpers :as h]
             [clj-time.local :as l]

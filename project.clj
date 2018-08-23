@@ -22,7 +22,7 @@
                  [org.immutant/web "2.1.10"]             ;; libraries Ring + Undertow
                  [luminus-migrations "0.4.2"]            ;; migratus esentially
                  [luminus/ring-ttl-session "0.3.2"]      ;; ring.middleware.session.store library
-                 [markdown-clj "1.0.1"]                  ;; parses md files
+                 [markdown-clj "1.0.2"]                  ;; parses md files
                  [metosin/compojure-api "1.1.11"]
                  [metosin/muuntaja "0.4.1"]              ;; library for fast http api format negotiation, encoding and decoding.
                  [metosin/ring-http-response "0.9.0"]    ;; Handling HTTP Statuses with Clojure(Script)
