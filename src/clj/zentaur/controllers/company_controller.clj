@@ -13,17 +13,22 @@
 ;; Polimorphysm for static pages
 (defmulti page-behavior (fn [page] (:page page)))
 
-(defmethod page-behavior :about
+(defmethod page-behavior "about"
   [page]
   {:title "About us" :contents (page-view/about)})
 
-(defmethod page-behavior :news
+(defmethod page-behavior "news"
   [page]
   {:title "News" :contents (page-view/news)})
 
 (defmethod page-behavior "vision"
   [page]
   {:title "Vision" :contents (page-view/vision)})
+
+(defmethod page-behavior "join"
+  [page]
+  {:title "Join us!" :contents (page-view/join)})
+
 
 (defn load-page [params]
   (let [page (:page params)]

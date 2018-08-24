@@ -15,8 +15,7 @@
 (defn nav-links []
     [[:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/news"} "Nachrichten"]]
      [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/vision"} "Unsere Vision"]]
-     [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/quienessomos"} "Wer sind wir?"]]
-     [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/unete"} "Begleiten"]]
+     [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/join"} "Begleiten"]]
      [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/about"} "Über uns" ]]])
 
 (defn success-flash [msg]

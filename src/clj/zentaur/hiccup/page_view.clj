@@ -16,7 +16,7 @@
 
 (defn join []
   [:div {:id "content"}
-   [:h1 {:class "text-success"} "Join"]])
+   [:h1 {:class "text-success"} "Join us!"]])
 
 (defn nav-links []
   [[:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/news"} "Nachrichten"]]
