@@ -22,6 +22,7 @@
   (GET    "/admin/uploads"              request   (cont-uploads/admin-uploads request))
   (POST   "/admin/uploads"              request   (cont-uploads/upload-file request))
   (GET    "/admin/uploads/process/:id"  request   (cont-uploads/process request))
+  (POST   "/admin/uploads/test/"        request   (cont-uploads/test request))
   (GET    "/admin/uploads/archive/:id"  request   (cont-uploads/archive request))
   (GET    "/admin/uploads/download/:id" request   (cont-uploads/download (:params request)))
   (GET    "/admin/uploads/extract/:id"  request   (cont-uploads/extract  (:params request)))

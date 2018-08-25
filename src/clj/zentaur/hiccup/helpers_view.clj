@@ -13,20 +13,15 @@
    [:h1 {:class "text-success"} "Hello Hiccup"]])
 
 (defn nav-links []
-    [[:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/news"} "Nachrichten"]]
-     [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/vision"} "Unsere Vision"]]
-     [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/join"} "Begleiten"]]
-     [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/about"} "Über uns" ]]])
+  [[:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/news"} "Nachrichten"]]
+   [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/vision"} "Unsere Vision"]]
+   [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/join"} "Begleiten"]]
+   [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/about"} "Über uns" ]]])
 
-(defn success-flash [msg]
-            [:div.alert.notice.alert-success
-             [:a.close {:data-dismiss "alert"} "x"]
-             [:div#flash_notice msg]])
-
-(defn error-flash [msg]
-            [:div.alert.notice.alert-error
-             [:a.close {:data-dismiss "alert"} "x"]
-             [:div#flash_notice msg]])
+(defn display-flash [msg]
+  [:div {:class "alert notice alert-success" :id "flash-msg"}
+    [:a.close {:data-dismiss "alert"} "x"]
+    [:div#flash_notice msg]])
 
 (defn hello []
   [:div {:class "well"}

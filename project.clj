@@ -6,9 +6,9 @@
                  [cheshire "5.8.0"]                      ;; Clojure JSON and BSON encoding/decoding
                  [cider/cider-nrepl "0.18.0"]
                  [clj-time "0.14.0"]                     ;; date time-zone library
-                 [cljs-ajax "0.7.3"]                     ;; Ajax
+                 [cljs-ajax "0.7.4"]                     ;; Ajax
+                 [cljsjs/jquery "3.2.1-0"]               ;; jQuery
                  [com.cognitect/transit-clj "0.8.309"]
-                 [com.billpiel/sayid "0.0.15"]           ;; clojure debugger
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [com.novemberain/pantomime "2.10.0"]
                  [compojure "1.6.1"]                     ;; routes for ring
@@ -58,7 +58,7 @@
             [lein-kibit "0.1.5"]           ;; rubocop for clojure
             [lein-immutant "2.1.0"]
             [com.jakemccrary/lein-test-refresh "0.23.0"]]
-  :clean-targets ^{:protect false}
+  :clean-targets ^{:protect false :doc "Keeps the cache clean"}
     [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
   :aliases {"test-all" ["do" ["test"] ["specs"]]}
   :profiles {

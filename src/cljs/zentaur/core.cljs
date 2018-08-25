@@ -1,11 +1,20 @@
 (ns zentaur.core
-  (:require [zentaur.users :as users]
-         ;;   [zentaur.posts :as posts]
-         ;;   [zentaur.uploads :as uploads]
+  (:require [ajax.core :refer [GET POST]]
+            [clojure.string :as s]
+            [zentaur.users :as users]
             [goog.dom :as gdom]
+            [goog.string :as gstr]
             [goog.events :as events])
   (:import [goog.events EventType]))
 
+;; Ajax handlers
+(defn handler [response]
+  (.log js/console (str response)))
+
+(defn error-handler [{:keys [status status-text]}]
+  (.log js/console (str "something bad happened: " status " " status-text)))
+
+;; Users
 (defn- load-users []
   (events/listen (gdom/getElement "icon-add") EventType.CLICK
                  (fn [e]
@@ -15,17 +24,92 @@
                      (do
                        (.log js/console (str ">>> VALUE >>>>>  " e))
                        (set! (.-className divh) toggle))))))
+;;;;;  PROCESS
+(def qstart "{ \n \"status\": \"1\", \n \"hint\" : \"\", \n  \"explanation\": \"\", \n  \"question\": \"\", \n")
+
+(def qstart_1 " \"qtype\" : \"1\", \n  \"answers\": [
+                       { \"answer\": \"One\", \"correct\": \"false\" }, \n
+                       { \"answer\": \"Two\", \"correct\": \"false\" }  \n ] } ")
+
+(def qstart_2 " \"qtype\" : \"5\", \n \"answers\": [
+               { \"first_column\": \"México\",  \"second_column\": \"\",   \"name_column\": \"A\", \"correct_column\": \"B\" }, \n
+               { \"first_column\": \"Argentina\",  \"second_column\": \"\", \"name_column\": \"B\", \"correct_column\": \"A\" }, \n ] } ")
+
+(def qstart_3 " \"qtype\" : \"3\" \n } ")
+
+(defn build-string [zahlenwert]
+ (let [question qstart]
+  (cond
+    (= zahlenwert 1) (str question qstart_1)
+    (= zahlenwert 2) (str question qstart_2)
+    (= zahlenwert 3) (str question qstart_3))))
+
+(defn insert-text [zahlenwert]
+  (let [textbox   (gdom/getElement "json-field")
+        text-str  (.-value textbox)   ;; goog.dom.getTextContent  getTextContent
+        question  (build-string zahlenwert)
+        _         (.log js/console (str ">>> QUESTION >>>>> " (.stringify js/JSON question)))
+        startPos  (.-selectionStart textbox)
+        endPos    (.-selectionEnd textbox)
+        beforeStr (subs text-str 0 startPos)
+        afterStr  (subs text-str endPos (count text-str))
+        finalStr  (str beforeStr  question  afterStr)]
+
+    (set! (.-innerHTML textbox) finalStr)))
+
+(defn set-message [response]
+  (let [div-message (gdom/getElement "test-message")
+        msg         (:msg response)]
+  (set! (.-className divh) toggle)
+  (set! (.-innerHTML div-message) msg))
+
+(defn test-json []
+  (let [textbox   (gdom/getElement "json-field")
+        text-str  (.-value textbox)]
+
+  (POST "/admin/uploads/test/"
+        {:params {:body text-str
+                  :user    "Bob"}
+         :handler set-message
+         :error-handler error-handler})))
+
+(defn- load-process []
+  (events/listen (gdom/getElement "insert-question") EventType.CHANGE
+                 (fn [e]
+                   (let [value (.-value (gdom/getElement "insert-question"))]
+                     (insert-text (js/parseInt value)))))
+  (events/listen (gdom/getElement "test-button") EventType.CLICK (test-json)))
+
 
 (defn- load-posts []
   (events/listen (gdom/getElement "icon-add") EventType.CLICK
        (fn [] (.log js/console (str ">>> VALUE >>>>>  #####   >>>>>   events/listen  in users ns")))))
 
+(defn remove-flash []
+  (.log js/console (str ">>> REMOVVING!!!! >>>>> "))
+  (when-let [flash-msg (gdom/getElement "flash-msg")]
+    (js/setTimeout (.-remove flash-msg) 9000)))
+
+(defn flash-timeout []
+  (if-let [flash-msg (gdom/getElement "flash-msg")]
+    (js/setTimeout (remove-flash) 90000)
+    (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! " ))))
+
 (defn ^:export init []
+  (flash-timeout)
   (let [current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> CURRENT >>>>> " current_url))]
-    (case current_url
-        "/admin/users"   (load-users)
-   ;;     "/admin/posts"   (posts/mount)
-   ;;     "/admin/uploads" (uploads/mount)
-        "default")))
+    (cond
+      (s/includes? current_url "admin/users")     (load-users)
+      (s/includes? current_url "uploads/process") (load-process)
+      (s/includes? current_url "admin/posts")     (load-posts)
+      :else "F")))
+
+;; function removeAlert() {
+;;   $(document).ready(function () {
+;;     window.setTimeout(function() {
+;;       $(".alert").fadeTo(1000, 0).slideUp(1000, function(){
+;;         $(this).remove();
+;;       });
+;;
 

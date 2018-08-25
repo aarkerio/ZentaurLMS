@@ -1,5 +1,6 @@
 (ns zentaur.posts
   (:require [zentaur.libs.sanitize :as s]
+            [zentaur.uploads :as uploads]
             [ajax.core :refer [GET POST DELETE]]))
 
 (enable-console-print!)
@@ -14,6 +15,17 @@
         comments_div (.getElementById js/document "comments")]
     (.append comments_div (s/escape-html (str created_at "<br />" last_name "<br />" comment)))
     (.log js/console (str "Handler response: " response))))
+
+(defn- error-handler [{:keys [status stext]}]
+  (.log js/console (str "something bad happened: " status " " stext)))
+
+(defn- send-ajax [comment post_id csrf-token]
+  (POST "/post/savecomment"
+      {:params {:comment comment
+                :post_id post_id}
+       :headers {"x-csrf-token" csrf-token}
+       :handler handler
+       :error-handler error-handler}))
 
 (defn listener-msg
   ([elem] (listener-msg elem "msgtextarea" "click" "send-ajax"))
@@ -30,17 +42,6 @@
                             (.preventDefault evt)
                             (set! (.-value (.getElementById js/document container)) "")
                             (send-ajax comment post_id csrf-value))))))
-
-(defn- error-handler [{:keys [status stext]}]
-  (.log js/console (str "something bad happened: " status " " stext)))
-
-(defn- send-ajax [comment post_id csrf-token]
-  (POST "/post/savecomment"
-      {:params {:comment comment
-                :post_id post_id}
-       :headers {"x-csrf-token" csrf-token}
-       :handler handler
-       :error-handler error-handler}))
 
 (.log js/console "I am in posts.cljs  !")
 

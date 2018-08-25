@@ -748,7 +748,7 @@ textarea {
 }
 
 .container {
-    margin: 12px;
+    margin: auto;
     padding: 10px;
 }
 
@@ -756,4 +756,49 @@ textarea {
     clear: both;
     margin: 12px;
     padding: 10px;
+    background-color:#00cc00;
+    color: #fff;
+}
+
+.blog-header{
+    padding:5px;
+}
+
+.blog-title {
+    font-weight:bold;
+    font-size:22pt;
+    color: #00cc00;
+}
+
+.blog-description {
+    font-size:11pt;
+    font-weight:bold;
+}
+
+.top-banner{
+    background-image: url("/img/school-banner.jpg");
+    padding: 0;
+    margin: 0;
+    height: 82px;
+    background-repeat: repeat-x;
+    width: 100%;
+    border-bottom: 1px solid #000;
+}
+
+.buttons-container {
+    width: 100%;
+}
+
+.buttondiv {
+    width: 160px;
+    float: left;
+    border: 1px solid grey;
+}
+
+.test-message {
+  display: none;
+}
+
+.ajax-gif {
+  display: none;
 }

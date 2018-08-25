@@ -57,18 +57,19 @@
   (let [text           (:content upload)
         formatted-text (clojure.string/trim-newline text)]
     [:div nil
-      [:h1 nil "Import"]
-      [:div {:class "row"}
-       "asddasdasdasd"]
-      [:div {:class "button-div"}
-        (f/submit-button {:class "butn" :id "save-button" :title "Test before!!"}  "Save")
-        (f/submit-button {:class "butn" :id "test-button"}  "Test")
-        (f/submit-button {:class "butn" :id "multiple-button"} "Multiple Option")
-        (f/submit-button {:class "butn" :id "download-button"} "Download")
-        (f/submit-button {:class "butn" :id "insert-button" :title "Insert basic json"}   "Insert")
-        (f/submit-button {:class "butn" :id "export-button"}   "Export")]
+      [:h1 nil "Quiztest bearbeiten und importieren"]
+      [:div {:id "test-message"}]
+      [:div {:class "buttons-container"}
+        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "save-button" :title "Test before!!"}  "Save")]
+        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "test-button"}  "Test")]
+        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "multiple-button"} "Multiple Option")]
+        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "download-button"} "Download")]
+        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "insert-button" :title "Insert basic json"} "Insert")]
+        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "export-button"} "Export")]
+        [:div {:class "buttondiv"} (c/html [:select {:class "form-control mr-sm-2" :name "insert-question" :id "insert-question" :style "width:120px;"}
+                                                    [:option {:value 0} "Choose:"][:option {:value 1} "Multiple option"]
+                                                    [:option {:value 2} "Columns"][:option {:value 3} "Single"]])]]
       [:div {:class "someclass"}
-       (f/text-area {:class "my-textarea" :rows "30" :cols "120" :id "export-button"} "json-field" formatted-text)]
-      [:div {:class "someclass"}
-         formatted-text]]))
+        (f/text-area {:class "my-textarea" :rows "30" :cols "120" :id "json-field" :autofocus "autofocus"} "json-field" formatted-text)]
+      [:div {:class "someclass"} formatted-text]]))
 
