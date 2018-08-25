@@ -108,6 +108,10 @@
                                  :updates {:name "X"}
                                  :id 3})))
 
+(defn test [body]
+  )
+
+
 (defn- download-without-db
   "GET /admin/uploads/download/:id"
   [upload]

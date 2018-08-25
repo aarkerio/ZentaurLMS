@@ -47,6 +47,12 @@
   (let [id (:id params)]
     (model-upload/download id)))
 
+(defn test
+  "GET /admin/uploads/test/"
+  [params]
+  (let [body (:body params)]
+    (model-upload/test body)))
+
 ;; GET /admin/uploads/archive/:id
 (defn archive [request]
   (let [base      (basec/set-vars request)
