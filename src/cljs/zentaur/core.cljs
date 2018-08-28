@@ -1,87 +1,121 @@
 (ns zentaur.core
-  (:require [zentaur.posts :as posts]
-            [zentaur.libs.sanitize :as s]
-            [domina :as dom]
-            [ajax.core :refer [GET POST DELETE]]
-            [cognitect.transit :as t]
-            [bide.core :as r]))
+  (:require [ajax.core :refer [GET POST]]
+            [clojure.string :as s]
+            [zentaur.users :as users]
+            [goog.dom :as gdom]
+            [goog.string :as gstr]
+            [goog.events :as events]
+            [goog.style :as style])
+  (:import [goog.events EventType]))
 
-(def r (t/reader :json))
-
+;; Ajax handlers
 (defn handler [response]
-  (let [parsed       (t/read r response)
-        __           (.log js/console (str ">>> PARSED >>>>> " (type parsed) ">>>>" parsed))
-        comment      (get parsed "comment")
-        created_at   (get parsed "created_at")
-        last_name    (get parsed "last_name")
-        _            (.log js/console (str ">>> COMMENT >>>>> " comment))
-        comments_div (.getElementById js/document "comments")]
-    (.append comments_div (s/escape-html (str created_at "<br />" last_name "<br />" comment)))
-    (.log js/console (str "Handler response: " response))))
+  (.log js/console (str response)))
 
-(defn error-handler [{:keys [status stext]}]
-  (.log js/console (str "something bad happened: " status " " stext)))
+(defn error-handler [{:keys [status status-text]}]
+  (.log js/console (str "something bad happened: " status " " status-text)))
 
-(defn send-ajax [comment post_id csrf-token]
-  (POST "/post/savecomment"
-      {:params {:comment comment
-                :post_id post_id}
-       :headers {"x-csrf-token" csrf-token}
-       :handler handler
-       :error-handler error-handler}))
+;; Users
+(defn- load-users []
+  (events/listen (gdom/getElement "icon-add") EventType.CLICK
+                 (fn [e]
+                   (let [divh      (gdom/getElement "divhide")
+                         divclass  (.-className divh)
+                         toggle   (if (= divclass "hidden-div") "visible" "hidden-div")]
+                     (do
+                       (.log js/console (str ">>> VALUE >>>>>  " e))
+                       (set! (.-className divh) toggle))))))
+;;;;;  PROCESS
+(def qstart "{ \n \"status\": \"1\", \n \"hint\" : \"\", \n  \"explanation\": \"\", \n  \"question\": \"\", \n")
 
-(defn mount-components []
-  (when-let [content (js/document.getElementById "root-app")]
-    (while (.hasChildNodes content)
-      (.removeChild content (.-lastChild content)))
-    (.appendChild content (js/document.createTextNode "Willkommen zu meim ekelhaft blog!!"))))
+(def qstart_1 " \"qtype\" : \"1\", \n  \"answers\": [
+                       { \"answer\": \"One\", \"correct\": \"false\" }, \n
+                       { \"answer\": \"Two\", \"correct\": \"false\" }  \n ] } ")
 
-(defn add-listener [& {:keys [elem event function] :or {event "click" function "send"}}]
-  (.log js/console (str elem ">>>>>"))
-  (.addEventListener (.getElementById js/document elem) event
-    (fn [evt]
-     (let [atxt (-> evt (.-currentTarget) (.-innerHTML))
-           msg  (str "You clicked the elemeent:  " atxt)]
-       (.alert js/window msg)
-       (.preventDefault evt)))))
+(def qstart_2 " \"qtype\" : \"5\", \n \"answers\": [
+               { \"first_column\": \"México\",  \"second_column\": \"\",   \"name_column\": \"A\", \"correct_column\": \"B\" }, \n
+               { \"first_column\": \"Argentina\",  \"second_column\": \"\", \"name_column\": \"B\", \"correct_column\": \"A\" }, \n ] } ")
 
-(defn listener-msg
-  ([elem] (listener-msg elem "msgtextarea" "click" "send-ajax"))
-  ([elem container event function]
-     (.addEventListener (.getElementById js/document elem) event
-                        (fn [evt]
-                          (.log js/console (str "evt: >>>>> " evt))
-                          (let [atxt (-> evt (.-currentTarget) (.-innerHTML))
-                                csrf-token (.getElementById js/document "__anti-forgery-token")
-                                csrf-value (-> csrf-token (.-value))
-                                post_id    (-> (.getElementById js/document "post_id") (.-value))
-                                comment    (-> (.getElementById js/document container) (.-value))]
-                            (.log js/console (str "  comment : >>>>> " comment))
-                            (.preventDefault evt)
-                            (set! (.-value (.getElementById js/document container)) "")
-                            (send-ajax comment post_id csrf-value))))))
+(def qstart_3 " \"qtype\" : \"3\" \n } ")
+
+(defn build-string [zahlenwert]
+ (let [question qstart]
+  (cond
+    (= zahlenwert 1) (str question qstart_1)
+    (= zahlenwert 2) (str question qstart_2)
+    (= zahlenwert 3) (str question qstart_3))))
+
+(defn insert-text [zahlenwert]
+  (let [textbox   (gdom/getElement "json-field")
+        text-str  (.-value textbox)   ;; goog.dom.getTextContent  getTextContent
+        question  (build-string zahlenwert)
+        _         (.log js/console (str ">>> QUESTION >>>>> " (.stringify js/JSON question)))
+        startPos  (.-selectionStart textbox)
+        endPos    (.-selectionEnd textbox)
+        beforeStr (subs text-str 0 startPos)
+        afterStr  (subs text-str endPos (count text-str))
+        finalStr  (str beforeStr  question  afterStr)]
+
+    (set! (.-innerHTML textbox) finalStr)))
+
+(defn set-message [response]
+  (.log js/console (str ">>> Set msg :::  #####  >>>>> " response))
+  (let [div-message (gdom/getElement "display-message")
+        msg         (:msg response)]
+    (set! (.-innerHTML div-message) msg)
+    (style/showElement div-message true)))
+
+(defn test-json []
+  (let [json       (.-value (gdom/getElement "json-field"))
+        id         (.-value (gdom/getElement "upload-id"))
+        csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+    (POST "/admin/uploads/test"
+        {:params {:body text-str
+                  :user    "Bob"}
+         :headers {"x-csrf-token" csrf-field}
+         :handler set-message
+         :error-handler error-handler})))
+
+(defn save-json []
+  (let [json       (.-value (gdom/getElement "json-field"))
+        id         (.-value (gdom/getElement "upload-id"))
+        csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+     (POST "/admin/uploads/save"
+         {:params {:body json
+                   :id id}
+          :headers {"x-csrf-token" csrf-field}
+          :handler set-message
+          :error-handler error-handler})))
+
+;;;;    PROCESS LOADERS BLOCK
+(defn load-process []
+  (events/listen (gdom/getElement "insert-question") EventType.CHANGE
+                 (fn [e]
+                   (let [value (.-value (gdom/getElement "insert-question"))]
+                     (insert-text (js/parseInt value)))))
+  ;; (events/listen (gdom/getElement "test-button") EventType.CLICK test-json)
+  (events/listen (gdom/getElement "save-button") EventType.CLICK save-json))
+
+(defn- load-posts []
+  (events/listen (gdom/getElement "icon-add") EventType.CLICK
+       (fn [] (.log js/console (str ">>> VALUE >>>>>  #####   >>>>>   events/listen  in users ns")))))
+
+(defn remove-flash []
+  (.log js/console (str ">>> REMOVVING!!!! >>>>> "))
+  (when-let [flash-msg (gdom/getElement "flash-msg")]
+    (js/setTimeout (.-remove flash-msg) 9000)))
+
+(defn flash-timeout []
+  (if-let [flash-msg (gdom/getElement "flash-msg")]
+    (js/setTimeout (remove-flash) 90000)
+    (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! " ))))
 
 (defn ^:export init []
-  (.log js/console " >>>>>  I am in INITTTTT FUNCTION!!!!!")
-  ;; (add-listener :elem "blog-post-title" :event "click" :function "send-message")
-  (when-let [button (.getElementById js/document "button-save")]
-     (.log js/console (str "Button Existssssss!!!!!!>>>>>>>>>>>" button))
-     (listener-msg "button-save" ))
-  (let [current_url js/window.location.href inc? clojure.string/includes?]
-    (when (inc? current_url "about")
-      (do
-        (.log js/console (str "22222 URL ->>>" js/window.location.href))
-        (mount-components)))))
-
-(defn set-country ([] (set-country "us" 98))
-  ([country code] (println country code)))
-
-(defn add-listener-ccc [elem event function]
-  (.log js/console (str elem ">>>>>"))
-  (.addEventListener (.getElementById js/document elem) event
-    (fn [evt]
-     (let [atxt (-> evt (.-currentTarget) (.-innerHTML))
-           msg  (str "You clicked:  " atxt)]
-       (.alert js/window msg)
-       (.preventDefault evt)))))
-
+  (flash-timeout)
+  (let [current_url (.-pathname (.-location js/document))
+        _           (.log js/console (str ">>> CURRENT >>>>> " current_url))]
+    (cond
+      (s/includes? current_url "admin/users")     (load-users)
+      (s/includes? current_url "uploads/process") (load-process)
+      (s/includes? current_url "admin/posts")     (load-posts)
+      :else "F")))

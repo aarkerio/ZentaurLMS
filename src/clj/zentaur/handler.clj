@@ -1,6 +1,6 @@
 (ns zentaur.handler
-  (:require [zentaur.hiccup_templating.layout-view :as layout]
-            [zentaur.hiccup_templating.helpers-view :as helper-view]
+  (:require [zentaur.hiccup.layout-view :as layout]
+            [zentaur.hiccup.helpers-view :as helper-view]
             [zentaur.middleware :as middleware]
             [zentaur.routes.home :refer [base-routes]]
             [zentaur.env :refer [defaults]]

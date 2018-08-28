@@ -14,14 +14,15 @@
 
 -- :name save-message! :! :n
 -- :doc creates a new message record
-INSERT INTO posts
-(fname, lname, email, pass)
-VALUES (:fname, :lname, :email, :pass)
+INSERT INTO comments
+(title, body, tags, published, discution, slug)
+VALUES (:title, :body, :tags, :published, :discution, :slug)
 
 -- :name get-posts :? :*
 -- :doc retrieve array posts given the id.
-SELECT id, title, body, active, discution, user_id, created_at FROM posts
-ORDER BY id DESC LIMIT 5
+SELECT p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname FROM posts as p, users as u
+WHERE p.published = true AND p.user_id = u.id
+ORDER BY id DESC LIMIT 10
 
 -- :name get-post :? :1
 -- :doc retrieve a post given the id.
@@ -31,13 +32,18 @@ WHERE id = :id
 -- :name save-post! :! :n
 -- :doc creates a new post record
 INSERT INTO posts
-(title, body, active, discution, tags, user_id, created_at)
-VALUES (:title, :body, :active, :discution, :tags, :user_id, :created_at)
+(title, body, published, discution, tags, user_id, slug)
+VALUES (:title, :body, :published, :discution, :tags, :user_id, :slug)
 
 -- :name update-post! :! :n
--- :doc update an existing user record
+-- :doc update an existing post record
 UPDATE posts
 SET title = :title, body = :body, tags = :tags, active = :active, discution = :discution
+WHERE id = :id
+
+-- :name toggle-post! :! :n
+-- :doc update an existing post record
+UPDATE posts SET published = :published
 WHERE id = :id
 
 -- :name delete-post! :! :n
@@ -59,8 +65,9 @@ WHERE c.post_id = :id AND u.id=c.user_id ORDER BY c.id
 
 -- :name admin-get-posts :? :*
 -- :doc retrieve array posts given the user id.
-SELECT id, title, body, active, discution, user_id, created_at FROM posts
-WHERE user_id = :user-id ORDER BY id
+SELECT p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname FROM posts as p, users as u
+WHERE p.user_id = :user-id AND p.user_id = u.id
+ORDER BY id DESC
 
 /*******************  UPLOADS   ***/
 
@@ -92,34 +99,6 @@ update :i:table set
 ~*/
 where id = :id
 
-/******************* USERS ***/
-
--- :name create-user! :! :n
--- :doc creates a new user record
-INSERT INTO users (id, fname, lname, email, pass)
-VALUES (:id, :fname, :lname, :email, :pass)
-
--- :name update-user! :! :n
--- :doc update an existing user record
-UPDATE users
-SET fname = :fname, lname = :lname, email = :email
-WHERE id = :id
-
--- :name get-user :? :1
--- :doc retrieve a user given the id.
-SELECT * FROM users
-WHERE id = :id
-
--- :name get-user-login :? :1
--- :doc retrieve a user given the email and password.
-SELECT id, fname, lname, uname, email, admin FROM users
-WHERE email = :email AND password = :password
-
--- :name delete-user! :! :n
--- :doc delete a user given the id
-DELETE FROM users
-WHERE id = :id
-
 /**************   TESTS    ****/
 
 -- :name cdreate-test! :! :n
@@ -142,3 +121,10 @@ WHERE id = :id
 -- :doc delete a test given the id
 DELETE FROM tests
 WHERE id = :id
+
+/**** ROLES   ****/
+
+-- :name get-roles :? :*
+-- :doc retrieve all roles.
+SELECT * FROM roles
+

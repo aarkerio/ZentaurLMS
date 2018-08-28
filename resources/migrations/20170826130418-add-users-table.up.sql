@@ -6,29 +6,21 @@ CREATE TABLE users(
    fname VARCHAR(30) NOT NULL,
    lname VARCHAR(30) NOT NULL,
    uname VARCHAR(30) NOT NULL UNIQUE,
-   email VARCHAR(30) NOT NULL,
+   email VARCHAR(30) NOT NULL UNIQUE,
    admin BOOLEAN NOT NULL DEFAULT false,
    last_login TIME,
-   is_active BOOLEAN,
-   password VARCHAR(300),
+   active BOOLEAN,
+   password VARCHAR(300) NOT NULL,
    created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
    updated_at timestamp(0) with time zone
  );
-
- -- fname | character varying(30)  | not null
- -- lname  | character varying(30)  | not null
- -- email      | character varying(30)  | not null
- -- admin      | boolean                | not null Vorgabewert false
- -- last_login | time without time zone |
- -- is_active  | boolean                |
- -- password   | character varying(300) |  (hashers/derive "secretpassword")
 
 INSERT INTO users (fname,
   lname,
   uname,
   email,
   admin,
-  is_active,
+  active,
   password
 ) VALUES ('Manuel',
           'Montoya',

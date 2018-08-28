@@ -1,12 +1,12 @@
-(ns zentaur.hiccup_templating.admin.uploads-view
+(ns zentaur.hiccup.admin.uploads-view
   (:require [hiccup.form :as f]
             [hiccup.core :as c]
             [clojure.tools.logging :as log]
             [hiccup.element :only (link-to)]))
 
 (defn extract? [id content]
-  (if (blank? content)
-    ([:a {:href (str "/admin/uploads/extract/" id)}  "Extract"])
+  (if (clojure.string/blank? content)
+    (c/html [:a {:href (str "/admin/uploads/extract/" id)} "Extract"])
     (str "Done")))
 
 (defn formatted-file [file]
@@ -53,20 +53,25 @@
           [:th "Archive"]]]
       [:tbody formatted-files] ]]))
 
-(defn process [file csrf-field]
+(defn process [upload csrf-field]
+  (let [text           (:content upload)
+        formatted-text (clojure.string/trim-newline text)]
     [:div nil
-      [:h1 nil "Import"]
-      [:div {:class "row"}
-       "asddasdasdasd"]
+      [:h1 nil "Quiztest bearbeiten und importieren"]
+      [:div {:id "display-message"}]
+      (f/hidden-field { :value csrf-field } "__anti-forgery-token")
+      (f/hidden-field { :value (:id upload) } "upload-id")
+      [:div {:class "buttons-container"}
+        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "save-button" :title "Test before!!"}  "Save")]
+        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "test-button"}  "Test")]
+        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "multiple-button"} "Multiple Option")]
+        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "download-button"} "Download")]
+        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "insert-button" :title "Insert basic json"} "Insert")]
+        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "export-button"} "Export")]
+        [:div {:class "buttondiv"} (c/html [:select {:class "form-control mr-sm-2" :name "insert-question" :id "insert-question" :style "width:120px;"}
+                                                    [:option {:value 0} "Choose:"][:option {:value 1} "Multiple option"]
+                                                    [:option {:value 2} "Columns"][:option {:value 3} "Single"]])]]
       [:div {:class "someclass"}
-        (f/submit-button {:class "btn" :id "save-button"}     "Save")
-        (f/submit-button {:class "btn" :id "test-button"}     "Test")
-        (f/submit-button {:class "btn" :id "multiple-button"} "Multiple Option")
-        (f/submit-button {:class "btn" :id "download-button"} "Download")
-        (f/submit-button {:class "btn" :id "export-button"}   "Export")]
-      [:div {:class "someclass"}
-       (f/text-area {:class "btn" :rows "20" :cols "100" :id "export-button"} "json-field" file)]
-      [:div {:class "someclass"}
-         file]
-        ])
+        (f/text-area {:class "my-textarea" :rows "30" :cols "120" :id "json-field" :autofocus "autofocus"} "json-field" formatted-text)]
+      [:div {:class "someclass"} formatted-text]]))
 

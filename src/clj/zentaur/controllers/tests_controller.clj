@@ -2,8 +2,8 @@
   (:require [clojure.tools.logging :as log]
             [zentaur.controllers.base-controller :as basec]
             [zentaur.models.tests :as model-test]
-            [zentaur.hiccup_templating.layout-view :as layout]
-            [zentaur.hiccup_templating.tests-view :as tests-view]
+            [zentaur.hiccup.layout-view :as layout]
+            [zentaur.hiccup.tests-view :as tests-view]
             [ring.util.http-response :as response]))
 
 ;; GET /tests

@@ -1,8 +1,8 @@
 (ns zentaur.controllers.uploads-controller
   (:require [zentaur.models.uploads :as model-upload]
             [zentaur.controllers.base-controller :as basec]
-            [zentaur.hiccup_templating.layout-view :as layout]
-            [zentaur.hiccup_templating.admin.uploads-view :as admin-uploads-view]
+            [zentaur.hiccup.layout-view :as layout]
+            [zentaur.hiccup.admin.uploads-view :as admin-uploads-view]
             [clojure.tools.logging :as log]
             [ring.util.http-response :as response]))
 
@@ -23,21 +23,41 @@
     (model-upload/upload-file params user-id)
     (-> (response/found "/admin/uploads"))))
 
-;; GET /admin/uploads/process/:id
-(defn process [request]
-  (let [base       (basec/set-vars request)
-        id         (-> request :identity :id)
+(defn process
+  ;; GET /admin/uploads/process/:id
+  [request]
+  (let [_          (log/info (str ">>> REQUEST >>>>> " request ))
+        base       (basec/set-vars request)
+        id         (-> request :params :id)
         csrf-field (:csrf-field base)
-        file       (model-upload/get-upload id)]
-    (log/info (str ">>> REQUEST >>>>> " request ))
-    (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process file csrf-field) }))))
+        upload     (model-upload/get-upload id)]
+    (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process upload csrf-field) }))))
 
 ;; GET /admin/uploads/extract/:id
 (defn extract [params]
   (let [id    (-> params :id)
         file  (model-upload/extract-text id)]
-    (log/info (str ">>> REQUEST >>>>> " file))
     (-> (response/found "/admin/uploads"))))
+
+(defn download
+  "GET /admin/uploads/download/:id"
+  [params]
+  (let [id (:id params)]
+    (model-upload/download id)))
+
+(defn save-test
+  "POST /admin/uploads/test/"
+  [params]
+  (let [body (:body params)]
+    (model-upload/save-test body)))
+
+(defn save-body
+  "POST /admin/uploads/save/"
+  [params]
+  (let [body      (:body params)
+        db-record (:id   params)
+        response  (model-upload/save-body body db-record)]
+    (-> (response/ok response))))
 
 ;; GET /admin/uploads/archive/:id
 (defn archive [request]
@@ -45,5 +65,4 @@
         id        (-> request :identity :id)
         csrf-field (:csrf-field base)
         file      (model-upload/get-upload id)]
-    (log/info (str ">>> REQUEST >>>>> " request ))
     (-> (response/found "/admin/uploads"))))
