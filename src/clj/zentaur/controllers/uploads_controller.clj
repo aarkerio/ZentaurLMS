@@ -31,14 +31,12 @@
         id         (-> request :params :id)
         csrf-field (:csrf-field base)
         upload     (model-upload/get-upload id)]
-    (log/info (str ">>> REQUEST >>>>> " request ))
     (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process upload csrf-field) }))))
 
 ;; GET /admin/uploads/extract/:id
 (defn extract [params]
   (let [id    (-> params :id)
         file  (model-upload/extract-text id)]
-    (log/info (str ">>> REQUEST >>>>> " file))
     (-> (response/found "/admin/uploads"))))
 
 (defn download
@@ -47,11 +45,19 @@
   (let [id (:id params)]
     (model-upload/download id)))
 
-(defn test
-  "GET /admin/uploads/test/"
+(defn save-test
+  "POST /admin/uploads/test/"
   [params]
   (let [body (:body params)]
-    (model-upload/test body)))
+    (model-upload/save-test body)))
+
+(defn save-body
+  "POST /admin/uploads/save/"
+  [params]
+  (let [body      (:body params)
+        db-record (:id   params)
+        response  (model-upload/save-body body db-record)]
+    (-> (response/ok response))))
 
 ;; GET /admin/uploads/archive/:id
 (defn archive [request]
@@ -59,5 +65,4 @@
         id        (-> request :identity :id)
         csrf-field (:csrf-field base)
         file      (model-upload/get-upload id)]
-    (log/info (str ">>> REQUEST >>>>> " request ))
     (-> (response/found "/admin/uploads"))))

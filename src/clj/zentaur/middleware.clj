@@ -40,8 +40,9 @@
   (restrict handler {:handler unauthorized-access
                      :on-error on-error}))
 
+;; RULES TO ACCESS
 (def rules [{:uri "/about"
-             :handler unauthorized-access}
+             :handler unauthorized-access}   ;; Open Access
             {:pattern #"^/admin.*"
              :handler admin-access
              :redirect "/notauthorized"}
@@ -52,7 +53,7 @@
             {:pattern #"^/user.*"
              :handler admin-access}
             {:pattern #"^/"
-             :handler unauthorized-access}
+             :handler unauthorized-access}   ;; Open Access
             ])
 
 (defn unauthorized-handler
@@ -85,6 +86,7 @@
       (handler req)
       (catch Throwable t
         (log/error (str "####### wrap-internal-error ########### >>>>>" t))
+        (log/error (str "####### wrap-internal-error HANDLER ########### >>>>>" handler))
         (error-page {:status 500
                      :title "Etwas sehr Schlechtes ist passiert!"
                      :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))

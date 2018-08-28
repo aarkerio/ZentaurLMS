@@ -58,7 +58,9 @@
         formatted-text (clojure.string/trim-newline text)]
     [:div nil
       [:h1 nil "Quiztest bearbeiten und importieren"]
-      [:div {:id "test-message"}]
+      [:div {:id "display-message"}]
+      (f/hidden-field { :value csrf-field } "__anti-forgery-token")
+      (f/hidden-field { :value (:id upload) } "upload-id")
       [:div {:class "buttons-container"}
         [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "save-button" :title "Test before!!"}  "Save")]
         [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "test-button"}  "Test")]

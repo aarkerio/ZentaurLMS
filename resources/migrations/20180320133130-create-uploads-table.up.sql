@@ -11,7 +11,7 @@ CREATE TABLE uploads (
    done boolean NOT NULL DEFAULT false,
    json text,
    content text,
-   hashvar varchar(250) NOT NULL, -- MD5 file checksum
+   hashvar varchar(250) NOT NULL UNIQUE, -- MD5 file checksum   ALTER TABLE uploads ADD CONSTRAINT hashvar_unique UNIQUE (hashvar);
    created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
    updated_at timestamp(0) with time zone
 );

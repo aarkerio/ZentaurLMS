@@ -31,7 +31,7 @@
     (log/info (str ">>>BODY  PARAM >>>>> " body-params))
     (model-post/save-comment!
       (assoc {} :created_at (l/local-now) :post_id post_id :comment comment :user_id user_id))
-    (basec/json-response { :comment comment :created_at (h/format-time) :last_name (:last_name identity) } )))
+    (basec/json-response { :comment comment :created_at (h/format-time) :last_name (:last_name identity) } ) ))
 
 ;; GET /posts/:id
 (defn single-post [request]

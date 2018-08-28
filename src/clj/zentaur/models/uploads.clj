@@ -108,9 +108,17 @@
                                  :updates {:name "X"}
                                  :id 3})))
 
-(defn test [body]
+(defn save-test [body]
+  nil
   )
 
+(defn save-body [body db-record]
+  (let [int-id (Integer/parseInt db-record)]
+    (if (= 1 (db/clj-expr-generic-update {:table   "uploads"
+                                          :updates {:json body}
+                                          :id      int-id}))
+    {:ok true  :msg "Erfolg!"}
+    {:ok false :msg "Etwas ist schief gelaufen!"})))
 
 (defn- download-without-db
   "GET /admin/uploads/download/:id"

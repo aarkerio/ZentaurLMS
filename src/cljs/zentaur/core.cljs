@@ -4,7 +4,8 @@
             [zentaur.users :as users]
             [goog.dom :as gdom]
             [goog.string :as gstr]
-            [goog.events :as events])
+            [goog.events :as events]
+            [goog.style :as style])
   (:import [goog.events EventType]))
 
 ;; Ajax handlers
@@ -58,28 +59,42 @@
     (set! (.-innerHTML textbox) finalStr)))
 
 (defn set-message [response]
-  (let [div-message (gdom/getElement "test-message")
+  (.log js/console (str ">>> Set msg :::  #####  >>>>> " response))
+  (let [div-message (gdom/getElement "display-message")
         msg         (:msg response)]
-  (set! (.-className divh) toggle)
-  (set! (.-innerHTML div-message) msg))
+    (set! (.-innerHTML div-message) msg)
+    (style/showElement div-message true)))
 
 (defn test-json []
-  (let [textbox   (gdom/getElement "json-field")
-        text-str  (.-value textbox)]
-
-  (POST "/admin/uploads/test/"
+  (let [json       (.-value (gdom/getElement "json-field"))
+        id         (.-value (gdom/getElement "upload-id"))
+        csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+    (POST "/admin/uploads/test"
         {:params {:body text-str
                   :user    "Bob"}
+         :headers {"x-csrf-token" csrf-field}
          :handler set-message
          :error-handler error-handler})))
 
-(defn- load-process []
+(defn save-json []
+  (let [json       (.-value (gdom/getElement "json-field"))
+        id         (.-value (gdom/getElement "upload-id"))
+        csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+     (POST "/admin/uploads/save"
+         {:params {:body json
+                   :id id}
+          :headers {"x-csrf-token" csrf-field}
+          :handler set-message
+          :error-handler error-handler})))
+
+;;;;    PROCESS LOADERS BLOCK
+(defn load-process []
   (events/listen (gdom/getElement "insert-question") EventType.CHANGE
                  (fn [e]
                    (let [value (.-value (gdom/getElement "insert-question"))]
                      (insert-text (js/parseInt value)))))
-  (events/listen (gdom/getElement "test-button") EventType.CLICK (test-json)))
-
+  ;; (events/listen (gdom/getElement "test-button") EventType.CLICK test-json)
+  (events/listen (gdom/getElement "save-button") EventType.CLICK save-json))
 
 (defn- load-posts []
   (events/listen (gdom/getElement "icon-add") EventType.CLICK
@@ -104,12 +119,3 @@
       (s/includes? current_url "uploads/process") (load-process)
       (s/includes? current_url "admin/posts")     (load-posts)
       :else "F")))
-
-;; function removeAlert() {
-;;   $(document).ready(function () {
-;;     window.setTimeout(function() {
-;;       $(".alert").fadeTo(1000, 0).slideUp(1000, function(){
-;;         $(this).remove();
-;;       });
-;;
-

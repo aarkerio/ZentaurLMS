@@ -3,6 +3,19 @@
             [hiccup.form :as f]
             [hiccup.page :refer [html5 include-css include-js]]))
 
+
+(defn login-form [csrf-field]
+  [:div {:class "form-box"}
+    [:div {:class "login-form"}
+    [:form {:method "post" :action "/login" }
+      [:div {:class "login-form-group"}
+        (f/hidden-field { :value csrf-field } "__anti-forgery-token")
+        (f/email-field {:class "field-form" :maxlength 50 :size 20 :placeholder "Email"} "email")]
+      [:div {:class "login-form-group"}
+        (f/password-field {:class "field-form" :maxlength 50 :size 10 :placeholder "Password"} "password")]
+      [:div {:class "login-form-group"}
+        (f/submit-button  {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Anmeldung")]]]])
+
 (defn application [content]
   (def vector-atom (atom (helpers/nav-links)))
   (when-let [email (-> content :identity :email)]
@@ -25,31 +38,27 @@
 		      (include-css "http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700,300&amp;subset=latin,latin-ext")
 		      (include-css "http://fonts.googleapis.com/css?family=Raleway:700,400,300")
 
-         [:body
-           (when-let [flash (:flash content)]
+          [:body
+            (when-not (-> content :identity :email)
+                  (login-form (:csrf-field content)))
+            (when-let [flash (:flash content)]
              (helpers/display-flash flash))
-           [:div {:class "blog-header"}
+            [:div {:class "blog-header"}
                 [:div {:class "blog-title" :id "blogtitle"} "Zentaur"]
                 [:div {:class "blog-description"} "Tausende von Fragen bereit zu verwenden."]]
-           [:nav {:class "navbar navbar-toggleable-md navbar-light bg-faded"}
+            [:nav {:class "navbar navbar-toggleable-md navbar-light bg-faded"}
              [:button {:class "navbar-toggler navbar-toggler-right" :type "button" :data-toggle "collapse" :data-target "#navbarSupportedContent"
                         :aria-controls "navbarSupportedContent" :aria-expanded "false" :aria-label "Toggle navigation"}
                       [:span {:class "navbar-toggler-icon"}]]
               [:a {:class "navbar-brand" :href "/"} "Home"]
               [:div {:class"collapse navbar-collapse" :id "navbarSupportedContent"}
-                [:ul {:class"navbar-nav mr-auto"} (for [link @vector-atom] link) ]
-                (when-not (-> content :identity :email)
-                  (f/form-to [:post "/login" {:class "form-inline my-2 my-lg-0"}]
-                    (f/hidden-field { :value (:csrf-field content)} "__anti-forgery-token")
-                    (f/password-field { :class "form-control mr-sm-2" :placeholder "password" } :password )
-                    (f/text-field  { :class "form-control mr-sm-2" :placeholder "email" } :email)
-                    (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Anmeldung")))]]
-           [:div {:class "top-banner"}]
-           [:div {:class "container"}  (:contents content)]]
-           [:footer {:class "blog-footer"}
-             [:img {:src "/img/warning_clojure.png" :alt "Lisp" :title "Lisp"}]
-             [:p "Chipotle Software &copy; 2018. MIT License."]
-             [:p [:a {:href "#"} "Back to top"]]]
-           (include-js "http://0.0.0.0:3449/js/app.js")
-           [:div {:id "root-app"} ""]]))
+                [:ul {:class"navbar-nav mr-auto"} (for [link @vector-atom] link) ]]]
+            [:div {:class "top-banner"}]
+            [:div {:class "container"}  (:contents content)]]
+            [:footer {:class "blog-footer"}
+              [:img {:src "/img/warning_clojure.png" :alt "Lisp" :title "Lisp"}]
+              [:p "Chipotle Software &copy; 2018. MIT License."]
+              [:p [:a {:href "#"} "Back to top"]]]
+            (include-js "http://0.0.0.0:3449/js/app.js")
+            [:div {:id "root-app"} ""]]))
 

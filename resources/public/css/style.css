@@ -802,3 +802,37 @@ textarea {
 .ajax-gif {
   display: none;
 }
+
+.form-box {
+   justify-content: right;
+   position: relative;
+   width:100%
+}
+
+.login-form{
+   position: absolute;
+   justify-content: right;
+   right: 10px;
+   top: 3px;
+   width: 30%;
+}
+
+.login-form-group{
+    float: left;
+    width: 150px;
+}
+
+.field-form {
+  background: #fff;
+  display: block;
+  height: 30px;
+  width: 100%;
+  margin: 5px 0;
+  padding: 0 5px;
+  border-width: 0;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  transform: translateX(0);
+}

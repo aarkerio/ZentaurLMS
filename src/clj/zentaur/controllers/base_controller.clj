@@ -4,9 +4,9 @@
             [selmer.parser :as parser]
             [ring.util.http-response :as resp]))
 
-(defn json-response [map]
-  (let [reader (str "foo bar")]
-    (parser/render-file "json/comment.json" map)))
+(defn json-response [file map]
+  (let [json-file (str "json/" file ".json")]
+    (parser/render-file json-file map)))
 
 (defn set-vars [request]
   (let [csrf-field (-> request :session :ring.middleware.anti-forgery/anti-forgery-token)
