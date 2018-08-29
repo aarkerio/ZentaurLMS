@@ -26,8 +26,7 @@ ORDER BY id DESC LIMIT 10
 
 -- :name get-post :? :1
 -- :doc retrieve a post given the id.
-SELECT * FROM posts
-WHERE id = :id
+SELECT * FROM posts WHERE id = :id
 
 -- :name save-post! :! :n
 -- :doc creates a new post record
@@ -92,17 +91,22 @@ WHERE id = :id
 -- :name create-test! :! :n
 -- :doc creates a new test record
 INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id)
-VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user_id)
+VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id)
 
 -- :name create-question! :! :n
 -- :doc creates a new question record
 INSERT INTO questions (question, qtype, hint, answer, active, user_id)
-VALUES (:question, :qtype, :hint, :answer, :active, :user_id)
+VALUES (:question, :qtype, :hint, :answer, :active, :user-id)
+
+-- :name question-test! :! :n
+-- :doc creates a new question test record
+INSERT INTO questions (question_id, test_id)
+VALUES (:question-iud, :test-id)
 
 -- :name create-answer! :! :n
 -- :doc creates a new answer record
 INSERT INTO answers (question_id  answer correct active user_id)
-VALUES (:question_id  :answer :correct :active :user_id)
+VALUES (:question_id  :answer :correct :active :user-id)
 
 -- :name get-test :? :1
 -- :doc retrieve a test given the id.
@@ -117,7 +121,6 @@ DELETE FROM tests WHERE id = :id
 -- :name get-roles :? :*
 -- :doc retrieve all roles.
 SELECT * FROM roles
-
 
 /******   GENERICS CALLS   ****/
 
@@ -135,5 +138,4 @@ where id = :id
 
 -- :name clj-generic-last-id :? :1
 -- :doc generic last inserted id
-SELECT id FROM :table SELECT ORDER BY id DESC LIMIT 1
-
+SELECT id FROM :i:table-name ORDER BY id DESC LIMIT 1

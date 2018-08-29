@@ -6,10 +6,10 @@
             [pantomime.extract :as extract]
             [struct.core :as st]
             [zentaur.db.core :as db]
-            [zentaur.libs.process-json :as pjson])
+            [zentaur.libs.models.process-json :as pjson])
   (:import  [java.security MessageDigest]
             [java.math BigInteger]))
-  
+
 (def FILE_FORM_PARAM "upload")
 (def OUTPUT_DIR "/tmp/")
 
