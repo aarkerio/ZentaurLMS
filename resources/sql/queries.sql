@@ -87,6 +87,40 @@ WHERE user_id = :user-id ORDER BY id DESC
 SELECT * FROM uploads
 WHERE id = :id
 
+/**************   TESTS    ****/
+
+-- :name create-test! :! :n
+-- :doc creates a new test record
+INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id)
+VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user_id)
+
+-- :name create-question! :! :n
+-- :doc creates a new question record
+INSERT INTO questions (question, qtype, hint, answer, active, user_id)
+VALUES (:question, :qtype, :hint, :answer, :active, :user_id)
+
+-- :name create-answer! :! :n
+-- :doc creates a new answer record
+INSERT INTO answers (question_id  answer correct active user_id)
+VALUES (:question_id  :answer :correct :active :user_id)
+
+-- :name get-test :? :1
+-- :doc retrieve a test given the id.
+SELECT * FROM tests WHERE id = :id
+
+-- :name delete-test! :! :n
+-- :doc delete a test given the id
+DELETE FROM tests WHERE id = :id
+
+/**** ROLES   ****/
+
+-- :name get-roles :? :*
+-- :doc retrieve all roles.
+SELECT * FROM roles
+
+
+/******   GENERICS CALLS   ****/
+
 -- :name clj-expr-generic-update :! :n
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
@@ -99,32 +133,7 @@ update :i:table set
 ~*/
 where id = :id
 
-/**************   TESTS    ****/
-
--- :name cdreate-test! :! :n
--- :doc creates a new test record
-INSERT INTO tests (id, fname, lname, email, pass)
-VALUES (:id, :fname, :lname, :email, :pass)
-
--- :name update-test! :! :n
--- :doc update an existing test record
-UPDATE tests
-SET fname = :fname, last_name = :last_name, email = :email
-WHERE id = :id
-
--- :name get-test :? :1
--- :doc retrieve a test given the id.
-SELECT * FROM tests
-WHERE id = :id
-
--- :name delete-test! :! :n
--- :doc delete a test given the id
-DELETE FROM tests
-WHERE id = :id
-
-/**** ROLES   ****/
-
--- :name get-roles :? :*
--- :doc retrieve all roles.
-SELECT * FROM roles
+-- :name clj-generic-last-id :? :1
+-- :doc generic last inserted id
+SELECT id FROM :table SELECT ORDER BY id DESC LIMIT 1
 

@@ -1,10 +1,10 @@
 (ns zentaur.controllers.uploads-controller
-  (:require [zentaur.models.uploads :as model-upload]
+  (:require [clojure.tools.logging :as log]
+            [ring.util.http-response :as response]
+            [zentaur.models.uploads :as model-upload]
             [zentaur.controllers.base-controller :as basec]
             [zentaur.hiccup.layout-view :as layout]
-            [zentaur.hiccup.admin.uploads-view :as admin-uploads-view]
-            [clojure.tools.logging :as log]
-            [ring.util.http-response :as response]))
+            [zentaur.hiccup.admin.uploads-view :as admin-uploads-view]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;     ADMIN FUNCTIONS    ;;;;;;;;;;;;;;;;;;;;
 ;; GET /admin/uploads
@@ -45,14 +45,15 @@
   (let [id (:id params)]
     (model-upload/download id)))
 
-(defn save-test
-  "POST /admin/uploads/test/"
-  [params]
-  (let [body (:body params)]
-    (model-upload/save-test body)))
+(defn export-test
+  "POST /admin/uploads/export"
+  [request]
+  (let [user-id  (-> request :identity :id)
+        body     (-> request :params :body)]
+    (model-upload/export-test body user-id)))
 
 (defn save-body
-  "POST /admin/uploads/save/"
+  "POST /admin/uploads/save"
   [params]
   (let [body      (:body params)
         db-record (:id   params)

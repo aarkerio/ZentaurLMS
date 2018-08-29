@@ -65,13 +65,13 @@
     (set! (.-innerHTML div-message) msg)
     (style/showElement div-message true)))
 
-(defn test-json []
+(defn export-json []
   (let [json       (.-value (gdom/getElement "json-field"))
         id         (.-value (gdom/getElement "upload-id"))
         csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-    (POST "/admin/uploads/test"
-        {:params {:body text-str
-                  :user    "Bob"}
+    (POST "/admin/uploads/export"
+        {:params {:body  json
+                  :id    id}
          :headers {"x-csrf-token" csrf-field}
          :handler set-message
          :error-handler error-handler})))
@@ -93,7 +93,7 @@
                  (fn [e]
                    (let [value (.-value (gdom/getElement "insert-question"))]
                      (insert-text (js/parseInt value)))))
-  ;; (events/listen (gdom/getElement "test-button") EventType.CLICK test-json)
+  (events/listen (gdom/getElement "export-button") EventType.CLICK export-json)
   (events/listen (gdom/getElement "save-button") EventType.CLICK save-json))
 
 (defn- load-posts []
