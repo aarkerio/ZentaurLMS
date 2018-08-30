@@ -14,7 +14,7 @@
      {:title title :description  description  :instructions instructions :level int-level :lang lang :tags tags :origin origin :user-id user-id}))
 
 (defn- build-questions [questions user-id]
-  (map #( {:question (get % :question) :qtype (get % :qtype) :hint (get % :hint) :answer (get % :answer) :user-id user-id } questions)))
+  (map #( {:question (get % :question) :qtype (get % :qtype) :hint (get % :hint) :answer (get % :answer) :user-id user-id } ) questions))
 
 (defn- process-json [body-map]
   (log/info (str ">>> body-map >>>>> " body-map))
@@ -36,7 +36,7 @@
              (insert-answers (:answers q) question-id))
            ) questions))
 
-(defn- insert-test 0[test]
+(defn- insert-test [test]
   (try
     (db/create-test! test)
     (throw
