@@ -21,26 +21,22 @@
   (let [questions (:questions body-map)]
     (+ 5 6)))
 
-(defn- insert-answers [answers {id :id}]
-  (log/info (str ">>> QUESTIONNNNNNN> >>>>> " questions))
-  (try
-    (map (fn [q]
-
+(defn- insert-answers [answers question-id]
+  (log/info (str ">>> ANSWERSSS > >>>>> " answers))
+  (map (fn [answer]
+         (db/create-answer! (assoc answer {:question-id question-id}))
+         ) answers))
 
 (defn- insert-questions [questions {id :id}]
   (log/info (str ">>> QUESTIONNNNNNN> >>>>> " questions))
-  (try
-    (map (fn [q]
-           (let [question-id (db/insert-question! q)]
-             (db/insert-question-test! {:question-id question-id :test-id id})
-             (db/insert-answer! (:answers q) question-id))
-           ) questions)
-    (throw
-       (ex-info "The question has melted!"
-       {:causes   #{:database-error} }))
-    (catch Exception e (ex-data e))))
+  (map (fn [q]
+         (log/info (str ">>> 1111111  QQQQQ > >>>>> " q))
+           (let [question-id (db/create-question! q)]
+             (db/create-question-test! {:question-id question-id :test-id id})
+             (insert-answers (:answers q) question-id))
+           ) questions))
 
-(defn- insert-test [test]
+(defn- insert-test 0[test]
   (try
     (db/create-test! test)
     (throw
@@ -56,6 +52,6 @@
           test-map  (build-test body-map user-id)
           _         (log/info (str ">>> test-map >>>>> " test-map))
           questions (build-questions (:questions body-map) user-id)
-          _         (log/info (str ">>> test-map >>>>> " test-map))]
+          _         (log/info (str ">>> questions >>>>> " questions))]
       (insert-test test-map)
-      (insert-questions questions (shar/get-last-id "tests"))))
+      (insert-questions questions (shar/get-last-id "tests")))))
