@@ -6,8 +6,8 @@ CREATE TABLE questions(
   user_id INT NOT NULL REFERENCES users(id),
   question text NOT NULL,
   qtype INT NOT NULL DEFAULT 1,  -- qtype 1: multiple option, 2: open, 3: true/false, 4: fullfill, 5: composite questions
-  hint VARCHAR(300) NOT NULL,
-  answer text NOT NULL,
+  hint VARCHAR(300),
+  explanation text,
   active BOOLEAN NOT NULL DEFAULT false,
   reviewed_lang BOOLEAN NOT NULL DEFAULT false,
   reviewed_fact BOOLEAN NOT NULL DEFAULT false,

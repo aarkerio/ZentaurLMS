@@ -91,12 +91,12 @@ WHERE id = :id
 -- :name create-test! :<!
 -- :doc creates a new test record
 INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id)
-VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id)
+VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id) returning id
 
 -- :name create-question! :<!
 -- :doc creates a new question record
-INSERT INTO questions (question, qtype, hint, answer, active, user_id)
-VALUES (:question, :qtype, :hint, :answer, :active, :user-id)
+INSERT INTO questions (question, qtype, hint, explanation, active, user_id)
+VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) returning id
 
 -- :name create-question-test! :! :n
 -- :doc creates a new question test record
@@ -105,8 +105,8 @@ VALUES (:question-id, :test-id)
 
 -- :name create-answer! :<!
 -- :doc creates a new answer record
-INSERT INTO answers (question_id  answer correct active user_id)
-VALUES (:question_id  :answer :correct :active :user-id)
+INSERT INTO answers (question_id  answer correct)
+VALUES (:question_id  :answer :correct) returning id
 
 -- :name get-test :? :1
 -- :doc retrieve a test given the id.
