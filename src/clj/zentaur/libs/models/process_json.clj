@@ -29,7 +29,7 @@
   (log/info (str ">>> 888888 INSERT ANSWERSSS > >>>>> " answers))
   (doseq [answer answers]
     (log/info (str ">>> 999999 INSERT ANSWER > >>>>> " answer))
-    (db/create-answer! (assoc answer {:question-id question-id}))))
+    (db/create-answer! (assoc (update answer :correct #(if (= % "true") true false)) :question-id question-id))))
 
 (defn insert-questions [questions {id :id}]
   (doseq [question questions]

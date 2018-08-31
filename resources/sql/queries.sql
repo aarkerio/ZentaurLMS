@@ -105,8 +105,8 @@ VALUES (:question-id, :test-id)
 
 -- :name create-answer! :<!
 -- :doc creates a new answer record
-INSERT INTO answers (question_id  answer correct)
-VALUES (:question_id  :answer :correct) returning id
+INSERT INTO answers (question_id, answer, correct)
+VALUES (:question-id, :answer, :correct) returning id
 
 -- :name get-test :? :1
 -- :doc retrieve a test given the id.
