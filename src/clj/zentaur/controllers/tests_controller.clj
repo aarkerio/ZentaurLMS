@@ -10,9 +10,9 @@
 (defn get-tests [request]
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
-        posts    (model-test/admin-get-posts user-id)]
+        tests    (model-test/get-tests {:user-id user-id})]
     (layout/application
-        (merge base {:title "Tests" :contents (tests-view/index posts) }))))
+        (merge base {:title "Tests" :contents (tests-view/index tests) }))))
 
 (defn get-admin [request]
   (let [base     (basec/set-vars request)]

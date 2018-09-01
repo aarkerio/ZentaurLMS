@@ -4,20 +4,20 @@
             [clojure.tools.logging :as log]
             [hiccup.element :only (link-to)]))
 
-(defn formatted-post [{:keys [title created_at tags discution published id]}]
+(defn formatted-test [{:keys [title created_at tags discution published id]}]
   [:tr
-    [:td [:a {:href (str "/admin/posts/edit/" id)}  "Edit"]]
+    [:td [:a {:href (str "/admin/tests/edit/" id)}  "Edit"]]
     [:td title]
     [:td tags]
-    [:td [:a {:href (str "/admin/posts/published/" id "/" published)}  published]]
+    [:td [:a {:href (str "/admin/tests/published/" id "/" published)}  published]]
     [:td created_at]
-    [:td [:a {:href (str "/admin/posts/delete/" id)}  "Delete"]]])
+    [:td [:a {:href (str "/admin/tests/delete/" id)}  "Delete"]]])
 
-(defn index [posts]
-  (let [formatted-posts (doall (for [post posts]
-                                 (formatted-post post)))]
+(defn index [tests]
+  (let [formatted-tests (doall (for [test tests]
+                                 (formatted-test test)))]
     [:div {:id "cont"}
-      [:div {:id "button-neuer"} [:a {:class "btn btn-outline-primary" :href "/admin/posts/new"} "Neuer Beitrag"]]
+      [:div {:id "button-neuer"} [:a {:class "btn btn-outline-primary" :href "/admin/tests/new"} "Neuer Beitrag"]]
       [:div {:id "content"}
         [:table {:class "some-table-class"}
           [:thead
@@ -28,14 +28,14 @@
               [:th "Publish"]
               [:th "Created"]
               [:th "Delete"]]]
-          [:tbody formatted-posts]]]
+          [:tbody formatted-tests]]]
       [:nav {:class "blog-pagination"}
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
         [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
 
 (defn new [base user-id]
   [:div {:id "cont"}
-             (f/form-to [:post "/admin/posts"]
+             (f/form-to [:test "/admin/tests"]
                 (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
                 (f/hidden-field { :value user-id} "user_id")
                 [:div (f/text-field {:maxlength 150 :size 90 :placeholder "Title"} "title")]

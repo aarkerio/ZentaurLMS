@@ -108,9 +108,17 @@ VALUES (:question-id, :test-id)
 INSERT INTO answers (question_id, answer, correct)
 VALUES (:question-id, :answer, :correct) returning id
 
--- :name get-test :? :1
+-- :name get-tests :? :n
 -- :doc retrieve a test given the id.
-SELECT * FROM tests WHERE id = :id
+SELECT *.t FROM tests AS t, questions AS q, ANSWERS AS a WHERE t.user_id = :user-id AND t.id = q.test_id
+
+-- :name get-one-test :? :1
+-- :doc retrieve a test given the id.
+SELECT * FROM tests WHERE id = :id AND user_id = :user-id
+
+-- :name admin-get-tests :? :n
+-- :doc retrieve all tests.
+SELECT * FROM tests WHERE active = true ORDER BY id DESC LIMIT 10
 
 -- :name delete-test! :! :n
 -- :doc delete a test given the id
