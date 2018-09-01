@@ -3,7 +3,6 @@
 
 CREATE TABLE answers(
   id serial PRIMARY KEY,
-  user_id INT NOT NULL REFERENCES users(id),
   question_id INT NOT NULL REFERENCES questions(id),
   answer VARCHAR(300) NOT NULL,
   correct BOOLEAN NOT NULL DEFAULT false,

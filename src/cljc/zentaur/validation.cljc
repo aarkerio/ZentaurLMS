@@ -1,7 +1,6 @@
 (ns zentaur.validation
   (:require [struct.core :as st]
-            [clojure.string :as str]
-            ))
+            [clojure.string :as str]))
 
 (defn username?
   [username]

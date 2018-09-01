@@ -775,6 +775,11 @@ textarea {
     font-weight:bold;
 }
 
+.blog-pagination{
+    padding:5px;
+    margin: 20px auto;
+}
+
 .top-banner{
     background-image: url("/img/school-banner.jpg");
     padding: 0;
@@ -836,3 +841,8 @@ textarea {
   box-shadow: none;
   transform: translateX(0);
 }
+
+#button-neuer{
+    margin: 15px 0 15px 0;
+}
+

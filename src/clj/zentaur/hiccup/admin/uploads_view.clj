@@ -54,7 +54,8 @@
       [:tbody formatted-files] ]]))
 
 (defn process [upload csrf-field]
-  (let [text           (:content upload)
+  (let [json           (:json upload)
+        text           (:content upload)
         formatted-text (clojure.string/trim-newline text)]
     [:div nil
       [:h1 nil "Quiztest bearbeiten und importieren"]
@@ -63,8 +64,6 @@
       (f/hidden-field { :value (:id upload) } "upload-id")
       [:div {:class "buttons-container"}
         [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "save-button" :title "Test before!!"}  "Save")]
-        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "test-button"}  "Test")]
-        [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "multiple-button"} "Multiple Option")]
         [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "download-button"} "Download")]
         [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "insert-button" :title "Insert basic json"} "Insert")]
         [:div {:class "buttondiv"} (f/submit-button {:class "btn btn-primary" :id "export-button"} "Export")]
@@ -72,6 +71,6 @@
                                                     [:option {:value 0} "Choose:"][:option {:value 1} "Multiple option"]
                                                     [:option {:value 2} "Columns"][:option {:value 3} "Single"]])]]
       [:div {:class "someclass"}
-        (f/text-area {:class "my-textarea" :rows "30" :cols "120" :id "json-field" :autofocus "autofocus"} "json-field" formatted-text)]
+        (f/text-area {:class "my-textarea" :rows "30" :cols "120" :id "json-field" :autofocus "autofocus"} "json-field" json)]
       [:div {:class "someclass"} formatted-text]]))
 

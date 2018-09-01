@@ -3,7 +3,6 @@
             [hiccup.form :as f]
             [hiccup.page :refer [html5 include-css include-js]]))
 
-
 (defn login-form [csrf-field]
   [:div {:class "form-box"}
     [:div {:class "login-form"}
@@ -21,12 +20,13 @@
   (when-let [email (-> content :identity :email)]
     (swap! vector-atom conj [:li {:class "nav-item"} [:a {:href "/admin/users" :class "nav-link"} "Benutzer"]]
                             [:li {:class "nav-item"} [:a {:href "/admin/posts" :class "nav-link"} "Beiträge"]]
+                            [:li {:class "nav-item"} [:a {:href "/admin/tests" :class "nav-link"} "Quiztest"]]
                             [:li {:class "nav-item"} [:a {:href "/admin/uploads" :class "nav-link"} "Dateien"]]
                             [:li {:class "nav-item"} (str "Hallo" email "!")]
                             [:li {:class "nav-item"} [:a {:href "/logout" :class "nav-link"} "Logout"]] ))
 
   (html5 [:head
-          [:title (str ":: Zentaur :: Quizz Test for you " (:title content))]
+          [:title (str ":: Zentaur :: Quizz Tests for you " (:title content))]
           [:meta {:http-equiv "Content-Type" :content "text/html;charset=utf-8"}]
           [:link {:rel "shortcut icon" :href "/img/favicon.ico"}]
           (include-js  "//cdnjs.cloudflare.com/ajax/libs/tether/1.4.3/js/tether.min.js")

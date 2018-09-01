@@ -9,7 +9,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;    VALIDATIONS
 ;;;;;;;;;;;;;;;;;;;;;
-(def post-schema
+(def test-schema
   [[:title st/required st/string]
    [:body
     st/required
@@ -17,13 +17,13 @@
     {:body "message must contain at least 10 characters"
      :validate #(> (count %) 9)}]])
 
-(defn validate-post [params]
+(defn validate-test [params]
   (first
-    (st/validate params post-schema)))
+    (st/validate params test-schema)))
 
 (def comment-schema
   [[:comment st/required st/string]
-   [:post_id st/required st/integer]])
+   [:test_id st/required st/integer]])
 
 (defn validate-comment [params]
   (first
@@ -33,30 +33,22 @@
 ;;          ACTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn get-posts []
-     (db/get-posts))
+(defn get-tests [user-id]
+  (db/get-tests { :user-id user-id }))
 
-(defn get-post [id]
-  (db/get-post id))
-
-(defn get-comments [id]
-  (db/get-comments id))
+(defn get-one-test [user-id id]
+  (db/get-one-test {:user-id user-id :id id}))
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
-(defn save-post! [params]
-  (if-let [errors (validate-post params)]
-      (db/save-post! params)))
-
-(defn save-comment! [params]
-  (if-let [errors (validate-post params)]
-      (db/save-comment params)))
+(defn save-test! [params]
+  (if-let [errors (validate-test params)]
+      (db/create-test! params)))
 
 (defn destroy [params]
   (do
-    (db/delete-post! params)))
-
+    (db/delete-test! params)))
 
 ;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
-(defn admin-get-posts [user-id]
-    (db/admin-get-posts {:user-id user-id}))
+(defn admin-get-tests [user-id]
+    (db/admin-get-tests))
 

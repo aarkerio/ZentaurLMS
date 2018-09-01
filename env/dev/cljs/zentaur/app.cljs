@@ -1,5 +1,6 @@
 (ns ^:figwheel-no-load zentaur.app
   (:require [zentaur.core :as core]
+            [zentaur.tests.core :as tcore]
             [devtools.core :as devtools]))
 
 (enable-console-print!)

@@ -5,6 +5,7 @@ CREATE TABLE question_tests(
   id serial PRIMARY KEY,
   test_id INT NOT NULL REFERENCES tests(id),
   question_id INT NOT NULL REFERENCES questions(id),
+  ordnen SMALLINT NOT NULL DEFAULT 1,
   created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
   updated_at timestamp(0) with time zone
 );

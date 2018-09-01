@@ -3,16 +3,16 @@
             [zentaur.controllers.base-controller :as basec]
             [zentaur.models.tests :as model-test]
             [zentaur.hiccup.layout-view :as layout]
-            [zentaur.hiccup.tests-view :as tests-view]
+            [zentaur.hiccup.admin.tests-view :as tests-view]
             [ring.util.http-response :as response]))
 
 ;; GET /tests
 (defn get-tests [request]
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
-        posts    (model-test/admin-get-posts user-id)]
+        tests    (model-test/get-tests {:user-id user-id})]
     (layout/application
-        (merge base {:title "Tests" :contents (tests-view/index posts) }))))
+        (merge base {:title "Tests" :contents (tests-view/index tests) }))))
 
 (defn get-admin [request]
   (let [base     (basec/set-vars request)]
@@ -25,8 +25,16 @@
 ;;;;;  ADMIN FUNCTIONS
 
 ;; GET /admin/tests
-(defn admin-tests [request]
+(defn admin-index [request]
   (let [base     (basec/set-vars request)
-        posts    (model-test/get-posts)]
+        user-id  (-> request :identity :id)
+        tests    (model-test/get-tests user-id)]
     (layout/application
-        (merge base {:title "Tests" :contents (tests-view/index posts) }))))
+        (merge base {:title "Quiz Tests" :contents (tests-view/index tests) }))))
+
+;; GET /admin/tests/new
+(defn admin-new [request]
+  (let [base     (basec/set-vars request)
+        user-id  (-> request :identity :id)]
+    (layout/application
+        (merge base {:title "New Quiz Tests" :contents (tests-view/new base) }))))

@@ -1,12 +1,17 @@
 (ns zentaur.core
   (:require [ajax.core :refer [GET POST]]
+            [cljs.loader :as loader]
             [clojure.string :as s]
-            [zentaur.users :as users]
             [goog.dom :as gdom]
             [goog.string :as gstr]
             [goog.events :as events]
-            [goog.style :as style])
+            [goog.style :as style]
+            [zentaur.users :as users])
   (:import [goog.events EventType]))
+
+(enable-console-print!)
+
+(println "I'm in the home module!")
 
 ;; Ajax handlers
 (defn handler [response]
@@ -65,13 +70,13 @@
     (set! (.-innerHTML div-message) msg)
     (style/showElement div-message true)))
 
-(defn test-json []
+(defn export-json []
   (let [json       (.-value (gdom/getElement "json-field"))
         id         (.-value (gdom/getElement "upload-id"))
         csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-    (POST "/admin/uploads/test"
-        {:params {:body text-str
-                  :user    "Bob"}
+    (POST "/admin/uploads/export"
+        {:params {:body  json
+                  :id    id}
          :headers {"x-csrf-token" csrf-field}
          :handler set-message
          :error-handler error-handler})))
@@ -93,7 +98,7 @@
                  (fn [e]
                    (let [value (.-value (gdom/getElement "insert-question"))]
                      (insert-text (js/parseInt value)))))
-  ;; (events/listen (gdom/getElement "test-button") EventType.CLICK test-json)
+  (events/listen (gdom/getElement "export-button") EventType.CLICK export-json)
   (events/listen (gdom/getElement "save-button") EventType.CLICK save-json))
 
 (defn- load-posts []
@@ -110,8 +115,15 @@
     (js/setTimeout (remove-flash) 90000)
     (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! " ))))
 
+(defn run-tests []
+  (fn [e]
+    (loader/load :tests
+      (fn []
+        ((resolve 'zentaur.tests.core/run))))))
+
 (defn ^:export init []
   (flash-timeout)
+  (run-tests)
   (let [current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> CURRENT >>>>> " current_url))]
     (cond
@@ -119,3 +131,5 @@
       (s/includes? current_url "uploads/process") (load-process)
       (s/includes? current_url "admin/posts")     (load-posts)
       :else "F")))
+
+(loader/set-loaded! :home)

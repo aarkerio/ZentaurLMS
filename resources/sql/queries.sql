@@ -26,8 +26,7 @@ ORDER BY id DESC LIMIT 10
 
 -- :name get-post :? :1
 -- :doc retrieve a post given the id.
-SELECT * FROM posts
-WHERE id = :id
+SELECT * FROM posts WHERE id = :id
 
 -- :name save-post! :! :n
 -- :doc creates a new post record
@@ -87,6 +86,52 @@ WHERE user_id = :user-id ORDER BY id DESC
 SELECT * FROM uploads
 WHERE id = :id
 
+/**************   TESTS    ****/
+
+-- :name create-test! :<!
+-- :doc creates a new test record
+INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id)
+VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id) returning id
+
+-- :name create-question! :<!
+-- :doc creates a new question record
+INSERT INTO questions (question, qtype, hint, explanation, active, user_id)
+VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) returning id
+
+-- :name create-question-test! :! :n
+-- :doc creates a new question test record
+INSERT INTO question_tests (question_id, test_id)
+VALUES (:question-id, :test-id)
+
+-- :name create-answer! :<!
+-- :doc creates a new answer record
+INSERT INTO answers (question_id, answer, correct)
+VALUES (:question-id, :answer, :correct) returning id
+
+-- :name get-tests :? :*
+-- :doc retrieve a test given the id.
+SELECT * FROM tests WHERE user_id = :user-id
+
+-- :name get-one-test :? :1
+-- :doc retrieve a test given the id.
+SELECT * FROM tests WHERE id = :id AND user_id = :user-id
+
+-- :name admin-get-tests :? :n
+-- :doc retrieve all tests.
+SELECT * FROM tests WHERE active = true ORDER BY id DESC LIMIT 10
+
+-- :name delete-test! :! :n
+-- :doc delete a test given the id
+DELETE FROM tests WHERE id = :id
+
+/**** ROLES   ****/
+
+-- :name get-roles :? :*
+-- :doc retrieve all roles.
+SELECT * FROM roles
+
+/******   GENERICS CALLS   ****/
+
 -- :name clj-expr-generic-update :! :n
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
@@ -99,32 +144,6 @@ update :i:table set
 ~*/
 where id = :id
 
-/**************   TESTS    ****/
-
--- :name cdreate-test! :! :n
--- :doc creates a new test record
-INSERT INTO tests (id, fname, lname, email, pass)
-VALUES (:id, :fname, :lname, :email, :pass)
-
--- :name update-test! :! :n
--- :doc update an existing test record
-UPDATE tests
-SET fname = :fname, last_name = :last_name, email = :email
-WHERE id = :id
-
--- :name get-test :? :1
--- :doc retrieve a test given the id.
-SELECT * FROM tests
-WHERE id = :id
-
--- :name delete-test! :! :n
--- :doc delete a test given the id
-DELETE FROM tests
-WHERE id = :id
-
-/**** ROLES   ****/
-
--- :name get-roles :? :*
--- :doc retrieve all roles.
-SELECT * FROM roles
-
+-- :name clj-generic-last-id :? :1
+-- :doc generic last inserted id
+SELECT id FROM :i:table-name ORDER BY id DESC LIMIT 1

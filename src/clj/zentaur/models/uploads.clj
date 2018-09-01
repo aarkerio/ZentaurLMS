@@ -1,13 +1,12 @@
-(ns #^{:author "Manuel Montoya",
-       :doc "Message Digest function for Clojure"}
-  zentaur.models.uploads
-  (:require [zentaur.db.core :as db]
-            [struct.core :as st]
+(ns zentaur.models.uploads
+  (:require [clj-time.local :as l]
             [clojure.tools.logging :as log]
             [clojure.java.io :as io]
-            [pantomime.extract :as extract]
             [digest :as dgt]
-            [clj-time.local :as l])
+            [pantomime.extract :as extract]
+            [struct.core :as st]
+            [zentaur.db.core :as db]
+            [zentaur.libs.models.process-json :as pjson])
   (:import  [java.security MessageDigest]
             [java.math BigInteger]))
 
@@ -103,14 +102,14 @@
         _        (log/info (str ">>> upload >>>>> " upload))
         all-file (extract/parse (str "resources/public/uploads/" (:filename upload)))
         text     (:text all-file)]
-    ;; (db/clj-expr-generic-update {:content text :json json :id id})
     (db/clj-expr-generic-update {:table "test"
                                  :updates {:name "X"}
                                  :id 3})))
 
-(defn save-test [body]
-  nil
-  )
+(defn export-test [body user-id]
+  (if (= 1 (pjson/export-json body user-id))
+    {:ok true  :msg "Erfolg!"}
+    {:ok false :msg "Etwas ist schief gelaufen!"}))
 
 (defn save-body [body db-record]
   (let [int-id (Integer/parseInt db-record)]
@@ -133,12 +132,12 @@
                      "Content-Disposition" (str "attachment; filename=" filename)}}))
 
 (defn- get-upload-from-db [id]
-    (get-upload id))
+  (get-upload id))
 
 (defn download [id]
-    (-> id
-        get-upload-from-db
-        download-without-db))
+  (-> id
+      get-upload-from-db
+      download-without-db))
 
 (defn catto []
   (let [files (mapv str (filter #(.isFile %) (file-seq (clojure.java.io/file "resources/sql/"))))]
