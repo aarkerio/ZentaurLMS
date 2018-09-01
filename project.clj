@@ -59,83 +59,90 @@
             [lein-immutant "2.1.0"]
             [com.jakemccrary/lein-test-refresh "0.23.0"]]
   :clean-targets ^{:protect false :doc "Keeps the cache clean"}
-    [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
+  [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
   :aliases {"test-all" ["do" ["test"] ["specs"]]}
   :profiles {
-    :uberjar {
-      :omit-source true
-      :prep-tasks ["compile" ["cljsbuild" "once" "min"]]
-      :cljsbuild
-        {:builds
-          {:min
-          {:source-paths ["src/cljs" "env/prod/cljs"]
-           :compiler
-            {:output-to "resources/public/js/app.js"
-             :optimizations :advanced
-             :pretty-print false
-             :closure-warnings
-             {:externs-validation :off :non-standard-jsdoc :off}}}}}
-         :aot :all
-         :uberjar-name "zentaur.jar"
-         :source-paths ["env/prod/clj"]
-         :resource-paths ["env/prod/resources"]}  ;; uberjar ends
+             :uberjar {
+                       :omit-source true
+                       :prep-tasks ["compile" ["cljsbuild" "once" "min"]]
+                       :cljsbuild
+                       {:builds
+                        {:min
+                         {:source-paths ["src/cljs" "env/prod/cljs"]
+                          :compiler
+                          :modules {:home {:entries #{"zentaur.core"}      :output-to "out/home.js"}
+                                    :site {:entries #{"zentaur.site.core"} :output-to "out/site.js"}
+                                    :tests {:entries #{"zentaur.tests.core"} :output-to "out/tests.js"}}
+                          {:output-to "resources/public/js/app.js"
+                           :optimizations :advanced
+                           :pretty-print false
+                           :closure-warnings
+                           {:externs-validation :off :non-standard-jsdoc :off}}}}}
+                       :aot :all
+                       :uberjar-name "zentaur.jar"
+                       :source-paths ["env/prod/clj"]
+                       :resource-paths ["env/prod/resources"]}  ;; uberjar ends
 
-    :dev  [:project/dev]
-    :test [:project/dev :project/test]
+             :dev  [:project/dev]
+             :test [:project/dev :project/test]
 
-    :project/dev {
-      :jvm-opts ["-Dconf=dev-config.edn"]
-      :dependencies [[binaryage/devtools "0.9.4"]
-                     [com.cemerick/piggieback "0.2.2"]    ;; nREPL support for ClojureScript REPLs
-                     [doo "0.1.8"]                        ;; doo is a library and lein plugin to run cljs.test on different js environments.
-                     [figwheel-sidecar "0.5.14"]
-                     [funcool/bide "1.6.0"]               ;; A simple routing library for ClojureScript
-                     [org.clojure/test.check "0.9.0"]
-                     [pjstadig/humane-test-output "0.8.3"]
-                     [prone "1.1.4"]                      ;; Better exception reporting middleware for Ring.
-                     [ring/ring-mock "0.3.1"]             ;; Mocking request
-                     [ring/ring-devel "1.6.3"]]
-      :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
-                     [lein-doo "0.1.8"]]
-      :cljsbuild {
-        :builds {
-         :app {
-          :id "dev"
-          :source-paths ["src/cljs" "env/dev/cljs"]
-          :figwheel {
-            :on-jsload "zentaur.app/main" }  ;; the path to the main function (launcher)
-          :compiler {
-            :main "zentaur.app"
-            :asset-path "/js/out"
-            :output-to "resources/public/js/app.js"
-            :output-dir "resources/public/js/out"
-            :source-map true
-            :optimizations :none
-            :pretty-print true}}}}  ;; / cljsbuild ends
+             :project/dev {
+                           :jvm-opts ["-Dconf=dev-config.edn"]
+                           :dependencies [[binaryage/devtools "0.9.4"]
+                                          [com.cemerick/piggieback "0.2.2"]    ;; nREPL support for ClojureScript REPLs
+                                          [doo "0.1.8"]                        ;; doo is a library and lein plugin to run cljs.test on different js environments.
+                                          [figwheel-sidecar "0.5.14"]
+                                          [funcool/bide "1.6.0"]               ;; A simple routing library for ClojureScript
+                                          [org.clojure/test.check "0.9.0"]
+                                          [pjstadig/humane-test-output "0.8.3"]
+                                          [prone "1.1.4"]                      ;; Better exception reporting middleware for Ring.
+                                          [ring/ring-mock "0.3.1"]             ;; Mocking request
+                                          [ring/ring-devel "1.6.3"]]
+                           :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
+                                          [lein-doo "0.1.8"]]
+                           :cljsbuild {
+                                       :builds {
+                                                :app {
+                                                      :id "dev"
+                                                      :source-paths ["src/cljs" "env/dev/cljs"]
+                                                      :figwheel {
+                                                                 :on-jsload "zentaur.app/main" }  ;; the path to the main function (launcher)
+                                                      :compiler {
+                                                                 :modules {:home  {:entries #{"zentaur.core"}       :output-to "resources/public/js/out/home.js"}
+                                                                           :site  {:entries #{"zentaur.site.core"}  :output-to "resources/public/js/out/site.js"}
+                                                                           :tests {:entries #{"zentaur.tests.core"} :output-to "resources/public/js/out/tests.js"}
+                                                                           :cljs-base {:output-to "resources/public/js/out/cljs_base.js"}}
+                                                                 :main "zentaur.app"
+                                                                 :asset-path "resources/public/js/out"
+                                                                 :output-dir "resources/public/js/out"
+                                                                 :output-to "resources/public/js/main.js"
+                                                                 :source-map true
+                                                                 :optimizations :none
+                                                                 :verbose true
+                                                                 :pretty-print true}}}}  ;; / cljsbuild ends
+                           :doo {:build "test"}
+                           :source-paths ["env/dev/clj"]
+                           :resource-paths ["env/dev/resources"]
+                           :repl-options {:init-ns zentaur.core
+                                          ;; If nREPL takes too long to load it may timeout,
+                                          ;; increase this to wait longer before timing out.
+                                          ;; Defaults to 30000 (30 seconds)
+                                          :timeout 120000
+                                          }} ;; /project/dev ends
 
-      :doo {:build "test"}
-      :source-paths ["env/dev/clj"]
-      :resource-paths ["env/dev/resources"]
-      :repl-options {:init-ns zentaur.core
-                     ;; If nREPL takes too long to load it may timeout,
-                     ;; increase this to wait longer before timing out.
-                     ;; Defaults to 30000 (30 seconds)
-                     :timeout 120000
-                     }} ;; /project/dev ends
-
-    :project/test {
-      :resource-paths ["env/test/resources"]
-      :jvm-opts ["-Dconf=test-config.edn"]
-      :test-paths ["test"]
-      :injections [(require 'pjstadig.humane-test-output)
-                   (pjstadig.humane-test-output/activate!)]
-      :cljsbuild {
-        :builds {
-          :test {
-            :source-paths ["src/cljc" "src/cljs" "test/cljs"]
-            :compiler {
-              :output-to "target/test.js"
-              :main "zentaur.doo-runner"
-              :optimizations :whitespace
-              :pretty-print true}}}}}  ;; project/test ends
-    })
+             :project/test {
+                            :resource-paths ["env/test/resources"]
+                            :jvm-opts ["-Dconf=test-config.edn"]
+                            :test-paths ["test"]
+                            :injections [(require 'pjstadig.humane-test-output)
+                                         (pjstadig.humane-test-output/activate!)]
+                            :cljsbuild {
+                                        :builds {
+                                                 :test {
+                                                        :source-paths ["src/cljc" "src/cljs" "test/cljs"]
+                                                        :compiler {
+                                                                   :output-to "target/test.js"
+                                                                   :main "zentaur.doo-runner"
+                                                                   :optimizations :whitespace
+                                                                   :pretty-print true}}}}}  ;; project/test ends
+             })

@@ -3,7 +3,6 @@
             [hiccup.form :as f]
             [hiccup.page :refer [html5 include-css include-js]]))
 
-
 (defn login-form [csrf-field]
   [:div {:class "form-box"}
     [:div {:class "login-form"}

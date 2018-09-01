@@ -20,6 +20,7 @@
   (GET    "/admin/users"                request   (cont-users/admin-users request))
   (POST   "/admin/users"                request   (cont-users/create-user request))
   (GET    "/admin/tests"                request   (cont-tests/admin-index request))
+  (GET    "/admin/tests/new"            request   (cont-tests/admin-new request))
   (GET    "/admin/uploads"              request   (cont-uploads/admin-uploads request))
   (POST   "/admin/uploads"              request   (cont-uploads/upload-file request))
   (GET    "/admin/uploads/process/:id"  request   (cont-uploads/process request))

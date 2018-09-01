@@ -1,12 +1,17 @@
 (ns zentaur.core
   (:require [ajax.core :refer [GET POST]]
+            [cljs.loader :as loader]
             [clojure.string :as s]
-            [zentaur.users :as users]
             [goog.dom :as gdom]
             [goog.string :as gstr]
             [goog.events :as events]
-            [goog.style :as style])
+            [goog.style :as style]
+            [zentaur.users :as users])
   (:import [goog.events EventType]))
+
+(enable-console-print!)
+
+(println "I'm in the home module!")
 
 ;; Ajax handlers
 (defn handler [response]
@@ -110,8 +115,15 @@
     (js/setTimeout (remove-flash) 90000)
     (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! " ))))
 
+(defn run-tests []
+  (fn [e]
+    (loader/load :tests
+      (fn []
+        ((resolve 'zentaur.tests.core/run))))))
+
 (defn ^:export init []
   (flash-timeout)
+  (run-tests)
   (let [current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> CURRENT >>>>> " current_url))]
     (cond
@@ -119,3 +131,5 @@
       (s/includes? current_url "uploads/process") (load-process)
       (s/includes? current_url "admin/posts")     (load-posts)
       :else "F")))
+
+(loader/set-loaded! :home)

@@ -31,3 +31,10 @@
         tests    (model-test/get-tests user-id)]
     (layout/application
         (merge base {:title "Quiz Tests" :contents (tests-view/index tests) }))))
+
+;; GET /admin/tests/new
+(defn admin-new [request]
+  (let [base     (basec/set-vars request)
+        user-id  (-> request :identity :id)]
+    (layout/application
+        (merge base {:title "New Quiz Tests" :contents (tests-view/new base) }))))

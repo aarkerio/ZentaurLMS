@@ -48,7 +48,6 @@
   (do
     (db/delete-test! params)))
 
-
 ;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
 (defn admin-get-tests [user-id]
     (db/admin-get-tests))

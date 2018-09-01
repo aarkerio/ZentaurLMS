@@ -108,9 +108,9 @@ VALUES (:question-id, :test-id)
 INSERT INTO answers (question_id, answer, correct)
 VALUES (:question-id, :answer, :correct) returning id
 
--- :name get-tests :? :n
+-- :name get-tests :? :*
 -- :doc retrieve a test given the id.
-SELECT *.t FROM tests AS t, questions AS q, ANSWERS AS a WHERE t.user_id = :user-id AND t.id = q.test_id
+SELECT * FROM tests WHERE user_id = :user-id
 
 -- :name get-one-test :? :1
 -- :doc retrieve a test given the id.
