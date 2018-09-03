@@ -1,14 +1,15 @@
 (defproject zentaur "0.0.4"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://chipotle-software.com/"
-  :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
+  :dependencies [[binaryage/devtools "0.9.10"]           ;; Chrome DevTools enhancements
+                 [buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [buddy/buddy-auth "2.1.0"]              ;; Authentication
                  [cheshire "5.8.0"]                      ;; Clojure JSON and BSON encoding/decoding
                  [cider/cider-nrepl "0.18.0"]
                  [clj-time "0.14.0"]                     ;; date time-zone library
                  [cljs-ajax "0.7.4"]                     ;; Ajax
                  [cljsjs/jquery "3.2.1-0"]               ;; jQuery
-                 [com.cognitect/transit-clj "0.8.309"]
+                 [com.cognitect/transit-clj "0.8.313"]   ;; JSON on steroids
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [com.novemberain/pantomime "2.10.0"]
                  [compojure "1.6.1"]                     ;; routes for ring
@@ -88,8 +89,7 @@
 
              :project/dev {
                            :jvm-opts ["-Dconf=dev-config.edn"]
-                           :dependencies [[binaryage/devtools "0.9.4"]
-                                          [com.cemerick/piggieback "0.2.2"]    ;; nREPL support for ClojureScript REPLs
+                           :dependencies [[com.cemerick/piggieback "0.2.2"]    ;; nREPL support for ClojureScript REPLs
                                           [doo "0.1.8"]                        ;; doo is a library and lein plugin to run cljs.test on different js environments.
                                           [figwheel-sidecar "0.5.14"]
                                           [funcool/bide "1.6.0"]               ;; A simple routing library for ClojureScript
@@ -108,14 +108,15 @@
                                                       :figwheel {
                                                                  :on-jsload "zentaur.app/main" }  ;; the path to the main function (launcher)
                                                       :compiler {
+                                                                 :preloads [devtools.preload]
+                                                                 :asset-path "/js/out"
+                                                                 :output-dir "resources/public/js/out"
+                                                                 :output-to  "resources/public/js/main.js"
                                                                  :modules {:home  {:entries #{"zentaur.core"}       :output-to "resources/public/js/out/home.js"}
                                                                            :site  {:entries #{"zentaur.site.core"}  :output-to "resources/public/js/out/site.js"}
                                                                            :tests {:entries #{"zentaur.tests.core"} :output-to "resources/public/js/out/tests.js"}
                                                                            :cljs-base {:output-to "resources/public/js/out/cljs_base.js"}}
                                                                  :main "zentaur.app"
-                                                                 :asset-path "resources/public/js/out"
-                                                                 :output-dir "resources/public/js/out"
-                                                                 :output-to "resources/public/js/main.js"
                                                                  :source-map true
                                                                  :optimizations :none
                                                                  :verbose true

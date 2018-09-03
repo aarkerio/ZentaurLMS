@@ -93,6 +93,10 @@ WHERE id = :id
 INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id)
 VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id) returning id
 
+-- :name create-minimal-test! :! :n
+-- :doc creates a minimal test record
+INSERT INTO tests (title, tags, user_id) VALUES (:title, :tags, :user-id)
+
 -- :name create-question! :<!
 -- :doc creates a new question record
 INSERT INTO questions (question, qtype, hint, explanation, active, user_id)
@@ -100,8 +104,7 @@ VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) returning id
 
 -- :name create-question-test! :! :n
 -- :doc creates a new question test record
-INSERT INTO question_tests (question_id, test_id)
-VALUES (:question-id, :test-id)
+INSERT INTO question_tests (question_id, test_id) VALUES (:question-id, :test-id)
 
 -- :name create-answer! :<!
 -- :doc creates a new answer record
@@ -110,7 +113,7 @@ VALUES (:question-id, :answer, :correct) returning id
 
 -- :name get-tests :? :*
 -- :doc retrieve a test given the id.
-SELECT * FROM tests WHERE user_id = :user-id
+SELECT * FROM tests WHERE user_id = :user-id AND active = true ORDER BY id DESC
 
 -- :name get-one-test :? :1
 -- :doc retrieve a test given the id.

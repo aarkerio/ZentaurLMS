@@ -1,5 +1,7 @@
 (ns zentaur.tests.core
-  (:require [cljs.loader :as loader]
+  (:require [ajax.core :refer [GET POST]]
+            [cljs.loader :as loader]
+            [goog.dom :as gdom]
             [reagent.core :as r]))
 
 (.log js/console "I am un tests module!!!  ")
@@ -8,7 +10,22 @@
 
 (defonce counter (r/atom 0))
 
+(defonce test-state (r/atom {}))
+
+(defn initial-load []
+  (let [test-id    (.-value (gdom/getElement "test-id"))
+        csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+    (POST "/admin/tests/load"
+        {:params {:test-id test-id}
+         :headers {"x-csrf-token" csrf-field}
+         :handler (fn [r] (reset! test-state r))
+         :error-handler (fn [r] (prn r))})))
+
 (defn add-todo [text]
+  (let [id (swap! counter inc)]
+    (swap! todos assoc id {:id id :title text :done false})))
+
+(defn add-question [text]
   (let [id (swap! counter inc)]
     (swap! todos assoc id {:id id :title text :done false})))
 
@@ -84,12 +101,12 @@
             done (->> items (filter :done) count)
             active (- (count items) done)]
         [:div
-         [:section#todoapp
-          [:header#header
-           [:h1 "todos"]
-           [todo-input {:id "new-todo"
-                        :placeholder "What needs to be done?"
-                        :on-save add-todo}]]
+          [:section#todoapp
+            [:header#header
+              [:h1 "todos los todos!!!"]
+              [todo-input {:id "new-todo"
+                           :placeholder "What needs to be done?"
+                           :on-save add-todo}]]
           (when (-> items count pos?)
             [:div
              [:section#main
@@ -107,11 +124,30 @@
          [:footer#info
           [:p "Double-click to edit a todo"]]]))))
 
-(defn ^:export run []
-  (.log js/console "Starting reagent !!!!!")
-  (r/render [todo-app]
-            (js/document.getElementById "app")))
+(defn question-component []
+  [:div
+    [:p "I am a component!"]
+    [:div.someclass
+      [todo-input {:id "new-question"
+                   :placeholder "Add a question"
+                   :on-save add-question}]]
+   [:h3 "single-select list"]
+   [:div.list-group {:field :single-select :id :pick-one}
+    [:div.list-group-item {:key :multiple} "Multiple option"]
+    [:div.list-group-item {:key :single} "Single"]
+    [:div.list-group-item {:key :columns} "Columns"]]])
 
-(run)
+(defn question-parent []
+  [:div
+   [:p "I include simple-component."]
+   [question-component]])
+
+(defn ^:export run []
+  (r/render [todo-app]
+            (gdom/getElement "app")))
+
+(fn []
+  (when-let [root-div (gdom/getElement "test-root-app")]
+    (run)))
 
 (loader/set-loaded! :tests)
