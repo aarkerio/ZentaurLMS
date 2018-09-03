@@ -44,10 +44,14 @@
 
 (defn edit [base test-id]
   [:div
+    [:h1 "Edit Quizz Test"]
     [:div {:id "cont"}
     (f/form-to [:post "/admin/tests"]
       (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
       (f/hidden-field { :value test-id} "test-id"))]
    [:div {:id "test-root-app"}]
-   (include-js "http://localhost:3449/js/out/tests.js")])
+   ;; (include-js "/js/out/goog/base.js")
+   ;; (include-js "/js/out/cljs_deps.js")
+   ;; (include-js "http://localhost:3449/js/out/tests.js")
+   ])
 

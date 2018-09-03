@@ -45,6 +45,6 @@
 ;; GET /admin/tests/edit
 (defn admin-edit [request]
   (let [base     (basec/set-vars request)
-        user-id  (-> request :identity :id)]
+        test-id  (-> request :params :id)]
     (layout/application
-        (merge base {:title "New Quiz Tests" :contents (tests-view/edit base) }))))
+        (merge base {:title "New Quiz Tests" :contents (tests-view/edit base test-id) }))))
