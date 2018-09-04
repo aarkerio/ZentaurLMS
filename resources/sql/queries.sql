@@ -123,6 +123,15 @@ SELECT * FROM tests WHERE id = :id AND user_id = :user-id
 -- :doc retrieve all tests.
 SELECT * FROM tests WHERE active = true ORDER BY id DESC LIMIT 10
 
+-- :name get-questions :? :n
+-- :doc retrieve all tests.
+SELECT q.* FROM question_tests AS qt, question AS q WHERE qt.test_id = :test-id AND qt.question_id=q.id ORDER BY ordnen DESC LIMIT 10
+
+-- :name get-answers :? :n
+-- :doc retrieve all tests.
+SELECT q.* FROM question_tests AS qt, question AS q WHERE qt.test_id = :test-id AND qt.question_id=q.id ORDER BY ordnen DESC LIMIT 10
+
+
 -- :name delete-test! :! :n
 -- :doc delete a test given the id
 DELETE FROM tests WHERE id = :id

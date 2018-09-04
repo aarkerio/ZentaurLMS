@@ -5,7 +5,7 @@
                  [buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [buddy/buddy-auth "2.1.0"]              ;; Authentication
                  [cheshire "5.8.0"]                      ;; Clojure JSON and BSON encoding/decoding
-                 [cider/cider-nrepl "0.18.0"]
+                 [cider/cider-nrepl "0.18.0"]            ;; Interactive Development Environment that Rocks!
                  [clj-time "0.14.0"]                     ;; date time-zone library
                  [cljs-ajax "0.7.4"]                     ;; Ajax
                  [cljsjs/jquery "3.2.1-0"]               ;; jQuery
@@ -33,7 +33,6 @@
                  [org.clojure/java.jdbc "0.7.1"]
                  [org.clojure/tools.cli "0.3.5"]
                  [org.clojure/tools.logging "0.4.0"]
-                 [org.clojure/tools.nrepl "0.2.13"]
                  [org.clojure/tools.reader "1.1.0"]
                  [org.postgresql/postgresql "42.2.2"]
                  [reagent "0.8.1"]                       ;;  Minimalistic React for ClojureScript

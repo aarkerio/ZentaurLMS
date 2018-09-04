@@ -19,7 +19,24 @@
         {:params {:test-id test-id}
          :headers {"x-csrf-token" csrf-field}
          :handler (fn [r] (reset! test-state r))
-         :error-handler (fn [r] (prn r))})))
+         :error-handler (fn [r] (prn r))})
+
+    (fn []
+    [:div [:h2 "Welcome to reagentnew"]
+     [:div [:a {:href "/about"} "go to about page"]
+      [:ul
+       (for [i (:vals @state)]
+         [:li {:key i} "got " i " from the server"])]]])))
+
+(defn mont-questions []
+  (fn []
+    [:div [:h2 "Welcome to reagentnew"]
+     [:div [:a {:href "/about"} "go to about page"]
+      [:ul
+       (for [i (:vals @state)]
+         [:li {:key i} "got " i " from the server"])]]]))
+
+
 
 (defn add-todo [text]
   (let [id (swap! counter inc)]
@@ -144,10 +161,9 @@
 
 (defn ^:export run []
   (r/render [todo-app]
-            (gdom/getElement "app")))
+            (gdom/getElement "test-root-app")))
 
-(fn []
-  (when-let [root-div (gdom/getElement "test-root-app")]
-    (run)))
+(when-let [root-div (gdom/getElement "test-root-app")]
+  (run))
 
 (loader/set-loaded! :tests)
