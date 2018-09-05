@@ -40,22 +40,25 @@
         (db/create-minimal-test! full-params)
         {:flash errors})))
 
-;; (defn get-questions [test-id]
-;;   (let [questions (db/get-questions test-id)]
-;;     (doseq [question questions]
-;;       (assoc-in questions :question question))
-;;       (let [answers (db/get-answers test-id)]
-;;         (assoc-in :question :answers answers))))
+(defn- get-answers [question]
+  (let [answers (db/get-answers { :question-id (:id question) })]
+    { :question question :answers { :answers answers} }))
 
-;; (defn get-test-nodes [test-id user-id]
-;;   (let [test      (db/get-one-test {:id user-id :user-id user-id})
-;;         questions (get-questions test-id)]
-;;     (assoc test :questions questions))))
+(defn- get-questions [test-id]
+  (let [questions     (db/get-questions { :test-id test-id })
+        root-question {}]
+    (map get-answers questions)))
+
+(defn get-test-nodes [test-id user-id]
+  (let [test      (db/get-one-test { :id test-id :user-id user-id })
+        questions (get-questions test-id)]
+     (log/info (str ">>> questions >>>>> " questions))
+     (assoc test :questions questions)))
 
 (defn destroy [params]
-    (db/delete-test! params))
+  (db/delete-test! params))
 
 ;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
 (defn admin-get-tests [user-id]
-    (db/admin-get-tests))
+  (db/admin-get-tests))
 

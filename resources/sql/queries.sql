@@ -115,22 +115,21 @@ VALUES (:question-id, :answer, :correct) returning id
 -- :doc retrieve a test given the id.
 SELECT * FROM tests WHERE user_id = :user-id AND active = true ORDER BY id DESC
 
+-- :name admin-get-tests :? :*
+-- :doc retrieve all tests.
+SELECT * FROM tests WHERE active = true ORDER BY id DESC LIMIT 10
+
 -- :name get-one-test :? :1
 -- :doc retrieve a test given the id.
 SELECT * FROM tests WHERE id = :id AND user_id = :user-id
 
--- :name admin-get-tests :? :n
--- :doc retrieve all tests.
-SELECT * FROM tests WHERE active = true ORDER BY id DESC LIMIT 10
+-- :name get-questions :? :*
+-- :doc retrieve all questions tests.
+SELECT q.* FROM question_tests AS qt, questions AS q WHERE qt.test_id = :test-id AND qt.question_id=q.id ORDER BY ordnen DESC
 
--- :name get-questions :? :n
+-- :name get-answers :? :*
 -- :doc retrieve all tests.
-SELECT q.* FROM question_tests AS qt, question AS q WHERE qt.test_id = :test-id AND qt.question_id=q.id ORDER BY ordnen DESC LIMIT 10
-
--- :name get-answers :? :n
--- :doc retrieve all tests.
-SELECT q.* FROM question_tests AS qt, question AS q WHERE qt.test_id = :test-id AND qt.question_id=q.id ORDER BY ordnen DESC LIMIT 10
-
+SELECT * FROM answers WHERE question_id = :question-id  ORDER BY ordnen DESC
 
 -- :name delete-test! :! :n
 -- :doc delete a test given the id

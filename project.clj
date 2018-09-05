@@ -16,10 +16,9 @@
                  [conman "0.8.2"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.11"]                        ;; where all configuration properties converge
                  [digest "1.4.8"]                        ;; Message digest library for Clojure.
-                 [domina "1.0.3"]                        ;; A DOM manipulation library for ClojureScript
                  [funcool/bide "1.6.0"]                  ;; A simple routing library for ClojureScript
                  [funcool/struct "1.3.0"]                ;; database validation
-                 [hiccup "1.0.5"]                        ;; templates
+                 [hiccup "1.0.5"]                        ;; HTML render
                  [org.immutant/web "2.1.10"]             ;; libraries Ring + Undertow
                  [luminus-migrations "0.4.2"]            ;; migratus esentially
                  [luminus/ring-ttl-session "0.3.2"]      ;; ring.middleware.session.store library

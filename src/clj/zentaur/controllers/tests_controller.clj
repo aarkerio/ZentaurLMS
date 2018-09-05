@@ -24,8 +24,10 @@
 
 ;;;;;  ADMIN FUNCTIONS
 
-;; POST /admin/tests
-(defn create-test [request]
+
+(defn create-test
+  "POST /admin/tests"
+  [request]
   (log/info (str ">>> REQUEST >>>>> " request))
   (let [params       (-> request :params)
         user-id      (-> request :identity :id)
@@ -33,8 +35,9 @@
     (model-test/create-test! clean-params user-id)
     (-> (response/found "/admin/tests"))))
 
-;; GET /admin/tests
-(defn admin-index [request]
+(defn admin-index
+  "GET /admin/tests"
+  [request]
   (let [base     (basec/set-vars request)
         _        (log/info (str ">>> BAAASSEEEEEEEEE >>>>> " base))
         user-id  (-> request :identity :id)
@@ -42,9 +45,17 @@
     (layout/application
         (merge base {:title "Quiz Tests" :contents (tests-view/index tests base) }))))
 
-;; GET /admin/tests/edit
-(defn admin-edit [request]
+(defn admin-edit
+  "GET /admin/tests/edit"
+  [request]
   (let [base     (basec/set-vars request)
         test-id  (-> request :params :id)]
     (layout/application
         (merge base {:title "New Quiz Tests" :contents (tests-view/edit base test-id) }))))
+
+(defn load-json
+  "POST /admin/uploads/save"
+  [request]
+  (let [user-id (-> request :identity :id)
+        test-id (-> request :params :id)]
+    (-> (response/ok (model-test/get-test-nodes test-id user-id)))))

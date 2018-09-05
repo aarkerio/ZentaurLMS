@@ -10,6 +10,8 @@
 
 (defonce counter (r/atom 0))
 
+(defonce state (r/atom {}))
+
 (defonce test-state (r/atom {}))
 
 (defn initial-load []
@@ -62,7 +64,7 @@
                 (complete-all true)))
 
 (defn todo-input [{:keys [title on-save on-stop]}]
-  (let [val (r/atom title)
+  (let [val   (r/atom title)
         stop #(do (reset! val "")
                   (if on-stop (on-stop)))
         save #(let [v (-> @val str clojure.string/trim)]
@@ -123,6 +125,10 @@
               [:h1 "todos los todos!!!"]
               [todo-input {:id "new-todo"
                            :placeholder "What needs to be done?"
+                           :on-save add-todo}]
+              [:br]
+              [todo-input {:id "title-input"
+                           :placeholder "Title"
                            :on-save add-todo}]]
           (when (-> items count pos?)
             [:div
