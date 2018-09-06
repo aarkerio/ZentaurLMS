@@ -1,6 +1,7 @@
 (ns zentaur.tests.core
   (:require [ajax.core :refer [GET POST]]
             [cljs.loader :as loader]
+            [cognitect.transit :as t]
             [goog.dom :as gdom]
             [reagent.core :as r]))
 
@@ -20,7 +21,9 @@
     (POST "/admin/tests/load"
         {:params {:test-id test-id}
          :headers {"x-csrf-token" csrf-field}
-         :handler (fn [r] (reset! test-state r))
+         :handler (fn [r] (.log js/console r))
+         :response-format :json
+         :keywords? true
          :error-handler (fn [r] (prn r))})
 
     (fn []
@@ -37,8 +40,6 @@
       [:ul
        (for [i (:vals @state)]
          [:li {:key i} "got " i " from the server"])]]]))
-
-
 
 (defn add-todo [text]
   (let [id (swap! counter inc)]
@@ -57,6 +58,8 @@
 (defn clear-done [] (swap! todos mmap remove #(get-in % [1 :done])))
 
 (defonce init (do
+                (initial-load)
+                (.log js/console (str ">>> VALUE >>>>> " (.stringify js/JSON test-state)))
                 (add-todo "Rename Cloact to Reagent")
                 (add-todo "Add undo demo")
                 (add-todo "Make all rendering async")

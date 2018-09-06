@@ -5,7 +5,6 @@
              [zentaur.hiccup.helpers-view :as helper-view]
              [zentaur.layout :refer [*app-context* error-page]]
              [clojure.tools.logging :as log]
-             [cognitect.transit :as transit]
              [hiccup.middleware :only (wrap-base-url)]
              [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
              [ring.middleware.flash :refer [wrap-flash]]
@@ -99,12 +98,6 @@
                            :contents (helper-view/http-status {:status 403
                                                                :title "Invalid anti-forgery token"
                                                                :message "Invalid anti-forgery token"})})}))
-(def joda-time-writer
-  (transit/write-handler
-    (constantly "m")
-    (fn [v] (-> ^ReadableInstant v .getMillis))
-    (fn [v] (-> ^ReadableInstant v .getMillis .toString))))
-
 (def all-the-sessions (atom {}))
 
 (defn wrap-base [handler]
@@ -116,5 +109,5 @@
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)))
       (wrap-flash)
-      (wrap-restful-format handler [:json :transit-json])
+      (wrap-restful-format handler [:json])
       (wrap-internal-error)))

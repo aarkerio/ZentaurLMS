@@ -1,9 +1,10 @@
 (ns zentaur.models.tests
-  (:require [zentaur.db.core :as db]
-            [zentaur.env :as env]
-            [struct.core :as st]
+  (:require [clj-time.local :as l]
             [clojure.tools.logging :as log]
-            [clj-time.local :as l]))
+            [struct.core :as st]
+            [zentaur.db.core :as db]
+            [zentaur.env :as env]
+            [zentaur.hiccup.helpers-view :as helper]))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;    VALIDATIONS    NIL == all was fine!!
@@ -41,19 +42,21 @@
         {:flash errors})))
 
 (defn- get-answers [question]
-  (let [answers (db/get-answers { :question-id (:id question) })]
-    { :question question :answers { :answers answers} }))
+  (let [_                (log/info (str ">>> CREATED AT TYPE >>>>> " (type (:created_at question))))
+        answers          (db/get-answers {:question-id (:id question)})
+        question-updated (update question :created_at (fn [v] (helper/format-date v) (str (:created_at question))))]
+    { :question question-updated :answers { :answers answers} }))
 
 (defn- get-questions [test-id]
-  (let [questions     (db/get-questions { :test-id test-id })
-        root-question {}]
+  (let [questions  (db/get-questions { :test-id test-id })]
     (map get-answers questions)))
 
 (defn get-test-nodes [test-id user-id]
   (let [test      (db/get-one-test { :id test-id :user-id user-id })
+        test-updated (update test :created_at (fn [v] (helper/format-date v) (str (:created_at test))))
         questions (get-questions test-id)]
      (log/info (str ">>> questions >>>>> " questions))
-     (assoc test :questions questions)))
+     (assoc test-updated :questions (apply pr-str questions))))
 
 (defn destroy [params]
   (db/delete-test! params))
