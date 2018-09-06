@@ -1,7 +1,6 @@
 (ns zentaur.tests.core
   (:require [ajax.core :refer [GET POST]]
             [cljs.loader :as loader]
-            [cognitect.transit :as t]
             [goog.dom :as gdom]
             [reagent.core :as r]))
 
@@ -19,19 +18,19 @@
   (let [test-id    (.-value (gdom/getElement "test-id"))
         csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
     (POST "/admin/tests/load"
-        {:params {:test-id test-id}
+        {:params {:test-id "83"}
          :headers {"x-csrf-token" csrf-field}
-         :handler (fn [r] (.log js/console r))
+         :handler (fn [r] (do (.log js/console r) (swap! @test-state (#(identity %) r))))
+         :format :json
          :response-format :json
-         :keywords? true
          :error-handler (fn [r] (prn r))})
 
     (fn []
-    [:div [:h2 "Welcome to reagentnew"]
-     [:div [:a {:href "/about"} "go to about page"]
-      [:ul
-       (for [i (:vals @state)]
-         [:li {:key i} "got " i " from the server"])]]])))
+     [:div [:h2 "Welcome to reagentnew"]
+      [:div [:a {:href "/about"} "go to about page"]
+       [:ul
+        (for [i (:vals @test-state)]
+          [:li {:key i} "got " i " from the server"])]]])))
 
 (defn mont-questions []
   (fn []
@@ -59,7 +58,7 @@
 
 (defonce init (do
                 (initial-load)
-                (.log js/console (str ">>> VALUE >>>>> " (.stringify js/JSON test-state)))
+                (.log js/console (str ">>> VALUE >>>>> " (.stringify js/JSON @test-state)))
                 (add-todo "Rename Cloact to Reagent")
                 (add-todo "Add undo demo")
                 (add-todo "Make all rendering async")

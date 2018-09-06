@@ -129,7 +129,7 @@ SELECT q.* FROM question_tests AS qt, questions AS q WHERE qt.test_id = :test-id
 
 -- :name get-answers :? :*
 -- :doc retrieve all tests.
-SELECT * FROM answers WHERE question_id = :question-id  ORDER BY ordnen DESC
+SELECT id, question_id, answer, correct FROM answers WHERE question_id = :question-id  ORDER BY ordnen DESC
 
 -- :name delete-test! :! :n
 -- :doc delete a test given the id

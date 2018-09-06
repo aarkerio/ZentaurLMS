@@ -54,8 +54,9 @@
         (merge base {:title "New Quiz Tests" :contents (tests-view/edit base test-id) }))))
 
 (defn load-json
-  "POST /admin/uploads/save"
-  [request]
-  (let [user-id (-> request :identity :id)
-        test-id (-> request :params :id)]
-    (-> (response/ok (model-test/get-test-nodes test-id user-id)))))
+  "POST /admin/tests/load"
+  [{:keys [identity params]}]
+  (let [user-id (:id identity)
+        test-id (Integer/parseInt (get params "test-id"))
+        _ (log/info (str ">>> user-id >>>>> " user-id "     >>>>> test-id " test-id ))]
+    (response/ok (model-test/get-test-nodes test-id user-id) )))

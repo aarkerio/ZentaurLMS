@@ -1,9 +1,8 @@
 (ns zentaur.middleware
-  (:require  [zentaur.config :refer [env]]
-             [zentaur.env :refer [defaults]]
-             [zentaur.hiccup.layout-view :as layout]
-             [zentaur.hiccup.helpers-view :as helper-view]
-             [zentaur.layout :refer [*app-context* error-page]]
+  (:require  [buddy.auth :refer [authenticated?]]
+             [buddy.auth.accessrules :refer [restrict wrap-access-rules]]
+             [buddy.auth.backends.session :refer [session-backend]]
+             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
              [clojure.tools.logging :as log]
              [hiccup.middleware :only (wrap-base-url)]
              [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
@@ -11,10 +10,11 @@
              [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
              [ring.middleware.format :refer [wrap-restful-format]]
              [ring.util.response :refer [response]]
-             [buddy.auth :refer [authenticated?]]
-             [buddy.auth.accessrules :refer [restrict wrap-access-rules]]
-             [buddy.auth.backends.session :refer [session-backend]]
-             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]])
+             [zentaur.config :refer [env]]
+             [zentaur.env :refer [defaults]]
+             [zentaur.hiccup.layout-view :as layout]
+             [zentaur.hiccup.helpers-view :as helper-view]
+             [zentaur.layout :refer [*app-context* error-page]])
   (:import [javax.servlet ServletContext]
            [org.joda.time ReadableInstant]))
 
@@ -105,9 +105,9 @@
       (wrap-access-rules {:rules rules :on-error on-error})
       (wrap-authentication auth-backend)
       (wrap-authorization auth-backend)
+      (wrap-restful-format)
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)))
       (wrap-flash)
-      (wrap-restful-format handler [:json])
       (wrap-internal-error)))
