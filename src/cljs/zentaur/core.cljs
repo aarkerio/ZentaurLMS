@@ -11,7 +11,7 @@
 
 (enable-console-print!)
 
-(println "I'm in the home module!")
+(println "I'm in the core aka home module!")
 
 ;; Ajax handlers
 (defn handler [response]
@@ -115,21 +115,23 @@
     (js/setTimeout (remove-flash) 90000)
     (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! " ))))
 
-(defn run-tests []
-  (fn [e]
-    (loader/load :tests
-      (fn []
-        ((resolve 'zentaur.tests.core/run))))))
+(defn- load-tests []
+  (when-let [hform (gdom/getElement "button-show-div")]
+    (events/listen hform EventType.CLICK
+                 (fn [e]
+                   (let [divh    (gdom/getElement "hidden-form")
+                         toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
+                       (set! (.-className divh) toggle))))))
 
 (defn ^:export init []
   (flash-timeout)
-  (run-tests)
   (let [current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> CURRENT >>>>> " current_url))]
     (cond
       (s/includes? current_url "admin/users")     (load-users)
       (s/includes? current_url "uploads/process") (load-process)
       (s/includes? current_url "admin/posts")     (load-posts)
+      (s/includes? current_url "admin/tests")     (load-tests)
       :else "F")))
 
 (loader/set-loaded! :home)

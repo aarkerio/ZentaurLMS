@@ -24,17 +24,39 @@
 
 ;;;;;  ADMIN FUNCTIONS
 
-;; GET /admin/tests
-(defn admin-index [request]
+
+(defn create-test
+  "POST /admin/tests"
+  [request]
+  (log/info (str ">>> REQUEST >>>>> " request))
+  (let [params       (-> request :params)
+        user-id      (-> request :identity :id)
+        clean-params (dissoc params :__anti-forgery-token :submit :button-save)]
+    (model-test/create-test! clean-params user-id)
+    (-> (response/found "/admin/tests"))))
+
+(defn admin-index
+  "GET /admin/tests"
+  [request]
   (let [base     (basec/set-vars request)
+        _        (log/info (str ">>> BAAASSEEEEEEEEE >>>>> " base))
         user-id  (-> request :identity :id)
         tests    (model-test/get-tests user-id)]
     (layout/application
-        (merge base {:title "Quiz Tests" :contents (tests-view/index tests) }))))
+        (merge base {:title "Quiz Tests" :contents (tests-view/index tests base) }))))
 
-;; GET /admin/tests/new
-(defn admin-new [request]
+(defn admin-edit
+  "GET /admin/tests/edit"
+  [request]
   (let [base     (basec/set-vars request)
-        user-id  (-> request :identity :id)]
+        test-id  (-> request :params :id)]
     (layout/application
-        (merge base {:title "New Quiz Tests" :contents (tests-view/new base) }))))
+        (merge base {:title "New Quiz Tests" :contents (tests-view/edit base test-id) }))))
+
+(defn load-json
+  "POST /admin/tests/load"
+  [{:keys [identity params]}]
+  (let [user-id (:id identity)
+        test-id (Integer/parseInt (get params "test-id"))
+        _ (log/info (str ">>> user-id >>>>> " user-id "     >>>>> test-id " test-id ))]
+    (response/ok (model-test/get-test-nodes test-id user-id) )))

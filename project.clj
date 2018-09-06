@@ -1,24 +1,24 @@
 (defproject zentaur "0.0.4"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://chipotle-software.com/"
-  :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
+  :dependencies [[binaryage/devtools "0.9.10"]           ;; Chrome DevTools enhancements
+                 [buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [buddy/buddy-auth "2.1.0"]              ;; Authentication
                  [cheshire "5.8.0"]                      ;; Clojure JSON and BSON encoding/decoding
-                 [cider/cider-nrepl "0.18.0"]
+                 [cider/cider-nrepl "0.18.0"]            ;; Interactive Development Environment that Rocks!
                  [clj-time "0.14.0"]                     ;; date time-zone library
                  [cljs-ajax "0.7.4"]                     ;; Ajax
                  [cljsjs/jquery "3.2.1-0"]               ;; jQuery
-                 [com.cognitect/transit-clj "0.8.309"]
+                 [com.cognitect/transit-clj "0.8.313"]   ;; JSON on steroids
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [com.novemberain/pantomime "2.10.0"]
                  [compojure "1.6.1"]                     ;; routes for ring
                  [conman "0.8.2"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.11"]                        ;; where all configuration properties converge
                  [digest "1.4.8"]                        ;; Message digest library for Clojure.
-                 [domina "1.0.3"]                        ;; A DOM manipulation library for ClojureScript
                  [funcool/bide "1.6.0"]                  ;; A simple routing library for ClojureScript
                  [funcool/struct "1.3.0"]                ;; database validation
-                 [hiccup "1.0.5"]                        ;; templates
+                 [hiccup "1.0.5"]                        ;; HTML render
                  [org.immutant/web "2.1.10"]             ;; libraries Ring + Undertow
                  [luminus-migrations "0.4.2"]            ;; migratus esentially
                  [luminus/ring-ttl-session "0.3.2"]      ;; ring.middleware.session.store library
@@ -32,15 +32,14 @@
                  [org.clojure/java.jdbc "0.7.1"]
                  [org.clojure/tools.cli "0.3.5"]
                  [org.clojure/tools.logging "0.4.0"]
-                 [org.clojure/tools.nrepl "0.2.13"]
                  [org.clojure/tools.reader "1.1.0"]
                  [org.postgresql/postgresql "42.2.2"]
                  [reagent "0.8.1"]                       ;;  Minimalistic React for ClojureScript
                  [ring/ring-core "1.6.3"]                ;;  a very thin HTTP abstraction
                  [ring/ring-codec "1.1.0"]               ;;  encoding and decoding into formats used in web
                  [ring/ring-defaults "0.3.2"]            ;;  Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
-                 [ring/ring-mock "0.3.2"]                ;; library for creating Ring request maps for testing purposes.
                  [ring-middleware-format "0.7.2"]        ;;  Middleware json + transit requests
+                 [ring/ring-mock "0.3.2"]                ;; library for creating Ring request maps for testing purposes.
                  [selmer "1.11.7"]                       ;;  Simple HTML Templates
                  [slugify "0.0.1"]]
   :min-lein-version "2.8.0"
@@ -88,8 +87,7 @@
 
              :project/dev {
                            :jvm-opts ["-Dconf=dev-config.edn"]
-                           :dependencies [[binaryage/devtools "0.9.4"]
-                                          [com.cemerick/piggieback "0.2.2"]    ;; nREPL support for ClojureScript REPLs
+                           :dependencies [[com.cemerick/piggieback "0.2.2"]    ;; nREPL support for ClojureScript REPLs
                                           [doo "0.1.8"]                        ;; doo is a library and lein plugin to run cljs.test on different js environments.
                                           [figwheel-sidecar "0.5.14"]
                                           [funcool/bide "1.6.0"]               ;; A simple routing library for ClojureScript
@@ -108,14 +106,15 @@
                                                       :figwheel {
                                                                  :on-jsload "zentaur.app/main" }  ;; the path to the main function (launcher)
                                                       :compiler {
+                                                                 :preloads [devtools.preload]
+                                                                 :asset-path "/js/out"
+                                                                 :output-dir "resources/public/js/out"
+                                                                 :output-to  "resources/public/js/main.js"
                                                                  :modules {:home  {:entries #{"zentaur.core"}       :output-to "resources/public/js/out/home.js"}
                                                                            :site  {:entries #{"zentaur.site.core"}  :output-to "resources/public/js/out/site.js"}
                                                                            :tests {:entries #{"zentaur.tests.core"} :output-to "resources/public/js/out/tests.js"}
                                                                            :cljs-base {:output-to "resources/public/js/out/cljs_base.js"}}
                                                                  :main "zentaur.app"
-                                                                 :asset-path "resources/public/js/out"
-                                                                 :output-dir "resources/public/js/out"
-                                                                 :output-to "resources/public/js/main.js"
                                                                  :source-map true
                                                                  :optimizations :none
                                                                  :verbose true

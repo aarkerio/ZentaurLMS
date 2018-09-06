@@ -59,6 +59,6 @@
               [:img {:src "/img/warning_clojure.png" :alt "Lisp" :title "Lisp"}]
               [:p "Chipotle Software &copy; 2018. MIT License."]
               [:p [:a {:href "#"} "Back to top"]]]
-            (include-js "http://0.0.0.0:3449/js/app.js")
+            (include-js "http://localhost:3449/js/out/cljs_base.js")
             [:div {:id "root-app"} ""]]))
 

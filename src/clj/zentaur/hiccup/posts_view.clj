@@ -33,7 +33,6 @@
         [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
 
 (defn comment-form [base id]
-  (log/info (str ">>> BSEEEE >>>>> " base))
   (when-let [email (-> base :identity :email)]
             (f/form-to [:post ""]
                 (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")

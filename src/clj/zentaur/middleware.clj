@@ -1,21 +1,20 @@
 (ns zentaur.middleware
-  (:require  [zentaur.config :refer [env]]
-             [zentaur.env :refer [defaults]]
-             [zentaur.hiccup.layout-view :as layout]
-             [zentaur.hiccup.helpers-view :as helper-view]
-             [zentaur.layout :refer [*app-context* error-page]]
+  (:require  [buddy.auth :refer [authenticated?]]
+             [buddy.auth.accessrules :refer [restrict wrap-access-rules]]
+             [buddy.auth.backends.session :refer [session-backend]]
+             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
              [clojure.tools.logging :as log]
-             [cognitect.transit :as transit]
              [hiccup.middleware :only (wrap-base-url)]
              [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
              [ring.middleware.flash :refer [wrap-flash]]
              [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
              [ring.middleware.format :refer [wrap-restful-format]]
              [ring.util.response :refer [response]]
-             [buddy.auth :refer [authenticated?]]
-             [buddy.auth.accessrules :refer [restrict wrap-access-rules]]
-             [buddy.auth.backends.session :refer [session-backend]]
-             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]])
+             [zentaur.config :refer [env]]
+             [zentaur.env :refer [defaults]]
+             [zentaur.hiccup.layout-view :as layout]
+             [zentaur.hiccup.helpers-view :as helper-view]
+             [zentaur.layout :refer [*app-context* error-page]])
   (:import [javax.servlet ServletContext]
            [org.joda.time ReadableInstant]))
 
@@ -99,12 +98,6 @@
                            :contents (helper-view/http-status {:status 403
                                                                :title "Invalid anti-forgery token"
                                                                :message "Invalid anti-forgery token"})})}))
-(def joda-time-writer
-  (transit/write-handler
-    (constantly "m")
-    (fn [v] (-> ^ReadableInstant v .getMillis))
-    (fn [v] (-> ^ReadableInstant v .getMillis .toString))))
-
 (def all-the-sessions (atom {}))
 
 (defn wrap-base [handler]
@@ -112,9 +105,9 @@
       (wrap-access-rules {:rules rules :on-error on-error})
       (wrap-authentication auth-backend)
       (wrap-authorization auth-backend)
+      (wrap-restful-format)
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)))
       (wrap-flash)
-      (wrap-restful-format handler [:json :transit-json])
       (wrap-internal-error)))

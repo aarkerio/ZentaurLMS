@@ -30,6 +30,11 @@
   (first
     (st/validate params upload-schema)))
 
+
+;;;;;;;;;;;;;;;;;;;;;;
+;;    ACTIONS
+;;;;;;;;;;;;;;;;;;;;;
+
 (defn get-uploads [user-id]
   (db/get-uploads {:user-id user-id}))
 
@@ -95,16 +100,6 @@
         (db/clj-expr-generic-update {:table   "uploads"
                                      :updates {:content text}
                                      :id      (:id db-record)})))
-(defn bbb-download
-  [params]
-  (let [id       (:id params)
-        upload   (db/get-upload {:id id})
-        _        (log/info (str ">>> upload >>>>> " upload))
-        all-file (extract/parse (str "resources/public/uploads/" (:filename upload)))
-        text     (:text all-file)]
-    (db/clj-expr-generic-update {:table "test"
-                                 :updates {:name "X"}
-                                 :id 3})))
 
 (defn export-test [body user-id]
   (if (= 1 (pjson/export-json body user-id))
