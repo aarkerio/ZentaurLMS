@@ -1,44 +1,18 @@
 (ns zentaur.tests.core
   (:require [ajax.core :refer [GET POST]]
+            [cljs.core.async :refer [chan close!]]
             [cljs.loader :as loader]
             [goog.dom :as gdom]
-            [reagent.core :as r]))
+            [reagent.core :as r])
+  (:require-macros
+            [cljs.core.async.macros :as m :refer [go]]))
 
 (.log js/console "I am un tests module!!!  ")
 
-(defonce todos (r/atom (sorted-map)))
-
-(defonce counter (r/atom 0))
-
-(defonce state (r/atom {}))
-
-(defonce test-state (r/atom {}))
-
-(defn initial-load []
-  (let [test-id    (.-value (gdom/getElement "test-id"))
-        csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-    (POST "/admin/tests/load"
-        {:params {:test-id "83"}
-         :headers {"x-csrf-token" csrf-field}
-         :handler (fn [r] (do (.log js/console r) (swap! @test-state (#(identity %) r))))
-         :format :json
-         :response-format :json
-         :error-handler (fn [r] (prn r))})
-
-    (fn []
-     [:div [:h2 "Welcome to reagentnew"]
-      [:div [:a {:href "/about"} "go to about page"]
-       [:ul
-        (for [i (:vals @test-state)]
-          [:li {:key i} "got " i " from the server"])]]])))
-
-(defn mont-questions []
-  (fn []
-    [:div [:h2 "Welcome to reagentnew"]
-     [:div [:a {:href "/about"} "go to about page"]
-      [:ul
-       (for [i (:vals @state)]
-         [:li {:key i} "got " i " from the server"])]]]))
+(defonce todos      (r/atom (sorted-map)))
+(defonce questions  (r/atom (sorted-map)))
+(defonce counter    (r/atom 0))
+(defonce test-state (r/atom {:vals []}))
 
 (defn add-todo [text]
   (let [id (swap! counter inc)]
@@ -46,7 +20,7 @@
 
 (defn add-question [text]
   (let [id (swap! counter inc)]
-    (swap! todos assoc id {:id id :title text :done false})))
+    (swap! questions assoc id {:id id :title text :done false})))
 
 (defn toggle [id] (swap! todos update-in [id :done] not))
 (defn save [id title] (swap! todos assoc-in [id :title] title))
@@ -56,16 +30,21 @@
 (defn complete-all [v] (swap! todos mmap map #(assoc-in % [1 :done] v)))
 (defn clear-done [] (swap! todos mmap remove #(get-in % [1 :done])))
 
-(defonce init (do
-                (initial-load)
-                (.log js/console (str ">>> VALUE >>>>> " (.stringify js/JSON @test-state)))
-                (add-todo "Rename Cloact to Reagent")
-                (add-todo "Add undo demo")
-                (add-todo "Make all rendering async")
-                (add-todo "Allow any arguments to component functions")
-                (complete-all true)))
+(defn initial-load []
+  (let [test-id    (.-value (gdom/getElement "test-id"))
+        csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+    (POST "/admin/tests/load"
+        {:params {:test-id "83"}
+         :headers {"x-csrf-token" csrf-field}
+         :handler (fn [r] (do (reset! test-state r) (.log js/console r)))
+         :format :json
+         :keywords? true
+         :response-format :json
+         :error-handler (fn [r] (prn r))})
 
-(defn todo-input [{:keys [title on-save on-stop]}]
+  (.log js/console (str ">>> VALUE TEST >>>>> " (-> @test-state str clojure.string/trim)))))
+
+(defn text-input [{:keys [title on-save on-stop]}]
   (let [val   (r/atom title)
         stop #(do (reset! val "")
                   (if on-stop (on-stop)))
@@ -82,7 +61,32 @@
                                27 (stop)
                                nil)}])))
 
-(def todo-edit (with-meta todo-input
+(defn timeout [ms]
+  (let [c (chan)]
+    (js/setTimeout (fn [] (close! c)) ms)
+    c))
+
+(defn sleep [f]
+  (go
+    (<! (timeout 1000))
+    (js/setTimeout f 40000)))
+
+(defn title-component []
+  [:div
+    [text-input {:id "input-title"
+                 :placeholder "What needs to be done?"
+                 :value "asdsdasdasd"}]])
+
+(defonce init (do
+                (initial-load)
+                (add-todo "Rename Cloact to Reagent")
+                (add-todo "Add undo demo")
+                (add-todo "Make all rendering async")
+                (add-todo "Allow any arguments to component functions")
+                (sleep (.log js/console (str ">>> VALUE TEST >>>>> " (-> @test-state str clojure.string/trim))))
+                (complete-all true)))
+
+(def todo-edit (with-meta text-input
                  {:component-did-mount #(.focus (r/dom-node %))}))
 
 (defn todo-stats [{:keys [filt active done]}]
@@ -124,12 +128,10 @@
         [:div
           [:section#todoapp
             [:header#header
-              [:h1 "todos los todos!!!"]
-              [todo-input {:id "new-todo"
-                           :placeholder "What needs to be done?"
-                           :on-save add-todo}]
+             [:h1 "todos los todos!!!"]
+              (title-component)
               [:br]
-              [todo-input {:id "title-input"
+              [text-input {:id "title-input"
                            :placeholder "Title"
                            :on-save add-todo}]]
           (when (-> items count pos?)
@@ -153,7 +155,7 @@
   [:div
     [:p "I am a component!"]
     [:div.someclass
-      [todo-input {:id "new-question"
+      [text-input {:id "new-question"
                    :placeholder "Add a question"
                    :on-save add-question}]]
    [:h3 "single-select list"]
