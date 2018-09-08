@@ -33,7 +33,7 @@
           (include-js  "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
           (include-css "/css/bootstrap.min.css")
           (include-css "/css/zentaur.css")
-          (include-css "/css/style.css")
+          (include-css "/css/styles.css")
           (include-js  "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js")
 		      (include-css "http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700,300&amp;subset=latin,latin-ext")
 		      (include-css "http://fonts.googleapis.com/css?family=Raleway:700,400,300")
