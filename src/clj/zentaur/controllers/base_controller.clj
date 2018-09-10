@@ -10,7 +10,7 @@
 
 (defn set-vars [request]
   (let [csrf-field (-> request :session :ring.middleware.anti-forgery/anti-forgery-token)
-        flash    (:flash request)
-        identity (:identity request)]
+        flash      (:flash request)
+        identity   (:identity request)]
     {:identity identity :flash flash :csrf-field csrf-field}))
 
