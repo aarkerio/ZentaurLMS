@@ -20,13 +20,14 @@
                  [funcool/struct "1.3.0"]                ;; database validation
                  [hiccup "1.0.5"]                        ;; HTML render
                  [org.immutant/web "2.1.10"]             ;; libraries Ring + Undertow
-                 [luminus-migrations "0.4.2"]            ;; migratus esentially
+                 [luminus-migrations "0.5.3"]            ;; migratus esentially
                  [luminus/ring-ttl-session "0.3.2"]      ;; ring.middleware.session.store library
                  [markdown-clj "1.0.2"]                  ;; parses md files
                  [metosin/compojure-api "1.1.11"]
-                 [metosin/muuntaja "0.4.1"]              ;; library for fast http api format negotiation, encoding and decoding.
+                 [metosin/muuntaja "0.6.0"]              ;; library for fast http api format negotiation, encoding and decoding.
                  [metosin/ring-http-response "0.9.0"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.13"]                        ;; managing Clojure and ClojureScript app state
+                 [nrepl "0.4.5"]
                  [org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.339" :scope "provided"]
                  [org.clojure/java.jdbc "0.7.1"]
@@ -50,13 +51,25 @@
   :main ^:skip-aot zentaur.core
   :migratus {:store :database :classname "net.sf.log4jdbc.DriverSpy" :db ~(get (System/getenv) "DATABASE_URL")}
   :plugins [[cider/cider-nrepl "0.18.0"]
+            [com.jakemccrary/lein-test-refresh "0.23.0"]
+            [lein-auto "0.1.2"]
             [lein-cprop "1.0.3"]
-            [migratus-lein "0.5.2"]
             [lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.16"]
+            [lein-sassc "0.10.4"]
             [lein-kibit "0.1.5"]           ;; rubocop for clojure
             [lein-immutant "2.1.0"]
-            [com.jakemccrary/lein-test-refresh "0.23.0"]]
+            [migratus-lein "0.6.0"]]
+  :sassc
+  [{:src "resources/scss/styles.scss"
+    :output-to "resources/public/css/styles.css"
+    :style "nested"
+    :import-path "resources/scss"}]
+
+  :auto
+  {"sassc" {:file-pattern #"\.(scss|sass)$" :paths ["resources/scss"]}}
+
+  :hooks [leiningen.sassc]
   :clean-targets ^{:protect false :doc "Keeps the cache clean"}
   [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
   :aliases {"test-all" ["do" ["test"] ["specs"]]}
@@ -87,14 +100,14 @@
 
              :project/dev {
                            :jvm-opts ["-Dconf=dev-config.edn"]
-                           :dependencies [[com.cemerick/piggieback "0.2.2"]    ;; nREPL support for ClojureScript REPLs
-                                          [doo "0.1.8"]                        ;; doo is a library and lein plugin to run cljs.test on different js environments.
+                           :dependencies [[com.cemerick/piggieback "0.2.2"]      ;; nREPL support for ClojureScript REPLs
+                                          [doo "0.1.8"]                          ;; doo is a library and lein plugin to run cljs.test on different js environments.
                                           [figwheel-sidecar "0.5.14"]
-                                          [funcool/bide "1.6.0"]               ;; A simple routing library for ClojureScript
+                                          [funcool/bide "1.6.0"]                 ;; A simple routing library for ClojureScript
                                           [org.clojure/test.check "0.9.0"]
-                                          [pjstadig/humane-test-output "0.8.3"]
-                                          [prone "1.1.4"]                      ;; Better exception reporting middleware for Ring.
-                                          [ring/ring-mock "0.3.1"]             ;; Mocking request
+                                          [pjstadig/humane-test-output "0.8.3"]  ;; Humane test output for clojure.test.
+                                          [prone "1.1.4"]                        ;; Better exception reporting middleware for Ring.
+                                          [ring/ring-mock "0.3.1"]               ;; Mocking request
                                           [ring/ring-devel "1.6.3"]]
                            :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
                                           [lein-doo "0.1.8"]]

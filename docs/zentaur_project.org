@@ -1,11 +1,19 @@
-#+TITLE: Luminus TODO org
+#+TITLE: Zentaur TODO org
 #+AUTHOR: MM
 #+DATE: TODAY
 #+STARTUP: Chipotle
 #+OPTIONS: toc:nil
 #+TODO: TODO IN-PROGRESS WAITING STAGING DONE
 
-* Chipotle-Luminus Project
+* TODO Chipotle Zentaur Project
+
+** Loading Ajax in the SPA
+   DEADLINE: <2018-09-07 Fr>
+   :LOGBOOK:
+   CLOCK: [2018-09-07 Fr 12:40]
+   :END:
+   
+ 
 
 ** IN-PROGRESS CRUD Clojure
    Creating the first CRUD

@@ -8,8 +8,7 @@
             [clj-time.local :as l]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
-            [ring.util.http-response :as response]
-            [ring.util.request :refer [body-string]]))
+            [ring.util.http-response :as response]))
 
 (def msg-erfolg "Veränderung wurden erfolgreich gespeichert")
 (def msg-fehler "Etwas ging schief")
