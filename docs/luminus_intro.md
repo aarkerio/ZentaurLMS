@@ -3,13 +3,19 @@ ispell-check-comments: exclusive
 ispell-local-dictionary: "en_GB"
 End: -->
 
-# Clojure for Rails Developer with Luminus#
+# Clojure for Rails Developer with Luminus
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/aarkerio/ZentaurLMS/master/resources/public/img/warning_clojure.png">
+</p>
 
 Ruby is one of the smartest OO languages out there and Rails is a solid, fun and full featured framework. I enjoy coding with Ruby, I've doing it for ten years now and I think I'll be doing it for many years to come. However, it's time to try something new, not only because is good *per se* to taste other flavours but because we could learn news and betters ways to code in the process.
 
 Lisp is one of those hidden jewels when we talk about developing software, something that mixes the minimal amount of elements and the maximal power of expression. Clojure is a modern Lisp that runs over the JVM, because of that, we can access to which is probably the largest software repository in the world, id est, all those thousands and thousands of Java packages and libraries. Furthermore, Clojure has a lot of smart and sweet syntatic sugar waiting for us. Some friends of mine are already tried Clojure and they talk so many good things about the language, then it is my turn to fall through the rabbit's whole and see by myself what is down there waiting for me. These are the notes to the travel so far.
 
-
+<p align="center">
+  <img src="https://raw.githubusercontent.com/aarkerio/ZentaurLMS/master/resources/public/img/5ikdvgoazp911.png">
+</p>
 
 OOP inherited a vision of programming that includes imperative steps and changing stuff using *ifs* and *loops*. Lisp has a very different approach because is more about to create "tunnels" that transform data in a declarative way. One of the most attractive traits of this way to code is that is more kind with your brain because the "cognitive charge" is lighter: in OOP objects are big entities and they have a complex "inner life" where a simple change modifies how methods work. All we've experienced, when we integrate to a new job, one of those projects where a seven hundred lines class controllers calls a three hundred lines class model that use the other four hundred lines module library that ends passing data to a two hundred lines presenter; and you must keep in your mind every state and every step through the whole process! Mentally, is an exhausting and stressing process. We see a lot of code but, where is the semantics? and how can I get a grip of meaning from these things that not only are huge entities but each one have a set of different inner states? Is not a surprise than even the smartest developers need weeks or months to understand all that intermingled code. To get the confidence to make changes in that code base costs a lot of money because consumes tons of time. Besides, you need a lot of discipline to avoid technical debt because imperative OOP code tends to be larger and more prone to errors.
 
@@ -309,6 +315,11 @@ You can see the results in the browser. The params in the index action is empty 
 
 # DATABASE
 
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/aarkerio/ZentaurLMS/master/resources/public/img/pfrr.jpeg">
+</p>
+
 In the section plugins of the file project.clj, add:
 
      [migratus-lein "0.6.0"]
@@ -383,7 +394,7 @@ Open the file *resources/sql/queries.sql* and add after the last line:
 
 Notice that he we are following a Clojure convention: when something ends with a "!" notation, that means a change in the state for atoms, metadata, vars, transients, agents and input/output as well (alters a table, writes a file, etc), so, we put the admiration mark (!) to indicate that that part is not "pure", but mutating the sate.
 
-Luminus use [Hugsql](https://www.hugsql.org/), I know what are you thinking: "Wait, no ORM!". Well, ORM is a concept created to fulfil the gap between SQL and Objects, but we don't have objects anymore. Hugsql returns us a lazy sequence, and we don't need more. A Hugsql query can be written like:
+Luminus use [Hugsql](https://www.hugsql.org/), I know what are you thinking: "Wait, no ORM!". Well, ORM is a concept created to fulfil the gap between SQL (mathematics) and Objects ("intuitive" entities), but we don't have objects anymore. Hugsql returns us a lazy sequence, and we don't need anything else. A Hugsql query can be written like:
 
     -- :Name insert-post!
     -- :command :execute
@@ -508,8 +519,24 @@ Our posts model shows a new function in save the params data:
 
 Notice that we need to update the field published since Hugsql es expecting a boolean value, not a string.
 
+# Authentication
+
+TODO
+
 # Validation the form with ClojureScript
 
+TODO
 
+# Validation the model with Construct
+
+TODO
+
+# TDD in Clojure
+
+TODO
+
+# Reagent: React with ClojureScript  
+
+TODO
 
 
