@@ -6,7 +6,8 @@
             [goog.string :as gstr]
             [goog.events :as events]
             [goog.style :as style]
-            [zentaur.users :as users])
+            [zentaur.users :as users]
+            [zentaur.tests.core :as ctests])
   (:import [goog.events EventType]))
 
 (enable-console-print!)

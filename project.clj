@@ -1,6 +1,6 @@
 (defproject zentaur "0.0.4"
   :description "Zentaur. Clojure and ClojureScript LMS."
-  :url "http://chipotle-software.com/"
+  :url "http://xalisco-labs.com/"
   :dependencies [[binaryage/devtools "0.9.10"]           ;; Chrome DevTools enhancements
                  [buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [buddy/buddy-auth "2.1.0"]              ;; Authentication

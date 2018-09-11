@@ -170,6 +170,7 @@
    [question-component]])
 
 (defn ^:export run []
+  (.log js/console (str ">>> VALUE >>>>> TEST  RUNNNINNNNNNNING"))
   (r/render [todo-app]
             (gdom/getElement "test-root-app")))
 

@@ -520,9 +520,122 @@ Our posts model shows a new function in save the params data:
 
 Notice that we need to update the field published since Hugsql es expecting a boolean value, not a string.
 
-# Authentication
+# Authorisation and Authentication with Buddy
 
-TODO
+Authorisation and authentication are a middleware responsibility, we use the [Buddy Auth](https://funcool.github.io/buddy-auth/latest/) library for this. In your *src/clj/myblog/middleware.clj* file, edit the requirements section to have the *wrap-access-rules* loaded:
+
+     [buddy.auth.accessrules :refer [restrict wrap-access-rules]]
+
+after the requirements section add the rules and the functions that we'll be using:
+
+     ;; ******  Using wrap-access-rules middleware STARTS.
+     (defn admin-access [request]
+       (let [identity (:identity request)]
+         (= true (:admin identity))))
+
+     (defn loggedin-access [request]
+       (some? (-> request :session :identity)))
+
+     (defn on-error [request response]
+       {:status  403
+        :headers {"Content-Type" "text/plain"}
+        :body    (str "Access to " (:uri request) " is not authorized")})
+
+     (def rules [{:pattern #"^/admin.*"
+                  :handler admin-access
+                  :redirect "/notauthorized"}
+                 {:pattern #"^/user/changepassword"
+                  :handler loggedin-access}
+                 {:uris ["/post/savecomment" "/post/listing"]
+                  :handler loggedin-access}
+                 {:pattern #"^/user.*"
+                  :handler loggedin-access}
+                 ])
+     ;; ******  Using wrap-access-rules middleware ENDS.
+
+finally in the bottom of the file add:
+
+     (wrap-access-rules {:rules rules :on-error on-error})
+
+to the wrap-base function, so you'll end with something like:
+
+    (defn wrap-base [handler]
+      (-> ((:middleware defaults) handler)
+          (wrap-access-rules {:rules rules :on-error on-error})
+          wrap-auth
+          wrap-webjars
+          wrap-flash
+          (wrap-session {:cookie-attrs {:http-only true}})
+          (wrap-defaults
+            (-> site-defaults
+                (assoc-in [:security :anti-forgery] false)
+                (dissoc :session)))
+          wrap-internal-error))
+
+Now you need to add a GET "login" route to show the html form:
+
+    (defn login-form [csrf-field]
+      [:div {:class "form-box"}
+        [:div {:class "login-form"}
+        [:form {:method "post" :action "/login" }
+          [:div {:class "login-form-group"}
+            (f/hidden-field { :value csrf-field } "__anti-forgery-token")
+            (f/email-field {:class "field-form" :maxlength 50 :size 20 :placeholder "Email"} "email")]
+          [:div {:class "login-form-group"}
+            (f/password-field {:class "field-form" :maxlength 50 :size 10 :placeholder "Password"} "password")]
+          [:div {:class "login-form-group"}
+            (f/submit-button  {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Anmeldung")]]]])
+
+besides, it is necessary to add a new POST route to send the email and the password, and a new users controller with a function like:
+
+    ;; POST /login
+    (defn post-login
+      [{{email "email" password "password"} :form-params session :session :as req}]
+      (let [user (model-user/get-user-by-email-and-password email password)
+            _    (log/info (str ">>> password >>>>> " password))]
+        ;; If authenticated
+        (if-not (nil? (:user user))
+          (do
+             (assoc (response/found "/")
+               :session (assoc session :identity (:user user)) :flash "Bitte schön!"))
+             (assoc (response/found "/login") :flash "Etwas stimmt nicht mit deinem Zugriffsprozess") )) )
+
+And a new users model:
+
+     (ns myblog.models.users
+       (:require [myblog.db.core :as db]
+                 [myblog.env :as env]
+                 [clojure.tools.logging :as log]
+                 [buddy.hashers :as hashers]
+                 [clj-time.local :as l]))
+
+     (defn create [user]
+       (let [prepassword  (:prepassword user)
+             password     (hashers/derive prepassword env/secret-salt)
+             admin        (contains? user :preadmin)
+             clean-user   (dissoc user :prepassword :preadmin)]
+          (log/info (format ">>> whole data %s" (merge clean-user {:password password :admin admin :active true})))
+          (-> clean-user
+            (assoc :pass password :admin admin :active true :role_id role_id)
+            (db/create-user!))))
+
+     (defn get-user-by-email-and-password [email password]
+       (let [password-derived (hashers/derive password env/secret-salt)
+             trimmed_email    (clojure.string/trim email)]
+         (assoc {} :user (db/get-user-login
+                           { :pass password-derived :email trimmed_email }))))
+
+
+Notice that we are using the "hashers/derive" function to avoid saving the passwords in clear text, to do so we need a salt string in the file *env/dev/clj/myblog/env.clj*, something like:
+
+     (def secret-salt {:salt "1f1cchy531dc1ea6"})
+
+You can add a new user from the REPL:
+
+     user> (require '[myblog.models.users :as model-users])
+
+     user> (model-users/create {:prepassword "wh4t3v3r" :first_name "Julia" :last_name "López" :admin "true" :email "some@email.com"})
+
 
 # Validation the form with ClojureScript
 
