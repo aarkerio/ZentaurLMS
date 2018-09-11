@@ -1,6 +1,7 @@
 (ns zentaur.tests.core
   (:require [ajax.core :refer [GET POST]]
-            [cljs.core.async :refer [chan close!]]
+            [cljs.core.async :refer [<! chan close!]]
+            [cljs-http.client :as http]
             [cljs.loader :as loader]
             [goog.dom :as gdom]
             [reagent.core :as r])
@@ -12,7 +13,7 @@
 (defonce todos      (r/atom (sorted-map)))
 (defonce questions  (r/atom (sorted-map)))
 (defonce counter    (r/atom 0))
-(defonce test-state (r/atom {:vals []}))
+(defonce test-state (r/atom {}))
 
 (defn add-todo [text]
   (let [id (swap! counter inc)]
@@ -30,19 +31,17 @@
 (defn complete-all [v] (swap! todos mmap map #(assoc-in % [1 :done] v)))
 (defn clear-done [] (swap! todos mmap remove #(get-in % [1 :done])))
 
-(defn initial-load []
-  (let [test-id    (.-value (gdom/getElement "test-id"))
-        csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-    (POST "/admin/tests/load"
-        {:params {:test-id "83"}
-         :headers {"x-csrf-token" csrf-field}
-         :handler (fn [r] (do (reset! test-state r) (.log js/console r)))
-         :format :json
-         :keywords? true
-         :response-format :json
-         :error-handler (fn [r] (prn r))})
+(defn gather-json []
+    (let [test-id    (.-value (gdom/getElement "test-id"))
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+      {:test-id test-id :format :json :keywords? true :response-format :json :csrf-token csrf-field}))
 
-  (.log js/console (str ">>> VALUE TEST >>>>> " (-> @test-state str clojure.string/trim)))))
+(defn initial-load []
+  (let [params (gather-json)]
+    (go (let [response (<! (http/post "/admin/tests/load"
+                                      {:json-params params :headers {"x-csrf-token" (:csrf-token params)} }))]
+          (.log js/console (str ">>> RESPONSE >>>>> " response))
+          (reset! test-state (:body response))))))
 
 (defn text-input [{:keys [title on-save on-stop]}]
   (let [val   (r/atom title)
@@ -61,16 +60,6 @@
                                27 (stop)
                                nil)}])))
 
-(defn timeout [ms]
-  (let [c (chan)]
-    (js/setTimeout (fn [] (close! c)) ms)
-    c))
-
-(defn sleep [f]
-  (go
-    (<! (timeout 1000))
-    (js/setTimeout f 40000)))
-
 (defn title-component []
   [:div
     [text-input {:id "input-title"
@@ -83,7 +72,6 @@
                 (add-todo "Add undo demo")
                 (add-todo "Make all rendering async")
                 (add-todo "Allow any arguments to component functions")
-                (sleep (.log js/console (str ">>> VALUE TEST >>>>> " (-> @test-state str clojure.string/trim))))
                 (complete-all true)))
 
 (def todo-edit (with-meta text-input

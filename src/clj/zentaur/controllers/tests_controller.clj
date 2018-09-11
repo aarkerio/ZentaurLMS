@@ -56,7 +56,7 @@
 (defn load-json
   "POST /admin/tests/load"
   [{:keys [identity params]}]
-  (log/info (str ">>> PARAMS JSON    UUUUU >>>>> " params))
+  (log/info (str ">>> PARAMS JSON >>>>> " params))
   (let [user-id (:id identity)
         test-id (Integer/parseInt (get params :test-id))
         _ (log/info (str ">>> user-id >>>>> " user-id "     >>>>> test-id " test-id ))]
