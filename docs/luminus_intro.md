@@ -3,23 +3,31 @@ ispell-check-comments: exclusive
 ispell-local-dictionary: "en_GB"
 End: -->
 
-# Clojure for Rails Developer with Luminus#
+# Clojure for Rails Developer with Luminus
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/aarkerio/ZentaurLMS/master/resources/public/img/warning_clojure.png">
+</p>
 
 Ruby is one of the smartest OO languages out there and Rails is a solid, fun and full featured framework. I enjoy coding with Ruby, I've doing it for ten years now and I think I'll be doing it for many years to come. However, it's time to try something new, not only because is good *per se* to taste other flavours but because we could learn news and betters ways to code in the process.
 
-Lisp is one of those hidden jewels when we talk about developing software, something that mixes the minimal amount of elements and the maximal power of expression. Clojure is a modern Lisp that runs over the JVM, because of that, we can access to which is probably the largest software repository in the world, id est, all those thousands and thousands of Java packages and libraries. Furthermore, Clojure has a lot of smart and sweet syntatic sugar waiting for us. Some friends of mine are already tried Clojure and they talk so many good things about the language, then it is my turn to fall through the rabbit's whole and see by myself what is down there waiting for me. These are the notes to the travel so far.
+Lisp is one of those hidden jewels when we talk about developing software, something that mixes the minimal amount of elements and the maximal power of expression. Clojure is a modern Lisp that runs over the JVM, because of that, we can access to which is probably the largest software repository in the world, id est, all those thousands and thousands of Java packages and libraries. Furthermore, Clojure has a lot of smart and sweet syntactic sugar waiting for us. Some friends of mine have already tried Clojure and they have being talking so many good things about the language than now is my turn to fall through the rabbit's whole and see what is down there for me. These are the notes to the journey so far.
 
-
+<p align="center">
+  <img src="https://raw.githubusercontent.com/aarkerio/ZentaurLMS/master/resources/public/img/5ikdvgoazp911.png">
+</p>
 
 OOP inherited a vision of programming that includes imperative steps and changing stuff using *ifs* and *loops*. Lisp has a very different approach because is more about to create "tunnels" that transform data in a declarative way. One of the most attractive traits of this way to code is that is more kind with your brain because the "cognitive charge" is lighter: in OOP objects are big entities and they have a complex "inner life" where a simple change modifies how methods work. All we've experienced, when we integrate to a new job, one of those projects where a seven hundred lines class controllers calls a three hundred lines class model that use the other four hundred lines module library that ends passing data to a two hundred lines presenter; and you must keep in your mind every state and every step through the whole process! Mentally, is an exhausting and stressing process. We see a lot of code but, where is the semantics? and how can I get a grip of meaning from these things that not only are huge entities but each one have a set of different inner states? Is not a surprise than even the smartest developers need weeks or months to understand all that intermingled code. To get the confidence to make changes in that code base costs a lot of money because consumes tons of time. Besides, you need a lot of discipline to avoid technical debt because imperative OOP code tends to be larger and more prone to errors.
 
-In functional programming, in the other hand, you have a single "flow" of functions where the data cross from the point A to point B and that's it, entities are always small and interweaved, you don't need to keep states in your mind anymore, you only need to know that all data structure that fall in your hands must be transformed, moved, routed or saved following a rigid flow, nothing else. When the code is created in that way, the expression of the domain is easier to understand for everybody, you'll need less lines and the code tends to be concise, compact and less prone to fail. Testing and refactoring are also easier. Simplicity actually matters.
+In functional programming, in the other hand, you have a single "flow" of functions where the data cross from the point A to point B and that's it, entities are always small and interweaved, you don't need to keep states in your mind anymore, you only need to know that all data structure that fall in your hands must be transformed, moved, routed or saved following a rigid flow, nothing else. When the code is created in that way, the expression of the domain is easier to understand for everybody, you'll need less lines and the code tends to be concise, compact and less prone to fail. Testing and refactoring are also easier. Simplicity actually matters. In conclusion, there are few languages that can been considered as productive as Ruby, but Clojure indeed is one of those languages.
 
-At this point you already read and followed some tutorials to know the basics of Clojure, in particular the excellent introduction [Clojure Distilled](https://yogthos.github.io/ClojureDistilled.html). Surely you already know that you have three options to start and handle a Clojure project: leningen, that is the oldest one, the newer [boot](http://boot-clj.com/) and the even more new CLI tools. Since we are new arrivals we'll stick with the most used option. We'll use Luminus, Luminus is not a framework in the way RoR is because --even when it has some libraries developed *ad hoc*-- doesn't have so much code behind it. You will notice that Clojure tools are more rustic and do less *magic* that many Rails tools, but in exchange, you will gain more control and knowledge over those tools. Luminus is more like a useful template. Because of that, you'll notice that while you learn more and more about Clojure and its ecosystem, Luminus will start to drift away and gradually you will modify a lot of things in your own way. But anyway, Luminus is a useful starting point so:
+At this point you already read and followed some tutorials to know the basics of Clojure, in particular the excellent introduction [Clojure Distilled](https://yogthos.github.io/ClojureDistilled.html). Surely you already know that you have three options to start and handle a Clojure project: leiningen, that is the oldest one, the newer [boot](http://boot-clj.com/) and the even more new CLI tools. Since we are new arrivals we'll stick with the most used option. We'll use Luminus, Luminus is not a framework in the way RoR is because --even when it has some libraries developed *ad hoc*-- it doesn't have so much code behind it. You will notice that Clojure tools are more rustic and do less *magic* that many Rails tools, but in exchange, you will gain more control and knowledge over those tools. Luminus is more like a useful and full featured template. Because of its nature, you'll realise that while you learn more and more about Clojure and its ecosystem, Luminus could start to drift away (if you want so) and gradually you will modify a lot of things in your own way. But anyway, Luminus is a great starting point so:
 
      $ lein new luminus myblog +postgres +cljs +auth
 
-We created a new app with PostgreSQL, ClojureScript and Auth support, we could have added SASS support with the "+sassc" option, but that would have required to install the sassc parser first, usually with:
+We created a new app with PostgreSQL, ClojureScript and Auth support. ClojureScript is a different language that Clojure but their similarities are so strong that is possible to say that if you know Clojure, you already know how to code in ClojureScript. To have an homogeneous environment for the Back and FrontEnd is a big advantage, you don't need a drastic distinction between BE and FE tasks anymore, any developer can work in both sides. One of the greatest news about ClojureScript is its tooling, which has improved a lot in the last couple of years. Of course, if you share the extended opinion that JavaScript is an ugly and bad designed language, ClojureScript indeed is a bless.
+
+BTW, when we created our project, we could have added SASS support with the *+sassc* option, but that would have required to install the *sassc* parser first, usually with:
 
     $ apt/yum/pacman install sassc
 
@@ -32,7 +40,7 @@ Anyhow, check the directories and files that Luminus just created for us. The *t
         e)
     .... ))
 
-such code can be used in the front and the back end. *Reader Conditionals* is how that feature of Clojure is called.
+such code can be used in the front and the back end, another great reason of why Clojure environment is so cool, can you mix Python and React code?, no you can't! but you can with *Reader Conditionals*, that is how this feature of Clojure/ClojureScript is called, btw.
 
 The dir *env* save the configuration for the three environments: development, test and production. In the root of your new app you'll the *project.clj* file. Open it... scary hu? not so much really, the main sections are the *:dependencies* and the *:profiles* sections. It's a good idea to keep your dependencies in alphabetical order. The *:profiles* sections matches with two of our environment: the test and the dev. The *:uberjar* part is related with the production deployment because, in the future, we'll need to create the file *myblog.jar* and upload it to our production server. As with Puma or Unicorn, an Nginx server is used to setup a Clojure app in production.
 
@@ -87,7 +95,7 @@ Now check the content of the dir *src/clj/myblog/*, most of the files there keep
      [main] INFO  myblog.core - #'myblog.core/http-server started
      [main] INFO  myblog.core - #'myblog.core/repl-server started
 
-As you can read, the name space *myblog.core* put all together and then launch what we need: a network repl, the connection to the database, the http server, etc.
+As you can read, the name space *myblog.core* put all together and then launch what we need: a network repl, the connection to the database, the http server, etc. To do so Luminus use the  [Mount](https://github.com/tolitius/mount) library to start and keep the *states*.
 
 You can connect to the repl using:
 
@@ -309,6 +317,10 @@ You can see the results in the browser. The params in the index action is empty 
 
 # DATABASE
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/aarkerio/ZentaurLMS/master/resources/public/img/pfrr.jpeg">
+</p>
+
 In the section plugins of the file project.clj, add:
 
      [migratus-lein "0.6.0"]
@@ -383,7 +395,7 @@ Open the file *resources/sql/queries.sql* and add after the last line:
 
 Notice that he we are following a Clojure convention: when something ends with a "!" notation, that means a change in the state for atoms, metadata, vars, transients, agents and input/output as well (alters a table, writes a file, etc), so, we put the admiration mark (!) to indicate that that part is not "pure", but mutating the sate.
 
-Luminus use [Hugsql](https://www.hugsql.org/), I know what are you thinking: "Wait, no ORM!". Well, ORM is a concept created to fulfil the gap between SQL and Objects, but we don't have objects anymore. Hugsql returns us a lazy sequence, and we don't need more. A Hugsql query can be written like:
+Luminus use [Hugsql](https://www.hugsql.org/), I know what are you thinking: "Wait, no ORM!". Well, ORM is a concept created to fulfil the gap between SQL (mathematics) and Objects ("intuitive" entities), but we don't have objects anymore. Hugsql returns us a lazy sequence, and we don't need anything else. A Hugsql query can be written like:
 
     -- :Name insert-post!
     -- :command :execute
@@ -508,8 +520,24 @@ Our posts model shows a new function in save the params data:
 
 Notice that we need to update the field published since Hugsql es expecting a boolean value, not a string.
 
+# Authentication
+
+TODO
+
 # Validation the form with ClojureScript
 
+TODO
 
+# Validation the model with Construct
+
+TODO
+
+# TDD in Clojure
+
+TODO
+
+# Reagent: React with ClojureScript  
+
+TODO
 
 

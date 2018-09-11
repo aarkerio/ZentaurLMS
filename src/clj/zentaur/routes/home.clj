@@ -7,7 +7,7 @@
     [zentaur.controllers.users-controller   :as cont-users]
     [compojure.core :refer [defroutes context GET POST PUT DELETE PATCH]]))
 
-(defroutes base-routes
+(defroutes home-routes
   (GET    "/"                           request   (cont-posts/get-posts request))
   (POST   "/admin/posts"                request   (cont-posts/save-post (:params request)))
   (POST   "/post/savecomment"           request   (cont-posts/save-comment request))

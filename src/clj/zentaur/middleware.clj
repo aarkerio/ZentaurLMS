@@ -1,113 +1,73 @@
 (ns zentaur.middleware
-  (:require  [buddy.auth :refer [authenticated?]]
-             [buddy.auth.accessrules :refer [restrict wrap-access-rules]]
-             [buddy.auth.backends.session :refer [session-backend]]
-             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
-             [clojure.tools.logging :as log]
-             [hiccup.middleware :only (wrap-base-url)]
-             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
-             [ring.middleware.flash :refer [wrap-flash]]
-             [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-             [ring.middleware.format :refer [wrap-restful-format]]
-             [ring.util.response :refer [response]]
-             [zentaur.config :refer [env]]
-             [zentaur.env :refer [defaults]]
-             [zentaur.hiccup.layout-view :as layout]
-             [zentaur.hiccup.helpers-view :as helper-view]
-             [zentaur.layout :refer [*app-context* error-page]])
-  (:import [javax.servlet ServletContext]
+  (:require [zentaur.env :refer [defaults]]
+            [cheshire.generate :as cheshire]
+            [cognitect.transit :as transit]
+            [clojure.tools.logging :as log]
+            [zentaur.layout :refer [error-page]]
+            [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+            [ring.middleware.webjars :refer [wrap-webjars]]
+            [zentaur.middleware.formats :as formats]
+            [muuntaja.middleware :refer [wrap-format wrap-params]]
+            [zentaur.config :refer [env]]
+            [ring.middleware.flash :refer [wrap-flash]]
+            [immutant.web.middleware :refer [wrap-session]]
+            [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+            [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
+            [buddy.auth.accessrules :refer [restrict]]
+            [buddy.auth :refer [authenticated?]]
+            [buddy.auth.backends.session :refer [session-backend]])
+  (:import 
            [org.joda.time ReadableInstant]))
-
-(def ^:const available-roles ["admin" "user" "none"])
-
-(defn admin-access [req]
-  (let [identity (:identity req)]
-    (= true (:admin identity))))
-
-(defn loggedin-access [req]
-  (some? (-> req :session :identity)))
-
-;; Open Access
-(defn unauthorized-access [_] true)
-
-(defn on-error [request response]
-  {:status  403
-   :headers {"Content-Type" "text/plain"}
-   :body    (str "Access to " (:uri request) " is not authorized")})
-
-(defn wrap-restricted [handler]
-  (restrict handler {:handler unauthorized-access
-                     :on-error on-error}))
-
-;; RULES TO ACCESS
-(def rules [{:uri "/about"
-             :handler unauthorized-access}   ;; Open Access
-            {:pattern #"^/admin.*"
-             :handler admin-access
-             :redirect "/notauthorized"}
-            {:pattern #"^/user/changepassword"
-             :handler loggedin-access}
-            {:uris ["/post/savecomment" "/post/listing"]
-             :handler loggedin-access}
-            {:pattern #"^/user.*"
-             :handler admin-access}
-            {:pattern #"^/"
-             :handler unauthorized-access}   ;; Open Access
-            ])
-
-(defn unauthorized-handler
-  [request _]
-  (let [current-url (:uri request)]
-    (response (format "/login?nexturl=%s" current-url))))
-
-(def auth-backend
-  (session-backend))
-
-;; build the context
-(defn wrap-context [handler]
-  (fn [request]
-    (binding [*app-context*
-              (if-let [context (:servlet-context request)]
-                ;; If we're not inside a servlet environment
-                ;; (for example when using mock requests), then
-                ;; .getContextPath might not exist
-                (try (.getContextPath ^ServletContext context)
-                     (catch IllegalArgumentException _ context))
-                ;; if the context is not specified in the request
-                ;; we check if one has been specified in the environment
-                ;; instead
-                (:app-context env))]
-      (handler request))))
 
 (defn wrap-internal-error [handler]
   (fn [req]
     (try
       (handler req)
       (catch Throwable t
-        (log/error (str "####### wrap-internal-error ########### >>>>>" t))
-        (log/error (str "####### wrap-internal-error HANDLER ########### >>>>>" handler))
+        (log/error t (.getMessage t))
         (error-page {:status 500
-                     :title "Etwas sehr Schlechtes ist passiert!"
+                     :title "Something very bad has happened!"
                      :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
 (defn wrap-csrf [handler]
   (wrap-anti-forgery
     handler
     {:error-response
-      (layout/application {:title "Invalid anti-forgery token"
-                           :contents (helper-view/http-status {:status 403
-                                                               :title "Invalid anti-forgery token"
-                                                               :message "Invalid anti-forgery token"})})}))
-(def all-the-sessions (atom {}))
+     (error-page
+       {:status 403
+        :title "Invalid anti-forgery token"})}))
+
+
+(defn wrap-formats [handler]
+  (let [wrapped (-> handler wrap-params (wrap-format formats/instance))]
+    (fn [request]
+      ;; disable wrap-formats for websockets
+      ;; since they're not compatible with this middleware
+      ((if (:websocket? request) handler wrapped) request))))
+
+(defn on-error [request response]
+  (error-page
+    {:status 403
+     :title (str "Access to " (:uri request) " is not authorized")}))
+
+(defn wrap-restricted [handler]
+  (restrict handler {:handler authenticated?
+                     :on-error on-error}))
+
+(defn wrap-auth [handler]
+  (let [backend (session-backend)]
+    (-> handler
+        (wrap-authentication backend)
+        (wrap-authorization backend))))
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
-      (wrap-access-rules {:rules rules :on-error on-error})
-      (wrap-authentication auth-backend)
-      (wrap-authorization auth-backend)
-      (wrap-restful-format)
+      wrap-auth
+      wrap-webjars
+      wrap-flash
+      (wrap-session {:cookie-attrs {:http-only true}})
       (wrap-defaults
         (-> site-defaults
-            (assoc-in [:security :anti-forgery] false)))
-      (wrap-flash)
-      (wrap-internal-error)))
+            (assoc-in [:security :anti-forgery] false)
+            (dissoc :session)))
+      wrap-internal-error))
