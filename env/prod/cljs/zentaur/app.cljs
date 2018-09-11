@@ -1,8 +1,7 @@
-(ns ^:figwheel-no-load zentaur.app
+(ns zentaur.app
   (:require [zentaur.core :as core]))
 
-(enable-console-print!)
+;;ignore println statements in prod
+(set! *print-fn* (fn [& _]))
 
-(defn main []
-  (core/init!))
-
+(core/init!)

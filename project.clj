@@ -9,7 +9,9 @@
                  [clj-time "0.14.0"]                     ;; date time-zone library
                  [cljs-ajax "0.7.4"]                     ;; Ajax
                  [cljsjs/jquery "3.2.1-0"]               ;; jQuery
-                 [com.cognitect/transit-clj "0.8.313"]   ;; JSON on steroids
+                 [com.cognitect/transit-java "0.8.337"]  ;; JSON on steroids
+                 [com.fasterxml.jackson.core/jackson-core "2.9.6"]
+                 [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.9.6"]
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [com.novemberain/pantomime "2.10.0"]
                  [compojure "1.6.1"]                     ;; routes for ring
@@ -40,7 +42,8 @@
                  [ring/ring-codec "1.1.0"]               ;;  encoding and decoding into formats used in web
                  [ring/ring-defaults "0.3.2"]            ;;  Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
                  [ring-middleware-format "0.7.2"]        ;;  Middleware json + transit requests
-                 [ring/ring-mock "0.3.2"]                ;; library for creating Ring request maps for testing purposes.
+                 [ring/ring-mock "0.3.2"]                ;;  library for creating Ring request maps for testing purposes.
+                 [ring-webjars "0.2.0"]                  ;;  Web assets
                  [selmer "1.11.7"]                       ;;  Simple HTML Templates
                  [slugify "0.0.1"]]
   :min-lein-version "2.8.0"
@@ -102,6 +105,7 @@
                            :jvm-opts ["-Dconf=dev-config.edn"]
                            :dependencies [[com.cemerick/piggieback "0.2.2"]      ;; nREPL support for ClojureScript REPLs
                                           [doo "0.1.8"]                          ;; doo is a library and lein plugin to run cljs.test on different js environments.
+                                          [expound "0.7.1"]                      ;; Human-optimized error messages for clojure.spec
                                           [figwheel-sidecar "0.5.14"]
                                           [funcool/bide "1.6.0"]                 ;; A simple routing library for ClojureScript
                                           [org.clojure/test.check "0.9.0"]
