@@ -39,11 +39,11 @@
 (defn initial-load []
   (let [params (gather-json)]
     (go (let [response (<! (http/post "/admin/tests/load"
-                                      {:json-params params :headers {"x-csrf-token" (:csrf-token params)} }))]
-          (.log js/console (str ">>> RESPONSE >>>>> " response))
+                                      {:json-params params :headers {"x-csrf-token" (:csrf-token params)}}))]
+          (prn (str " RESPONSE >>>" (:body response)))
           (reset! test-state (:body response))))))
 
-(defn text-input [{:keys [title on-save on-stop]}]
+(defn text-input [{:keys [title on-save on-stop value]}]
   (let [val   (r/atom title)
         stop #(do (reset! val "")
                   (if on-stop (on-stop)))
@@ -51,7 +51,7 @@
                 (if-not (empty? v) (on-save v))
                 (stop))]
     (fn [{:keys [id class placeholder]}]
-      [:input {:type "text" :value @val
+      [:input {:type "text" :value value
                :id id :class class :placeholder placeholder
                :on-blur save
                :on-change #(reset! val (-> % .-target .-value))
@@ -61,10 +61,12 @@
                                nil)}])))
 
 (defn title-component []
-  [:div
-    [text-input {:id "input-title"
-                 :placeholder "What needs to be done?"
-                 :value "asdsdasdasd"}]])
+  (let [test-sate  (r/atom "test-sate")]
+    (.log js/console (str ">>> STATE  >>>   VALUE >>>>> " (.stringify js/JSON test-sate)))
+    [:div
+      [text-input {:id "input-title"
+                   :placeholder "What needs to be done?"
+                   :value (get @test-sate "title")}]]))
 
 (defonce init (do
                 (initial-load)
@@ -110,8 +112,8 @@
 (defn todo-app [props]
   (let [filt (r/atom :all)]
     (fn []
-      (let [items (vals @todos)
-            done (->> items (filter :done) count)
+      (let [items  (vals @todos)
+            done   (->> items (filter :done) count)
             active (- (count items) done)]
         [:div
           [:section#todoapp
