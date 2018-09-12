@@ -1,6 +1,6 @@
 (defproject zentaur "0.0.4"
   :description "Zentaur. Clojure and ClojureScript LMS."
-  :url "http://chipotle-software.com/"
+  :url "http://xalisco-labs.com/"
   :dependencies [[binaryage/devtools "0.9.10"]           ;; Chrome DevTools enhancements
                  [buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [buddy/buddy-auth "2.1.0"]              ;; Authentication
@@ -8,6 +8,7 @@
                  [cider/cider-nrepl "0.18.0"]            ;; Interactive Development Environment that Rocks!
                  [clj-time "0.14.0"]                     ;; date time-zone library
                  [cljs-ajax "0.7.4"]                     ;; Ajax
+                 [cljs-http "0.1.45"]                    ;; cljs-http returns core.async channels
                  [cljsjs/jquery "3.2.1-0"]               ;; jQuery
                  [com.cognitect/transit-java "0.8.337"]  ;; JSON on steroids
                  [com.fasterxml.jackson.core/jackson-core "2.9.6"]

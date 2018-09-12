@@ -29,7 +29,6 @@
 
 ;; POST /login
 (defn post-login
-  ;; Login into the app
   [{{email "email" password "password"} :form-params session :session :as req}]
   (let [user (model-user/get-user-by-email-and-password email password)
         _    (log/info (str ">>> password >>>>> " password))]

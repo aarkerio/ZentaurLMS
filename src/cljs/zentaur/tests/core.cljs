@@ -1,6 +1,7 @@
 (ns zentaur.tests.core
   (:require [ajax.core :refer [GET POST]]
-            [cljs.core.async :refer [chan close!]]
+            [cljs.core.async :refer [<! chan close!]]
+            [cljs-http.client :as http]
             [cljs.loader :as loader]
             [goog.dom :as gdom]
             [reagent.core :as r])
@@ -12,7 +13,7 @@
 (defonce todos      (r/atom (sorted-map)))
 (defonce questions  (r/atom (sorted-map)))
 (defonce counter    (r/atom 0))
-(defonce test-state (r/atom {:vals []}))
+(defonce test-state (r/atom {}))
 
 (defn add-todo [text]
   (let [id (swap! counter inc)]
@@ -30,21 +31,19 @@
 (defn complete-all [v] (swap! todos mmap map #(assoc-in % [1 :done] v)))
 (defn clear-done [] (swap! todos mmap remove #(get-in % [1 :done])))
 
+(defn gather-json []
+    (let [test-id    (.-value (gdom/getElement "test-id"))
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+      {:test-id test-id :format :json :keywords? true :response-format :json :csrf-token csrf-field}))
+
 (defn initial-load []
-  (let [test-id    (.-value (gdom/getElement "test-id"))
-        csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-    (POST "/admin/tests/load"
-        {:params {:test-id "83"}
-         :headers {"x-csrf-token" csrf-field}
-         :handler (fn [r] (do (reset! test-state r) (.log js/console r)))
-         :format :json
-         :keywords? true
-         :response-format :json
-         :error-handler (fn [r] (prn r))})
+  (let [params (gather-json)]
+    (go (let [response (<! (http/post "/admin/tests/load"
+                                      {:json-params params :headers {"x-csrf-token" (:csrf-token params)}}))]
+          (prn (str " RESPONSE >>>" (:body response)))
+          (reset! test-state (:body response))))))
 
-  (.log js/console (str ">>> VALUE TEST >>>>> " (-> @test-state str clojure.string/trim)))))
-
-(defn text-input [{:keys [title on-save on-stop]}]
+(defn text-input [{:keys [title on-save on-stop value]}]
   (let [val   (r/atom title)
         stop #(do (reset! val "")
                   (if on-stop (on-stop)))
@@ -52,7 +51,7 @@
                 (if-not (empty? v) (on-save v))
                 (stop))]
     (fn [{:keys [id class placeholder]}]
-      [:input {:type "text" :value @val
+      [:input {:type "text" :value value
                :id id :class class :placeholder placeholder
                :on-blur save
                :on-change #(reset! val (-> % .-target .-value))
@@ -61,21 +60,13 @@
                                27 (stop)
                                nil)}])))
 
-(defn timeout [ms]
-  (let [c (chan)]
-    (js/setTimeout (fn [] (close! c)) ms)
-    c))
-
-(defn sleep [f]
-  (go
-    (<! (timeout 1000))
-    (js/setTimeout f 40000)))
-
 (defn title-component []
-  [:div
-    [text-input {:id "input-title"
-                 :placeholder "What needs to be done?"
-                 :value "asdsdasdasd"}]])
+  (let [test-sate  (r/atom "test-sate")]
+    (.log js/console (str ">>> STATE  >>>   VALUE >>>>> " (.stringify js/JSON test-sate)))
+    [:div
+      [text-input {:id "input-title"
+                   :placeholder "What needs to be done?"
+                   :value (get @test-sate "title")}]]))
 
 (defonce init (do
                 (initial-load)
@@ -83,7 +74,6 @@
                 (add-todo "Add undo demo")
                 (add-todo "Make all rendering async")
                 (add-todo "Allow any arguments to component functions")
-                (sleep (.log js/console (str ">>> VALUE TEST >>>>> " (-> @test-state str clojure.string/trim))))
                 (complete-all true)))
 
 (def todo-edit (with-meta text-input
@@ -122,8 +112,8 @@
 (defn todo-app [props]
   (let [filt (r/atom :all)]
     (fn []
-      (let [items (vals @todos)
-            done (->> items (filter :done) count)
+      (let [items  (vals @todos)
+            done   (->> items (filter :done) count)
             active (- (count items) done)]
         [:div
           [:section#todoapp
@@ -170,6 +160,7 @@
    [question-component]])
 
 (defn ^:export run []
+  (.log js/console (str ">>> VALUE >>>>> TEST  RUNNNINNNNNNNING"))
   (r/render [todo-app]
             (gdom/getElement "test-root-app")))
 

@@ -4,19 +4,27 @@
 
 (defn vision []
   [:div {:id "content"}
-   [:h1 {:class "text-success"} "Vision"]])
+   [:h1 {:class "text-success"} "Vision"]
+   [:p {:class "text-paragraph"} "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua."]
+   [:p {:class "text-paragraph"} [:img {:src "/img/pfrr.jpeg" :title "PPFR" :alt "PPFR"}]]])
 
 (defn about []
   [:div {:id "content"}
-   [:h1 {:class "text-success"} "About"]])
+   [:h1 {:class "text-success"} "About"]
+   [:p {:class "text-paragraph"} "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua."]
+   [:p {:class "text-paragraph"} [:img {:src "/img/pfrr.jpeg" :title "PPFR" :alt "PPFR"}]]])
 
 (defn news []
   [:div {:id "content"}
-   [:h1 {:class "text-success"} "News"]])
+   [:h1 {:class "text-success"} "News"]
+   [:p {:class "text-paragraph"} "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua."]
+   [:p {:class "text-paragraph"} [:img {:src "/img/pfrr.jpeg" :title "PPFR" :alt "PPFR"}]]])
 
 (defn join []
   [:div {:id "content"}
-   [:h1 {:class "text-success"} "Join us!"]])
+   [:h1 {:class "text-success"} "Join us!"]
+   [:p {:class "text-paragraph"} "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua."]
+   [:p {:class "text-paragraph"} [:img {:src "/img/pfrr.jpeg" :title "PPFR" :alt "PPFR"}]]])
 
 (defn nav-links []
   [[:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/news"} "Nachrichten"]]
