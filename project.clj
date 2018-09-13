@@ -15,6 +15,7 @@
                  [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.9.6"]
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [com.novemberain/pantomime "2.10.0"]
+                 [com.rpl/specter "1.1.1"]               ;; querying and transforming nested and recursive data
                  [compojure "1.6.1"]                     ;; routes for ring
                  [conman "0.8.2"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.11"]                        ;; where all configuration properties converge
@@ -39,6 +40,7 @@
                  [org.clojure/tools.reader "1.1.0"]
                  [org.postgresql/postgresql "42.2.2"]
                  [reagent "0.8.1"]                       ;;  Minimalistic React for ClojureScript
+                 [re-frame "0.10.6"]                     ;;  A Clojurescript MVC-like Framework For Writing SPAs Using Reagent.
                  [ring/ring-core "1.6.3"]                ;;  a very thin HTTP abstraction
                  [ring/ring-codec "1.1.0"]               ;;  encoding and decoding into formats used in web
                  [ring/ring-defaults "0.3.2"]            ;;  Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
@@ -46,7 +48,7 @@
                  [ring/ring-mock "0.3.2"]                ;;  library for creating Ring request maps for testing purposes.
                  [ring-webjars "0.2.0"]                  ;;  Web assets
                  [selmer "1.11.7"]                       ;;  Simple HTML Templates
-                 [slugify "0.0.1"]]
+                 [slugify "0.0.1"]] 
   :min-lein-version "2.8.0"
   :source-paths ["src/clj" "src/cljc"]
   :test-paths ["test/clj"]
@@ -115,6 +117,7 @@
                                           [ring/ring-mock "0.3.1"]               ;; Mocking request
                                           [ring/ring-devel "1.6.3"]]
                            :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
+                                          [cider/cider-nrepl "0.18.0"]
                                           [lein-doo "0.1.8"]]
                            :cljsbuild {
                                        :builds {

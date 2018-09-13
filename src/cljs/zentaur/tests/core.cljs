@@ -40,8 +40,9 @@
   (let [params (gather-json)]
     (go (let [response (<! (http/post "/admin/tests/load"
                                       {:json-params params :headers {"x-csrf-token" (:csrf-token params)}}))]
-          (prn (str " RESPONSE >>>" (:body response)))
-          (reset! test-state (:body response))))))
+          (prn (str " RESPONSE TYPE >>>" (type (:body response))))
+          (prn (str " RESPONSE PARSED >>>" (.parse js/JSON (:body response))))
+          (reset! test-state (.parse js/JSON (:body response)))))))
 
 (defn text-input [{:keys [title on-save on-stop value]}]
   (let [val   (r/atom title)
@@ -61,8 +62,8 @@
                                nil)}])))
 
 (defn title-component []
-  (let [test-sate  (r/atom "test-sate")]
-    (.log js/console (str ">>> STATE  >>>   VALUE >>>>> " (.stringify js/JSON test-sate)))
+  (let [test-sate  (r/atom @test-sate)]
+    (.log js/console (str ">>> STATE  >>>   VALUE >>>>> " (.stringify js/JSON @test-sate)))
     [:div
       [text-input {:id "input-title"
                    :placeholder "What needs to be done?"
