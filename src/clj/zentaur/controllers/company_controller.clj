@@ -29,7 +29,6 @@
   [page]
   {:title "Join us!" :contents (page-view/join)})
 
-
 (defn load-page [params]
   (let [page (:page params)]
     (layout/application (page-behavior {:page page}))))

@@ -39,7 +39,7 @@
                  [org.clojure/tools.logging "0.4.0"]
                  [org.clojure/tools.reader "1.1.0"]
                  [org.postgresql/postgresql "42.2.2"]
-                 [reagent "0.8.1"]                       ;;  Minimalistic React for ClojureScript
+                 [reagent "0.8.2-SNAPSHOT"]              ;;  Minimalistic React for ClojureScript
                  [re-frame "0.10.6"]                     ;;  A Clojurescript MVC-like Framework For Writing SPAs Using Reagent.
                  [ring/ring-core "1.6.3"]                ;;  a very thin HTTP abstraction
                  [ring/ring-codec "1.1.0"]               ;;  encoding and decoding into formats used in web

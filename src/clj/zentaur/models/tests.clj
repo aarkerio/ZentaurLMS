@@ -5,10 +5,10 @@
             [struct.core :as st]
             [zentaur.db.core :as db]
             [zentaur.env :as env]
-            [zentaur.hiccup.helpers-view :as helper]))
+            [zentaur.libs.helpers :as helpers]))
 
 ;;;;;;;;;;;;;;;;;;;;;;
-;;    VALIDATIONS    NIL == all was fine!!
+;;    VALIDATIONS    NIL == all is fine!!
 ;;;;;;;;;;;;;;;;;;;;;
 
 (def test-schema
@@ -36,16 +36,15 @@
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
   (let [full-params (assoc params :user-id user-id)
-        _ (log/info (str ">>> full-params >>>>> " full-params))
         errors      (-> full-params (validate-test))]
-      (if (= errors nil)
-        (db/create-minimal-test! full-params)
-        {:flash errors})))
+    (if (= errors nil)
+      (db/create-minimal-test! full-params)
+      {:flash errors})))
 
 (defn- get-answers [question]
   (let [answers          (db/get-answers {:question-id (:id question)})
-        question-updated (update question :created_at (fn [v] (helper/format-date v) (str (:created_at question))))]
-    {:question question-updated :answers answers}))
+        question-updated (update question :created_at #(helpers/format-time %))]
+    (assoc question-updated :answers answers)))
 
 (defn- get-questions [test-id]
   (let [questions  (db/get-questions { :test-id test-id })]
@@ -53,7 +52,7 @@
 
 (defn get-test-nodes [test-id user-id]
   (let [test         (db/get-one-test { :id test-id :user-id user-id })
-        test-updated (update test :created_at (fn [v] (helper/format-date v) (str (:created_at test))))
+        test-updated (update test :created_at #(helpers/format-time %))
         questions    (get-questions test-id)]
      (ches/generate-string (assoc test-updated :questions questions))))
 

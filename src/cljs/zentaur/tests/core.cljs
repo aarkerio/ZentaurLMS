@@ -13,7 +13,7 @@
 (defonce todos      (r/atom (sorted-map)))
 (defonce questions  (r/atom (sorted-map)))
 (defonce counter    (r/atom 0))
-(defonce test-state (r/atom {}))
+(defonce jtest      (r/atom {}))
 
 (defn add-todo [text]
   (let [id (swap! counter inc)]
@@ -40,9 +40,7 @@
   (let [params (gather-json)]
     (go (let [response (<! (http/post "/admin/tests/load"
                                       {:json-params params :headers {"x-csrf-token" (:csrf-token params)}}))]
-          (prn (str " RESPONSE TYPE >>>" (type (:body response))))
-          (prn (str " RESPONSE PARSED >>>" (.parse js/JSON (:body response))))
-          (reset! test-state (.parse js/JSON (:body response)))))))
+          (reset! jtest (js->clj (.parse js/JSON (:body response)) :keywordize-keys true))))))
 
 (defn text-input [{:keys [title on-save on-stop value]}]
   (let [val   (r/atom title)
@@ -62,23 +60,16 @@
                                nil)}])))
 
 (defn title-component []
-  (let [test-sate  (r/atom @test-sate)]
-    (.log js/console (str ">>> STATE  >>>   VALUE >>>>> " (.stringify js/JSON @test-sate)))
+  (let [title (:title @jtest)]
     [:div
       [text-input {:id "input-title"
-                   :placeholder "What needs to be done?"
-                   :value (get @test-sate "title")}]]))
+                   :placeholder "Test name"
+                   :defaultValue title}]]))
 
 (defonce init (do
                 (initial-load)
-                (add-todo "Rename Cloact to Reagent")
-                (add-todo "Add undo demo")
-                (add-todo "Make all rendering async")
                 (add-todo "Allow any arguments to component functions")
                 (complete-all true)))
-
-(def todo-edit (with-meta text-input
-                 {:component-did-mount #(.focus (r/dom-node %))}))
 
 (defn todo-stats [{:keys [filt active done]}]
   (let [props-for (fn [name]
@@ -95,60 +86,53 @@
        [:button#clear-completed {:on-click clear-done}
         "Clear completed " done])]))
 
-(defn todo-item []
-  (let [editing (r/atom false)]
-    (fn [{:keys [id done title]}]
-      [:li {:class (str (if done "completed ")
-                        (if @editing "editing"))}
-       [:div.view
-        [:input.toggle {:type "checkbox" :checked done
-                        :on-change #(toggle id)}]
-        [:label {:on-double-click #(reset! editing true)} title]
-        [:button.destroy {:on-click #(delete id)}]]
-       (when @editing
-         [todo-edit {:class "edit" :title title
-                     :on-save #(save id %)
-                     :on-stop #(reset! editing false)}])])))
+(defn answer-item [answer]
+  (let [answer-string (:answer answer)
+        id            (:id answer)
+        _   (.log js/console (str ">>> VALUE  ANSWER IDDDDDDD >>>>> " id ))]
+    [:div.view
+     [:input {:type "text"
+              :value answer-string
+              :id    (str "answer-" id)
+              :class "question-class"}]]))
 
-(defn todo-app [props]
-  (let [filt (r/atom :all)]
-    (fn []
-      (let [items  (vals @todos)
-            done   (->> items (filter :done) count)
-            active (- (count items) done)]
+(defn question-item [question]
+  (let [question-str (:question question)
+        qtype        (:qtype question)
+        id           (:id question)
+        _            (.log js/console (str ">>> VALUE  QUESTION IDDDDDDD >>>>> " id ))]
+    [:div {:class "question-view" :id (str "question-" id)}
+      [:input {:type  "text"
+               :defaultValue question-str
+               :id    (str "question-" id)
+               :maxLength 90
+               :size 80
+               :class "question-input"}]
+     ;; (when (= qtype 1)
+     ;;   (do [:a {:id "add-answer"} "Add new answer"]
+     ;;       (for [(:answers question) answer]
+     ;;         (answer-item answer))
+     ;;       ))
+     ]))
+
+(defn todo-app []
+      (let [questions (:questions @jtest)]
         [:div
           [:section#todoapp
             [:header#header
-             [:h1 "todos los todos!!!"]
               (title-component)
               [:br]
-              [text-input {:id "title-input"
-                           :placeholder "Title"
-                           :on-save add-todo}]]
-          (when (-> items count pos?)
-            [:div
-             [:section#main
-              [:input#toggle-all {:type "checkbox" :checked (zero? active)
-                                  :on-change #(complete-all (pos? active))}]
-              [:label {:for "toggle-all"} "Mark all as complete"]
-              [:ul#todo-list
-               (for [todo (filter (case @filt
-                                    :active (complement :done)
-                                    :done :done
-                                    :all identity) items)]
-                 ^{:key (:id todo)} [todo-item todo])]]
-             [:footer#footer
-              [todo-stats {:active active :done done :filt filt}]]])]
-         [:footer#info
-          [:p "Double-click to edit a todo"]]]))))
+              [:a {:id "add-question" :href "#"} "Add new question"]]
+            [:div#main
+               (for [question questions]
+                 (question-item question))]]]))
 
 (defn question-component []
   [:div
     [:p "I am a component!"]
     [:div.someclass
       [text-input {:id "new-question"
-                   :placeholder "Add a question"
-                   :on-save add-question}]]
+                   :placeholder "Add a question"}]]
    [:h3 "single-select list"]
    [:div.list-group {:field :single-select :id :pick-one}
     [:div.list-group-item {:key :multiple} "Multiple option"]
@@ -161,7 +145,6 @@
    [question-component]])
 
 (defn ^:export run []
-  (.log js/console (str ">>> VALUE >>>>> TEST  RUNNNINNNNNNNING"))
   (r/render [todo-app]
             (gdom/getElement "test-root-app")))
 

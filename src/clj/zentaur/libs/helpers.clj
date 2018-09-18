@@ -30,9 +30,9 @@
         page (if (and (string? page)(not= page ""))
                (Integer/parseInt page))
         page (cond
-              (nil? page) 1 (or (neg? page) (zero? page)) 1
-              (> page pages) pages
-              :else page)
+               (nil? page) 1 (or (neg? page) (zero? page)) 1
+               (> page pages) pages
+               :else page)
         next (+ page 1)
         prev (- page 1)]
     (let [prev (if (or (neg? prev) (zero? prev)) nil prev)]

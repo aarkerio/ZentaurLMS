@@ -24,11 +24,9 @@
 
 ;;;;;  ADMIN FUNCTIONS
 
-
 (defn create-test
   "POST /admin/tests"
   [request]
-  (log/info (str ">>> REQUEST >>>>> " request))
   (let [params       (-> request :params)
         user-id      (-> request :identity :id)
         clean-params (dissoc params :__anti-forgery-token :submit :button-save)]
@@ -39,7 +37,6 @@
   "GET /admin/tests"
   [request]
   (let [base     (basec/set-vars request)
-        _        (log/info (str ">>> BAAASSEEEEEEEEE >>>>> " base))
         user-id  (-> request :identity :id)
         tests    (model-test/get-tests user-id)]
     (layout/application
@@ -56,8 +53,6 @@
 (defn load-json
   "POST /admin/tests/load"
   [{:keys [identity params]}]
-  (log/info (str ">>> PARAMS JSON >>>>> " params))
   (let [user-id (:id identity)
-        test-id (Integer/parseInt (get params :test-id))
-        _ (log/info (str ">>> user-id >>>>> " user-id "     >>>>> test-id " test-id ))]
-    (response/ok (model-test/get-test-nodes test-id user-id) )))
+        test-id (Integer/parseInt (get params :test-id))]
+    (response/ok (model-test/get-test-nodes test-id user-id))))
