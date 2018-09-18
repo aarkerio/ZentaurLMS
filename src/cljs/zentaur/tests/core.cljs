@@ -1,6 +1,5 @@
 (ns zentaur.tests.core
-  (:require [ajax.core :refer [GET POST]]
-            [cljs.core.async :refer [<! chan close!]]
+  (:require [cljs.core.async :refer [<! chan close!]]
             [cljs-http.client :as http]
             [cljs.loader :as loader]
             [goog.dom :as gdom]
@@ -9,27 +8,35 @@
             [cljs.core.async.macros :as m :refer [go]]))
 
 (.log js/console "I am un tests module!!!  ")
+(defonce app-state (r/atom {:seconds-elapsed 0}))
+(defonce csrf      (r/atom "not-valid-csrf"))
+(defonce questions (r/atom (sorted-map)))
+(defonce answer-1  (r/atom {}))
+(defonce answer-2  (r/atom {}))
+(defonce answer-3  (r/atom {}))
+(defonce answer-4  (r/atom {}))
+(defonce answer-5  (r/atom {}))
+(defonce answer-6  (r/atom {}))
+(defonce answer-7  (r/atom {}))
+(defonce answer-8  (r/atom {}))
+(defonce answer-9  (r/atom {}))
+(defonce answer-10 (r/atom {}))
+(defonce counter   (r/atom 0))
+(defonce todos     (r/atom 0))
+(defonce test-id   (r/atom 0))
+(defonce title     (r/atom "Test title"))
+(defonce jtest     (r/atom {:title "Test title"}))
 
-(defonce todos      (r/atom (sorted-map)))
-(defonce questions  (r/atom (sorted-map)))
-(defonce counter    (r/atom 0))
-(defonce jtest      (r/atom {}))
+(defn set-timeout! [ratom]
+  (js/setTimeout #(swap! ratom update :seconds-elapsed inc) 7000))
 
-(defn add-todo [text]
-  (let [id (swap! counter inc)]
-    (swap! todos assoc id {:id id :title text :done false})))
-
-(defn add-question [text]
-  (let [id (swap! counter inc)]
-    (swap! questions assoc id {:id id :title text :done false})))
-
-(defn toggle [id] (swap! todos update-in [id :done] not))
+(defn toggle [id div] (swap! todos update-in [id :done] not))
 (defn save [id title] (swap! todos assoc-in [id :title] title))
 (defn delete [id] (swap! todos dissoc id))
 
-(defn mmap [m f a] (->> m (f a) (into (empty m))))
-(defn complete-all [v] (swap! todos mmap map #(assoc-in % [1 :done] v)))
-(defn clear-done [] (swap! todos mmap remove #(get-in % [1 :done])))
+(defn add-question [text]
+  (let [id (swap! todos inc)]
+    (swap! questions assoc id {:id id :title text :done false})))
 
 (defn gather-json []
     (let [test-id    (.-value (gdom/getElement "test-id"))
@@ -40,7 +47,17 @@
   (let [params (gather-json)]
     (go (let [response (<! (http/post "/admin/tests/load"
                                       {:json-params params :headers {"x-csrf-token" (:csrf-token params)}}))]
-          (reset! jtest (js->clj (.parse js/JSON (:body response)) :keywordize-keys true))))))
+          (reset! jtest (js->clj (.parse js/JSON (:body response)) :keywordize-keys true))
+          (.log js/console (str ">>> VALUE @JTEST GO >>>>> "  @jtest))
+          (reset! title (:title @jtest))))))
+
+(defn save-all []
+  (let [params     (gather-json)
+        all-params (assoc params :questions @questions)]
+    (go (let [response (<! (http/post "/admin/tests/save"
+                                      {:json-params all-params :headers {"x-csrf-token" (:csrf-token params)}}))]
+          (def foo (js->clj (.parse js/JSON (:body response)) :keywordize-keys true))
+          (.log js/console (str ">>> VALUE @JTEST GO >>>>> "  foo))))))
 
 (defn text-input [{:keys [title on-save on-stop value]}]
   (let [val   (r/atom title)
@@ -50,8 +67,11 @@
                 (if-not (empty? v) (on-save v))
                 (stop))]
     (fn [{:keys [id class placeholder]}]
-      [:input {:type "text" :value value
-               :id id :class class :placeholder placeholder
+      [:input {:type "text"
+               :value value
+               :id id
+               :class class
+               :placeholder placeholder
                :on-blur save
                :on-change #(reset! val (-> % .-target .-value))
                :on-key-down #(case (.-which %)
@@ -59,90 +79,103 @@
                                27 (stop)
                                nil)}])))
 
-(defn title-component []
-  (let [title (:title @jtest)]
-    [:div
-      [text-input {:id "input-title"
-                   :placeholder "Test name"
-                   :defaultValue title}]]))
-
 (defonce init (do
                 (initial-load)
-                (add-todo "Allow any arguments to component functions")
-                (complete-all true)))
-
-(defn todo-stats [{:keys [filt active done]}]
-  (let [props-for (fn [name]
-                    {:class (if (= name @filt) "selected")
-                     :on-click #(reset! filt name)})]
-    [:div
-     [:span#todo-count
-      [:strong active] " " (case active 1 "item" "items") " left"]
-     [:ul#filters
-      [:li [:a (props-for :all) "All"]]
-      [:li [:a (props-for :active) "Active"]]
-      [:li [:a (props-for :done) "Completed"]]]
-     (when (pos? done)
-       [:button#clear-completed {:on-click clear-done}
-        "Clear completed " done])]))
+                ))
 
 (defn answer-item [answer]
   (let [answer-string (:answer answer)
         id            (:id answer)
-        _   (.log js/console (str ">>> VALUE  ANSWER IDDDDDDD >>>>> " id ))]
-    [:div.view
-     [:input {:type "text"
-              :value answer-string
-              :id    (str "answer-" id)
-              :class "question-class"}]]))
+        correct       (:correct answer)
+        _   (.log js/console (str ">>> VALUE  ANSWER >>>>> " answer ))]
+    [:div {:class "answer-view" :id (str "answer-" id) :key (str "answer-" id)}
+     [:input {:type         "text"
+              :defaultValue answer-string
+              :id           (str "answer-" id)
+              :key          (str "answer-" id)
+              :maxLength    90
+              :size         80
+              :class        "question-class"}]
+
+     [:input {:type "checkbox" :id (str "answer-cb-" id) :defaultChecked correct :title "Mark as a correct answer"}]]))
 
 (defn question-item [question]
   (let [question-str (:question question)
         qtype        (:qtype question)
         id           (:id question)
-        _            (.log js/console (str ">>> VALUE  QUESTION IDDDDDDD >>>>> " id ))]
-    [:div {:class "question-view" :id (str "question-" id)}
-      [:input {:type  "text"
+        number       (swap! counter inc)
+        _            (.log js/console (str ">>> VALUE  QUESTION >>>>> " question))
+        _ (r/atom (:answers question))]
+    [:div {:class "question-view" :id (str "question-" id) :key (str "question-" id)}
+     (str number " .- ")
+     [:input {:type         "text"
                :defaultValue question-str
-               :id    (str "question-" id)
-               :maxLength 90
-               :size 80
-               :class "question-input"}]
-     ;; (when (= qtype 1)
-     ;;   (do [:a {:id "add-answer"} "Add new answer"]
-     ;;       (for [(:answers question) answer]
-     ;;         (answer-item answer))
-     ;;       ))
-     ]))
+               :id           (str "question-" id)
+               :key          (str "question-" id)
+               :maxLength    120
+               :size         100
+               :class        "question-input"}]
+     (when (= qtype 1)
+       [:a {:key (str "add-answer-link" id) :id (str "add-answer-link" id) :href "#"} "Add a new answer"])
+     (when (= qtype 1)
+       (for [answer (:answers question)]
+         (answer-item answer)))]))
+
+(defn new-question []
+  [:div {:id "new-question" :key "instructions-component" :class "div-separator"}
+   [:input {:type        "text"
+            :id          "new-question"
+            :key         "new-question"
+            :placeholder "New question"
+            :title       "New question"
+            :maxLength   150
+            :size        100}]
+   [:br]
+   [:a {:id "add-question" :key "add-question" :href "#"} "Save question"]])
 
 (defn todo-app []
-      (let [questions (:questions @jtest)]
+  (let [new-questions (:questions @jtest)
+        _             (reset! questions new-questions)
+        title         (:title @jtest)
+        description   (:description @jtest)
+        instructions  (:instructions @jtest)
+        _             (reset! counter 0)]
         [:div
-          [:section#todoapp
-            [:header#header
-              (title-component)
-              [:br]
-              [:a {:id "add-question" :href "#"} "Add new question"]]
-            [:div#main
-               (for [question questions]
-                 (question-item question))]]]))
-
-(defn question-component []
-  [:div
-    [:p "I am a component!"]
-    [:div.someclass
-      [text-input {:id "new-question"
-                   :placeholder "Add a question"}]]
-   [:h3 "single-select list"]
-   [:div.list-group {:field :single-select :id :pick-one}
-    [:div.list-group-item {:key :multiple} "Multiple option"]
-    [:div.list-group-item {:key :single} "Single"]
-    [:div.list-group-item {:key :columns} "Columns"]]])
-
-(defn question-parent []
-  [:div
-   [:p "I include simple-component."]
-   [question-component]])
+         [:section#todoapp
+          [:header#header
+           [:div {:id "title-component" :key "title-component" :class "div-separator"}
+            [:input {:type        "text"
+                     :defaultValue title
+                     :id          "input-title"
+                     :key         "input-title"
+                     :placeholder "Test name"
+                     :title       "Test name"
+                     :maxLength    150
+                     :size         100}]]
+           [:div {:id "description-component" :key "description-component" :class "div-separator"}
+            [:input {:type        "text"
+                     :defaultValue description
+                     :id          "input-description"
+                     :key         "input-description"
+                     :placeholder "Test description"
+                     :title        "Test description"
+                     :maxLength    150
+                     :size         100}]]
+           [:div {:id "instructions-component" :key "instructions-component" :class "div-separator"}
+            [:input {:type        "text"
+                     :defaultValue instructions
+                     :id          "input-instructions"
+                     :key         "input-instructions"
+                     :placeholder "Test instructions"
+                     :title       "Test instructions"
+                     :maxLength   150
+                     :size        100}]]
+           [:br]
+           [:a {:id "add-question" :key "add-question" :href "#"} "Add a new question"]]
+           [new-question]
+          [:div#questions
+           (for [question @questions]
+             (question-item question))]]]))
 
 (defn ^:export run []
   (r/render [todo-app]
