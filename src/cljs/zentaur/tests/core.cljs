@@ -1,26 +1,30 @@
 (ns zentaur.tests.core
-  (:require [cljs.core.async :refer [<! chan close!]]
+  (:require 
+            [cljs.core.async :refer [<! chan close!]]
             [cljs-http.client :as http]
             [cljs.loader :as loader]
             [goog.dom :as gdom]
-            [reagent.core :as r])
-  (:require-macros
-            [cljs.core.async.macros :as m :refer [go]]))
+            [goog.events :as events]
+            [reagent.core :as r]
+            [secretary.core :as secretary]
+            [zentaur.events]    ;; These two are only required to make the compiler
+            [zentaur.subs]      ;; my subscriptions
+            [zentaur.views])
+  (:require-macros [cljs.core.async.macros :as m :refer [go]]
+                   [secretary.core :refer [defroute]])
+  (:import [goog History]
+           [goog.history EventType]))
 
-(.log js/console "I am un tests module!!!  ")
+;; Put an initial value into app-db.
+;; The event handler for `:initialise-db` can be found in `events.cljs`
+;; Using the sync version of dispatch means that value is in
+;; place before we go onto the next step.
+(dispatch-sync [:initialise-db])
+
 (defonce app-state (r/atom {:seconds-elapsed 0}))
 (defonce csrf      (r/atom "not-valid-csrf"))
 (defonce questions (r/atom (sorted-map)))
 (defonce answer-1  (r/atom {}))
-(defonce answer-2  (r/atom {}))
-(defonce answer-3  (r/atom {}))
-(defonce answer-4  (r/atom {}))
-(defonce answer-5  (r/atom {}))
-(defonce answer-6  (r/atom {}))
-(defonce answer-7  (r/atom {}))
-(defonce answer-8  (r/atom {}))
-(defonce answer-9  (r/atom {}))
-(defonce answer-10 (r/atom {}))
 (defonce counter   (r/atom 0))
 (defonce todos     (r/atom 0))
 (defonce test-id   (r/atom 0))

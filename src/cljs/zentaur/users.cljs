@@ -3,8 +3,6 @@
             [goog.events :as events])
   (:import [goog.events EventType]))
 
-(enable-console-print!)
-
 (println "I'm  in the users NS ! ")
 
 (defn add-listener [{:keys [elem event function] :or {event "click" function "send"}}]

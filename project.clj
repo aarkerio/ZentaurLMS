@@ -12,7 +12,7 @@
                  [cljsjs/jquery "3.2.1-0"]               ;; jQuery
                  [com.cognitect/transit-java "0.8.337"]  ;; JSON on steroids
                  [com.fasterxml.jackson.core/jackson-core "2.9.6"]
-                 [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.9.6"]
+                 [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.9.6"]  ;; time formats
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [com.novemberain/pantomime "2.10.0"]
                  [com.rpl/specter "1.1.1"]               ;; querying and transforming nested and recursive data
@@ -47,8 +47,9 @@
                  [ring-middleware-format "0.7.2"]        ;;  Middleware json + transit requests
                  [ring/ring-mock "0.3.2"]                ;;  library for creating Ring request maps for testing purposes.
                  [ring-webjars "0.2.0"]                  ;;  Web assets
+                 [secretary "1.2.3"]                     ;;  A client-side router for ClojureScript.
                  [selmer "1.11.7"]                       ;;  Simple HTML Templates
-                 [slugify "0.0.1"]] 
+                 [slugify "0.0.1"]]
   :min-lein-version "2.8.0"
   :source-paths ["src/clj" "src/cljc"]
   :test-paths ["test/clj"]
@@ -59,22 +60,18 @@
   :plugins [[cider/cider-nrepl "0.18.0"]
             [com.jakemccrary/lein-test-refresh "0.23.0"]
             [lein-auto "0.1.2"]
-            [lein-cprop "1.0.3"]
+            [lein-cprop "1.0.3"]          ;; loads configuration
             [lein-cljsbuild "1.1.7"]
             [lein-figwheel "0.5.16"]
             [lein-sassc "0.10.4"]
             [lein-kibit "0.1.5"]           ;; rubocop for clojure
             [lein-immutant "2.1.0"]
             [migratus-lein "0.6.0"]]
-  :sassc
-  [{:src "resources/scss/styles.scss"
-    :output-to "resources/public/css/styles.css"
-    :style "nested"
-    :import-path "resources/scss"}]
-
-  :auto
-  {"sassc" {:file-pattern #"\.(scss|sass)$" :paths ["resources/scss"]}}
-
+  :sassc [{:src "resources/scss/styles.scss"
+           :output-to "resources/public/css/styles.css"
+           :style "nested"
+           :import-path "resources/scss"}]
+  :auto {"sassc" {:file-pattern #"\.(scss|sass)$" :paths ["resources/scss"]}}
   :hooks [leiningen.sassc]
   :clean-targets ^{:protect false :doc "Keeps the cache clean"}
   [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
