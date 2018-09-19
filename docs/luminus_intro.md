@@ -636,7 +636,6 @@ You can add a new user from the REPL:
 
      user> (model-users/create {:prepassword "wh4t3v3r" :first_name "Julia" :last_name "López" :admin "true" :email "some@email.com"})
 
-
 # Validating the form with ClojureScript
 
 TODO
@@ -649,7 +648,7 @@ TODO
 
 TODO
 
-# Reagent: React with ClojureScript  
+# Reagent: React with ClojureScript
 
 TODO
 
