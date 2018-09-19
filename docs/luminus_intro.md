@@ -55,13 +55,13 @@ Now create a new user and a new database:
      CREATE USER lumi WITH ENCRYPTED PASSWORD 'yourpass';
      GRANT ALL PRIVILEGES ON DATABASE myblog_dev TO lumi;
 
-Edit the file **dev-config.edn**, uncomment and change the string *:database-url*. Surely you have noticed that some files in the clojure's world ends with the extension .edn, the name stand for Extensible Data Notation. EDN is a kind of JSON developed inside the Clojure community to avoid JSON limitations, mainly its lack of extensibility. There is a subproject called [Transit](https://github.com/cognitect/transit-format) that offers higher performance encoding and decoding option over the web and it can be used instead of JSON, but we don't need to talk about EDN and Transit right now.
+Edit the file **dev-config.edn**, uncomment and change the string *:database-url*. Surely you already have noticed that some files in the clojure's world ends with the extension .edn, the name stand for *Extensible Data Notation*. EDN is a kind of JSON developed inside the Clojure community to avoid JSON limitations, mainly its lack of extensibility. There is a subproject called [Transit](https://github.com/cognitect/transit-format) that offers higher performance encoding and decoding option over HTTP and it can be used instead of JSON, but we don't need to talk about EDN and Transit right now.
 
 Now start your server:
 
     $ lein with-profile dev run
 
-The "with-profile dev" part is not necessary, "lein run" will launch the app, but is good to know how to call a profile under leiningen isn't? Now you can see the app in your browser http://localhost:3000/. You can see the message "If you're seeing this message, that means you haven't yet compiled your ClojureScript!". Open another tab in your console and run:
+The "with-profile dev" part is not necessary, "lein run" will launch the app, but it's good to know how to call a profile under leiningen isn't? Now you can see the app in your browser http://localhost:3000/. You can see the message "If you're seeing this message, that means you haven't yet compiled your ClojureScript!". Open another tab in your console and run:
 
     $ lein figwheel
 
