@@ -1,4 +1,4 @@
-(defproject zentaur "0.0.4"
+(defproject zentaur "0.0.5"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
   :dependencies [[binaryage/devtools "0.9.10"]           ;; Chrome DevTools enhancements
@@ -14,7 +14,7 @@
                  [com.fasterxml.jackson.core/jackson-core "2.9.6"]
                  [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.9.6"]  ;; time formats
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
-                 [com.novemberain/pantomime "2.10.0"]
+                 [com.novemberain/pantomime "2.10.0"]    ;; A tiny Clojure library that deals with MIME types
                  [com.rpl/specter "1.1.1"]               ;; querying and transforming nested and recursive data
                  [compojure "1.6.1"]                     ;; routes for ring
                  [conman "0.8.2"]                        ;; Luminus database connection management and SQL query generation library
@@ -27,7 +27,7 @@
                  [luminus-migrations "0.5.3"]            ;; migratus esentially
                  [luminus/ring-ttl-session "0.3.2"]      ;; ring.middleware.session.store library
                  [markdown-clj "1.0.2"]                  ;; parses md files
-                 [metosin/compojure-api "1.1.11"]
+                 [metosin/compojure-api "1.1.11"]        ;; Sweet web apis with Compojure & Swagger
                  [metosin/muuntaja "0.6.0"]              ;; library for fast http api format negotiation, encoding and decoding.
                  [metosin/ring-http-response "0.9.0"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.13"]                        ;; managing Clojure and ClojureScript app state
@@ -37,7 +37,7 @@
                  [org.clojure/java.jdbc "0.7.1"]
                  [org.clojure/tools.cli "0.3.5"]
                  [org.clojure/tools.logging "0.4.0"]
-                 [org.clojure/tools.reader "1.1.0"]
+                 [org.clojure/tools.reader "1.3.0"]      ;;  Clojure reader and an EDN-only reader
                  [org.postgresql/postgresql "42.2.2"]
                  [reagent "0.8.2-SNAPSHOT"]              ;;  Minimalistic React for ClojureScript
                  [re-frame "0.10.6"]                     ;;  A Clojurescript MVC-like Framework For Writing SPAs Using Reagent.

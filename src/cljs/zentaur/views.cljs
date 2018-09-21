@@ -1,6 +1,6 @@
 (ns zentaur.views
   (:require [reagent.core  :as reagent]
-            [re-frame.core :refer [subscribe dispatch]]
+            [re-frame.core :as reframe]
             [clojure.string :as str]))
 
 (defn todo-input [{:keys [title on-save on-stop]}]
@@ -32,43 +32,41 @@
           [:input.toggle
             {:type "checkbox"
              :checked done
-             :on-change #(dispatch [:toggle-done id])}]
+             :on-change #(reframe/dispatch [:toggle-done id])}]
           [:label
             {:on-double-click #(reset! editing true)}
             title]
           [:button.destroy
-            {:on-click #(dispatch [:delete-todo id])}]]
+            {:on-click #(reframe/dispatch [:delete-todo id])}]]
         (when @editing
           [todo-input
             {:class "edit"
              :title title
              :on-save #(if (seq %)
-                          (dispatch [:save id %])
-                          (dispatch [:delete-todo id]))
+                          (reframe/dispatch [:save id %])
+                          (reframe/dispatch [:delete-todo id]))
              :on-stop #(reset! editing false)}])])))
-
 
 (defn task-list
   []
-  (let [visible-todos @(subscribe [:visible-todos])
-        all-complete? @(subscribe [:all-complete?])]
+  (let [visible-todos @(reframe/subscribe [:visible-todos])
+        all-complete? @(reframe/subscribe [:all-complete?])]
       [:section#main
         [:input#toggle-all
           {:type "checkbox"
            :checked all-complete?
-           :on-change #(dispatch [:complete-all-toggle])}]
+           :on-change #(reframe/dispatch [:complete-all-toggle])}]
         [:label
           {:for "toggle-all"}
           "Mark all as complete"]
         [:ul#todo-list
-          (for [todo  visible-todos]
+          (for [todo visible-todos]
             ^{:key (:id todo)} [todo-item todo])]]))
-
 
 (defn footer-controls
   []
-  (let [[active done] @(subscribe [:footer-counts])
-        showing       @(subscribe [:showing])
+  (let [[active done] @(reframe/subscribe [:footer-counts])
+        showing       @(reframe/subscribe [:showing])
         a-fn          (fn [filter-kw txt]
                         [:a {:class (when (= filter-kw showing) "selected")
                              :href (str "#/" (name filter-kw))} txt])]
@@ -80,26 +78,25 @@
       [:li (a-fn :active "Active")]
       [:li (a-fn :done   "Completed")]]
      (when (pos? done)
-       [:button#clear-completed {:on-click #(dispatch [:clear-completed])}
+       [:button#clear-completed {:on-click #(reframe/dispatch [:clear-completed])}
         "Clear completed"])]))
-
 
 (defn task-entry
   []
   [:header#header
-    [:h1 "todos"]
+    [:h1 "Die dumme und stinkende Liste zu tun"]
     [todo-input
       {:id "new-todo"
        :placeholder "What needs to be done?"
        :on-save #(when (seq %)
-                    (dispatch [:add-todo %]))}]])
+                   (reframe/dispatch [:add-todo %]))}]])
 
 (defn todo-app
   []
   [:div
    [:section#todoapp
     [task-entry]
-    (when (seq @(subscribe [:todos]))
+    (when (seq @(reframe/subscribe [:todos]))
       [task-list])
     [footer-controls]]
    [:footer#info
