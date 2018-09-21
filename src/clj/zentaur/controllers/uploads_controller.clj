@@ -7,16 +7,19 @@
             [zentaur.hiccup.admin.uploads-view :as admin-uploads-view]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;     ADMIN FUNCTIONS    ;;;;;;;;;;;;;;;;;;;;
-;; GET /admin/uploads
-(defn admin-uploads [request]
+
+(defn admin-uploads
+  ;; GET /admin/uploads
+  [request]
   (let [base       (basec/set-vars request)
         user-id    (-> request :identity :id)
         csrf-field (:csrf-field base)
         files      (model-upload/get-uploads user-id)]
     (layout/application (merge base {:title "Posts" :contents (admin-uploads-view/index files csrf-field) }))))
 
-;; POST /admin/uploads
-(defn upload-file [request]
+(defn upload-file
+  ;; POST /admin/uploads
+  [request]
   (let [user-id   (-> request :identity :id)
         params    (-> request :params)]
     (log/info (str ">>> REQUEST >>>>> " request ))
@@ -33,8 +36,9 @@
         upload     (model-upload/get-upload id)]
     (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process upload csrf-field) }))))
 
-;; GET /admin/uploads/extract/:id
-(defn extract [params]
+(defn extract
+  ;; GET /admin/uploads/extract/:id
+  [params]
   (let [id    (-> params :id)
         file  (model-upload/extract-text id)]
     (-> (response/found "/admin/uploads"))))
@@ -60,8 +64,9 @@
         response  (model-upload/save-body body db-record)]
     (-> (response/ok response))))
 
-;; GET /admin/uploads/archive/:id
-(defn archive [request]
+(defn archive
+  ;; GET /admin/uploads/archive/:id
+  [request]
   (let [base      (basec/set-vars request)
         id        (-> request :identity :id)
         csrf-field (:csrf-field base)

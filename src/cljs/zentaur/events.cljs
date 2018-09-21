@@ -1,8 +1,7 @@
 (ns zentaur.events
-  (:require [zentaur.db    :refer [default-db todos->local-store]]
-            [re-frame.core :refer [reg-event-db reg-event-fx inject-cofx path after]]
+  (:require [zentaur.db    :as zdb]        ;; [default-db todos->local-store]]
+            [re-frame.core :as reframe]    ;; [reg-event-db reg-event-fx inject-cofx path after]]
             [cljs.spec.alpha :as s]))
-
 
 ;; -- Interceptors --------------------------------------------------------------
 ;;
@@ -29,7 +28,6 @@
 ;; check if the new value for `app-db` correctly matches a Spec.
 ;;
 
-
 ;; -- First Interceptor ------------------------------------------------------
 ;;
 ;; Event handlers change state, that's their job. But what happens if there's
@@ -44,7 +42,6 @@
 ;; Because all state is held in `app-db`, we are effectively validating the
 ;; ENTIRE state of the application after each event handler runs.  All of it.
 
-
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
   [a-spec db]
@@ -52,20 +49,18 @@
     (throw (ex-info (str "spec check failed: " (s/explain-str a-spec db)) {}))))
 
 ;; now we create an interceptor using `after`
-(def check-spec-interceptor (after (partial check-and-throw :todomvc.db/db)))
-
+(def check-spec-interceptor (reframe/after (partial check-and-throw :zentaur.db/db)))  ;; PARTIAL: (def hundred-times (partial * 100))
 
 ;; -- Second Interceptor -----------------------------------------------------
 ;;
-;; Part of the TodoMVC challenge is to store todos in local storage.
+;; Part of the Zentaur challenge is to store todos in local storage.
 ;; Next, we define an interceptor to help with this challenge.
 ;; This interceptor runs `after` an event handler, and it stores the
 ;; current todos into local storage.
 ;; Later, we include this interceptor into the interceptor chain
 ;; of all event handlers which modify todos.  In this way, we ensure that
 ;; every change to todos is written to local storage.
-(def ->local-store (after todos->local-store))
-
+(def ->local-store (reframe/after zdb/todos->local-store))
 
 ;; -- Interceptor Chain ------------------------------------------------------
 ;;
@@ -75,8 +70,8 @@
 ;; A chain of interceptors is a vector of interceptors.
 ;; Explanation of the `path` Interceptor is given further below.
 (def todo-interceptors [check-spec-interceptor    ;; ensure the spec is still valid  (after)
-                        (path :todos)             ;; the 1st param given to handler will be the value from this path within db
-                        ->local-store])            ;; write todos to localstore  (after)
+                        (reframe/path :todos)     ;; the 1st param given to handler will be the value from this path within db
+                        ->local-store])           ;; write todos to localstore  (after)
 
 
 ;; -- Helpers -----------------------------------------------------------------
@@ -87,7 +82,6 @@
   Returns one more than the current largest id."
   [todos]
   ((fnil inc 0) (last (keys todos))))
-
 
 ;; -- Event Handlers ----------------------------------------------------------
 
@@ -106,22 +100,21 @@
 ;; To fully understand this advanced topic, you'll have to read the tutorials
 ;; and look at the bottom of `db.cljs` for the `:local-store-todos` cofx
 ;; registration.
-(reg-event-fx                 ;; part of the re-frame API
+(reframe/reg-event-fx                 ;; part of the re-frame API
   :initialise-db              ;; event id being handled
 
   ;; the interceptor chain (a vector of 2 interceptors in this case)
-  [(inject-cofx :local-store-todos) ;; gets todos from localstore, and puts value into coeffects arg
+  [(reframe/inject-cofx :local-store-todos) ;; gets todos from localstore, and puts value into coeffects arg
    check-spec-interceptor]          ;; after event handler runs, check app-db for correctness. Does it still match Spec?
 
   ;; the event handler (function) being registered
   (fn [{:keys [db local-store-todos]} _]                  ;; take 2 values from coeffects. Ignore event vector itself.
-    {:db (assoc default-db :todos local-store-todos)}))   ;; all hail the new state to be put in app-db
-
+    {:db (assoc zdb/default-db :todos local-store-todos)}))   ;; all hail the new state to be put in app-db
 
 ;; usage:  (dispatch [:set-showing  :active])
 ;; This event is dispatched when the user clicks on one of the 3
 ;; filter buttons at the bottom of the display.
-(reg-event-db      ;; part of the re-frame API
+(reframe/reg-event-db      ;; part of the re-frame API
   :set-showing     ;; event-id
 
   ;; only one interceptor
@@ -145,11 +138,11 @@
 ;;
 ;; So, `path` operates a little like `update-in`
 ;;
-#_(reg-event-db
+#_(reframe/reg-event-db
   :set-showing
 
   ;; this now a chain of 2 interceptors. Note use of `path`
-  [check-spec-interceptor (path :showing)]
+  [check-spec-interceptor (reframe/path :showing)]
 
   ;; The event handler
   ;; Because of the `path` interceptor above, the 1st parameter to
@@ -160,9 +153,8 @@
   (fn [old-showing-value [_ new-showing-value]]
     new-showing-value))                  ;; return new state for the path
 
-
 ;; usage:  (dispatch [:add-todo  "a description string"])
-(reg-event-db                     ;; given the text, create a new todo
+(reframe/reg-event-db                     ;; given the text, create a new todo
   :add-todo
 
   ;; Use the standard interceptors, defined above, which we
@@ -180,39 +172,35 @@
     (let [id (allocate-next-id todos)]
       (assoc todos id {:id id :title text :done false}))))
 
-
-(reg-event-db
+(reframe/reg-event-db
   :toggle-done
   todo-interceptors
   (fn [todos [_ id]]
     (update-in todos [id :done] not)))
 
 
-(reg-event-db
+(reframe/reg-event-db
   :save
   todo-interceptors
   (fn [todos [_ id title]]
     (assoc-in todos [id :title] title)))
 
-
-(reg-event-db
+(reframe/reg-event-db
   :delete-todo
   todo-interceptors
   (fn [todos [_ id]]
     (dissoc todos id)))
 
-
-(reg-event-db
+(reframe/reg-event-db
   :clear-completed
-  todo-interceptors
+  todo-interceptors  ;; function
   (fn [todos _]
     (let [done-ids (->> (vals todos)         ;; which todos have a :done of true
                         (filter :done)
                         (map :id))]
       (reduce dissoc todos done-ids))))      ;; delete todos which are done
 
-
-(reg-event-db
+(reframe/reg-event-db
   :complete-all-toggle
   todo-interceptors
   (fn [todos _]
