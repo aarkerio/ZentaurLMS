@@ -73,7 +73,6 @@
                         (reframe/path :todos)     ;; the 1st param given to handler will be the value from this path within db
                         ->local-store])           ;; write todos to localstore  (after)
 
-
 ;; -- Helpers -----------------------------------------------------------------
 
 (defn allocate-next-id
@@ -105,10 +104,10 @@
 
   ;; the interceptor chain (a vector of 2 interceptors in this case)
   [(reframe/inject-cofx :local-store-todos) ;; gets todos from localstore, and puts value into coeffects arg
-   check-spec-interceptor]          ;; after event handler runs, check app-db for correctness. Does it still match Spec?
+   check-spec-interceptor]                  ;; after event handler runs, check app-db for correctness. Does it still match Spec?
 
   ;; the event handler (function) being registered
-  (fn [{:keys [db local-store-todos]} _]                  ;; take 2 values from coeffects. Ignore event vector itself.
+  (fn [{:keys [db local-store-todos]} _]                       ;; take 2 values from coeffects. Ignore event vector itself.
     {:db (assoc zdb/default-db :todos local-store-todos)}))   ;; all hail the new state to be put in app-db
 
 ;; usage:  (dispatch [:set-showing  :active])

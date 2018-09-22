@@ -25,6 +25,7 @@
 (defn sorted-todos
   [db _]
   (:todos db))
+
 (reframe/reg-sub :sorted-todos sorted-todos)    ;; usage: (subscribe [:sorted-todos])
 
 ;; -------------------------------------------------------------------------------------
