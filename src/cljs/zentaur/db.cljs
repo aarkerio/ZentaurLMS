@@ -31,7 +31,8 @@
     :active                                                 ;; only todos whose :done is false
     :done                                                   ;; only todos whose :done is true
     })
-(s/def ::db (s/keys :req-un [::todos ::showing]))
+(s/def ::count int?)
+(s/def ::db (s/keys :req-un [::todos ::showing ::count]))
 
 ;; -- Default app-db Value  ---------------------------------------------------
 ;;
@@ -44,7 +45,8 @@
 
 (def default-db           ;; what gets put into app-db by default.
   {:todos   (sorted-map)  ;; an empty list of todos. Use the (int) :id as the key
-   :showing :all})        ;; show all todos
+   :showing :all          ;; show all todos
+   :count   2})
 
 
 ;; -- Local Storage  ----------------------------------------------------------
@@ -67,7 +69,6 @@
   [questions]
   (.setItem js/localStorage ls-key (str questions)))     ;; sorted-map written as an EDN map
 
-
 ;; -- cofx Registrations  -----------------------------------------------------
 
 ;; Use `reg-cofx` to register a "coeffect handler" which will inject the todos
@@ -87,5 +88,5 @@
              ;; read in todos from localstore, and process into a sorted map
              (into (sorted-map)
                    (some->> (.getItem js/localStorage ls-key)
-                            (cljs.reader/read-string)    ;; EDN map -> map
+                            (cljs.reader/read-string)    ;; EDN map -> map  == Reads data in the edn format
                             )))))

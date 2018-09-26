@@ -91,10 +91,31 @@
        :on-save #(when (seq %)
                    (reframe/dispatch [:add-todo %]))}]])
 
+;; ##### My shit  STARTS
+(defn counter-control
+  [value on-change]
+  [:div.myclass
+   [:input {:type "button"
+            :value value
+            :on-click (fn [event]
+                        (reframe/dispatch [:count-update on-change]))}]])
+
+(defn counter-display []
+  (let [count (reframe/subscribe [:count])]
+    [:div (str "Current count: " @count)]))    ;; vielleicht später:  @(subscribe [:count])    subscribe and dereference in one step
+
+(defn counter []
+  [:div
+   [counter-display]
+   [counter-control "+" inc]
+   [counter-control "-" dec]])
+;; ##### My shit  ENDS
+
 (defn todo-app
   []
   [:div
    [:section#todoapp
+    [counter]
     [task-entry]
     (when (seq @(reframe/subscribe [:todos]))
       [task-list])

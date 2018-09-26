@@ -99,22 +99,24 @@
 ;; To fully understand this advanced topic, you'll have to read the tutorials
 ;; and look at the bottom of `db.cljs` for the `:local-store-todos` cofx
 ;; registration.
-(reframe/reg-event-fx                 ;; part of the re-frame API
-  :initialise-db              ;; event id being handled
+(reframe/reg-event-fx         ;; part of the re-frame API
+ :initialise-db              ;; event id being handled
 
   ;; the interceptor chain (a vector of 2 interceptors in this case)
-  [(reframe/inject-cofx :local-store-todos) ;; gets todos from localstore, and puts value into coeffects arg
-   check-spec-interceptor]                  ;; after event handler runs, check app-db for correctness. Does it still match Spec?
+ [(reframe/inject-cofx :local-store-todos)        ;; gets todos from localstore, and puts value into coeffects arg
+  check-spec-interceptor                          ;; after event handler runs, check app-db for correctness. Does it still match Spec?
+  (.log js/console (str ">>> >>>I'm the initial Interceptor!!! "))]
 
   ;; the event handler (function) being registered
   (fn [{:keys [db local-store-todos]} _]                       ;; take 2 values from coeffects. Ignore event vector itself.
-    {:db (assoc zdb/default-db :todos local-store-todos)}))   ;; all hail the new state to be put in app-db
+    {:db (assoc zdb/default-db
+                :todos local-store-todos)}))   ;; all hail the new state to be put in app-db
 
 ;; usage:  (dispatch [:set-showing  :active])
 ;; This event is dispatched when the user clicks on one of the 3
 ;; filter buttons at the bottom of the display.
 (reframe/reg-event-db      ;; part of the re-frame API
-  :set-showing     ;; event-id
+  :set-showing             ;; event-id
 
   ;; only one interceptor
   [check-spec-interceptor]       ;; after event handler runs, check app-db for correctness. Does it still match Spec?
@@ -177,7 +179,6 @@
   (fn [todos [_ id]]
     (update-in todos [id :done] not)))
 
-
 (reframe/reg-event-db
   :save
   todo-interceptors
@@ -207,3 +208,11 @@
       (reduce #(assoc-in %1 [%2 :done] new-done)
               todos
               (keys todos)))))
+
+;; My new event handler
+(reframe/reg-event-db
+ :count-update
+ todo-interceptors
+ (fn [db [_ on-change]]                ;; First argument: coeffects map which contains the current state of the world (including app state)
+   (update db :count on-change)))     ;; Second argument the event to handle
+

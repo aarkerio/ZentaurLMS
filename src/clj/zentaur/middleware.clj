@@ -90,7 +90,7 @@
       wrap-auth
       wrap-webjars
       wrap-flash
-      (wrap-session {:cookie-attrs {:timeout 0 :http-only true}})   ;;  A :timeout value less than or equal to zero indicates the session should never expire.
+      (wrap-session {:timeout 0 :cookie-attrs {:http-only true}})   ;;  A :timeout value less than or equal to zero indicates the session should never expire.
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)
