@@ -94,5 +94,6 @@
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)
+            (assoc :timeout 0)
             (dissoc :session)))
       wrap-internal-error))

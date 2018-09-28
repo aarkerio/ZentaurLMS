@@ -48,6 +48,7 @@
 
 (defn ^:export main
   []
+  (reframe/dispatch-sync [:request-test])  ;; <--- boot process is started. Synchronously initialised *before*
   ;; Render the UI into the HTML's <div id="app" /> element
   ;; The view function `todomvc.views/todo-app` is the
   ;; root view for the entire UI.

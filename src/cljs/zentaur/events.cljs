@@ -1,7 +1,10 @@
 (ns zentaur.events
-  (:require [zentaur.db    :as zdb]        ;; [default-db todos->local-store]]
+  (:require [ajax.core :as ajax]
+            [cljs.spec.alpha :as s]
+            [day8.re-frame.async-flow-fx]
+            [day8.re-frame.http-fx]
             [re-frame.core :as reframe]    ;; [reg-event-db reg-event-fx inject-cofx path after]]
-            [cljs.spec.alpha :as s]))
+            [zentaur.db    :as zdb]))
 
 ;; -- Interceptors --------------------------------------------------------------
 ;;
@@ -58,7 +61,7 @@
 ;; This interceptor runs `after` an event handler, and it stores the
 ;; current todos into local storage.
 ;; Later, we include this interceptor into the interceptor chain
-;; of all event handlers which modify todos.  In this way, we ensure that
+;; of all event handlers which modify todos. In this way, we ensure that
 ;; every change to todos is written to local storage.
 (def ->local-store (reframe/after zdb/todos->local-store))
 
@@ -154,6 +157,9 @@
   (fn [old-showing-value [_ new-showing-value]]
     new-showing-value))                  ;; return new state for the path
 
+
+;; ######  reg-event-db, delivers ONLY the coeffect db (partial of the current state of the world) to the event handler
+
 ;; usage:  (dispatch [:add-todo  "a description string"])
 (reframe/reg-event-db                     ;; given the text, create a new todo
   :add-todo
@@ -216,3 +222,51 @@
  (fn [db [_ on-change]]                ;; First argument: coeffects map which contains the current state of the world (including app state)
    (update db :count on-change)))     ;; Second argument the event to handle
 
+
+;; AJAX handlers
+(reframe/reg-event-db
+  :process-response
+  (fn
+    [db [_ response]]               ;; destructure the response from the event vector
+    (-> db
+        (assoc :loading? false)     ;; take away that "Loading ..." UI
+        (assoc :test (js->clj response)))))  ;; fairly lame process
+
+(reframe/reg-event-db
+ :bad-response
+ (fn
+   [db [_ response]]
+   (.log js/console (str ">>> ERROR >>>>> " response))))
+
+;; reg-event-fx == event handler's coeffects
+
+(reframe/reg-event-fx    ;; <-- note the `-fx` extension
+  :request-test          ;; <-- the event id
+  (fn                     ;; <-- the handler function
+    [cfx _]              ;; <-- 1st argument is coeffect, from which we extract db
+    (let [db (:db cfx)]
+      ;; we return a map of (side) effects
+      {:http-xhrio {:method          :post
+                    :uri             "/admin/tests/load"
+                    :format          (ajax/json-request-format)
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:process-response]
+                    :on-failure      [:bad-response]}
+       :db  (assoc db :loading? true)})))
+
+(defn boot-flow
+  []
+  {:first-dispatch [:do-X]              ;; what event kicks things off ?
+   :rules [                             ;; a set of rules describing the required flow
+           {:when :seen? :events :success-X  :dispatch [:do-Y]}
+           {:when :seen? :events :success-Y  :dispatch [:do-Z]}
+           {:when :seen? :events :success-Z  :halt? true}
+           {:when :seen-any-of? :events [:fail-X :fail-Y :fail-Z] :dispatch  [:app-failed-state] :halt? true}]})
+
+(reframe/reg-event-fx            ;; note the -fx == coeffects world
+  :boot                          ;; usage:  (dispatch [:boot])  See step 3
+  (fn [_ _]
+    {:db (-> {}                  ;;  do whatever synchronous work needs to be done
+            "task1-fn"             ;; ?? set state to show "loading" twirly for user??
+            "task2-fn")            ;; ?? do some other simple initialising of state
+     :async-flow  (boot-flow)})) ;; kick off the async process

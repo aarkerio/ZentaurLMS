@@ -104,11 +104,16 @@
   (let [count (reframe/subscribe [:count])]
     [:div (str "Current count: " @count)]))    ;; vielleicht später:  @(subscribe [:count])    subscribe and dereference in one step
 
+(defn test-display []
+  (let [test (reframe/subscribe [:test])]
+    [:div (str "Current test: " @test)]))      ;; vielleicht später:  @(subscribe [:count])    subscribe and dereference in one step
+
 (defn counter []
   [:div
    [counter-display]
    [counter-control "+" inc]
-   [counter-control "-" dec]])
+   [counter-control "-" dec]]
+   [test-display])
 ;; ##### My shit  ENDS
 
 (defn todo-app

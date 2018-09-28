@@ -163,9 +163,13 @@
  (fn [[todos completed] _]
    [(- (count todos) completed) completed]))
 
-;; My function
+;; My new subscription functions
 (reframe/reg-sub
  :count
  (fn [db]
    (:count db)))
 
+(reframe/reg-sub
+ :test
+ (fn [db]
+   (:test db)))
