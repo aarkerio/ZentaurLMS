@@ -173,3 +173,8 @@
  :test
  (fn [db]
    (:test db)))
+
+(reframe/reg-sub
+ :questions
+ (fn [db]
+   (get-in db [:questions])))

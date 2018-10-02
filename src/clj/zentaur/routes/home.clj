@@ -21,6 +21,7 @@
   (GET    "/admin/tests/edit/:id"       request   (cont-tests/admin-edit request))
   (POST   "/admin/tests"                request   (cont-tests/create-test request))
   (POST   "/admin/tests/load"           request   (cont-tests/load-json request))
+  (POST   "/admin/tests/createquestion" request   (cont-tests/create-question request))
   (GET    "/admin/uploads"              request   (cont-uploads/admin-uploads request))
   (POST   "/admin/uploads"              request   (cont-uploads/upload-file request))
   (GET    "/admin/uploads/process/:id"  request   (cont-uploads/process request))

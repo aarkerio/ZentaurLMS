@@ -26,6 +26,16 @@
     (model-test/create-test! clean-params user-id)
     (-> (response/found "/admin/tests"))))
 
+(defn create-question
+  "POST /admin/tests/savequestion"
+  [request]
+  (let [params       (-> request :params)
+        user-id      (-> request :identity :id)
+        _ ((log/info (str ">>> PARAMS NDEW QUESTION >>>>> " params)))
+        clean-params (dissoc params :__anti-forgery-token :submit :button-save)]
+    (model-test/create-question! clean-params user-id)
+    (-> (response/ok {:ok true}))))
+
 (defn admin-index
   "GET /admin/tests"
   [request]

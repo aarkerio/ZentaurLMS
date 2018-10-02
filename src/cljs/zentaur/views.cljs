@@ -1,17 +1,20 @@
 (ns zentaur.views
-  (:require [reagent.core  :as reagent]
-            [re-frame.core :as reframe]
-            [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [goog.dom :as gdom]
+            [reagent.core  :as reagent]
+            [re-frame.core :as reframe]))
 
-(defn todo-input [{:keys [title on-save on-stop]}]
-  (let [val  (reagent/atom title)
+(def api-url "https://conduit.productionready.io/api")
+
+(defn question-input [{:keys [question on-save on-stop]}]
+  (let [val  (reagent/atom question)
         stop #(do (reset! val "")
                   (when on-stop (on-stop)))
         save #(let [v (-> @val str str/trim)]
                 (on-save v)
                 (stop))]
     (fn [props]
-      [:input (merge (dissoc props :on-save :on-stop :title)
+      [:input (merge (dissoc props :on-save :on-stop :question)
                      {:type        "text"
                       :value       @val
                       :auto-focus  true
@@ -21,109 +24,100 @@
                                       13 (save)
                                       27 (stop)
                                       nil)})])))
-
-(defn todo-item
+(defn question-item
   []
   (let [editing (reagent/atom false)]
     (fn [{:keys [id done title]}]
-      [:li {:class (str (when done "completed ")
+      [:li {:class (str (when done "completed")
                         (when @editing "editing"))}
-        [:div.view
-          [:input.toggle
-            {:type "checkbox"
-             :checked done
-             :on-change #(reframe/dispatch [:toggle-done id])}]
-          [:label
-            {:on-double-click #(reset! editing true)}
-            title]
-          [:button.destroy
-            {:on-click #(reframe/dispatch [:delete-todo id])}]]
-        (when @editing
-          [todo-input
-            {:class "edit"
-             :title title
-             :on-save #(if (seq %)
-                          (reframe/dispatch [:save id %])
-                          (reframe/dispatch [:delete-todo id]))
-             :on-stop #(reset! editing false)}])])))
-
-(defn task-list
-  []
-  (let [visible-todos @(reframe/subscribe [:visible-todos])
-        all-complete? @(reframe/subscribe [:all-complete?])]
-      [:section#main
-        [:input#toggle-all
-          {:type "checkbox"
-           :checked all-complete?
-           :on-change #(reframe/dispatch [:complete-all-toggle])}]
+       [:div.view
         [:label
-          {:for "toggle-all"}
-          "Mark all as complete"]
-        [:ul#todo-list
-          (for [todo visible-todos]
-            ^{:key (:id todo)} [todo-item todo])]]))
+         {:on-double-click #(reset! editing true)}
+         title]
+        [:button.destroy
+         {:on-click #(reframe/dispatch [:delete-question id])}]]
+       (when @editing
+         [question-input
+          {:class "edit"
+           :title title
+           :on-save #(if (seq %)
+                       (reframe/dispatch [:save-question id %])
+                       (reframe/dispatch [:delete-question id]))
+           :on-stop #(reset! editing false)}])])))
 
-(defn footer-controls
+(defn questions-list
   []
-  (let [[active done] @(reframe/subscribe [:footer-counts])
-        showing       @(reframe/subscribe [:showing])
-        a-fn          (fn [filter-kw txt]
-                        [:a {:class (when (= filter-kw showing) "selected")
-                             :href (str "#/" (name filter-kw))} txt])]
-    [:footer#footer
-     [:span#todo-count
-      [:strong active] " " (case active 1 "item" "items") " left"]
-     [:ul#filters
-      [:li (a-fn :all    "All")]
-      [:li (a-fn :active "Active")]
-      [:li (a-fn :done   "Completed")]]
-     (when (pos? done)
-       [:button#clear-completed {:on-click #(reframe/dispatch [:clear-completed])}
-        "Clear completed"])]))
+  (let [questions @(reframe/subscribe [:questions])
+        all-complete? @(reframe/subscribe [:all-complete?])]
+    [:section#main
+     [:label
+      {:for "toggle-all"}
+      "Mark all as complete"]
+     [:ul#questions-list
+      (for [question questions]
+        ^{:key (:id question)} [question-item question])]]))
 
-(defn task-entry
+(defn question-entry
   []
-  [:header#header
-    [:h1 "Die dumme und stinkende Liste zu tun"]
-    [todo-input
-      {:id "new-todo"
-       :placeholder "What needs to be done?"
-       :on-save #(when (seq %)
-                   (reframe/dispatch [:add-todo %]))}]])
+  (let [test (reframe/subscribe [:test])]
+    [:div.hidden-div {:id "hidden-form"}
+      [:h3.class "Hinzifugen neue fragen"]
+     [:div.div-separator {:id "question-title-div" :key "question-title-div"}
+      [question-input
+       {:id          "new-question"
+        :placeholder "Neue frage"
+        :defaultValue ""
+        :size        100
+        :maxLength   180}]]
 
-;; ##### My shit  STARTS
-(defn counter-control
-  [value on-change]
-  [:div.myclass
-   [:input {:type "button"
-            :value value
-            :on-click (fn [event]
-                        (reframe/dispatch [:count-update on-change]))}]])
-
-(defn counter-display []
-  (let [count (reframe/subscribe [:count])]
-    [:div (str "Current count: " @count)]))    ;; vielleicht später:  @(subscribe [:count])    subscribe and dereference in one step
+     [:div.div-separator {:id "question-hint-div" :key "question-hint-div"}
+      [:input {:type         "text"
+               :defaultValue ""
+               :id           "question-hint"
+               :key          "question-hint"
+               :placeholder  "Question hint"
+               :title        "Question hint"
+               :maxLength    180
+               :size         100}]]
+     [:div.div-separator {:id "question-description-div" :key "question-description-div"}
+      [:input {:type         "text"
+               :defaultValue ""
+               :id           "question-description"
+               :key          "question-description"
+               :placeholder  "Question description"
+               :title        "Question description"
+               :maxLength    180
+               :size         100}]]
+     [:div.div-separator {:id "question-qtype-div" :key "question-qtype-div"}
+      [:select.form-control.mr-sm-2 {:name "qtype" :id "qtype-select"}
+       [:option {:value "1"} "Multiple"]
+       [:option {:value "2"} "Columns"]
+       [:option {:value "2"} "Single"]]]
+     [:div
+      [:input.btn {:type "button" :value "Save new question"
+                   :on-click #(re-frame.core/dispatch [:save-question {:question    (.-value (gdom/getElement "new-question"))
+                                                                       :hint        (.-value (gdom/getElement "question-hint"))
+                                                                       :qtype       (.-value (gdom/getElement "qtype-select"))
+                                                                       :test-id     (:id @test)
+                                                                       :description (.-value (gdom/getElement "question-description"))}])}]]]))
 
 (defn test-display []
   (let [test (reframe/subscribe [:test])]
-    [:div (str "Current test: " @test)]))      ;; vielleicht später:  @(subscribe [:count])    subscribe and dereference in one step
+    [:div
+     [:h1 (:title @test)]
+     [:div.someclass (str "tags: " (:tags @test) "    created: " (:created_at @test)) ]
+     (str "Current test: " @test)
+     [:div [:img {:src "/img/icon_add.png" :alt "Fragen hinzüfugen" :title "Fragen hinzüfugen" :id "button-show-div"}]]]))
 
-(defn counter []
-  [:div
-   [counter-display]
-   [counter-control "+" inc]
-   [counter-control "-" dec]]
-   [test-display])
 ;; ##### My shit  ENDS
 
 (defn todo-app
   []
   [:div
    [:section#todoapp
-    [counter]
-    [task-entry]
-    (when (seq @(reframe/subscribe [:todos]))
-      [task-list])
-    [footer-controls]]
+    [test-display]
+    [question-entry]
+    (when (seq @(reframe/subscribe [:questions]))
+      [questions-list])]
    [:footer#info
-    [:p "Double-click to edit a todo"]]])
+    [:p "Drag and drop to reorder questions"]]])

@@ -23,6 +23,21 @@
   (first
     (st/validate params test-schema)))
 
+(def question-schema
+  [[:user-id st/required st/integer]
+   [:qtype   st/required st/integer]
+   [:active  st/required st/boolean]
+   [:question
+    st/required
+    st/string
+    {:title "Title field must contain at least 2 characters"
+     :validate #(> (count %) 2)}]])
+
+(defn validate-question [params]
+  (first
+    (st/validate params question-schema)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          ACTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -39,6 +54,13 @@
         errors      (-> full-params (validate-test))]
     (if (= errors nil)
       (db/create-minimal-test! full-params)
+      {:flash errors})))
+
+(defn create-question! [params user-id]
+  (let [full-params (assoc params :user-id user-id :active true)
+        errors      (-> full-params (validate-question))]
+    (if (= errors nil)
+      (db/create-question! full-params)
       {:flash errors})))
 
 (defn- get-answers [question]

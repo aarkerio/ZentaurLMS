@@ -3,6 +3,7 @@
             [cljs.spec.alpha :as s]
             [day8.re-frame.async-flow-fx]
             [day8.re-frame.http-fx]
+            [goog.dom :as gdom]
             [re-frame.core :as reframe]    ;; [reg-event-db reg-event-fx inject-cofx path after]]
             [zentaur.db    :as zdb]))
 
@@ -68,10 +69,8 @@
 ;; -- Interceptor Chain ------------------------------------------------------
 ;;
 ;; Each event handler can have its own chain of interceptors.
-;; We now create the interceptor chain shared by all event handlers
-;; which manipulate todos.
-;; A chain of interceptors is a vector of interceptors.
-;; Explanation of the `path` Interceptor is given further below.
+;; We now create the interceptor chain shared by all event handlers which manipulate todos.
+;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
 (def todo-interceptors [check-spec-interceptor    ;; ensure the spec is still valid  (after)
                         (reframe/path :todos)     ;; the 1st param given to handler will be the value from this path within db
                         ->local-store])           ;; write todos to localstore  (after)
@@ -112,8 +111,7 @@
 
   ;; the event handler (function) being registered
   (fn [{:keys [db local-store-todos]} _]                       ;; take 2 values from coeffects. Ignore event vector itself.
-    {:db (assoc zdb/default-db
-                :todos local-store-todos)}))   ;; all hail the new state to be put in app-db
+    {:db (assoc zdb/default-db :todos local-store-todos)}))   ;; all hail the new state to be put in app-db
 
 ;; usage:  (dispatch [:set-showing  :active])
 ;; This event is dispatched when the user clicks on one of the 3
@@ -156,7 +154,6 @@
   ;; within app-db.
   (fn [old-showing-value [_ new-showing-value]]
     new-showing-value))                  ;; return new state for the path
-
 
 ;; ######  reg-event-db, delivers ONLY the coeffect db (partial of the current state of the world) to the event handler
 
@@ -228,9 +225,11 @@
   :process-response
   (fn
     [db [_ response]]               ;; destructure the response from the event vector
+    (.log js/console (str ">>> RRRRRRRRRRR >>>>> "  response))
     (-> db
-        (assoc :loading? false)     ;; take away that "Loading ..." UI
-        (assoc :test (js->clj response)))))  ;; fairly lame process
+        (assoc :loading?  false)     ;; take away that "Loading ..." UI
+        (assoc :test      (js->clj response))
+        (assoc :questions (js->clj (:questions response))))))
 
 (reframe/reg-event-db
  :bad-response
@@ -240,19 +239,46 @@
 
 ;; reg-event-fx == event handler's coeffects
 
+
 (reframe/reg-event-fx    ;; <-- note the `-fx` extension
   :request-test          ;; <-- the event id
   (fn                     ;; <-- the handler function
     [cfx _]              ;; <-- 1st argument is coeffect, from which we extract db
-    (let [db (:db cfx)]
+    (let [db         (:db cfx)
+          test-id    (.-value (gdom/getElement "test-id"))
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+
       ;; we return a map of (side) effects
       {:http-xhrio {:method          :post
                     :uri             "/admin/tests/load"
                     :format          (ajax/json-request-format)
+                    :params          {:test-id test-id}
+                    :headers         {"x-csrf-token" csrf-field}
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:process-response]
                     :on-failure      [:bad-response]}
-       :db  (assoc db :loading? true)})))
+       :db (assoc db :loading? true)})))
+
+(reframe/reg-event-fx        ;; <-- note the `-fx` extension
+  :save-question             ;; <-- the event id
+  (fn                         ;; <-- the handler function
+    [cofx [_ question]]      ;; <-- 1st argument is coeffect, from which we extract db
+    (.log js/console (str ">>>   _____________  ___  >>>>>   " _))
+    (.log js/console (str ">>>   QUUUUUUUUUUUUUESTION    >>>>>   " question))
+    (let [db         (:db cofx)
+          test-id    (.-value (gdom/getElement "test-id"))
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+
+      ;; we return a map of (side) effects
+      {:http-xhrio {:method          :post
+                    :uri             "/admin/tests/createquestion"
+                    :format          (ajax/json-request-format)
+                    :params          question
+                    :headers         {"x-csrf-token" csrf-field}
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:process-response]
+                    :on-failure      [:bad-response]}
+       :db (assoc db :loading? true)})))
 
 (defn boot-flow
   []
