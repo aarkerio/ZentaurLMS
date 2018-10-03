@@ -27,14 +27,13 @@
     (-> (response/found "/admin/tests"))))
 
 (defn create-question
-  "POST /admin/tests/savequestion"
+  "POST /admin/tests/createquestion"
   [request]
   (let [params       (-> request :params)
         user-id      (-> request :identity :id)
-        _ ((log/info (str ">>> PARAMS NDEW QUESTION >>>>> " params)))
-        clean-params (dissoc params :__anti-forgery-token :submit :button-save)]
-    (model-test/create-question! clean-params user-id)
-    (-> (response/ok {:ok true}))))
+        new-params   (assoc params :user-id user-id :active true)
+        _            (log/info (str ">>> DD PARAMS NEW QUESTION >>>>> " new-params))]
+    (response/ok (model-test/create-question! new-params))))
 
 (defn admin-index
   "GET /admin/tests"

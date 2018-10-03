@@ -1,7 +1,6 @@
 (ns zentaur.subs ^{:doc "Re-frame Subscriptions"}
   (:require [re-frame.core :as reframe]))  ;; [reg-sub subscribe]
 
-
 ;; Subscribers automatically subscribe data from the global state and re-render on change.
 ;;
 ;;  subscribe within a renderer view:    [:div  @(subscribe [:a])]  subscribe and dereference a subscription in one go.
@@ -178,3 +177,8 @@
  :questions
  (fn [db]
    (get-in db [:questions])))
+
+(reframe/reg-sub
+ :qform
+ (fn [db]
+   (get-in db [:qform])))

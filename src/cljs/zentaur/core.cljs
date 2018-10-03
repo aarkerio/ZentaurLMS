@@ -114,15 +114,7 @@
 (defn flash-timeout []
   (if-let [flash-msg (gdom/getElement "flash-msg")]
     (js/setTimeout (remove-flash) 90000)
-    (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! " ))))
-
-(defn- load-tests []
-  (when-let [hform (gdom/getElement "button-show-div")]
-    (events/listen hform EventType.CLICK
-                 (fn [e]
-                   (let [divh    (gdom/getElement "hidden-form")
-                         toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
-                       (set! (.-className divh) toggle))))))
+    (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! "))))
 
 (defn ^:export init []
   (flash-timeout)
@@ -132,7 +124,6 @@
       (s/includes? current_url "admin/users")     (load-users)
       (s/includes? current_url "uploads/process") (load-process)
       (s/includes? current_url "admin/posts")     (load-posts)
-      (s/includes? current_url "admin/tests")     (load-tests)
       :else "F")))
 
 (loader/set-loaded! :home)

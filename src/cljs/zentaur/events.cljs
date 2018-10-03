@@ -183,6 +183,11 @@
     (update-in todos [id :done] not)))
 
 (reframe/reg-event-db
+  :toggle-question
+  (fn [questions [_ id]]
+    (update-in questions [id :done] not)))
+
+(reframe/reg-event-db
   :save
   todo-interceptors
   (fn [todos [_ id title]]
@@ -211,6 +216,12 @@
       (reduce #(assoc-in %1 [%2 :done] new-done)
               todos
               (keys todos)))))
+
+(reframe/reg-event-db
+ :toggle-qform
+ (fn [db [_]]
+   (.log js/console (str ">>> qform:::::: >>>>> " _))
+   (update db :qform not)))
 
 ;; My new event handler
 (reframe/reg-event-db
@@ -266,6 +277,7 @@
     (.log js/console (str ">>>   _____________  ___  >>>>>   " _))
     (.log js/console (str ">>>   QUUUUUUUUUUUUUESTION    >>>>>   " question))
     (let [db         (:db cofx)
+          _          (.log js/console (str ">>>   DDBBB    >>>>>   " db))
           test-id    (.-value (gdom/getElement "test-id"))
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
 
@@ -278,7 +290,31 @@
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:process-response]
                     :on-failure      [:bad-response]}
-       :db (assoc db :loading? true)})))
+       :db (-> db
+               (update :qform not)
+               (update :questions #(conj % question))
+               )})))
+
+(reframe/reg-event-fx        ;; <-- note the `-fx` extension
+  :update-questions          ;; <-- the event id
+  (fn                         ;; <-- the handler function
+    [cofx [_ question]]      ;; <-- 1st argument is coeffect, from which we extract db
+    (.log js/console (str ">>>   _____________  ___  >>>>>   " _))
+    (.log js/console (str ">>>   QUUUUUUUUUUUUUESTION    >>>>>   " question))
+    (let [db         (:db cofx)
+          test-id    (.-value (gdom/getElement "test-id"))
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+
+      ;; we return a map of (side) effects
+      {:http-xhrio {:method          :post
+                    :uri             "/admin/tests/createquestion"
+                    :format          (ajax/json-request-format)
+                    :params          question
+                    :headers         {"x-csrf-token" csrf-field}
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:process-response]
+                    :on-failure      [:bad-response]}
+       :db (update db :qform not)})))
 
 (defn boot-flow
   []

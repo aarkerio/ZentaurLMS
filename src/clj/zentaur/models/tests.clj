@@ -56,19 +56,30 @@
       (db/create-minimal-test! full-params)
       {:flash errors})))
 
-(defn create-question! [params user-id]
-  (let [full-params (assoc params :user-id user-id :active true)
-        errors      (-> full-params (validate-question))]
-    (if (= errors nil)
-      (db/create-question! full-params)
-      {:flash errors})))
+(defn- ^:private link-test-question!
+  [last-question test-id]
+  (let [question-id (get-in (first last-question) [:id])]
+    (db/create-question-test! {:question-id question-id :test-id test-id})))
 
-(defn- get-answers [question]
+(defn create-question! [params]
+  (let [full-params (-> params
+                        (update :qtype #(Integer/parseInt %))
+                        (update :test-id #(Integer/parseInt %)))
+        errors      (-> full-params (validate-question))]
+    (log/info (str ">>> PARAMS full-params >>>>> " full-params))
+    (if (= errors nil)
+      (as-> full-params v
+          (db/create-question! v)
+          (link-test-question! v (:test-id full-params))
+          (assoc {} :v v :ok true))
+      {:flash errors :ok false})))
+
+(defn- ^:private get-answers [question]
   (let [answers          (db/get-answers {:question-id (:id question)})
         question-updated (update question :created_at #(helpers/format-time %))]
     (assoc question-updated :answers answers)))
 
-(defn- get-questions [test-id]
+(defn- ^:private get-questions [test-id]
   (let [questions  (db/get-questions { :test-id test-id })]
     (map get-answers questions)))
 

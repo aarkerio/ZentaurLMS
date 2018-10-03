@@ -70,11 +70,11 @@ ORDER BY id DESC
 
 /*******************  UPLOADS   ***/
 
--- :name save-upload! :! :n
+-- :name save-upload! :<!
 -- :doc creates a new upload record
 INSERT INTO uploads
 (filename, active, tags, user_id, created_at, hashvar, done)
-VALUES (:filename, :active, :tags, :user_id, :created_at, :hashvar, :done)
+VALUES (:filename, :active, :tags, :user_id, :created_at, :hashvar, :done) returning id
 
 -- :name get-uploads :? :*
 -- :doc retrieve uploads given the user id.
