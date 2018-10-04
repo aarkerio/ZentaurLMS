@@ -219,8 +219,7 @@
 
 (reframe/reg-event-db
  :toggle-qform
- (fn [db [_]]
-   (.log js/console (str ">>> qform:::::: >>>>> " _))
+ (fn [db _]
    (update db :qform not)))
 
 ;; My new event handler
@@ -250,7 +249,6 @@
 
 ;; reg-event-fx == event handler's coeffects
 
-
 (reframe/reg-event-fx    ;; <-- note the `-fx` extension
   :request-test          ;; <-- the event id
   (fn                     ;; <-- the handler function
@@ -270,8 +268,21 @@
                     :on-failure      [:bad-response]}
        :db (assoc db :loading? true)})))
 
+;; AJAX handlers
+(reframe/reg-event-db
+  :process-new-question
+  (fn
+    [db [_ question]]               ;; destructure the response from the event vector
+    (.log js/console (str ">>> question >>>>> " question))
+    (-> db
+        (assoc  :loading?  false)     ;; take away that "Loading ..." UI
+        (update :qform not)
+        (update :questions conj question))))
+
+;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions
+
 (reframe/reg-event-fx        ;; <-- note the `-fx` extension
-  :save-question             ;; <-- the event id
+  :create-question           ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ question]]      ;; <-- 1st argument is coeffect, from which we extract db
     (.log js/console (str ">>>   _____________  ___  >>>>>   " _))
@@ -288,12 +299,8 @@
                     :params          question
                     :headers         {"x-csrf-token" csrf-field}
                     :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:process-response]
-                    :on-failure      [:bad-response]}
-       :db (-> db
-               (update :qform not)
-               (update :questions #(conj % question))
-               )})))
+                    :on-success      [:process-new-question question]
+                    :on-failure      [:bad-response]}})))
 
 (reframe/reg-event-fx        ;; <-- note the `-fx` extension
   :update-questions          ;; <-- the event id

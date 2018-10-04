@@ -25,12 +25,48 @@
                                       13 (save)
                                       27 (stop)
                                       nil)})])))
+(defn input-answer [answer]
+  [:div.div-separator {:id "question-hint-div" :key "question-hint-div"}
+      [:input {:type         "text"
+               :defaultValue ""
+               :id           "answer-hint"
+               :key          "answer-hint"
+               :placeholder  "Answer"
+               :title        "Answer"
+               :maxLength    180
+               :size         100}]])
+
+(defn new-answer [question-id]
+  (let [checked  (reagent/atom false)
+        dom-id   (str "new-answer-div" question-id)]
+     (fn []
+    [:div.div-separator {:id dom-id :key dom-id}
+     [:input {:type         "text"
+              :defaultValue ""
+              :id           (str "new-answer-"question-id)
+              :key          (str "new-answer-"question-id)
+              :placeholder  "New Answer"
+              :title        "New Answer"
+              :maxLength    180
+              :size         70}]
+     [:input.btn {:type "checkbox" :title "richtig?"
+                  :key (str "new-answer-box-"question-id) :id (str "new-answer-box-"question-id)
+                  :checked @checked :on-change #(swap! checked not)}]
+     [:input.btn {:type "button" :value "Antwort hinzufügen"
+                  :key (str "new-answer-btn" question-id)
+                  :id  (str "new-answer-btn" question-id)
+                  :on-click #(reframe/dispatch [:create-answer question-id @checked])}]])))
+
 (defn question-item
-  [{:keys [id question explanation hint key]}]
+  [{:keys [id question explanation hint key qtype] :as q}]
   [:div.div-separator {:key (str "divl" id) :id (str "divl" id)}
    [:p {:key (str "divl1" id) :id (str "divl1" id)} [:span.bold-font (str key ".-")] "Question: " question]
    [:p {:key (str "divl2" id) :id (str "divl2" id)} "Hint: " hint]
    [:p {:key (str "divl3" id) :id (str "divl3" id)} "Explanation: " explanation]
+   (if (= qtype 1)
+     [new-answer]
+     (for [answer (:answers q)]
+       [input-answer id]))
    [:input.btn {:type "button" :value "Löschen fragen"
                 :key (str "btn" id)
                 :id (str "btn" id)
@@ -51,13 +87,14 @@
     [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
       [:h3.class "Hinzifugen neue fragen"]
      [:div.div-separator {:id "question-title-div" :key "question-title-div"}
-      [question-input
-       {:id          "new-question"
-        :placeholder "Neue frage"
-        :defaultValue ""
-        :size        100
-        :maxLength   180}]]
-
+      [:input {:type         "text"
+               :defaultValue ""
+               :id           "new-question"
+               :key          "new-question"
+               :placeholder  "New question"
+               :title        "New question"
+               :maxLength    180
+               :size         100}]]
      [:div.div-separator {:id "question-hint-div" :key "question-hint-div"}
       [:input {:type         "text"
                :defaultValue ""
@@ -79,15 +116,16 @@
      [:div.div-separator {:id "question-qtype-div" :key "question-qtype-div"}
       [:select.form-control.mr-sm-2 {:name "qtype" :id "qtype-select"}
        [:option {:value "1"} "Multiple"]
-       [:option {:value "2"} "Columns"]
-       [:option {:value "2"} "Single"]]]
+       [:option {:value "2"} "Open"]
+       [:option {:value "3"} "Fullfill"]
+       [:option {:value "4"} "Columns"]]]
      [:div
       [:input.btn {:type "button" :value "Save new question"
-                   :on-click #(re-frame.core/dispatch [:save-question {:question    (.-value (gdom/getElement "new-question"))
-                                                                       :hint        (.-value (gdom/getElement "question-hint"))
-                                                                       :qtype       (.-value (gdom/getElement "qtype-select"))
-                                                                       :test-id     (.-value (gdom/getElement "test-id"))
-                                                                       :explanation (.-value (gdom/getElement "explanation-description"))}
+                   :on-click #(re-frame.core/dispatch [:create-question {:question    (.-value (gdom/getElement "new-question"))
+                                                                         :hint        (.-value (gdom/getElement "question-hint"))
+                                                                         :qtype       (.-value (gdom/getElement "qtype-select"))
+                                                                         :test-id     (.-value (gdom/getElement "test-id"))
+                                                                         :explanation (.-value (gdom/getElement "explanation-description"))}
                                                        :toggle-qform])}]]]))
 
 (defn test-display []

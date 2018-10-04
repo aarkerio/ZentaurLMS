@@ -58,15 +58,16 @@
 
 (defn- ^:private link-test-question!
   [last-question test-id]
-  (let [question-id (get-in (first last-question) [:id])]
-    (db/create-question-test! {:question-id question-id :test-id test-id})))
+  (let [question-id (get-in (first last-question) [:id])
+        ordnen      (db/get-last-ordnen-questions {:test-id test-id})
+        neu-ordnen  (inc (:ordnen ordnen))]
+    (db/create-question-test! {:question-id question-id :test-id test-id :ordnen neu-ordnen})))
 
 (defn create-question! [params]
   (let [full-params (-> params
-                        (update :qtype #(Integer/parseInt %))
+                        (update :qtype   #(Integer/parseInt %))
                         (update :test-id #(Integer/parseInt %)))
         errors      (-> full-params (validate-question))]
-    (log/info (str ">>> PARAMS full-params >>>>> " full-params))
     (if (= errors nil)
       (as-> full-params v
           (db/create-question! v)

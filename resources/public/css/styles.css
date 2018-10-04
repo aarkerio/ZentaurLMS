@@ -689,7 +689,7 @@ textarea {
   width: 100%;
   display: none; }
 
-.myvisible {
+.visible-div {
   width: 100%;
   display: block;
   padding: 8px;
@@ -801,3 +801,6 @@ textarea {
   padding: 5px;
   margin: 5px;
   border: 1px dotted gray; }
+
+.bold-font {
+  font-weight: bolder; }
