@@ -5,7 +5,7 @@ CREATE TABLE questions(
   id serial PRIMARY KEY,
   user_id INT NOT NULL REFERENCES users(id),
   question text NOT NULL,
-  qtype INT NOT NULL DEFAULT 1,  -- qtype 1: multiple option, 2: open, 3: true/false, 4: fullfill, 5: composite questions
+  qtype INT NOT NULL DEFAULT 1,  -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions
   hint VARCHAR(300),
   explanation text,
   active BOOLEAN NOT NULL DEFAULT false,
@@ -15,3 +15,7 @@ CREATE TABLE questions(
   created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
   updated_at timestamp(0) with time zone
  );
+
+ALTER TABLE questions ADD CHECK (qtype IN (1,2,3,4));
+
+COMMENT on column questions.qtype is '1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)'

@@ -1,6 +1,9 @@
 (ns zentaur.subs ^{:doc "Re-frame Subscriptions"}
   (:require [re-frame.core :as reframe]))  ;; [reg-sub subscribe]
 
+;; Subscribers automatically subscribe data from the global state and re-render on change.
+;;
+;;  subscribe within a renderer view:    [:div  @(subscribe [:a])]  subscribe and dereference a subscription in one go.
 ;; -------------------------------------------------------------------------------------
 ;; Layer 2
 ;;
@@ -13,10 +16,9 @@
 ;; that `app-db` changes (in any way). As a result, we want Layer 2 to be trivial.
 ;;
 (reframe/reg-sub
-  :showing          ;; usage:   (subscribe [:showing])
-  (fn [db _]        ;; db is the (map) value stored in the app-db atom
-    (:showing db))) ;; extract a value from the application state
-
+  :showing             ;; usage:   (subscribe [:showing])
+  (fn [db _]            ;; db is the (map) value stored in the app-db atom
+    (:showing db)))    ;; extract a value from the application state
 
 ;; Next, the registration of a similar handler is done in two steps.
 ;; First, we `defn` a pure handler function.  Then, we use `reg-sub` to register it.
@@ -25,6 +27,7 @@
 (defn sorted-todos
   [db _]
   (:todos db))
+
 (reframe/reg-sub :sorted-todos sorted-todos)    ;; usage: (subscribe [:sorted-todos])
 
 ;; -------------------------------------------------------------------------------------
@@ -58,7 +61,7 @@
 ;; But now we are dealing with intermediate (layer 3) nodes, we'll need to provide both fns.
 ;;
 (reframe/reg-sub
-  :todos        ;; usage:   (subscribe [:todos])
+  :todos             ;; usage:   (subscribe [:todos])
 
   ;; This function returns the input signals.
   ;; In this case, it returns a single signal.
@@ -126,12 +129,9 @@
 ;; -------------------------------------------------------------------------------------
 ;; SUGAR ?
 ;; Now for some syntactic sugar...
-;; The purpose of the sugar is to remove boilerplate noise. To distill to the essential
-;; in 90% of cases.
-;; Because it is so common to nominate 1 or more input signals,
-;; reg-sub provides some macro sugar so you can nominate a very minimal
-;; vector of input signals. The 1st function is not needed.
-;; Here is the example above rewritten using the sugar.
+;; The purpose of the sugar is to remove boilerplate noise. To distill to the essential in 90% of cases.
+;; Because it is so common to nominate 1 or more input signals, reg-sub provides some macro sugar so you can nominate a very minimal
+;; vector of input signals. The 1st function is not needed. Here is the example above rewritten using the sugar.
 #_(reframe/reg-sub
   :visible-todos
   :<- [:todos]
@@ -142,7 +142,6 @@
                       :done   :done
                       :all    identity)]
       (filter filter-fn todos))))
-
 
 (reframe/reg-sub
   :all-complete?
@@ -157,8 +156,29 @@
     (count (filter :done todos))))
 
 (reframe/reg-sub
-  :footer-counts
-  :<- [:todos]
-  :<- [:completed-count]
-  (fn [[todos completed] _]
-    [(- (count todos) completed) completed]))
+ :footer-counts
+ :<- [:todos]
+ :<- [:completed-count]
+ (fn [[todos completed] _]
+   [(- (count todos) completed) completed]))
+
+;; My new subscription functions
+(reframe/reg-sub
+ :count
+ (fn [db]
+   (:count db)))
+
+(reframe/reg-sub
+ :test
+ (fn [db]
+   (:test db)))
+
+(reframe/reg-sub
+ :questions
+ (fn [db]
+   (get-in db [:questions])))
+
+(reframe/reg-sub
+ :qform
+ (fn [db]
+   (get-in db [:qform])))

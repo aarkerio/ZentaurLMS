@@ -19,6 +19,8 @@
                  [compojure "1.6.1"]                     ;; routes for ring
                  [conman "0.8.2"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.11"]                        ;; where all configuration properties converge
+                 [day8.re-frame/http-fx "0.1.6"]         ;; Ajax for re-frame
+                 [day8.re-frame/async-flow-fx "0.0.11"]  ;; async control flow
                  [digest "1.4.8"]                        ;; Message digest library for Clojure.
                  [funcool/bide "1.6.0"]                  ;; A simple routing library for ClojureScript
                  [funcool/struct "1.3.0"]                ;; database validation

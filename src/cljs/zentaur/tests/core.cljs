@@ -6,7 +6,7 @@
             [goog.dom :as gdom]
             [goog.events :as events]
             [reagent.core :as r]
-            [re-frame.core :refer [dispatch dispatch-sync]]
+            [re-frame.core :as reframe] ;; [dispatch dispatch-sync]]
             [secretary.core :as secretary]
             [zentaur.events]    ;; These two are only required to make the compiler
             [zentaur.subs]      ;; my subscriptions
@@ -20,7 +20,7 @@
 ;; The event handler for `:initialise-db` can be found in `events.cljs`
 ;; Using the sync version of dispatch means that value is in
 ;; place before we go onto the next step.
-(dispatch-sync [:initialise-db])
+(reframe/dispatch-sync [:initialise-db])
 
 ;; -- Routes and History ------------------------------------------------------
 ;; Although we use the secretary library below, that's mostly a historical
@@ -29,8 +29,8 @@
 ;;   - https://github.com/juxt/bidi
 ;; We don't have a strong opinion.
 ;;
-(defroute "/" [] (dispatch [:set-showing :all]))
-(defroute "/:filter" [filter] (dispatch [:set-showing (keyword filter)]))
+(defroute "/" [] (reframe/dispatch [:set-showing :all]))
+(defroute "/:filter" [filter] (reframe/dispatch [:set-showing (keyword filter)]))
 
 (def history
   (doto (History.)
@@ -45,8 +45,10 @@
 ;;    }
 ;; So this is the entry function that kicks off the app once the HTML is loaded.
 ;;
+
 (defn ^:export main
   []
+  (reframe/dispatch-sync [:request-test])  ;; <--- boot process is started. Synchronously initialised *before*
   ;; Render the UI into the HTML's <div id="app" /> element
   ;; The view function `todomvc.views/todo-app` is the
   ;; root view for the entire UI.

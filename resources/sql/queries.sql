@@ -70,11 +70,11 @@ ORDER BY id DESC
 
 /*******************  UPLOADS   ***/
 
--- :name save-upload! :! :n
+-- :name save-upload! :<!
 -- :doc creates a new upload record
 INSERT INTO uploads
 (filename, active, tags, user_id, created_at, hashvar, done)
-VALUES (:filename, :active, :tags, :user_id, :created_at, :hashvar, :done)
+VALUES (:filename, :active, :tags, :user_id, :created_at, :hashvar, :done) returning id
 
 -- :name get-uploads :? :*
 -- :doc retrieve uploads given the user id.
@@ -104,7 +104,7 @@ VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) returning id
 
 -- :name create-question-test! :! :n
 -- :doc creates a new question test record
-INSERT INTO question_tests (question_id, test_id) VALUES (:question-id, :test-id)
+INSERT INTO question_tests (question_id, test_id, ordnen) VALUES (:question-id, :test-id, :ordnen)
 
 -- :name create-answer! :<!
 -- :doc creates a new answer record
@@ -125,7 +125,11 @@ SELECT * FROM tests WHERE id = :id AND user_id = :user-id
 
 -- :name get-questions :? :*
 -- :doc retrieve all questions tests.
-SELECT q.* FROM question_tests AS qt, questions AS q WHERE qt.test_id = :test-id AND qt.question_id=q.id ORDER BY ordnen DESC
+SELECT q.*, qt.ordnen FROM question_tests AS qt, questions AS q WHERE qt.test_id = :test-id AND qt.question_id=q.id ORDER BY qt.ordnen ASC
+
+-- :name get-last-ordnen-questions :? :1
+-- :doc retrieve the last ordnen.
+SELECT ordnen FROM question_tests WHERE test_id = :test-id ORDER BY ordnen DESC LIMIT 1
 
 -- :name get-answers :? :*
 -- :doc retrieve all tests.
@@ -134,6 +138,11 @@ SELECT id, question_id, answer, correct FROM answers WHERE question_id = :questi
 -- :name delete-test! :! :n
 -- :doc delete a test given the id
 DELETE FROM tests WHERE id = :id
+
+remove-question!
+-- :name remove-question! :! :n
+-- :doc remove a question given the test-id
+DELETE FROM question_tests WHERE test_id = :test-id AND question_id = :question-id
 
 /**** ROLES   ****/
 

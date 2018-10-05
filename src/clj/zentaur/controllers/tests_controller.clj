@@ -26,6 +26,15 @@
     (model-test/create-test! clean-params user-id)
     (-> (response/found "/admin/tests"))))
 
+(defn create-question
+  "POST /admin/tests/createquestion"
+  [request]
+  (let [params       (-> request :params)
+        user-id      (-> request :identity :id)
+        new-params   (assoc params :user-id user-id :active true)
+        _            (log/info (str ">>> DD PARAMS NEW QUESTION >>>>> " new-params))]
+    (response/ok (model-test/create-question! new-params))))
+
 (defn admin-index
   "GET /admin/tests"
   [request]
@@ -49,3 +58,8 @@
   (let [user-id (:id identity)
         test-id (Integer/parseInt (get params :test-id))]
     (response/ok (model-test/get-test-nodes test-id user-id))))
+
+(defn delete-question
+  "POST /admin/tests/deletequestion"
+  [{:keys [params]}]
+    (response/ok (model-test/remove-question params)))

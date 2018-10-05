@@ -14,7 +14,7 @@
     [:td [:a {:href (str "/admin/tests/delete/" id)}  "Delete"]]])
 
 (defn- form-new [csrf-field]
-  [:div {:id "hidden-form" :class "hidden-div"}
+  [:div.hidden-div {:id "hidden-form"}
     (f/form-to [:post "/admin/tests"]
       (f/hidden-field {:value csrf-field} "__anti-forgery-token")
       [:div (f/text-field {:maxlength 150 :size 90 :placeholder "Title"} "title")]

@@ -23,6 +23,21 @@
   (first
     (st/validate params test-schema)))
 
+(def question-schema
+  [[:user-id st/required st/integer]
+   [:qtype   st/required st/integer]
+   [:active  st/required st/boolean]
+   [:question
+    st/required
+    st/string
+    {:title "Title field must contain at least 2 characters"
+     :validate #(> (count %) 2)}]])
+
+(defn validate-question [params]
+  (first
+    (st/validate params question-schema)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          ACTIONS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -41,14 +56,37 @@
       (db/create-minimal-test! full-params)
       {:flash errors})))
 
-(defn- get-answers [question]
+(defn- ^:private link-test-question!
+  [last-question test-id]
+  (let [question-id (get-in (first last-question) [:id])
+        ordnen      (db/get-last-ordnen-questions {:test-id test-id})
+        neu-ordnen  (inc (:ordnen ordnen))]
+    (db/create-question-test! {:question-id question-id :test-id test-id :ordnen neu-ordnen})))
+
+(defn create-question! [params]
+  (let [full-params (-> params
+                        (update :qtype   #(Integer/parseInt %))
+                        (update :test-id #(Integer/parseInt %)))
+        errors      (-> full-params (validate-question))]
+    (if (= errors nil)
+      (as-> full-params v
+          (db/create-question! v)
+          (link-test-question! v (:test-id full-params))
+          (assoc {} :v v :ok true))
+      {:flash errors :ok false})))
+
+(defn- ^:private get-answers [question]
   (let [answers          (db/get-answers {:question-id (:id question)})
         question-updated (update question :created_at #(helpers/format-time %))]
     (assoc question-updated :answers answers)))
 
-(defn- get-questions [test-id]
+(defn- ^:private get-questions
+  "get and convert to map keyed"
+  [test-id]
   (let [questions  (db/get-questions { :test-id test-id })]
-    (map get-answers questions)))
+        (->> questions
+            (map get-answers)
+            (zipmap (iterate inc 1)))))
 
 (defn get-test-nodes [test-id user-id]
   (let [test         (db/get-one-test { :id test-id :user-id user-id })
@@ -59,7 +97,11 @@
 (defn destroy [params]
   (db/delete-test! params))
 
-;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
 (defn admin-get-tests [user-id]
   (db/admin-get-tests))
+
+(defn remove-question [params]
+  (let [test-id     (Integer/parseInt (:test-id params))
+        question-id (Integer/parseInt (:question-id params))]
+    (db/remove-question! {:test-id test-id :question-id question-id})))
 
