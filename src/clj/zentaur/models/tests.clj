@@ -83,10 +83,11 @@
 (defn- ^:private get-questions
   "get and convert to map keyed"
   [test-id]
-  (let [questions  (db/get-questions { :test-id test-id })]
+  (let [questions  (db/get-questions { :test-id test-id })
+        index-seq  (map #(% :id) questions)]
         (->> questions
-            (map get-answers)
-            (zipmap (iterate inc 1)))))
+             (map get-answers)
+             (zipmap index-seq))))
 
 (defn get-test-nodes [test-id user-id]
   (let [test         (db/get-one-test { :id test-id :user-id user-id })
@@ -101,6 +102,7 @@
   (db/admin-get-tests))
 
 (defn remove-question [params]
+  (log/info (str ">>>  remove-question >>>>> " params))
   (let [test-id     (Integer/parseInt (:test-id params))
         question-id (Integer/parseInt (:question-id params))]
     (db/remove-question! {:test-id test-id :question-id question-id})))

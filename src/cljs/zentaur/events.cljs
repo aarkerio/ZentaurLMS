@@ -235,7 +235,6 @@
   :process-response
   (fn
     [db [_ response]]               ;; destructure the response from the event vector
-    (.log js/console (str ">>> RRRRRRRRRRR >>>>> "  response))
     (-> db
         (assoc :loading?  false)     ;; take away that "Loading ..." UI
         (assoc :test      (js->clj response))
@@ -307,18 +306,17 @@
     (.log js/console (str ">>> question-id >>>>> " question-id))
     (-> db
         (assoc  :loading?  false)
-        (update :questions conj question-id))))
+        (dissoc :questions question-id))))
 
 (reframe/reg-event-fx        ;; <-- note the `-fx` extension
  :delete-question           ;; <-- the event id
-  (fn                         ;; <-- the handler function
-    [cofx [_ question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
-    (.log js/console (str ">>>   _____________  ___  >>>>>   " _))
+ (fn                         ;; <-- the handler function
+   [cofx [_ question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
+   (when (js/confirm "Delete question?")
     (let [db         (:db cofx)
           _          (.log js/console (str ">>>   DDBBB    >>>>>   " db))
           test-id    (.-value (gdom/getElement "test-id"))
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-      (when (js/confirm "Delete question?")
         ;; we return a map of (side) effects
         {:http-xhrio {:method          :post
                       :uri             "/admin/tests/deletequestion"

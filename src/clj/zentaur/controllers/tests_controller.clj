@@ -62,4 +62,4 @@
 (defn delete-question
   "POST /admin/tests/deletequestion"
   [{:keys [params]}]
-    (response/ok (model-test/remove-question params)))
+    (response/ok {:response (model-test/remove-question params)}))

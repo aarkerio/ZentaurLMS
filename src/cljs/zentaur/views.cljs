@@ -25,12 +25,12 @@
                                       13 (save)
                                       27 (stop)
                                       nil)})])))
-(defn input-answer [answer]
-  [:div.div-separator {:id "question-hint-div" :key "question-hint-div"}
+(defn input-answer [{:keys [id answer correct]}]
+  [:div.div-separator {:id "input-answer-div" :key "input-answer-div"}
       [:input {:type         "text"
                :defaultValue ""
-               :id           "answer-hint"
-               :key          "answer-hint"
+               :id           (str "answer-input-" id)
+               :key          (str "answer-input-" id)
                :placeholder  "Answer"
                :title        "Answer"
                :maxLength    180
@@ -58,32 +58,33 @@
                   :on-click #(reframe/dispatch [:create-answer question-id @checked])}]])))
 
 (defn question-item
-  [{:keys [id question explanation hint key qtype] :as q}]
-  [:div.div-separator {:key (str "divl" id) :id (str "divl" id)}
-   [:p {:key (str "divl1" id) :id (str "divl1" id)} [:span.bold-font (str key ".-")] "Question: " question]
-   [:p {:key (str "divl2" id) :id (str "divl2" id)} "Hint: " hint]
-   [:p {:key (str "divl3" id) :id (str "divl3" id)} "Explanation: " explanation]
+  [{:keys [question explanation hint key qtype id] :as q}]
+   (.log js/console (str ">>> VALUE 62 >>>>> " id  ))
+  [:div.div-separator {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
+   [:p {:key (str "div-question" id) :id (str "div-question" id)} [:span.bold-font (str key ".-")] "Question: " question]
+   [:p {:key (str "div-hint" id)     :id (str "div-hint" id)}     "Hint: " hint]
+   [:p {:key (str "div-explan" id)   :id (str "div-explan" id)}   "Explanation: " explanation]
    (if (= qtype 1)
      [new-answer]
      (for [answer (:answers q)]
-       [input-answer id]))
-   [:input.btn {:type "button" :value "Löschen fragen"
-                :key (str "btn" id)
-                :id (str "btn" id)
+       [input-answer answer]))
+   [:input.btn {:type     "button"
+                :value    "Löschen fragen"
+                :key      (str "frage-btn-x" id)
+                :id       (str "frage-btn-x" id)
                 :on-click #(reframe/dispatch [:delete-question id])}]])
 
 (defn questions-list
   []
   (let [questions (reframe/subscribe [:questions])
         counter   (atom 0)]
-    [:section#list-section {:key (str "question-list-key" counter) :id (str "question-list-key" counter)}
-      (for [question @questions]
-        [question-item (assoc question :key (swap! counter inc))])]))
+    [:section {:key (str "question-list-key-" counter) :id (str "question-list-key-" counter)}
+     (for [question @questions]
+       [question-item (second (assoc-in question [1 :key] (swap! counter inc)))])]))
 
 (defn question-entry
   []
   (let [qform (reframe/subscribe [:qform])]
-    (.log js/console (str ">>> DISPLAY    >>>>> " @qform))
     [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
       [:h3.class "Hinzifugen neue fragen"]
      [:div.div-separator {:id "question-title-div" :key "question-title-div"}
