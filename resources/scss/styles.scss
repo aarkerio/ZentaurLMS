@@ -1,13 +1,22 @@
 /* My Typography ----------------------------------------------------------------------------- */
-body {
-	font-family: 'Open Sans', sans-serif;
-}
+
+/*** importing extras ***/
+
+@import 'libs/extra';
+
+/** My Variables **/
+
+$font-stack:    Helvetica, sans-serif;
+$font-main: 'Open Sans', sans-serif;
+$primary-color: #333;
+
 .site-name {
 	font-family: 'Raleway', sans-serif;
 }
 html,
 body {
-	height: 100%;
+	  height: 100%;
+    font-family: $font-main;
 }
 body {
 	font-size: 15px;

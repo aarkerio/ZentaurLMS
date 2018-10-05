@@ -279,16 +279,13 @@
         (update :qform not)
         (update :questions conj question))))
 
-;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions
+;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
 
 (reframe/reg-event-fx        ;; <-- note the `-fx` extension
   :create-question           ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ question]]      ;; <-- 1st argument is coeffect, from which we extract db
-    (.log js/console (str ">>>   _____________  ___  >>>>>   " _))
-    (.log js/console (str ">>>   QUUUUUUUUUUUUUESTION    >>>>>   " question))
     (let [db         (:db cofx)
-          _          (.log js/console (str ">>>   DDBBB    >>>>>   " db))
           test-id    (.-value (gdom/getElement "test-id"))
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
 
@@ -301,6 +298,36 @@
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:process-new-question question]
                     :on-failure      [:bad-response]}})))
+
+
+(reframe/reg-event-db
+  :process-after-delete-question
+  (fn
+    [db [_ question-id]]
+    (.log js/console (str ">>> question-id >>>>> " question-id))
+    (-> db
+        (assoc  :loading?  false)
+        (update :questions conj question-id))))
+
+(reframe/reg-event-fx        ;; <-- note the `-fx` extension
+ :delete-question           ;; <-- the event id
+  (fn                         ;; <-- the handler function
+    [cofx [_ question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
+    (.log js/console (str ">>>   _____________  ___  >>>>>   " _))
+    (let [db         (:db cofx)
+          _          (.log js/console (str ">>>   DDBBB    >>>>>   " db))
+          test-id    (.-value (gdom/getElement "test-id"))
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+      (when (js/confirm "Delete question?")
+        ;; we return a map of (side) effects
+        {:http-xhrio {:method          :post
+                      :uri             "/admin/tests/deletequestion"
+                      :format          (ajax/json-request-format)
+                      :params          {:question-id question-id :test-id test-id}
+                      :headers         {"x-csrf-token" csrf-field}
+                      :response-format (ajax/json-response-format {:keywords? true})
+                      :on-success      [:process-after-delete-question question-id]
+                      :on-failure      [:bad-response]}}))))
 
 (reframe/reg-event-fx        ;; <-- note the `-fx` extension
   :update-questions          ;; <-- the event id

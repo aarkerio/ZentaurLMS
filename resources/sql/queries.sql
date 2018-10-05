@@ -139,6 +139,11 @@ SELECT id, question_id, answer, correct FROM answers WHERE question_id = :questi
 -- :doc delete a test given the id
 DELETE FROM tests WHERE id = :id
 
+remove-question!
+-- :name remove-question! :! :n
+-- :doc remove a question given the test-id
+DELETE FROM question_tests WHERE test_id = :test-id AND question_id = :question-id
+
 /**** ROLES   ****/
 
 -- :name get-roles :? :*

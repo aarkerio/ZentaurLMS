@@ -1,13 +1,34 @@
 /* My Typography ----------------------------------------------------------------------------- */
-body {
-  font-family: 'Open Sans', sans-serif; }
+/*** importing extras ***/
+/** Additional styles  **/
+/* open-sans-regular - latin */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/open-sans-v15-latin-regular.eot");
+  /* IE9 Compat Modes */
+  src: local("Open Sans Regular"), local("OpenSans-Regular"), url("../fonts/open-sans-v15-latin-regular.eot?#iefix") format("embedded-opentype"), url("../fonts/open-sans-v15-latin-regular.woff2") format("woff2"), url("../fonts/open-sans-v15-latin-regular.woff") format("woff"), url("../fonts/open-sans-v15-latin-regular.ttf") format("truetype"), url("../fonts/open-sans-v15-latin-regular.svg#OpenSans") format("svg");
+  /* Legacy iOS */ }
 
+/* raleway-regular - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/raleway-v12-latin-regular.eot");
+  /* IE9 Compat Modes */
+  src: local("Raleway"), local("Raleway-Regular"), url("../fonts/raleway-v12-latin-regular.eot?#iefix") format("embedded-opentype"), url("../fonts/raleway-v12-latin-regular.woff2") format("woff2"), url("../fonts/raleway-v12-latin-regular.woff") format("woff"), url("../fonts/raleway-v12-latin-regular.ttf") format("truetype"), url("../fonts/raleway-v12-latin-regular.svg#Raleway") format("svg");
+  /* Legacy iOS */ }
+
+/** My Variables **/
 .site-name {
   font-family: 'Raleway', sans-serif; }
 
 html,
 body {
-  height: 100%; }
+  height: 100%;
+  font-family: "Open Sans", sans-serif; }
 
 body {
   font-size: 15px;

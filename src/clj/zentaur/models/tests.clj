@@ -80,9 +80,13 @@
         question-updated (update question :created_at #(helpers/format-time %))]
     (assoc question-updated :answers answers)))
 
-(defn- ^:private get-questions [test-id]
+(defn- ^:private get-questions
+  "get and convert to map keyed"
+  [test-id]
   (let [questions  (db/get-questions { :test-id test-id })]
-    (map get-answers questions)))
+        (->> questions
+            (map get-answers)
+            (zipmap (iterate inc 1)))))
 
 (defn get-test-nodes [test-id user-id]
   (let [test         (db/get-one-test { :id test-id :user-id user-id })
@@ -93,7 +97,11 @@
 (defn destroy [params]
   (db/delete-test! params))
 
-;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
 (defn admin-get-tests [user-id]
   (db/admin-get-tests))
+
+(defn remove-question [params]
+  (let [test-id     (Integer/parseInt (:test-id params))
+        question-id (Integer/parseInt (:question-id params))]
+    (db/remove-question! {:test-id test-id :question-id question-id})))
 

@@ -134,7 +134,7 @@
     [:div
      [:h1 (:title @test)]
      [:div.someclass (str "tags: " (:tags @test) "    created: " (:created_at @test)) ]
-     (str "Current test: " @test)
+     (prn "Current test: " @test)
      [:div [:input.btn {:type "button" :value "Fragen hinzüfugen"
                         :on-click #(re-frame.core/dispatch [:toggle-qform])}]]]))
 

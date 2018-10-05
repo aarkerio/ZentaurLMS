@@ -58,3 +58,8 @@
   (let [user-id (:id identity)
         test-id (Integer/parseInt (get params :test-id))]
     (response/ok (model-test/get-test-nodes test-id user-id))))
+
+(defn delete-question
+  "POST /admin/tests/deletequestion"
+  [{:keys [params]}]
+    (response/ok (model-test/remove-question params)))
