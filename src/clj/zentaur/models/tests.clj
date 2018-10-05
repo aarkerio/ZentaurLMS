@@ -104,6 +104,6 @@
 (defn remove-question [params]
   (log/info (str ">>>  remove-question >>>>> " params))
   (let [test-id     (Integer/parseInt (:test-id params))
-        question-id (Integer/parseInt (:question-id params))]
+        question-id (:question-id params)]
     (db/remove-question! {:test-id test-id :question-id question-id})))
 

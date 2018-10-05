@@ -59,7 +59,6 @@
 
 (defn question-item
   [{:keys [question explanation hint key qtype id] :as q}]
-   (.log js/console (str ">>> VALUE 62 >>>>> " id  ))
   [:div.div-separator {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
    [:p {:key (str "div-question" id) :id (str "div-question" id)} [:span.bold-font (str key ".-")] "Question: " question]
    [:p {:key (str "div-hint" id)     :id (str "div-hint" id)}     "Hint: " hint]
@@ -135,17 +134,18 @@
     [:div
      [:h1 (:title @test)]
      [:div.someclass (str "tags: " (:tags @test) "    created: " (:created_at @test)) ]
-     (prn "Current test: " @test)
+     ;; (prn "Current test: " @test)
      [:div [:input.btn {:type "button" :value "Fragen hinzüfugen"
                         :on-click #(re-frame.core/dispatch [:toggle-qform])}]]]))
 
 (defn todo-app
   []
-  [:div
-   [:section#todoapp
-    [test-display]
-    [question-entry]
-    (when (seq @(reframe/subscribe [:questions]))
-      [questions-list])]
-   [:footer#info
-    [:p "Drag and drop to reorder questions"]]])
+  (let [questions (reframe/subscribe [:questions])]
+        [:div
+         [:section#todoapp
+          [test-display]
+          [question-entry]
+          (when (seq @questions)
+            [questions-list])]
+         [:footer#info
+          [:p "Drag and drop to reorder questions"]]]))

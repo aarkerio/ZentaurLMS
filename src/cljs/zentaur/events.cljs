@@ -244,7 +244,7 @@
  :bad-response
  (fn
    [db [_ response]]
-   (.log js/console (str ">>> ERROR >>>>> " response))))
+   (.log js/console (str ">>> ERROR in ajax response: >>>>> " response "   " _))))
 
 ;; reg-event-fx == event handler's coeffects
 
@@ -303,10 +303,10 @@
   :process-after-delete-question
   (fn
     [db [_ question-id]]
-    (.log js/console (str ">>> question-id >>>>> " question-id))
+    (update db )
     (-> db
-        (assoc  :loading?  false)
-        (dissoc :questions question-id))))
+        (update  :loading?  not)
+        (update  :questions (-in (keyword (str question-id))))))
 
 (reframe/reg-event-fx        ;; <-- note the `-fx` extension
  :delete-question           ;; <-- the event id
@@ -314,7 +314,6 @@
    [cofx [_ question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
    (when (js/confirm "Delete question?")
     (let [db         (:db cofx)
-          _          (.log js/console (str ">>>   DDBBB    >>>>>   " db))
           test-id    (.-value (gdom/getElement "test-id"))
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
         ;; we return a map of (side) effects
