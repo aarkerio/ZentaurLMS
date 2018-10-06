@@ -12,6 +12,8 @@
 ;; Interceptors are a more advanced topic. So, we're plunging into the deep
 ;; end here.
 ;;
+;; In re-frame, the forwards Interceptors sweep progressively creates the coeffects (inputs to the event handler),
+;; while the backwards sweep processes the effects (outputs from the event handler).
 ;; There is a tutorial on Interceptors in re-frame's `/docs`, but to get
 ;; you going fast, here's a very high level description ...
 ;;
@@ -229,12 +231,15 @@
  (fn [db [_ on-change]]                ;; First argument: coeffects map which contains the current state of the world (including app state)
    (update db :count on-change)))     ;; Second argument the event to handle
 
+(defn re-order [my-map]
+  (into (sorted-map-by (fn [key1 key2] (compare (key1 my-map) (key2 my-map)))) my-map)  )
 
 ;; AJAX handlers
 (reframe/reg-event-db
   :process-response
   (fn
     [db [_ response]]               ;; destructure the response from the event vector
+    (.log js/console (str ">>> QS >>>>> " (:questions response)))
     (-> db
         (assoc :loading?  false)     ;; take away that "Loading ..." UI
         (assoc :test      (js->clj response))
@@ -269,44 +274,41 @@
 
 ;; AJAX handlers
 (reframe/reg-event-db
-  :process-new-question
-  (fn
-    [db [_ question]]               ;; destructure the response from the event vector
-    (.log js/console (str ">>> question >>>>> " question))
-    (-> db
-        (assoc  :loading?  false)     ;; take away that "Loading ..." UI
-        (update :qform not)
-        (update :questions conj question))))
+ :process-new-question
+ (fn
+   [db [_ response]]               ;; destructure the response from the event vector
+   (.log js/console (str ">>> New question response >>>>> " response))
+   (-> db
+       (assoc  :loading?  false)     ;; take away that "Loading ..." UI
+       (update :qform not)
+       (assoc-in [:questions (:id response)] response))))
 
 ;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
 
 (reframe/reg-event-fx        ;; <-- note the `-fx` extension
-  :create-question           ;; <-- the event id
-  (fn                         ;; <-- the handler function
-    [cofx [_ question]]      ;; <-- 1st argument is coeffect, from which we extract db
-    (let [db         (:db cofx)
-          test-id    (.-value (gdom/getElement "test-id"))
-          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-
-      ;; we return a map of (side) effects
-      {:http-xhrio {:method          :post
-                    :uri             "/admin/tests/createquestion"
-                    :format          (ajax/json-request-format)
-                    :params          question
-                    :headers         {"x-csrf-token" csrf-field}
-                    :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:process-new-question question]
-                    :on-failure      [:bad-response]}})))
-
+ :create-question           ;; <-- the event id
+ (fn                         ;; <-- the handler function
+   [cofx [_ question]]      ;; <-- 1st argument is coeffect, from which we extract db
+   (let [db         (:db cofx)
+         test-id    (.-value (gdom/getElement "test-id"))
+         csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+     ;; we return a map of (side) effects
+     {:http-xhrio {:method          :post
+                   :uri             "/admin/tests/createquestion"
+                   :format          (ajax/json-request-format)
+                   :params          question
+                   :headers         {"x-csrf-token" csrf-field}
+                   :response-format (ajax/json-response-format {:keywords? true})
+                   :on-success      [:process-new-question]
+                   :on-failure      [:bad-response]}})))
 
 (reframe/reg-event-db
-  :process-after-delete-question
-  (fn
-    [db [_ question-id]]
-    (update db )
-    (-> db
-        (update  :loading?  not)
-        (update  :questions (-in (keyword (str question-id))))))
+ :process-after-delete-question
+ (fn
+   [db [_ question-id]]
+   (-> db
+       (update-in [:questions] dissoc (keyword (str question-id)))
+       (update  :loading?  not))))
 
 (reframe/reg-event-fx        ;; <-- note the `-fx` extension
  :delete-question           ;; <-- the event id
@@ -338,7 +340,7 @@
 
       ;; we return a map of (side) effects
       {:http-xhrio {:method          :post
-                    :uri             "/admin/tests/createquestion"
+                    :uri             "/admin/tests/updatequestion"
                     :format          (ajax/json-request-format)
                     :params          question
                     :headers         {"x-csrf-token" csrf-field}

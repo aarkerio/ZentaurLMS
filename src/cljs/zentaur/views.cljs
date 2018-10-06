@@ -25,6 +25,7 @@
                                       13 (save)
                                       27 (stop)
                                       nil)})])))
+
 (defn input-answer [{:keys [id answer correct]}]
   [:div.div-separator {:id "input-answer-div" :key "input-answer-div"}
       [:input {:type         "text"

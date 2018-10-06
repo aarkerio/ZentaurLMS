@@ -70,9 +70,9 @@
         errors      (-> full-params (validate-question))]
     (if (= errors nil)
       (as-> full-params v
-          (db/create-question! v)
-          (link-test-question! v (:test-id full-params))
-          (assoc {} :v v :ok true))
+        (db/create-question! v)
+        (link-test-question! v (:test-id full-params))
+        (assoc full-params :id (:id (db/clj-generic-last-id {:table-name "questions"}))))
       {:flash errors :ok false})))
 
 (defn- ^:private get-answers [question]

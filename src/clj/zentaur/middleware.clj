@@ -51,8 +51,8 @@
       (catch Throwable t
         (log/error t (.getMessage t))
         (error-page {:status 500
-                     :title "Something very bad has happened!"
-                     :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
+                     :title "Etwas sehr Schlechtes ist passiert!"
+                     :message "Wir haben ein Team von gut ausgebildeten Gnomen entsandt, um das Problem zu lösen."})))))
 
 (defn wrap-csrf [handler]
   (wrap-anti-forgery
