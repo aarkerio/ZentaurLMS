@@ -232,7 +232,7 @@
    (update db :count on-change)))     ;; Second argument the event to handle
 
 (defn re-order [my-map]
-  (into (sorted-map-by (fn [key1 key2] (compare (key1 my-map) (key2 my-map)))) my-map)  )
+  (into {} (sort-by (comp :ordnen val) my-map)))
 
 ;; AJAX handlers
 (reframe/reg-event-db
