@@ -72,7 +72,18 @@
       (as-> full-params v
         (db/create-question! v)
         (link-test-question! v (:test-id full-params))
-        (assoc full-params :id (:id (db/clj-generic-last-id {:table-name "questions"}))))
+        (db/get-last-question {:test-id (:test-id full-params)}))
+      {:flash errors :ok false})))
+
+(defn create-answer! [params]
+  (let [full-params (-> params
+                        (update :test-id #(Integer/parseInt %)))
+        errors      (-> full-params (validate-answer))]
+    (if (= errors nil)
+      (as-> full-params v
+        (db/create-question! v)
+        (link-test-question! v (:test-id full-params))
+        (db/get-last-question {:question-id (:question-id full-params)}))
       {:flash errors :ok false})))
 
 (defn- ^:private get-answers [question]
@@ -87,12 +98,14 @@
         index-seq  (map #(% :id) questions)]
         (->> questions
              (map get-answers)
-             (zipmap index-seq))))
+             (zipmap index-seq)  ;; add the index
+             )))
 
 (defn get-test-nodes [test-id user-id]
   (let [test         (db/get-one-test { :id test-id :user-id user-id })
         test-updated (update test :created_at #(helpers/format-time %))
         questions    (get-questions test-id)]
+     (log/info (str ">>> questions >>>>> " questions))
      (ches/generate-string (assoc test-updated :questions questions))))
 
 (defn destroy [params]

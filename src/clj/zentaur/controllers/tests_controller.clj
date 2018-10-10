@@ -31,8 +31,16 @@
   [request]
   (let [params       (-> request :params)
         user-id      (-> request :identity :id)
+        new-params   (assoc params :user-id user-id :active true)]
+    (response/ok (model-test/create-question! new-params))))
+
+(defn create-answer
+  "POST /admin/tests/createanswer"
+  [request]
+  (let [params       (-> request :params)
+        user-id      (-> request :identity :id)
         new-params   (assoc params :user-id user-id :active true)
-        _            (log/info (str ">>> DD PARAMS NEW QUESTION >>>>> " new-params))]
+        _            (log/info (str ">>> DD PARAMS NEW ANSWER >>>>> " new-params))]
     (response/ok (model-test/create-question! new-params))))
 
 (defn admin-index
