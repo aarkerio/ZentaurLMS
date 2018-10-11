@@ -249,6 +249,31 @@
    [db [_ response]]
    (.log js/console (str ">>> ERROR in ajax response: >>>>> " response "   " _))))
 
+(re-frame/reg-event-db
+ :process-new-answer
+ (fn
+   [db [_ response]]               ;; destructure the response from the event vector
+   (.log js/console (str ">>> New question response >>>>> " response))
+   (-> db
+       (assoc  :loading?  false)     ;; take away that "Loading ..." UI
+       (assoc-in [:questions (:id (:question_id response)) :answers] response))))
+
+(re-frame/reg-event-fx
+ :create-answer
+ (fn
+   [cfx [_ answer]]      ;; <-- 1st argument is coeffect, from which we extract db
+   (.log js/console (str ">>>   NEW ANSWER  >>>>> " answer ))
+   (let [csrf-field  (.-value (gdom/getElement "__anti-forgery-token"))]
+     ;; we return a map of (side) effects
+     {:http-xhrio {:method          :post
+                   :uri             "/admin/tests/createanswer"
+                   :format          (ajax/json-request-format)
+                   :params          answer
+                   :headers         {"x-csrf-token" csrf-field}
+                   :response-format (ajax/json-response-format {:keywords? true})
+                   :on-success      [:process-new-answer]
+                   :on-failure      [:bad-response]}})))
+
 ;; reg-event-fx == event handler's coeffects
 
 (re-frame/reg-event-fx    ;; <-- note the `-fx` extension
@@ -329,6 +354,35 @@
                       :on-success      [:process-after-delete-question question-id]
                       :on-failure      [:bad-response]}}))))
 
+(re-frame/reg-event-db
+ :process-after-delete-answer
+ [reorder-after-interceptor]
+ (fn
+   [db [_ question-id]]
+   (-> db
+       (update-in [:questions] dissoc (keyword (str question-id)))
+       (update  :loading?  not))))
+
+(re-frame/reg-event-fx        ;; <-- note the `-fx` extension
+ :delete-answer               ;; <-- the event id
+ (fn                          ;; <-- the handler function
+   [cofx [_ answer-id]]      ;; <-- 1st argument is coeffect, from which we extract db
+   (.log js/console (str ">>> Delete  answer-id >>>>> " answer-id))
+   (when (js/confirm "Delete answer?")
+    (let [db         (:db cofx)
+          test-id    (.-value (gdom/getElement "test-id"))
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+        ;; we return a map of (side) effects
+        {:http-xhrio {:method          :post
+                      :uri             "/admin/tests/deletequestion"
+                      :format          (ajax/json-request-format)
+                      :params          {:answer-id answer-id}
+                      :headers         {"x-csrf-token" csrf-field}
+                      :response-format (ajax/json-response-format {:keywords? true})
+                      :on-success      [:process-after-delete-answer answer-id]
+                      :on-failure      [:bad-response]}}))))
+
+
 (re-frame/reg-event-fx        ;; <-- note the `-fx` extension
   :update-questions          ;; <-- the event id
   (fn                         ;; <-- the handler function
@@ -350,6 +404,9 @@
                     :on-failure      [:bad-response]}
        :db (update db :qform not)})))
 
+
+;; #############  FLOW (later)
+
 (defn boot-flow
   []
   {:first-dispatch [:do-X]              ;; what event kicks things off ?
@@ -367,34 +424,3 @@
             "task2-fn")            ;; ?? do some other simple initialising of state
      :async-flow  (boot-flow)})) ;; kick off the async process
 
-
-;; AJAX handlers
-(re-frame/reg-event-db
- :process-new-answer
- [reorder-event]
- (fn
-   [db [_ response]]               ;; destructure the response from the event vector
-   (.log js/console (str ">>> New question response >>>>> " response))
-   (-> db
-       (assoc  :loading?  false)     ;; take away that "Loading ..." UI
-       (update :qform not)           ;; hide new question form
-       (assoc-in [:questions (:id response)] response))))
-
-;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
-
-(re-frame/reg-event-fx
- :create-answer
- (fn
-   [cofx [_ answer]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (.log js/console (str ">>>   NEW ANSWER  >>>>> " answer))
-   (let [db          (:db cofx)
-         csrf-field  (.-value (gdom/getElement "__anti-forgery-token"))]
-     ;; we return a map of (side) effects
-     {:http-xhrio {:method          :post
-                   :uri             "/admin/tests/createnswer"
-                   :format          (ajax/json-request-format)
-                   :params          answer
-                   :headers         {"x-csrf-token" csrf-field}
-                   :response-format (ajax/json-response-format {:keywords? true})
-                   :on-success      [:process-new-answer]
-                   :on-failure      [:bad-response]}})))

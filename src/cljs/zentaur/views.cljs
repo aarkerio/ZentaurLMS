@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [goog.dom :as gdom]
             [reagent.core  :as reagent]
-            [re-frame.core :as reframe]))
+            [re-frame.core :as re-frame]))
 
 (def ^:private api-url "https://conduit.productionready.io/api")
 
@@ -26,22 +26,23 @@
                                       27 (stop)
                                       nil)})])))
 
-(defn input-answer [{:keys [id answer correct]}]
-  [:div.div-separator {:id "input-answer-div" :key "input-answer-div"}
-      [:input {:type         "text"
-               :defaultValue ""
-               :id           (str "answer-input-" id)
-               :key          (str "answer-input-" id)
-               :placeholder  "Answer"
-               :title        "Answer"
-               :maxLength    180
-               :size         100}]])
+(defn display-answer [{:keys [id answer correct question-id]} counter]
+  (let [separator    (str "display-answer-div-" id)
+        answer-class (if (= correct false) "all-width-red" "all-width-green")]
+    [:div {:id separator :key separator}
+     [:div {:class answer-class}
+      [:span.bold-font (str counter ".-  ("correct")")] "   " answer
+      [:img.img-float-right
+                             {:title  "Delete answer"
+                              :alt  "Delete answer"
+                              :src    "/img/icon_delete.png"
+                              :on-click #(re-frame/dispatch [:delete-answer {:answer-id id :question-id question-id}])}]]]))
 
 (defn new-answer [question-id]
   (let [checked  (reagent/atom false)
-        dom-id   (str "new-answer-div" question-id)]
+        inner    (reagent/atom "")]
      (fn []
-    [:div.div-separator {:id dom-id :key dom-id}
+    [:div.div-separator {:id question-id :key question-id}
      [:input {:type         "text"
               :defaultValue ""
               :id           (str "new-answer-"question-id)
@@ -56,27 +57,56 @@
      [:input.btn {:type "button" :value "Antwort hinzufügen"
                   :key (str "new-answer-btn" question-id)
                   :id  (str "new-answer-btn" question-id)
-                  :on-click #(reframe/dispatch [:create-answer question-id @checked])}]])))
+                  :on-click #(re-frame/dispatch [:create-answer question-id @checked])}]
+     ])))
+
+(defn input-new-answer
+  "note: this is one-way bound to the global atom, it doesn't subscribe to it"
+  [{:keys [question-id on-stop props]}]
+  (let [inner       (reagent/atom "")
+        checked     (reagent/atom false)
+        keyed-div   (str "div-sep-" question-id)]
+    (fn []
+      [:div.div-separator {:id keyed-div :key keyed-div}
+       [:input (merge props
+                      {:type        "text"
+                       :value       @inner
+                       :on-change   #(reset! inner (-> % .-target .-value))
+                       :on-key-down #(case (.-which %)
+                                          27 (on-stop) ; esc
+                                          nil)})]
+       [:input.btn {:type "checkbox" :title "richtig?"
+                    :key (str "new-answer-box-"question-id)
+                    :id (str "new-answer-box-"question-id)
+                    :checked @checked :on-change #(swap! checked not)}]
+       [:input.btn {:type "button" :value "Antwort hinzufügen"
+                    :key (str "new-answer-btn" question-id)
+                    :id  (str "new-answer-btn" question-id)
+                    :on-click #(re-frame/dispatch [:create-answer {:question-id question-id
+                                                                   :correct @checked
+                                                                   :answer @inner}])}]])))
 
 (defn question-item
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
-  [:div.div-separator {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
-   [:p {:key (str "div-question" id) :id (str "div-question" id)} [:span.bold-font (str key ".-")] "Question: " question  "   ordnen:" ordnen]
-   [:p {:key (str "div-hint" id)     :id (str "div-hint" id)}     "Hint: " hint]
-   [:p {:key (str "div-explan" id)   :id (str "div-explan" id)}   "Explanation: " explanation]
-   (if (= qtype 1)
-     [new-answer]
-     (for [answer (:answers q)]
-       [input-answer answer]))
-   [:input.btn {:type     "button"
-                :value    "Löschen fragen"
-                :key      (str "frage-btn-x" id)
-                :id       (str "frage-btn-x" id)
-                :on-click #(reframe/dispatch [:delete-question id])}]])
+  (let [counter   (atom 0)]
+    [:div.div-separator {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
+     [:p {:key (str "div-question" id) :id (str "div-question" id)} [:span.bold-font (str key ".-")] "Question: " question  "   ordnen:" ordnen]
+     [:p {:key (str "div-hint" id)     :id (str "div-hint" id)}     "Hint: " hint]
+     [:p {:key (str "div-explan" id)   :id (str "div-explan" id)}   "Explanation: " explanation]
+     (if (= qtype 1)
+       (do [:div [input-new-answer {:question-id id :on-stop #(js/console.log "stopp") :props   {:placeholder "New answer"}}]
+            (for [answer (:answers q)]
+              [display-answer answer (swap! counter inc)])]))
+
+     [:p [:input.btn {:type     "button"
+                      :value    "Löschen fragen"
+                      :key      (str "frage-btn-x" id)
+                      :id       (str "frage-btn-x" id)
+                      :on-click #(re-frame/dispatch [:delete-question id])}]]]))
 
 (defn questions-list
   []
-  (let [questions (reframe/subscribe [:questions])
+  (let [questions (re-frame/subscribe [:questions])
         counter   (atom 0)]
     [:section {:key (str "question-list-key-" counter) :id (str "question-list-key-" counter)}
      (for [question @questions]
@@ -84,7 +114,7 @@
 
 (defn question-entry
   []
-  (let [qform (reframe/subscribe [:qform])]
+  (let [qform (re-frame/subscribe [:qform])]
     [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
       [:h3.class "Hinzifugen neue fragen"]
      [:div.div-separator {:id "question-title-div" :key "question-title-div"}
@@ -130,8 +160,8 @@
                                                        :toggle-qform])}]]]))
 
 (defn test-display []
-  (let [test  (reframe/subscribe [:test])
-        qform (reframe/subscribe [:qform])]
+  (let [test  (re-frame/subscribe [:test])
+        qform (re-frame/subscribe [:qform])]
     [:div
      [:h1 (:title @test)]
      [:div.someclass (str "tags: " (:tags @test) "    created: " (:created_at @test)) ]
@@ -141,7 +171,7 @@
 
 (defn todo-app
   []
-  (let [questions (reframe/subscribe [:questions])]
+  (let [questions (re-frame/subscribe [:questions])]
         [:div
          [:section#todoapp
           [test-display]

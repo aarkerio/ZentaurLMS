@@ -39,9 +39,8 @@
   [request]
   (let [params       (-> request :params)
         user-id      (-> request :identity :id)
-        new-params   (assoc params :user-id user-id :active true)
-        _            (log/info (str ">>> DD PARAMS NEW ANSWER >>>>> " new-params))]
-    (response/ok (model-test/create-question! new-params))))
+        new-params   (assoc params :user-id user-id)]
+    (response/ok (model-test/create-answer! new-params))))
 
 (defn admin-index
   "GET /admin/tests"
