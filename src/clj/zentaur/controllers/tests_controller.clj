@@ -31,9 +31,16 @@
   [request]
   (let [params       (-> request :params)
         user-id      (-> request :identity :id)
-        new-params   (assoc params :user-id user-id :active true)
-        _            (log/info (str ">>> DD PARAMS NEW QUESTION >>>>> " new-params))]
+        new-params   (assoc params :user-id user-id :active true)]
     (response/ok (model-test/create-question! new-params))))
+
+(defn create-answer
+  "POST /admin/tests/createanswer"
+  [request]
+  (let [params       (-> request :params)
+        user-id      (-> request :identity :id)
+        new-params   (assoc params :user-id user-id)]
+    (response/ok (model-test/create-answer! new-params))))
 
 (defn admin-index
   "GET /admin/tests"
@@ -62,4 +69,4 @@
 (defn delete-question
   "POST /admin/tests/deletequestion"
   [{:keys [params]}]
-    (response/ok (model-test/remove-question params)))
+    (response/ok {:response (model-test/remove-question params)}))

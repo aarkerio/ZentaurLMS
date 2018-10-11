@@ -4,7 +4,7 @@
             [day8.re-frame.async-flow-fx]
             [day8.re-frame.http-fx]
             [goog.dom :as gdom]
-            [re-frame.core :as reframe]    ;; [reg-event-db reg-event-fx inject-cofx path after]]
+            [re-frame.core :as re-frame]    ;; [reg-event-db reg-event-fx inject-cofx path after]]
             [zentaur.db    :as zdb]))
 
 ;; -- Interceptors --------------------------------------------------------------
@@ -12,6 +12,8 @@
 ;; Interceptors are a more advanced topic. So, we're plunging into the deep
 ;; end here.
 ;;
+;; In re-frame, the forwards Interceptors sweep progressively creates the coeffects (inputs to the event handler),
+;; while the backwards sweep processes the effects (outputs from the event handler).
 ;; There is a tutorial on Interceptors in re-frame's `/docs`, but to get
 ;; you going fast, here's a very high level description ...
 ;;
@@ -53,7 +55,7 @@
     (throw (ex-info (str "spec check failed: " (s/explain-str a-spec db)) {}))))
 
 ;; now we create an interceptor using `after`
-(def check-spec-interceptor (reframe/after (partial check-and-throw :zentaur.db/db)))  ;; PARTIAL: (def hundred-times (partial * 100))
+(def check-spec-interceptor (re-frame/after (partial check-and-throw :zentaur.db/db)))  ;; PARTIAL: (def hundred-times (partial * 100))
 
 ;; -- Second Interceptor -----------------------------------------------------
 ;;
@@ -64,7 +66,7 @@
 ;; Later, we include this interceptor into the interceptor chain
 ;; of all event handlers which modify todos. In this way, we ensure that
 ;; every change to todos is written to local storage.
-(def ->local-store (reframe/after zdb/todos->local-store))
+(def ->local-store (re-frame/after zdb/todos->local-store))
 
 ;; -- Interceptor Chain ------------------------------------------------------
 ;;
@@ -72,8 +74,26 @@
 ;; We now create the interceptor chain shared by all event handlers which manipulate todos.
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
 (def todo-interceptors [check-spec-interceptor    ;; ensure the spec is still valid  (after)
-                        (reframe/path :todos)     ;; the 1st param given to handler will be the value from this path within db
+                        (re-frame/path :todos)     ;; the 1st param given to handler will be the value from this path within db
                         ->local-store])           ;; write todos to localstore  (after)
+
+(defn order-questions
+  [db]
+  (let [questions (:questions db)]
+    (into (sorted-map-by
+           (fn [key1 key2]
+             (compare (:ordnen (get questions key1))
+                      (:ordnen (get questions key2)))))
+          questions)))
+
+(def reorder-event
+  (re-frame/->interceptor
+    :id      :reorder-event
+    :after   (fn [context]
+               (let [ordered-questions (order-questions (-> context  :effects :db)) ]
+                 (assoc-in context [:effects :db :questions] ordered-questions)))))
+
+(def reorder-after-interceptor (re-frame/after (partial order-questions)))
 
 ;; -- Helpers -----------------------------------------------------------------
 
@@ -101,11 +121,11 @@
 ;; To fully understand this advanced topic, you'll have to read the tutorials
 ;; and look at the bottom of `db.cljs` for the `:local-store-todos` cofx
 ;; registration.
-(reframe/reg-event-fx         ;; part of the re-frame API
+(re-frame/reg-event-fx         ;; part of the re-frame API
  :initialise-db              ;; event id being handled
 
   ;; the interceptor chain (a vector of 2 interceptors in this case)
- [(reframe/inject-cofx :local-store-todos)        ;; gets todos from localstore, and puts value into coeffects arg
+ [(re-frame/inject-cofx :local-store-todos)        ;; gets todos from localstore, and puts value into coeffects arg
   check-spec-interceptor                          ;; after event handler runs, check app-db for correctness. Does it still match Spec?
   (.log js/console (str ">>> >>>I'm the initial Interceptor!!! "))]
 
@@ -116,7 +136,7 @@
 ;; usage:  (dispatch [:set-showing  :active])
 ;; This event is dispatched when the user clicks on one of the 3
 ;; filter buttons at the bottom of the display.
-(reframe/reg-event-db      ;; part of the re-frame API
+(re-frame/reg-event-db      ;; part of the re-frame API
   :set-showing             ;; event-id
 
   ;; only one interceptor
@@ -140,11 +160,11 @@
 ;;
 ;; So, `path` operates a little like `update-in`
 ;;
-#_(reframe/reg-event-db
+#_(re-frame/reg-event-db
   :set-showing
 
   ;; this now a chain of 2 interceptors. Note use of `path`
-  [check-spec-interceptor (reframe/path :showing)]
+  [check-spec-interceptor (re-frame/path :showing)]
 
   ;; The event handler
   ;; Because of the `path` interceptor above, the 1st parameter to
@@ -158,7 +178,7 @@
 ;; ######  reg-event-db, delivers ONLY the coeffect db (partial of the current state of the world) to the event handler
 
 ;; usage:  (dispatch [:add-todo  "a description string"])
-(reframe/reg-event-db                     ;; given the text, create a new todo
+(re-frame/reg-event-db                     ;; given the text, create a new todo
   :add-todo
 
   ;; Use the standard interceptors, defined above, which we
@@ -176,80 +196,93 @@
     (let [id (allocate-next-id todos)]
       (assoc todos id {:id id :title text :done false}))))
 
-(reframe/reg-event-db
+(re-frame/reg-event-db
   :toggle-done
   todo-interceptors
   (fn [todos [_ id]]
     (update-in todos [id :done] not)))
 
-(reframe/reg-event-db
+(re-frame/reg-event-db
   :toggle-question
   (fn [questions [_ id]]
     (update-in questions [id :done] not)))
 
-(reframe/reg-event-db
+(re-frame/reg-event-db
   :save
   todo-interceptors
   (fn [todos [_ id title]]
     (assoc-in todos [id :title] title)))
 
-(reframe/reg-event-db
+(re-frame/reg-event-db
   :delete-todo
   todo-interceptors
   (fn [todos [_ id]]
     (dissoc todos id)))
 
-(reframe/reg-event-db
-  :clear-completed
-  todo-interceptors  ;; function
-  (fn [todos _]
-    (let [done-ids (->> (vals todos)         ;; which todos have a :done of true
-                        (filter :done)
-                        (map :id))]
-      (reduce dissoc todos done-ids))))      ;; delete todos which are done
-
-(reframe/reg-event-db
-  :complete-all-toggle
-  todo-interceptors
-  (fn [todos _]
-    (let [new-done (not-every? :done (vals todos))]   ;; work out: toggle true or false?
-      (reduce #(assoc-in %1 [%2 :done] new-done)
-              todos
-              (keys todos)))))
-
-(reframe/reg-event-db
+(re-frame/reg-event-db
  :toggle-qform
  (fn [db _]
    (update db :qform not)))
 
 ;; My new event handler
-(reframe/reg-event-db
+(re-frame/reg-event-db
  :count-update
  todo-interceptors
  (fn [db [_ on-change]]                ;; First argument: coeffects map which contains the current state of the world (including app state)
    (update db :count on-change)))     ;; Second argument the event to handle
 
-
 ;; AJAX handlers
-(reframe/reg-event-db
-  :process-response
-  (fn
-    [db [_ response]]               ;; destructure the response from the event vector
-    (.log js/console (str ">>> RRRRRRRRRRR >>>>> "  response))
-    (-> db
-        (assoc :loading?  false)     ;; take away that "Loading ..." UI
-        (assoc :test      (js->clj response))
-        (assoc :questions (js->clj (:questions response))))))
+(re-frame/reg-event-db
+ :process-response
+ [reorder-event]
+ (fn
+   [db [_ response]]               ;; destructure the response from the event vector
+   (.log js/console (str ">>> First Call >>>>> " (:questions response)))
+   (-> db
+       (assoc :loading?  false)     ;; take away that "Loading ..." UI
+       (assoc :test      (js->clj response))
+       (assoc :questions (js->clj (:questions response))))))
 
-(reframe/reg-event-db
+(re-frame/reg-event-db
  :bad-response
  (fn
    [db [_ response]]
-   (.log js/console (str ">>> ERROR >>>>> " response))))
+   (.log js/console (str ">>> ERROR in ajax response: >>>>> " response "   " _))))
+
+(re-frame/reg-event-db
+ :process-new-answer
+ (fn
+   [db [_ response]]               ;; destructure the response from the event vector
+   (.log js/console (str ">>> New answer response >>>>> " response))
+   (let [qkeyword     (keyword (str (:question_id response)))
+         _            (.log js/console (str ">>> qkeyword >>>>> " qkeyword))
+         submap       (get-in db [:questions qkeyword :answers])
+         _            (.log js/console (str ">>> SUBMAP >>>>> " submap))
+         modified     (conj submap response)
+         _            (.log js/console (str ">>> Modified >>>>> " modified))]
+     (-> db
+         (assoc  :loading?  false)     ;; take away that "Loading ..." UI
+         (update-in [:questions qkeyword :answers] conj response)))))
+
+(re-frame/reg-event-fx
+ :create-answer
+ (fn
+   [cfx [_ answer]]      ;; <-- 1st argument is coeffect, from which we extract db
+   (.log js/console (str ">>>   NEW ANSWER  >>>>> " answer ))
+   (let [csrf-field  (.-value (gdom/getElement "__anti-forgery-token"))]
+     ;; we return a map of (side) effects
+     {:http-xhrio {:method          :post
+                   :uri             "/admin/tests/createanswer"
+                   :format          (ajax/json-request-format)
+                   :params          answer
+                   :headers         {"x-csrf-token" csrf-field}
+                   :response-format (ajax/json-response-format {:keywords? true})
+                   :on-success      [:process-new-answer]
+                   :on-failure      [:bad-response]}})))
 
 ;; reg-event-fx == event handler's coeffects
 
-(reframe/reg-event-fx    ;; <-- note the `-fx` extension
+(re-frame/reg-event-fx    ;; <-- note the `-fx` extension
   :request-test          ;; <-- the event id
   (fn                     ;; <-- the handler function
     [cfx _]              ;; <-- 1st argument is coeffect, from which we extract db
@@ -269,56 +302,54 @@
        :db (assoc db :loading? true)})))
 
 ;; AJAX handlers
-(reframe/reg-event-db
-  :process-new-question
-  (fn
-    [db [_ question]]               ;; destructure the response from the event vector
-    (.log js/console (str ">>> question >>>>> " question))
-    (-> db
-        (assoc  :loading?  false)     ;; take away that "Loading ..." UI
-        (update :qform not)
-        (update :questions conj question))))
+(re-frame/reg-event-db
+ :process-new-question
+ [reorder-event]
+ (fn
+   [db [_ response]]               ;; destructure the response from the event vector
+   (.log js/console (str ">>> New question response >>>>> " response))
+   (-> db
+       (assoc  :loading?  false)     ;; take away that "Loading ..." UI
+       (update :qform not)           ;; hide new question form
+       (assoc-in [:questions (:id response)] response))))
 
 ;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
 
-(reframe/reg-event-fx        ;; <-- note the `-fx` extension
-  :create-question           ;; <-- the event id
-  (fn                         ;; <-- the handler function
-    [cofx [_ question]]      ;; <-- 1st argument is coeffect, from which we extract db
+(re-frame/reg-event-fx        ;; <-- note the `-fx` extension
+ :create-question           ;; <-- the event id
+ (fn                         ;; <-- the handler function
+   [cofx [dispatch-name question]]      ;; <-- 1st argument is coeffect, from which we extract db
+   (let [db         (:db cofx)
+         test-id    (.-value (gdom/getElement "test-id"))
+         csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+     ;; we return a map of (side) effects
+     {:http-xhrio {:method          :post
+                   :uri             "/admin/tests/createquestion"
+                   :format          (ajax/json-request-format)
+                   :params          question
+                   :headers         {"x-csrf-token" csrf-field}
+                   :response-format (ajax/json-response-format {:keywords? true})
+                   :on-success      [:process-new-question]
+                   :on-failure      [:bad-response]}})))
+
+(re-frame/reg-event-db
+ :process-after-delete-question
+ [reorder-after-interceptor]
+ (fn
+   [db [_ question-id]]
+   (-> db
+       (update-in [:questions] dissoc (keyword (str question-id)))
+       (update  :loading?  not))))
+
+(re-frame/reg-event-fx        ;; <-- note the `-fx` extension
+ :delete-question            ;; <-- the event id
+ (fn                          ;; <-- the handler function
+   [cofx [dispatch-id question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
+   (.log js/console (str ">>> dispatch-id >>>>> " dispatch-id))
+   (when (js/confirm "Delete question?")
     (let [db         (:db cofx)
           test-id    (.-value (gdom/getElement "test-id"))
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-
-      ;; we return a map of (side) effects
-      {:http-xhrio {:method          :post
-                    :uri             "/admin/tests/createquestion"
-                    :format          (ajax/json-request-format)
-                    :params          question
-                    :headers         {"x-csrf-token" csrf-field}
-                    :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:process-new-question question]
-                    :on-failure      [:bad-response]}})))
-
-
-(reframe/reg-event-db
-  :process-after-delete-question
-  (fn
-    [db [_ question-id]]
-    (.log js/console (str ">>> question-id >>>>> " question-id))
-    (-> db
-        (assoc  :loading?  false)
-        (update :questions conj question-id))))
-
-(reframe/reg-event-fx        ;; <-- note the `-fx` extension
- :delete-question           ;; <-- the event id
-  (fn                         ;; <-- the handler function
-    [cofx [_ question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
-    (.log js/console (str ">>>   _____________  ___  >>>>>   " _))
-    (let [db         (:db cofx)
-          _          (.log js/console (str ">>>   DDBBB    >>>>>   " db))
-          test-id    (.-value (gdom/getElement "test-id"))
-          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-      (when (js/confirm "Delete question?")
         ;; we return a map of (side) effects
         {:http-xhrio {:method          :post
                       :uri             "/admin/tests/deletequestion"
@@ -329,7 +360,36 @@
                       :on-success      [:process-after-delete-question question-id]
                       :on-failure      [:bad-response]}}))))
 
-(reframe/reg-event-fx        ;; <-- note the `-fx` extension
+(re-frame/reg-event-db
+ :process-after-delete-answer
+ [reorder-after-interceptor]
+ (fn
+   [db [_ question-id]]
+   (-> db
+       (update-in [:questions] dissoc (keyword (str question-id)))
+       (update  :loading?  not))))
+
+(re-frame/reg-event-fx        ;; <-- note the `-fx` extension
+ :delete-answer               ;; <-- the event id
+ (fn                          ;; <-- the handler function
+   [cofx [_ answer-id]]      ;; <-- 1st argument is coeffect, from which we extract db
+   (.log js/console (str ">>> Delete  answer-id >>>>> " answer-id))
+   (when (js/confirm "Delete answer?")
+    (let [db         (:db cofx)
+          test-id    (.-value (gdom/getElement "test-id"))
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+        ;; we return a map of (side) effects
+        {:http-xhrio {:method          :post
+                      :uri             "/admin/tests/deletequestion"
+                      :format          (ajax/json-request-format)
+                      :params          {:answer-id answer-id}
+                      :headers         {"x-csrf-token" csrf-field}
+                      :response-format (ajax/json-response-format {:keywords? true})
+                      :on-success      [:process-after-delete-answer answer-id]
+                      :on-failure      [:bad-response]}}))))
+
+
+(re-frame/reg-event-fx        ;; <-- note the `-fx` extension
   :update-questions          ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ question]]      ;; <-- 1st argument is coeffect, from which we extract db
@@ -341,7 +401,7 @@
 
       ;; we return a map of (side) effects
       {:http-xhrio {:method          :post
-                    :uri             "/admin/tests/createquestion"
+                    :uri             "/admin/tests/updatequestion"
                     :format          (ajax/json-request-format)
                     :params          question
                     :headers         {"x-csrf-token" csrf-field}
@@ -349,6 +409,9 @@
                     :on-success      [:process-response]
                     :on-failure      [:bad-response]}
        :db (update db :qform not)})))
+
+
+;; #############  FLOW (later)
 
 (defn boot-flow
   []
@@ -359,10 +422,11 @@
            {:when :seen? :events :success-Z  :halt? true}
            {:when :seen-any-of? :events [:fail-X :fail-Y :fail-Z] :dispatch  [:app-failed-state] :halt? true}]})
 
-(reframe/reg-event-fx            ;; note the -fx == coeffects world
+(re-frame/reg-event-fx            ;; note the -fx == coeffects world
   :boot                          ;; usage:  (dispatch [:boot])  See step 3
   (fn [_ _]
     {:db (-> {}                  ;;  do whatever synchronous work needs to be done
             "task1-fn"             ;; ?? set state to show "loading" twirly for user??
             "task2-fn")            ;; ?? do some other simple initialising of state
      :async-flow  (boot-flow)})) ;; kick off the async process
+

@@ -1,7 +1,8 @@
-(defproject zentaur "0.0.5"
+(defproject zentaur "0.0.6"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
-  :dependencies [[binaryage/devtools "0.9.10"]           ;; Chrome DevTools enhancements
+  :dependencies [[baking-soda "0.2.0"]                   ;; interface between clojurescript's reagent and bootstrap react components
+                 [binaryage/devtools "0.9.10"]           ;; Chrome DevTools enhancements
                  [buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [buddy/buddy-auth "2.1.0"]              ;; Authentication
                  [cheshire "5.8.0"]                      ;; Clojure JSON and BSON encoding/decoding

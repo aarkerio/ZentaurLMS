@@ -108,8 +108,7 @@ INSERT INTO question_tests (question_id, test_id, ordnen) VALUES (:question-id, 
 
 -- :name create-answer! :<!
 -- :doc creates a new answer record
-INSERT INTO answers (question_id, answer, correct)
-VALUES (:question-id, :answer, :correct) returning id
+INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question-id, :answer, :correct, :ordnen) returning id
 
 -- :name get-tests :? :*
 -- :doc retrieve a test given the id.
@@ -127,9 +126,21 @@ SELECT * FROM tests WHERE id = :id AND user_id = :user-id
 -- :doc retrieve all questions tests.
 SELECT q.*, qt.ordnen FROM question_tests AS qt, questions AS q WHERE qt.test_id = :test-id AND qt.question_id=q.id ORDER BY qt.ordnen ASC
 
+-- :name get-last-question :? :1
+-- :doc retrieve all questions tests.
+SELECT q.*, qt.ordnen FROM question_tests AS qt, questions AS q WHERE qt.test_id = :test-id AND qt.question_id=q.id ORDER BY qt.ordnen DESC LIMIT 1
+
+-- :name get-last-answer :? :1
+-- :doc retrieve all questions tests.
+SELECT * FROM answers WHERE question_id = :question-id  ORDER BY id DESC LIMIT 1
+
 -- :name get-last-ordnen-questions :? :1
 -- :doc retrieve the last ordnen.
 SELECT ordnen FROM question_tests WHERE test_id = :test-id ORDER BY ordnen DESC LIMIT 1
+
+-- :name get-last-ordnen-answer :? :1
+-- :doc retrieve the last ordnen.
+SELECT ordnen FROM answers WHERE question_id = :question-id ORDER BY ordnen DESC LIMIT 1
 
 -- :name get-answers :? :*
 -- :doc retrieve all tests.

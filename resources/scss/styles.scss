@@ -868,3 +868,30 @@ textarea {
 .bold-font {
     font-weight: bolder;
 }
+
+.all-width {
+    width:70%;
+    margin: 9px;
+    padding:2px;
+}
+
+.all-width-green {
+    @extend .all-width;
+    border: 1px dotted green;
+}
+
+.all-width-red {
+    @extend .all-width;
+    border: 1px dotted red;
+}
+
+.img-float-left {
+    float: left;
+}
+
+.img-float-right {
+    float: right;
+    margin-right: 20px;
+}
+
+

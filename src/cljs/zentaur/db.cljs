@@ -3,6 +3,16 @@
             [cljs.spec.alpha :as s]
             [re-frame.core :as reframe]))
 
+;; ####### CONTEXT
+;;  {:coeffects {:event [:some-id :some-param]
+;;             :db    <original contents of app-db>}
+;;
+;;   :effects   {:db    <new value for app-db>
+;;              :dispatch  [:an-event-id :param1]}
+;;
+;;   :queue     <a collection of further interceptors>
+;;   :stack     <a collection of interceptors already walked>}
+
 ;; -- Spec --------------------------------------------------------------------
 ;;
 ;; This is a clojure.spec specification for the value in app-db. It is like a
@@ -76,11 +86,6 @@
   [todos]
   (.setItem js/localStorage ls-key (str todos)))     ;; sorted-map written as an EDN map
 
-(defn questions->local-store
-  "Puts questions into localStorage"
-  [questions]
-  (.setItem js/localStorage ls-key (str questions)))     ;; sorted-map written as an EDN map
-
 ;; -- cofx Registrations  -----------------------------------------------------
 
 ;; Use `reg-cofx` to register a "coeffect handler" which will inject the todos
@@ -103,6 +108,17 @@
                    (some->> (.getItem js/localStorage ls-key)
                             (cljs.reader/read-string)    ;; EDN map -> map  == Reads data in the edn format
                             )))))
+(reframe/reg-cofx
+  :reorder-questions
+  (fn [cofx _]
+    (let [questions (-> cofx :db :questions)]
+      ;; put the localstore todos into the coeffect under :local-store-todos
+      (assoc cofx :questions
+             (into (sorted-map-by
+                    (fn [key1 key2]
+                      (compare (:ordnen (get questions key1))
+                               (:ordnen (get questions key2)))))
+                   questions)))))
 
 ;; (reframe/reg-cofx    ;; <-- note the `-fx` extension
 ;;   :backup-request-test      ;; <-- the event id
