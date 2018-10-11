@@ -253,10 +253,16 @@
  :process-new-answer
  (fn
    [db [_ response]]               ;; destructure the response from the event vector
-   (.log js/console (str ">>> New question response >>>>> " response))
-   (-> db
-       (assoc  :loading?  false)     ;; take away that "Loading ..." UI
-       (assoc-in [:questions (:id (:question_id response)) :answers] response))))
+   (.log js/console (str ">>> New answer response >>>>> " response))
+   (let [qkeyword     (keyword (str (:question_id response)))
+         _            (.log js/console (str ">>> qkeyword >>>>> " qkeyword))
+         submap       (get-in db [:questions qkeyword :answers])
+         _            (.log js/console (str ">>> SUBMAP >>>>> " submap))
+         modified     (conj submap response)
+         _            (.log js/console (str ">>> Modified >>>>> " modified))]
+     (-> db
+         (assoc  :loading?  false)     ;; take away that "Loading ..." UI
+         (update-in [:questions qkeyword :answers] conj response)))))
 
 (re-frame/reg-event-fx
  :create-answer

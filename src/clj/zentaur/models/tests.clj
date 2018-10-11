@@ -45,6 +45,10 @@
     "answers"   (db/get-last-ordnen-answer {:question-id id})
     "questions" (db/get-last-ordnen-questions {:test-id id})))
 
+(defn- ^:private key-answer
+  [answer]
+  (assoc answer :key (str "keyed-" (:id answer))))
+
 (defn create-answer! [params]
   (let [question-id  (:question-id params)
         next-ordnen  (or (:ordnen (get-last-ordnen "answers" question-id)) 0)
@@ -53,7 +57,8 @@
     (if (= errors nil)
       (as-> full-params v
         (db/create-answer! v)
-        (db/get-last-answer {:question-id question-id}))
+        (db/get-last-answer {:question-id question-id})
+        (key-answer v))
       {:flash errors :ok false})))
 
 (defn- ^:private get-answers [question]

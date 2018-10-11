@@ -14,7 +14,6 @@
                 (on-save v)
                 (stop))]
     (fn [props]
-      (.log js/console (str ">>> PROPS >>>>> " props))
       [:input (merge (dissoc props :on-save :on-stop :question)
                      {:type        "text"
                       :value       @val
@@ -90,7 +89,7 @@
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
   (let [counter   (atom 0)]
     [:div.div-separator {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
-     [:p {:key (str "div-question" id) :id (str "div-question" id)} [:span.bold-font (str key ".-")] "Question: " question  "   ordnen:" ordnen]
+     [:p {:key (str "div-question" id) :id (str "div-question" id)} [:span.bold-font (str key ".-")] "Question: " question  "   ordnen:" ordnen "   id:" id]
      [:p {:key (str "div-hint" id)     :id (str "div-hint" id)}     "Hint: " hint]
      [:p {:key (str "div-explan" id)   :id (str "div-explan" id)}   "Explanation: " explanation]
      (if (= qtype 1)
@@ -98,11 +97,12 @@
             (for [answer (:answers q)]
               [display-answer answer (swap! counter inc)])]))
 
-     [:p [:input.btn {:type     "button"
-                      :value    "Löschen fragen"
-                      :key      (str "frage-btn-x" id)
-                      :id       (str "frage-btn-x" id)
-                      :on-click #(re-frame/dispatch [:delete-question id])}]]]))
+     [:p.img-float-right
+      [:input.btn {:type     "button"
+                   :value    "Löschen fragen"
+                   :key      (str "frage-btn-x" id)
+                   :id       (str "frage-btn-x" id)
+                   :on-click #(re-frame/dispatch [:delete-question id])}]]]))
 
 (defn questions-list
   []
