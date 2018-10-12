@@ -20,30 +20,31 @@
       (db/create-minimal-test! full-params)
       {:flash errors})))
 
+(defn- ^:private get-last-ordnen
+  [table id]
+  (case table
+    "answers"   (db/get-last-ordnen-answer {:question-id id})
+    "questions" (db/get-last-ordnen-questions {:test-id id})))
+
 (defn- ^:private link-test-question!
   [last-question test-id]
   (let [question-id (get-in (first last-question) [:id])
-        ordnen      (db/get-last-ordnen-questions {:test-id test-id})
-        neu-ordnen  (inc (:ordnen ordnen))]
-    (db/create-question-test! {:question-id question-id :test-id test-id :ordnen neu-ordnen})))
+        next-ordnen (or (:ordnen (get-last-ordnen "questions" test-id)) 0)]
+    (db/create-question-test! {:question-id question-id :test-id test-id :ordnen (inc next-ordnen)})))
 
 (defn create-question! [params]
+  (log/info (str ">>> PARAM >>>>> " params))
   (let [full-params (-> params
                         (update :qtype   #(Integer/parseInt %))
                         (update :test-id #(Integer/parseInt %)))
-        errors      (-> full-params (val-test/validate-question))]
+        errors      (val-test/validate-question full-params)]
+    (log/info (str ">>> FULLL   PARAM >>>>> " full-params))
     (if (= errors nil)
       (as-> full-params v
         (db/create-question! v)
         (link-test-question! v (:test-id full-params))
         (db/get-last-question {:test-id (:test-id full-params)}))
       {:flash errors :ok false})))
-
-(defn- ^:private get-last-ordnen
-  [table id]
-  (case table
-    "answers"   (db/get-last-ordnen-answer {:question-id id})
-    "questions" (db/get-last-ordnen-questions {:test-id id})))
 
 (defn- ^:private key-answer
   [answer]
