@@ -118,7 +118,8 @@
                                           [ring/ring-devel "1.6.3"]]
                            :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
                                           [cider/cider-nrepl "0.18.0"]
-                                          [lein-doo "0.1.8"]]
+                                          [lein-doo "0.1.8"]
+                                          [venantius/ultra "0.5.2"]]
                            :cljsbuild {
                                        :builds {
                                                 :app {

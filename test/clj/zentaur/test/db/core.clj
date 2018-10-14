@@ -1,10 +1,10 @@
 (ns zentaur.test.db.core
-  (:require [zentaur.db.core :refer [*db*] :as db]
-            [luminus-migrations.core :as migrations]
-            [clojure.test :refer :all]
+  (:require [clojure.test :refer :all]
             [clojure.java.jdbc :as jdbc]
-            [zentaur.config :refer [env]]
-            [mount.core :as mount]))
+            [luminus-migrations.core :as migrations]
+            [mount.core :as mount]
+            [zentaur.db.core :refer [*db*] :as db]
+            [zentaur.config :refer [env]]))
 
 (use-fixtures
   :once

@@ -6,8 +6,6 @@
             [buddy.hashers :as hashers]
             [clj-time.local :as l]))
 
-(def userstore (atom {}))
-
 (defn uuid [] (java.util.UUID/randomUUID))
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -41,10 +39,7 @@
   (let [password-derived (hashers/derive password env/secret-salt)
         trimmed_email    (clojure.string/trim email)]
     (assoc {} :user (db/get-user-login
-                      { :password password-derived :email trimmed_email }))))
-
-(defn get-user [user-id]
-  (get @userstore user-id))
+                     { :password password-derived :email trimmed_email }))))
 
 (defn get-users [active]
   (db/get-users {:active active}))

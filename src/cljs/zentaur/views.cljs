@@ -112,7 +112,7 @@
         new-question (reagent/atom "")
         hint         (reagent/atom "")
         explanation  (reagent/atom "")
-        qtype        (reagent/atom 1)]
+        qtype        (reagent/atom "1")]
     (fn []
       [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
        [:h3.class "Hinzifugen neue fragen"]
@@ -151,18 +151,23 @@
                                        :value     @qtype
                                        :on-change #(reset! qtype (-> % .-target .-value))
                                        :id        "qtype-select"}
-         [:option {:value 1} "Multiple"]
-         [:option {:value 2} "Open"]
-         [:option {:value 3} "Fullfill"]
-         [:option {:value 4} "Columns"]]]
+         [:option {:value "1"} "Multiple"]
+         [:option {:value "2"} "Open"]
+         [:option {:value "3"} "Fullfill"]
+         [:option {:value "4"} "Columns"]]]
      [:div
       [:input.btn {:type "button" :value "Save new question"
-                   :on-click #(re-frame.core/dispatch [:create-question {:question    @new-question
+                   :on-click #(do (re-frame.core/dispatch [:create-question {:question    @new-question
                                                                          :hint        @hint
                                                                          :qtype       @qtype
                                                                          :test-id     (.-value (gdom/getElement "test-id"))
                                                                          :explanation @explanation}
-                                                       :toggle-qform])}]]])))
+                                                           :toggle-qform])
+                                  (reset! new-question "")
+                                  (reset! hint "")
+                                  (reset! explanation ""))}]]])))
+
+
 
 (defn test-display []
   (let [test  (re-frame/subscribe [:test])
