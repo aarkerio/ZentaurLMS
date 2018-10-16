@@ -23,6 +23,7 @@
                  [day8.re-frame/http-fx "0.1.6"]         ;; Ajax for re-frame
                  [day8.re-frame/async-flow-fx "0.0.11"]  ;; async control flow
                  [digest "1.4.8"]                        ;; Message digest library for Clojure.
+                 [factory-time "0.1.2"]                  ;; Factory girl for clojure
                  [funcool/bide "1.6.0"]                  ;; A simple routing library for ClojureScript
                  [funcool/struct "1.3.0"]                ;; database validation
                  [hiccup "1.0.5"]                        ;; HTML render

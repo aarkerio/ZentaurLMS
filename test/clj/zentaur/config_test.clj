@@ -1,4 +1,8 @@
-(ns zentaur.config-test)
+(ns zentaur.config-test
+  (:require [zentaur.db.core :as db]))
+
+(defn clean-database []
+  (db/delete-all-tables!))
 
 (defn one-time-setup []
   (println "one time setup"))
@@ -27,10 +31,10 @@
   (teardown-test))
 
 (defn setup []
-  (println "setup"))
+  (println "Setup before each"))
 
 (defn teardown []
-  (println "teardown"))
+  (println "Teardown after each"))
 
 (defn each-fixture [f]
   (setup)
