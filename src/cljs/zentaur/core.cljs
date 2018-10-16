@@ -86,12 +86,12 @@
   (let [json       (.-value (gdom/getElement "json-field"))
         id         (.-value (gdom/getElement "upload-id"))
         csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-     (POST "/admin/uploads/save"
-         {:params {:body json
-                   :id id}
-          :headers {"x-csrf-token" csrf-field}
-          :handler set-message
-          :error-handler error-handler})))
+    (POST "/admin/uploads/save"
+        {:params {:body json
+                  :id id}
+         :headers {"x-csrf-token" csrf-field}
+         :handler set-message
+         :error-handler error-handler})))
 
 ;;;;    PROCESS LOADERS BLOCK
 (defn load-process []
@@ -116,6 +116,14 @@
     (js/setTimeout (remove-flash) 90000)
     (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! "))))
 
+(defn- load-tests []
+  (when-let [hform (gdom/getElement "button-show-div")]
+    (events/listen hform EventType.CLICK
+                   (fn [e]
+                     (let [divh    (gdom/getElement "hidden-form")
+                           toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
+                       (set! (.-className divh) toggle))))))
+
 (defn ^:export init []
   (flash-timeout)
   (let [current_url (.-pathname (.-location js/document))
@@ -124,6 +132,7 @@
       (s/includes? current_url "admin/users")     (load-users)
       (s/includes? current_url "uploads/process") (load-process)
       (s/includes? current_url "admin/posts")     (load-posts)
+      (s/includes? current_url "admin/tests")     (load-tests)
       :else "F")))
 
 (loader/set-loaded! :home)

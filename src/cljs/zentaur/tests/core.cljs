@@ -1,6 +1,5 @@
 (ns zentaur.tests.core
-  (:require
-            [cljs.core.async :refer [<! chan close!]]
+  (:require [cljs.core.async :refer [<! chan close!]]
             [cljs-http.client :as http]
             [cljs.loader :as loader]
             [goog.dom :as gdom]
@@ -48,12 +47,13 @@
 
 (defn ^:export main
   []
-  (reframe/dispatch-sync [:request-test])  ;; <--- boot process is started. Synchronously initialised *before*
-  ;; Render the UI into the HTML's <div id="app" /> element
-  ;; The view function `todomvc.views/todo-app` is the
-  ;; root view for the entire UI.
-  (r/render [zentaur.views/todo-app]
-            (.getElementById js/document "test-root-app")))
+  (when-let [hform (gdom/getElement "test-root-app")]
+    (reframe/dispatch-sync [:request-test])  ;; <--- boot process is started. Synchronously initialised *before*
+    ;; Render the UI into the HTML's <div id="app" /> element
+    ;; The view function `todomvc.views/todo-app` is the
+    ;; root view for the entire UI.
+    (r/render [zentaur.views/todo-app]
+              (.getElementById js/document "test-root-app"))))
 
 (main)
 
