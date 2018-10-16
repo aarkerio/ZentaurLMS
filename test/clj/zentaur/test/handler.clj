@@ -1,26 +1,26 @@
 (ns zentaur.test.handler
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :as ct]   ;; [deftest testing is run-tests]
+            [muuntaja.core :as m]
+            [mount.core :as mount]
             [ring.mock.request :refer :all]
             [zentaur.handler :refer :all]
-            [zentaur.middleware.formats :as formats]
-            [muuntaja.core :as m]
-            [mount.core :as mount]))
+            [zentaur.middleware.formats :as formats]))
 
-(defn parse-json [body]
-  (m/decode formats/instance "application/json" body))
+;; (defn parse-json [body]
+;;   (m/decode formats/instance "application/json" body))
 
-(use-fixtures
-  :once
-  (fn [f]
-    (mount/start #'zentaur.config/env
-                 #'zentaur.handler/app)
-    (f)))
+;; (ct/use-fixtures
+;;   :once
+;;   (fn [f]
+;;     (mount/start #'zentaur.config/env
+;;                  #'zentaur.handler/app)
+;;     (f)))
 
-(deftest test-app
-  (testing "main route"
-    (let [response (app (request :get "/"))]
-      (is (= 200 (:status response)))))
+;; (ct/deftest test-app
+;;   (ct/testing "main route"
+;;     (let [response (app (request :get "/"))]
+;;       (ct/is (= 200 (:status response)))))
 
-  (testing "not-found route"
-    (let [response (app (request :get "/invalid"))]
-      (is (= 404 (:status response))))))
+;;   (ct/testing "not-found route"
+;;     (let [response (app (request :get "/invalid"))]
+;;       (ct/is (= 404 (:status response))))))

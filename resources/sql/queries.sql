@@ -209,5 +209,8 @@ WHERE email = :email AND password = :password
 
 -- :name delete-user! :! :n
 -- :doc delete a user given the id
-DELETE FROM users
-WHERE id = :id
+DELETE FROM users WHERE id = :id
+
+-- :name delete-all-tables! :! :n
+-- :doc delete all contest ONLY in TEST env
+TRUNCATE pages, composite_answers, roles, users, posts, question_tests, tests, uploads, questions, answers, comments

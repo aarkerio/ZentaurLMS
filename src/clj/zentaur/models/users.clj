@@ -6,8 +6,6 @@
             [buddy.hashers :as hashers]
             [clj-time.local :as l]))
 
-(def userstore (atom {}))
-
 (defn uuid [] (java.util.UUID/randomUUID))
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -32,22 +30,23 @@
         role_id      (Integer/parseInt (:role_id user))
         admin        (contains? user :preadmin)
         clean-user   (dissoc user :prepassword :preadmin)]
-     (log/info (format ">>> whole data %s" (merge clean-user {:password password :admin admin :active true :role_id role_id})))
-     (-> clean-user
-       (assoc :password password :admin admin :active true :role_id role_id)
-       (db/create-user!))))
+    ;; (log/info (format ">>> Whole User data %s" (merge clean-user {:password password :admin admin :active true :role_id role_id})))
+    (-> clean-user
+        (assoc :password password :admin admin :active true :role_id role_id)
+        (db/create-user!))))
 
 (defn get-user-by-email-and-password [email password]
   (let [password-derived (hashers/derive password env/secret-salt)
         trimmed_email    (clojure.string/trim email)]
     (assoc {} :user (db/get-user-login
-                      { :password password-derived :email trimmed_email }))))
-
-(defn get-user [user-id]
-  (get @userstore user-id))
+                     {:password password-derived :email trimmed_email}))))
 
 (defn get-users [active]
   (db/get-users {:active active}))
 
 (defn get-roles []
   (db/get-roles))
+
+(defn destroy [id]
+  (let [int-id (Integer/parseInt id)]
+    (db/delete-user! {:id int-id})))
