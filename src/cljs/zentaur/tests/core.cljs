@@ -37,14 +37,6 @@
                    (fn [event] (secretary/dispatch! (.-token event))))
     (.setEnabled true)))
 
-;; -- Entry Point -------------------------------------------------------------
-;; Within ../../resources/public/index.html you'll see this code
-;;    window.onload = function () {
-;;      todomvc.core.main();
-;;    }
-;; So this is the entry function that kicks off the app once the HTML is loaded.
-;;
-
 (defn ^:export main
   []
   (when-let [hform (gdom/getElement "test-root-app")]
