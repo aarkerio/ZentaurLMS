@@ -59,38 +59,67 @@
        [:input.btn {:type "button" :value "Antwort hinzufügen"
                     :key (str "new-answer-btn" question-id)
                     :id  (str "new-answer-btn" question-id)
-                    :on-click #(re-frame/dispatch [:create-answer {:question-id question-id
-                                                                   :correct @checked
-                                                                   :answer @inner}])}]])))
-(defprotocol PQuestion
-  (multi   [x] "Multiple option")
-  (fulfill [x] "Fulfill")
-  (columns [x] "columns")
-  (open    [x] "columns"))
+                    :on-click #(do (re-frame/dispatch [:create-answer {:question-id question-id
+                                                                       :correct @checked
+                                                                       :answer @inner}])
+                                   (reset! checked false)
+                                   (reset! inner ""))}]])))
+;; Polimorphysm for kind of question
+(defmulti display-question (fn [question] (:qtype question)))
 
-(deftype QType [a b]
-  PQuestion
-  (multi   [this] (+ a b))
-  (fulfill [this] (+ a b))
-  (columns [this] (+ a b))
-  (open    [this] (+ b a)))
+;; 1: multi 2: open, 3: fullfill, 4: composite questions (columns)
+(defmethod display-question 1
+  [{:keys [question explanation hint key qtype id ordnen] :as q}]
+  (let [counter (atom 0)]
+    [:div [input-new-answer {:question-id id :on-stop #(js/console.log "stopp") :props   {:placeholder "New answer"}}]
+     (for [answer (:answers q)]
+       [display-answer answer (swap! counter inc)])]))
+
+(defmethod display-question 2
+  [question]
+  [:p "This is an open question"])
+
+(defmethod display-question 3
+  [question]
+  [:p "Question fullfill"])
+
+(defmethod display-question 4
+  [question]
+  [:p "Question columns"])
+
+
+(defn simple-input [{:keys [question id hint explanation]}]
+  (let [aquestion    (reagent/atom question)
+        ahint        (reagent/atom hint)
+        aexplanation (reagent/atom explanation)]
+    (fn []
+      [:input {:type "text"
+               :value @val
+               :id i
+               :class class
+               :on-click #(re-frame/dispatch [:update-question id])
+               :on-change #(reset! val (-> % .-target .-value))
+               :on-key-down #(case (.-which %)
+                               13 (save)
+                               27 (stop)
+                               nil)}])))
 
 (defn question-item
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
-  (let [counter       (atom 0)
-        question-type (QType. qtype q)]
+  (let [counter (reagent/atom 0)
+        editing (reagent/atom false)]
     [:div.div-separator {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
+     [:img.img-float-right
+                             {:title    "Edit answer"
+                              :alt      "Edit answer"
+                              :src      "/img/icon_edit.png"
+                              :on-click #(reset! editing true)  }]
      [:p {:key (str "div-question" id) :id (str "div-question" id)} [:span.bold-font (str key ".-")] "Question: " question  "   ordnen:" ordnen "   id:" id]
-     [:p {:key (str "div-hint" id)     :id (str "div-hint" id)}     "Hint: " hint]
-     [:p {:key (str "div-explan" id)   :id (str "div-explan" id)}   "Explanation: " explanation]
-     (case qtype
-        1 (do [:div [input-new-answer {:question-id id :on-stop #(js/console.log "stopp") :props   {:placeholder "New answer"}}]
-            (for [answer (:answers q)]
-              [display-answer answer (swap! counter inc)])])
-        2 (prn "Open question")
-        3 (prn "Question fullfill")
-        4 (prn "Question columns"))
-     ;; 2: open, 3: fullfill, 4: composite questions (columns)
+     [:p {:key (str "div-hint" id)     :id (str "div-hint" id)}     [:span.bold-font "Hint: "] hint]
+     [:p {:key (str "div-explan" id)   :id (str "div-explan" id)}   [:span.bold-font "Explanation: "] explanation]
+     (when @editing
+       [simple-input q])
+     (display-question q)
      [:p.img-float-right
       [:input.btn {:type     "button"
                    :value    "Löschen fragen"
@@ -158,16 +187,14 @@
      [:div
       [:input.btn {:type "button" :value "Save new question"
                    :on-click #(do (re-frame.core/dispatch [:create-question {:question    @new-question
-                                                                         :hint        @hint
-                                                                         :qtype       @qtype
-                                                                         :test-id     (.-value (gdom/getElement "test-id"))
-                                                                         :explanation @explanation}
+                                                                             :hint        @hint
+                                                                             :qtype       @qtype
+                                                                             :test-id     (.-value (gdom/getElement "test-id"))
+                                                                             :explanation @explanation}
                                                            :toggle-qform])
                                   (reset! new-question "")
                                   (reset! hint "")
                                   (reset! explanation ""))}]]])))
-
-
 
 (defn test-display []
   (let [test  (re-frame/subscribe [:test])

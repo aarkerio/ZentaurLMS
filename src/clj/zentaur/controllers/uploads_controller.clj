@@ -9,7 +9,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;     ADMIN FUNCTIONS    ;;;;;;;;;;;;;;;;;;;;
 
 (defn admin-uploads
-  ;; GET /admin/uploads
+  "GET /admin/uploads"
   [request]
   (let [base       (basec/set-vars request)
         user-id    (-> request :identity :id)
@@ -18,28 +18,30 @@
     (layout/application (merge base {:title "Posts" :contents (admin-uploads-view/index files csrf-field) }))))
 
 (defn upload-file
-  ;; POST /admin/uploads
+  "POST /admin/uploads"
   [request]
   (let [user-id   (-> request :identity :id)
-        params    (-> request :params)]
-    (log/info (str ">>> REQUEST >>>>> " request ))
-    (model-upload/upload-file params user-id)
-    (-> (response/found "/admin/uploads"))))
+        params    (-> request :params)
+        result    (model-upload/upload-file params user-id)
+        message   (if (= result false) "wrong" "success") ]
+        ;; (log/info (str ">>> REQUEST >>>>> " request ))
+    (-> (response/found "/admin/uploads")
+        (assoc :flash message))))
 
 (defn process
-  ;; GET /admin/uploads/process/:id
+  "GET /admin/uploads/process/:id"
   [request]
-  (let [_          (log/info (str ">>> REQUEST >>>>> " request ))
-        base       (basec/set-vars request)
+  (let [base       (basec/set-vars request)
         id         (-> request :params :id)
         csrf-field (:csrf-field base)
         upload     (model-upload/get-upload id)]
     (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process upload csrf-field) }))))
 
 (defn extract
-  ;; GET /admin/uploads/extract/:id
+  "GET /admin/uploads/extract/:id
+  Convert to text"
   [params]
-  (let [id    (-> params :id)
+  (let [id    (:id params)
         file  (model-upload/extract-text id)]
     (-> (response/found "/admin/uploads"))))
 
@@ -65,7 +67,7 @@
     (-> (response/ok response))))
 
 (defn archive
-  ;; GET /admin/uploads/archive/:id
+  "GET /admin/uploads/archive/:id"
   [request]
   (let [base      (basec/set-vars request)
         id        (-> request :identity :id)

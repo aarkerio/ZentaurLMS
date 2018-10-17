@@ -315,9 +315,9 @@
 
 ;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
 
-(re-frame/reg-event-fx        ;; <-- note the `-fx` extension
+(re-frame/reg-event-fx      ;; <-- note the `-fx` extension
  :create-question           ;; <-- the event id
- (fn                         ;; <-- the handler function
+ (fn                         ;; <-- our handler function
    [cofx [dispatch-name question]]      ;; <-- 1st argument is coeffect, from which we extract db
    (let [db         (:db cofx)
          test-id    (.-value (gdom/getElement "test-id"))

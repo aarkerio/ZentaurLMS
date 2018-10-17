@@ -44,7 +44,7 @@
 
 (defn save-upload! [params]
   (if-let [errors (validate-upload params)]
-      (db/save-upload! params)))
+    (db/save-upload! params)))
 
 (defn copy-file [source-path dest-path]
   (io/copy (io/file source-path) (io/file dest-path)))
@@ -83,12 +83,13 @@
         tempfile  (:tempfile user-file)
         tags      (:tags params)
         hashvar   (dgt/sha-256 (io/as-file tempfile))
-        _         (log/info (str ">>> hashvar >>>>> " hashvar))
         rand5     (crypto.random/hex 5)]
-    (copy-file tempfile (str root-path "/resources/public/uploads/" (str rand5 "-" filename)))
-    (save-upload!
-      (assoc params :filename (str rand5 "-" filename) :created_at (l/local-now) :hashvar hashvar
-                    :active true :user_id user-id :tags tags :done false))))
+    (if-not (db/get-upload-by-hashvar {:hashvar hashvar})
+      (do (copy-file tempfile (str root-path "/resources/public/uploads/" (str rand5 "-" filename)))
+          (save-upload!
+           (assoc params :filename (str rand5 "-" filename) :created_at (l/local-now) :hashvar hashvar
+                  :active true :user-id user-id :tags tags :done false)))
+      false)))
 
 (defn extract-text
   "Convert PDF to txt and save it in the DB"
@@ -98,7 +99,7 @@
         all-file   (extract/parse (str "resources/public/uploads/" filename))
         text       (:text all-file)]
         (db/clj-expr-generic-update {:table   "uploads"
-                                     :updates {:content text}
+                                     :updates {:content text :json text}
                                      :id      (:id db-record)})))
 
 (defn export-test [body user-id]
