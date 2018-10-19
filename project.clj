@@ -42,6 +42,7 @@
                  [org.clojure/tools.cli "0.3.5"]
                  [org.clojure/tools.logging "0.4.0"]
                  [org.clojure/tools.reader "1.3.0"]      ;;  Clojure reader and an EDN-only reader
+                 [org.clojars.frozenlock/reagent-modals "0.2.8"]  ;; Bootstrap Modals
                  [org.postgresql/postgresql "42.2.2"]
                  [reagent "0.8.2-SNAPSHOT"]              ;;  Minimalistic React for ClojureScript
                  [re-frame "0.10.6"]                     ;;  A Clojurescript MVC-like Framework For Writing SPAs Using Reagent.

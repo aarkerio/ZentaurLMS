@@ -74,7 +74,7 @@ ORDER BY id DESC
 -- :doc creates a new upload record
 INSERT INTO uploads
 (filename, active, tags, user_id, created_at, hashvar, done)
-VALUES (:filename, :active, :tags, :user_id, :created_at, :hashvar, :done) returning id
+VALUES (:filename, :active, :tags, :user-id, :created_at, :hashvar, :done) returning id
 
 -- :name get-uploads :? :*
 -- :doc retrieve uploads given the user id.
@@ -82,9 +82,12 @@ SELECT * FROM uploads
 WHERE user_id = :user-id ORDER BY id DESC
 
 -- :name get-upload :? :1
--- :doc retrieve an upload file given the id.
-SELECT * FROM uploads
-WHERE id = :id
+-- :doc retrieve an upload record given the id.
+SELECT * FROM uploads WHERE id = :id
+
+-- :name get-upload-by-hashvar :? :1
+-- :doc retrieve an upload id given the hashvar.
+SELECT id FROM uploads WHERE hashvar = :hashvar
 
 /**************   TESTS    ****/
 
@@ -98,6 +101,11 @@ VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :use
 INSERT INTO tests (title, tags, user_id) VALUES (:title, :tags, :user-id)
 
 -- :name create-question! :<!
+-- :doc creates a new question record
+INSERT INTO questions (question, qtype, hint, explanation, active, user_id)
+VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) returning id
+
+-- :name update-question! :! :n
 -- :doc creates a new question record
 INSERT INTO questions (question, qtype, hint, explanation, active, user_id)
 VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) returning id

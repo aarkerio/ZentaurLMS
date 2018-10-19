@@ -315,9 +315,9 @@
 
 ;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
 
-(re-frame/reg-event-fx        ;; <-- note the `-fx` extension
+(re-frame/reg-event-fx      ;; <-- note the `-fx` extension
  :create-question           ;; <-- the event id
- (fn                         ;; <-- the handler function
+ (fn                         ;; <-- our handler function
    [cofx [dispatch-name question]]      ;; <-- 1st argument is coeffect, from which we extract db
    (let [db         (:db cofx)
          test-id    (.-value (gdom/getElement "test-id"))
@@ -389,6 +389,15 @@
                       :on-failure      [:bad-response]}}))))
 
 
+(re-frame/reg-event-db
+ :process-after-update-question
+ [reorder-after-interceptor]
+ (fn
+   [db [_ question-id]]
+   (-> db
+       (update-in [:questions] dissoc (keyword (str question-id)))
+       (update  :loading?  not))))
+
 (re-frame/reg-event-fx        ;; <-- note the `-fx` extension
   :update-questions          ;; <-- the event id
   (fn                         ;; <-- the handler function
@@ -396,7 +405,6 @@
     (.log js/console (str ">>>   _____________  ___  >>>>>   " _))
     (.log js/console (str ">>>   QUUUUUUUUUUUUUESTION    >>>>>   " question))
     (let [db         (:db cofx)
-          test-id    (.-value (gdom/getElement "test-id"))
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
 
       ;; we return a map of (side) effects
@@ -406,10 +414,8 @@
                     :params          question
                     :headers         {"x-csrf-token" csrf-field}
                     :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:process-response]
-                    :on-failure      [:bad-response]}
-       :db (update db :qform not)})))
-
+                    :on-success      [:process-after-update-question]
+                    :on-failure      [:bad-response]}})))
 
 ;; #############  FLOW (later)
 
