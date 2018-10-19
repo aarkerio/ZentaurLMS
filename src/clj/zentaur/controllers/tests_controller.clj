@@ -34,6 +34,14 @@
         new-params   (assoc params :user-id user-id :active true)]
     (response/ok (model-test/create-question! new-params))))
 
+(defn update-question
+  "POST /admin/tests/updatequestion"
+  [request]
+  (let [params       (-> request :params)
+        user-id      (-> request :identity :id)
+        new-params   (assoc params :user-id user-id :active true)]
+    (response/ok (model-test/update-question! new-params))))
+
 (defn create-answer
   "POST /admin/tests/createanswer"
   [request]

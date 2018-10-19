@@ -87,45 +87,69 @@
   [question]
   [:p "Question columns"])
 
-
-(defn simple-input [{:keys [question id hint explanation]}]
+(defn simple-input [{:keys [question id hint explanation qtype]}]
   (let [aquestion    (reagent/atom question)
         ahint        (reagent/atom hint)
-        aexplanation (reagent/atom explanation)]
+        aexplanation (reagent/atom explanation)
+        aqtype       (reagent/atom qtype)]
     (fn []
-      [:input {:type "text"
-               :value @val
-               :id i
-               :class class
-               :on-click #(re-frame/dispatch [:update-question id])
-               :on-change #(reset! val (-> % .-target .-value))
-               :on-key-down #(case (.-which %)
-                               13 (save)
-                               27 (stop)
-                               nil)}])))
+      [:div.edit_question [:div "Question: " [:br] [:input {:type      "text"
+                     :value     @aquestion
+                     :key       (str "edit-question-id-" id)
+                     :id        (str "edit-question-id-" id)
+                     :on-change #(reset! aquestion (-> % .-target .-value))}]]
+            [:div "Hint: " [:br] [:input {:type      "text"
+                     :value     @ahint
+                     :key       (str "edit-hint-id-" id)
+                     :id        (str "edit-hint-id-" id)
+                     :on-change #(reset! ahint (-> % .-target .-value))}]]
+            [:div "Explanation: " [:br] [:input {:type      "text"
+                     :value     @aexplanation
+                     :key       (str "edit-hint-id-" id)
+                     :id        (str "edit-hint-id-" id)
+                     :on-change #(reset! aexplanation (-> % .-target .-value))}]]
+       [:div.div-separator {:id "question-qtype-div" :key "question-qtype-div"}
+        [:select.form-control.mr-sm-2 {:name      "qtype"
+                                       :value     @aqtype
+                                       :on-change #(reset! aqtype (-> % .-target .-value))
+                                       :id        "qtype-select"}
+         [:option {:value "1"} "Multiple"]
+         [:option {:value "2"} "Open"]
+         [:option {:value "3"} "Fullfill"]
+         [:option {:value "4"} "Columns"]]]
+       [:div [:input.btn {:type "button" :value "Save"
+                          :on-click #(re-frame.core/dispatch [:update-question {:question    @aquestion
+                                                                                :hint        @ahint
+                                                                                :id          id
+                                                                                :qtype       @aqtype
+                                                                                :explanation @aexplanation}])}]]])))
 
 (defn question-item
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
   (let [counter (reagent/atom 0)
         editing (reagent/atom false)]
+    (fn []
     [:div.div-separator {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
-     [:img.img-float-right
-                             {:title    "Edit answer"
-                              :alt      "Edit answer"
-                              :src      "/img/icon_edit.png"
-                              :on-click #(reset! editing true)  }]
+     [:img.img-float-right {:title    "Edit question"
+                            :alt      "Edit question"
+                            :key      (str "edit-question-img-" id)
+                            :id       (str "edit-question-img-" id)
+                            :src      "/img/icon_edit.png"
+                            :on-click #(swap! editing not)}]
      [:p {:key (str "div-question" id) :id (str "div-question" id)} [:span.bold-font (str key ".-")] "Question: " question  "   ordnen:" ordnen "   id:" id]
      [:p {:key (str "div-hint" id)     :id (str "div-hint" id)}     [:span.bold-font "Hint: "] hint]
      [:p {:key (str "div-explan" id)   :id (str "div-explan" id)}   [:span.bold-font "Explanation: "] explanation]
      (when @editing
+       (.log js/console (str ">>> EDITING question >>>>> " @editing ))
        [simple-input q])
      (display-question q)
-     [:p.img-float-right
-      [:input.btn {:type     "button"
-                   :value    "Löschen fragen"
-                   :key      (str "frage-btn-x" id)
-                   :id       (str "frage-btn-x" id)
-                   :on-click #(re-frame/dispatch [:delete-question id])}]]]))
+     [:div.img-float-right
+      [:img {:src    "/img/icon_delete.png"
+             :title  "Delete question"
+             :alt    "Delete question"
+             :key    (str "frage-btn-x" id)
+             :id     (str "frage-btn-x" id)
+             :on-click #(re-frame/dispatch [:delete-question id])}]]] ) ))
 
 (defn questions-list
   []

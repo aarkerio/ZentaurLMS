@@ -105,6 +105,11 @@ INSERT INTO tests (title, tags, user_id) VALUES (:title, :tags, :user-id)
 INSERT INTO questions (question, qtype, hint, explanation, active, user_id)
 VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) returning id
 
+-- :name update-question! :! :n
+-- :doc creates a new question record
+INSERT INTO questions (question, qtype, hint, explanation, active, user_id)
+VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) returning id
+
 -- :name create-question-test! :! :n
 -- :doc creates a new question test record
 INSERT INTO question_tests (question_id, test_id, ordnen) VALUES (:question-id, :test-id, :ordnen)

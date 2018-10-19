@@ -22,6 +22,7 @@
   (POST   "/admin/tests"                request   (cont-tests/create-test request))
   (POST   "/admin/tests/load"           request   (cont-tests/load-json request))
   (POST   "/admin/tests/createquestion" request   (cont-tests/create-question request))
+  (POST   "/admin/tests/updatequestion" request   (cont-tests/update-question request))
   (POST   "/admin/tests/deletequestion" request   (cont-tests/delete-question request))
   (POST   "/admin/tests/createanswer"   request   (cont-tests/create-answer request))
   (GET    "/admin/uploads"              request   (cont-uploads/admin-uploads request))
