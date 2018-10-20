@@ -398,8 +398,8 @@
        (update-in [:questions] dissoc (keyword (str question-id)))
        (update  :loading?  not))))
 
-(re-frame/reg-event-fx        ;; <-- note the `-fx` extension
-  :update-questions          ;; <-- the event id
+(re-frame/reg-event-fx       ;; <-- note the `-fx` extension
+  :update-question           ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ question]]      ;; <-- 1st argument is coeffect, from which we extract db
     (.log js/console (str ">>>   _____________  ___  >>>>>   " _))
