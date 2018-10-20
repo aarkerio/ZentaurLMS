@@ -33,7 +33,6 @@
     (db/create-question-test! {:question-id question-id :test-id test-id :ordnen (inc next-ordnen)})))
 
 (defn create-question! [params]
-  (log/info (str ">>> PARAM >>>>> " params))
   (let [full-params (-> params
                         (update :qtype   #(Integer/parseInt %))
                         (update :test-id #(Integer/parseInt %)))
@@ -45,6 +44,14 @@
         (link-test-question! v (:test-id full-params))
         (db/get-last-question {:test-id (:test-id full-params)}))
       {:flash errors :ok false})))
+
+(defn update-question! [params]
+  (log/info (str ">>> UPDATE QUESTION PARAM >>>>> " params))
+  (let [full-params (-> params
+                        (update :qtype   #(Integer/parseInt %)))]
+      (-> full-params
+        (db/update-question! full-params)
+        (db/get-question {:id (:id params)}))))
 
 (defn- ^:private key-answer
   [answer]

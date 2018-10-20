@@ -18,4 +18,4 @@ CREATE TABLE questions(
 
 ALTER TABLE questions ADD CHECK (qtype IN (1,2,3,4));
 
-COMMENT on column questions.qtype is '1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)'
+COMMENT on column questions.qtype is '1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)';
