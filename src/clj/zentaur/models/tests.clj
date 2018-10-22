@@ -37,7 +37,6 @@
                         (update :qtype   #(Integer/parseInt %))
                         (update :test-id #(Integer/parseInt %)))
         errors      (val-test/validate-question full-params)]
-    (log/info (str ">>> FULLL   PARAM >>>>> " full-params))
     (if (= errors nil)
       (as-> full-params v
         (db/create-question! v)
@@ -46,9 +45,9 @@
       {:flash errors :ok false})))
 
 (defn update-question! [params]
-  (log/info (str ">>> UPDATE QUESTION PARAM >>>>> " params))
-  (let [full-params (dissoc params :active)]
-    (db/update-question! full-params)
+  (let [qtype       (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
+        full-params (dissoc params :active)]
+    (db/update-question! (assoc full-params :qtype qtype :updated_at (l/local-now)))
     (db/get-question {:id (:id params)})))
 
 (defn- ^:private key-answer

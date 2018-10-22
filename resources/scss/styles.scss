@@ -882,12 +882,31 @@ textarea {
     padding: 5px;
     margin: 5px;
     border: 1px dotted gray;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     &:hover {
         opacity:1;
         transition: 1s ease;
         background-color: #eaeaea;
    }
 }
+
+
+.div-flex-container {
+    padding: 5px;
+    margin: 5px;
+    border: 1px dotted gray;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    &:hover {
+        opacity:1;
+        transition: 1s ease;
+        background-color: #eaeaea;
+   }
+}
+
 
 .bold-font {
     font-weight: bolder;
@@ -916,6 +935,25 @@ textarea {
 .img-float-right {
     float: right;
     margin-right: 20px;
+}
+
+.edit-icon-div{
+    margin: 3px;
+}
+
+.all-width-green {
+    font-weight: bold;
+    color: green;
+}
+
+.all-width-red{
+    font-weight: bold;
+    color: red;
+}
+
+.img-delete-right {
+    align-self: flex-end;
+    border: 1px dotted red;
 }
 
 table.some-table-class {

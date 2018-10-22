@@ -1,9 +1,9 @@
 (ns zentaur.models.posts
-  (:require [zentaur.db.core :as db]
-            [struct.core :as st]
+  (:require [clj-time.local :as l]
             [clojure.tools.logging :as log]
             [slugify.core :refer [slugify]]
-            [clj-time.local :as l]))
+            [struct.core :as st]
+            [zentaur.db.core :as db]))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;    VALIDATIONS
@@ -63,6 +63,9 @@
           int_ui    (Integer/parseInt (:user_id params))]
       (db/save-post! (assoc params :published published :discution discution :user_id int_ui :slug slug))
       {})))
+
+(defn update-post! [params]
+  {:updated_at (l/local-now)} )
 
 (defn toggle [{:keys [id published]}]
   (let [new-state (if (= published "true") false true)

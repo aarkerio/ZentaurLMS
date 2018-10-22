@@ -388,21 +388,27 @@
                       :on-success      [:process-after-delete-answer answer-id]
                       :on-failure      [:bad-response]}}))))
 
-
 (re-frame/reg-event-db
  :process-after-update-question
  [reorder-after-interceptor]
  (fn
-   [db [_ question-id]]
+   [db [_ response]]
+   (let [qkeyword  (keyword (str (:id response)))]
+     (.log js/console (str ">>> DB    >>>>> " (-> db :questions (keyword (str (:id response))))))
+   ;;      (.log js/console (str ">>>   QUUUUUUUUUU  question-id *****   >>>>>   " response))
+   ;; {:explanation "adsfadsfadsf EDITEDdfgdfg", :reviewed_fact false,
+   ;;  :question "dsfadsfadsf EDITEDsdfdsgdfg", :hint "adsfadsfadsf EDITEDdfgdfg", :qtype 1,
+   ;;  :updated_at nil, :reviewed_cr false, :active true,
+     ;;  :id 65, :user_id 4,  :created_at "2018-10-17T16:44:34.000Z", :reviewed_lang false}
+   (update-in db [:questions qkeyword] conj response)
    (-> db
-       (update-in [:questions] dissoc (keyword (str question-id)))
-       (update  :loading?  not))))
+       (update-in [:questions qkeyword] conj response)
+       (update :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-question           ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ question]]      ;; <-- 1st argument is coeffect, from which we extract db
-    (.log js/console (str ">>>   _____________  ___  >>>>>   " _))
     (.log js/console (str ">>>   QUUUUUUUUUUUUUESTION    >>>>>   " question))
     (let [db         (:db cofx)
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
