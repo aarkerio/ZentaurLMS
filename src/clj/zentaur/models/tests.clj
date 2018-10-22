@@ -48,9 +48,8 @@
 (defn update-question! [params]
   (log/info (str ">>> UPDATE QUESTION PARAM >>>>> " params))
   (let [full-params (dissoc params :active)]
-    (-> full-params
-        (db/update-question! full-params)
-        (db/get-question {:id (:id params)}))))
+    (db/update-question! full-params)
+    (db/get-question {:id (:id params)})))
 
 (defn- ^:private key-answer
   [answer]
