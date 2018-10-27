@@ -135,6 +135,9 @@
                                                                                 :qtype       @aqtype
                                                                                 :explanation @aexplanation}])}]]])))
 
+(def <sub (comp deref re-frame.core/subscribe))
+(def >evt re-frame.core/dispatch)
+
 (defn question-item
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
   (let [counter (reagent/atom 0)
@@ -167,7 +170,7 @@
              :alt    "Delete question"
              :key    (str "frage-btn-x" id)
              :id     (str "frage-btn-x" id)
-             :on-click #(re-frame/dispatch [:delete-question id])}]]] ) ))
+             :on-click #(re-frame/dispatch [:delete-question id])}]]])))
 
 (defn questions-list
   []
@@ -183,7 +186,8 @@
         new-question (reagent/atom "")
         hint         (reagent/atom "")
         explanation  (reagent/atom "")
-        qtype        (reagent/atom "1")]
+        qtype        (reagent/atom "1")
+        questions    (re-frame/subscribe [:questions])]
     (fn []
       [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
        [:h3.class "Hinzifugen neue fragen"]
