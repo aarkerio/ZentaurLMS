@@ -394,16 +394,9 @@
  (fn
    [db [_ response]]
    (let [qkeyword  (keyword (str (:id response)))]
-     (.log js/console (str ">>> response  ---->>>  699999   >>>>> " response ))
-     (.log js/console (str ">>> DB 699999   >>>>> " db ))
-   ;;      (.log js/console (str ">>>   QUUUUUUUUUU  question-id *****   >>>>>   " response))
-   ;; {:explanation "adsfadsfadsf EDITEDdfgdfg", :reviewed_fact false,
-   ;;  :question "dsfadsfadsf EDITEDsdfdsgdfg", :hint "adsfadsfadsf EDITEDdfgdfg", :qtype 1,
-   ;;  :updated_at nil, :reviewed_cr false, :active true,
-     ;;  :id 65, :user_id 4,  :created_at "2018-10-17T16:44:34.000Z", :reviewed_lang false}
-   (-> db
-       (update-in [:questions qkeyword] conj response)
-       (update :loading?  not)))))
+     (-> db
+         (update-in [:questions qkeyword] conj response)
+         (update :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-question           ;; <-- the event id
@@ -416,6 +409,34 @@
       ;; we return a map of (side) effects
       {:http-xhrio {:method          :post
                     :uri             "/admin/tests/updatequestion"
+                    :format          (ajax/json-request-format)
+                    :params          question
+                    :headers         {"x-csrf-token" csrf-field}
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:process-after-update-question]
+                    :on-failure      [:bad-response]}})))
+;; ### UPDATE ANSWER
+(re-frame/reg-event-db
+ :process-after-update-answer
+ [reorder-after-interceptor]
+ (fn
+   [db [_ response]]
+   (let [qkeyword  (keyword (str (:id response)))]
+     (-> db
+         (update-in [:questions qkeyword :answers] conj response)
+         (update :loading?  not)))))
+
+(re-frame/reg-event-fx       ;; <-- note the `-fx` extension
+  :update-answer             ;; <-- the event id
+  (fn                         ;; <-- the handler function
+    [cofx [_ answer]]      ;; <-- 1st argument is coeffect, from which we extract db
+    (.log js/console (str ">>>   QUUUUUUUUUUUUUESTION    >>>>>   " answer))
+    (let [db         (:db cofx)
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+
+      ;; we return a map of (side) effects
+      {:http-xhrio {:method          :post
+                    :uri             "/admin/tests/updateanswer"
                     :format          (ajax/json-request-format)
                     :params          question
                     :headers         {"x-csrf-token" csrf-field}

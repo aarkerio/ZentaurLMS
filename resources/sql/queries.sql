@@ -111,9 +111,25 @@ UPDATE questions
 SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, updated_at = :updated_at
 WHERE id = :id
 
+-- :name update-question! :! :affected
+-- :doc updates a question record
+UPDATE questions
+SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, updated_at = :updated_at
+WHERE id = :id
+
+-- :name update-answer! :! :affected
+-- :doc updates an answer record
+UPDATE answers
+SET answer = :answer, ordnen = :ordnen, correct = :correct, updated_at = :updated_at
+WHERE id = :id
+
 -- :name get-question :? :1
 -- :doc retrieve a question given the id.
 SELECT * FROM questions WHERE id = :id
+
+-- :name get-answer :? :1
+-- :doc retrieve an answer given the id.
+SELECT * FROM answers WHERE id = :id
 
 -- :name create-question-test! :! :n
 -- :doc creates a new question test record

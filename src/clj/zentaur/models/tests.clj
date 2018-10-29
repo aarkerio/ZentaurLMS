@@ -72,6 +72,11 @@
         question-updated (update question :created_at #(helpers/format-time %))]
     (assoc question-updated :answers keys-answers)))
 
+(defn update-answer! [params]
+  (let [full-params (dissoc params :active)]
+    (db/update-answer! (assoc full-params :updated_at (l/local-now)))
+    (db/get-answer {:id (:id params)})))
+
 (defn- ^:private get-questions
   "get and convert to map keyed"
   [test-id]
