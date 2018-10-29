@@ -429,16 +429,14 @@
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-answer             ;; <-- the event id
   (fn                         ;; <-- the handler function
-    [cofx [_ answer]]      ;; <-- 1st argument is coeffect, from which we extract db
-    (.log js/console (str ">>>   QUUUUUUUUUUUUUESTION    >>>>>   " answer))
+    [cofx [_ answer]]        ;; <-- 1st argument is coeffect, from which we extract db
     (let [db         (:db cofx)
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-
       ;; we return a map of (side) effects
       {:http-xhrio {:method          :post
                     :uri             "/admin/tests/updateanswer"
                     :format          (ajax/json-request-format)
-                    :params          question
+                    :params          answer
                     :headers         {"x-csrf-token" csrf-field}
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:process-after-update-question]

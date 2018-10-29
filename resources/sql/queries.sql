@@ -120,7 +120,7 @@ WHERE id = :id
 -- :name update-answer! :! :affected
 -- :doc updates an answer record
 UPDATE answers
-SET answer = :answer, ordnen = :ordnen, correct = :correct, updated_at = :updated_at
+SET answer = :answer, correct = :correct, updated_at = :updated_at
 WHERE id = :id
 
 -- :name get-question :? :1
