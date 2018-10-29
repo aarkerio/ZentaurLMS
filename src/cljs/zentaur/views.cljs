@@ -25,21 +25,19 @@
                                       27 (stop)
                                       nil)})])))
 
-(defn answer-editing-input [{:keys [answer correct id] :as fanswer}]
-  (prn (str "fanswer : " fanswer))
+(defn answer-editing-input [{:keys [answer correct id]}]
   (let [aanswer   (reagent/atom answer)
         acorrect  (reagent/atom correct)]
-     (prn (str "answer : " aanswer))
     (fn []
       [:div.edit_question
        [:div "Answer: " [:br]
         [:input {:type      "text"
                  :value     @aanswer
-                 :key       (str "edit-answer-id-" id)
-                 :id        (str "edit-answer-id-" id)
+                 :key       (str "edit-answer-text-" id)
+                 :id        (str "edit-answer-text-" id)
                  :maxLength 180
                  :size      40
-                 :on-change #(reset! @aanswer (-> % .-target .-value))}]]
+                 :on-change #(reset! aanswer (-> % .-target .-value))}]]
        [:input {:type      "checkbox"
                 :title     "richtig?"
                 :key       (str "edit-answer-box-" id)

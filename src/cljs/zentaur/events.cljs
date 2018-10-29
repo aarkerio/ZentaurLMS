@@ -415,6 +415,7 @@
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:process-after-update-question]
                     :on-failure      [:bad-response]}})))
+
 ;; ### UPDATE ANSWER
 (re-frame/reg-event-db
  :process-after-update-answer
@@ -422,9 +423,11 @@
  (fn
    [db [_ response]]
    (let [qkeyword  (keyword (str (:id response)))]
-     (-> db
-         (update-in [:questions qkeyword :answers] conj response)
-         (update :loading?  not)))))
+     (.log js/console (str ">>> response answer >>>>> " response ))
+     ; (-> db
+     ;    (update-in [:questions qkeyword :answers] conj response)
+     ;    (update :loading?  not))
+     )))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-answer             ;; <-- the event id
