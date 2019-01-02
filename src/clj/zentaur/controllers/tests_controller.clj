@@ -68,7 +68,7 @@
      (merge base {:title "Quiz Tests" :contents (tests-view/index tests base) }))))
 
 (defn admin-edit
-  "GET /admin/tests/edit"
+  "GET /admin/tests/edit/:id"
   [request]
   (let [base     (basec/set-vars request)
         test-id  (-> request :params :id)]

@@ -36,7 +36,7 @@
                  [metosin/ring-http-response "0.9.0"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.13"]                        ;; managing Clojure and ClojureScript app state
                  [nrepl "0.4.5"]
-                 [org.clojure/clojure "1.9.0"]
+                 [org.clojure/clojure "1.10.0"]
                  [org.clojure/clojurescript "1.10.339" :scope "provided"]
                  [org.clojure/java.jdbc "0.7.1"]
                  [org.clojure/tools.cli "0.3.5"]
