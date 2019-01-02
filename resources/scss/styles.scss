@@ -915,6 +915,7 @@ textarea {
     flex-direction: column;
     justify-content: space-between;
     flex-wrap: nowrap; /* default */
+    justify-content: space-between;
     &:hover {
         opacity:1;
         transition: 1s ease;
