@@ -914,6 +914,7 @@ textarea {
     display: inline-flex;
     flex-direction: column;
     justify-content: space-between;
+    flex-wrap: nowrap; /* default */
     &:hover {
         opacity:1;
         transition: 1s ease;
@@ -928,18 +929,14 @@ textarea {
     margin: 3px;
 }
 
-.answer-text{
-    padding: 10px;
-}
-
 .bold-font {
     font-weight: bolder;
 }
 
 .all-width {
-    width: 100%;
+    width: 95%;
     margin: 9px;
-    padding:2px;
+    padding: 10px;
 }
 
 .all-width-green {
@@ -973,7 +970,6 @@ textarea {
 
 .img-delete-right {
     align-self: flex-end;
-    border: 1px dotted red;
 }
 
 table.some-table-class {
