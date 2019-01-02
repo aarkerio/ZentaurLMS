@@ -297,11 +297,11 @@
 (defn todo-app
   []
   (let [questions (re-frame/subscribe [:questions])]
-        [:div
-         [:section#todoapp
-          [test-display]
-          [question-entry]
-          (when (seq @questions)
-            [questions-list])]
-         [:footer#info
-          [:p "Drag and drop to reorder questions"]]]))
+    [:div
+     [:section#todoapp
+      [test-display]
+      [question-entry]
+      (when (seq @questions)
+        [questions-list])]
+     [:footer#info
+      [:p "Drag and drop to reorder the questions"]]]))
