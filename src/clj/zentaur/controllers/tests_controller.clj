@@ -47,7 +47,6 @@
   [request]
   (let [params       (-> request :params)
         new-params   (assoc params :active true)]
-    (log/info (str ">>> new-  new- PARAM >>>>> " params))
     (response/ok (model-test/update-answer! new-params))))
 
 (defn create-answer
