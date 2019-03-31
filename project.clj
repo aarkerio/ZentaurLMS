@@ -11,13 +11,13 @@
                  [cljs-ajax "0.7.4"]                     ;; Ajax
                  [cljs-http "0.1.45"]                    ;; cljs-http returns core.async channels
                  [cljsjs/jquery "3.2.1-0"]               ;; jQuery
-                 [com.cognitect/transit-java "0.8.337"]  ;; JSON on steroids
+                 [com.cognitect/transit-java "LATEST"]  ;; JSON on steroids
                  [com.fasterxml.jackson.core/jackson-core "2.9.6"]
                  [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.9.6"]  ;; time formats
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [com.novemberain/pantomime "2.10.0"]    ;; A tiny Clojure library that deals with MIME types
                  [com.rpl/specter "1.1.1"]               ;; querying and transforming nested and recursive data
-                 [compojure "1.6.1"]                     ;; routes for ring
+                 [compojure "LATEST"]                     ;; routes for ring
                  [conman "0.8.2"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.11"]                        ;; where all configuration properties converge
                  [day8.re-frame/http-fx "0.1.6"]         ;; Ajax for re-frame
@@ -35,8 +35,8 @@
                  [metosin/muuntaja "0.6.0"]              ;; library for fast http api format negotiation, encoding and decoding.
                  [metosin/ring-http-response "0.9.0"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.13"]                        ;; managing Clojure and ClojureScript app state
-                 [nrepl "0.4.5"]
-                 [org.clojure/clojure "1.10.0"]
+                 [nrepl "LATEST"]
+                 [org.clojure/clojure "LATEST"]
                  [org.clojure/clojurescript "1.10.439" :scope "provided"]
                  [org.clojure/java.jdbc "0.7.1"]
                  [org.clojure/tools.cli "0.3.5"]
