@@ -6,18 +6,17 @@
                  [buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [buddy/buddy-auth "2.1.0"]              ;; Authentication
                  [cheshire "5.8.0"]                      ;; Clojure JSON and BSON encoding/decoding
-                 [cider/cider-nrepl "0.21.1"]            ;; Interactive Development Environment that Rocks!
                  [clj-time "0.14.0"]                     ;; date time-zone library
                  [cljs-ajax "0.7.4"]                     ;; Ajax
                  [cljs-http "0.1.45"]                    ;; cljs-http returns core.async channels
                  [cljsjs/jquery "3.2.1-0"]               ;; jQuery
-                 [com.cognitect/transit-java "LATEST"]  ;; JSON on steroids
-                 [com.fasterxml.jackson.core/jackson-core "2.9.6"]
+                 [com.cognitect/transit-clj "0.8.313"]   ;; JSON on steroids
+                 [com.fasterxml.jackson.core/jackson-core "2.9.6"]  ;; Streaming API, implementation for JSON
                  [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.9.6"]  ;; time formats
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
                  [com.novemberain/pantomime "2.10.0"]    ;; A tiny Clojure library that deals with MIME types
                  [com.rpl/specter "1.1.1"]               ;; querying and transforming nested and recursive data
-                 [compojure "LATEST"]                     ;; routes for ring
+                 [compojure "1.6.1"]                     ;; routes for ring
                  [conman "0.8.2"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.11"]                        ;; where all configuration properties converge
                  [day8.re-frame/http-fx "0.1.6"]         ;; Ajax for re-frame
@@ -35,8 +34,8 @@
                  [metosin/muuntaja "0.6.0"]              ;; library for fast http api format negotiation, encoding and decoding.
                  [metosin/ring-http-response "0.9.0"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.13"]                        ;; managing Clojure and ClojureScript app state
-                 [nrepl "LATEST"]
-                 [org.clojure/clojure "LATEST"]
+                 [nrepl "0.6.0"]
+                 [org.clojure/clojure "1.10.0"]
                  [org.clojure/clojurescript "1.10.439" :scope "provided"]
                  [org.clojure/java.jdbc "0.7.1"]
                  [org.clojure/tools.cli "0.3.5"]
@@ -62,15 +61,15 @@
   :target-path "target/%s/"
   :main ^:skip-aot zentaur.core
   :migratus {:store :database :classname "net.sf.log4jdbc.DriverSpy" :db ~(get (System/getenv) "DATABASE_URL")}
-  :plugins [[cider/cider-nrepl "0.18.0"]
-            [com.jakemccrary/lein-test-refresh "0.23.0"]  ;; faster tests
-            [lein-auto "0.1.2"]
-            [lein-cprop "1.0.3"]          ;; loads configuration
-            [lein-cljsbuild "1.1.7"]
-            [lein-figwheel "0.5.16"]
-            [lein-sassc "0.10.4"]
-            [lein-kibit "0.1.5"]           ;; rubocop for clojure
-            [migratus-lein "0.6.0"]]       ;; migrate everything!!
+  :plugins [[cider/cider-nrepl "LATEST"]
+            [com.jakemccrary/lein-test-refresh "LATEST"]  ;; faster tests
+            [lein-auto "LATEST"]
+            [lein-cprop "LATEST"]          ;; loads configuration
+            [lein-cljsbuild "LATEST"]
+            [lein-figwheel "LATEST"]
+            [lein-sassc "LATEST"]
+            [lein-kibit "LATEST"]           ;; rubocop for clojure
+            [migratus-lein "LATEST"]]       ;; migrate everything!!
   :sassc [{:src "resources/scss/styles.scss"
            :output-to "resources/public/css/styles.css"
            :style "nested"
@@ -107,20 +106,20 @@
 
              :project/dev {
                            :jvm-opts ["-Dconf=dev-config.edn"]
-                           :dependencies [[com.cemerick/piggieback "0.2.2"]      ;; nREPL support for ClojureScript REPLs
-                                          [doo "0.1.8"]                          ;; doo is a library and lein plugin to run cljs.test on different js environments.
-                                          [expound "0.7.1"]                      ;; Human-optimized error messages for clojure.spec
-                                          [figwheel-sidecar "0.5.14"]
-                                          [funcool/bide "1.6.0"]                 ;; A simple routing library for ClojureScript
-                                          [org.clojure/test.check "0.9.0"]
-                                          [pjstadig/humane-test-output "0.8.3"]  ;; Humane test output for clojure.test.
-                                          [prone "1.1.4"]                        ;; Better exception reporting middleware for Ring.
-                                          [ring/ring-mock "0.3.1"]               ;; Mocking request
-                                          [ring/ring-devel "1.6.3"]]
-                           :plugins      [[com.jakemccrary/lein-test-refresh "0.19.0"]
-                                          [cider/cider-nrepl "0.18.0"]
-                                          [lein-doo "0.1.8"]
-                                          [venantius/ultra "0.5.2"]]
+                           :dependencies [[com.cemerick/piggieback "LATEST"]      ;; nREPL support for ClojureScript REPLs
+                                          [doo "LATEST"]                          ;; doo is a library and lein plugin to run cljs.test on different js environments.
+                                          [expound "LATEST"]                      ;; Human-optimized error messages for clojure.spec
+                                          [figwheel-sidecar "LATEST"]
+                                          [funcool/bide "LATEST"]                 ;; A simple routing library for ClojureScript
+                                          [org.clojure/test.check "LATEST"]
+                                          [pjstadig/humane-test-output "LATEST"]  ;; Humane test output for clojure.test.
+                                          [prone "LATEST"]                        ;; Better exception reporting middleware for Ring.
+                                          [ring/ring-mock "LATEST"]               ;; Mocking request
+                                          [ring/ring-devel "LATEST"]]
+                           :plugins      [[com.jakemccrary/lein-test-refresh "LATEST"]
+                                          [cider/cider-nrepl "LATEST"]
+                                          [lein-doo "LATEST"]
+                                          [venantius/ultra "LATEST"]]
                            :cljsbuild {
                                        :builds {
                                                 :app {
