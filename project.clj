@@ -43,7 +43,7 @@
                  [org.clojure/tools.reader "1.3.0"]      ;;  Clojure reader and an EDN-only reader
                  [org.clojars.frozenlock/reagent-modals "0.2.8"]  ;; Bootstrap Modals
                  [org.postgresql/postgresql "42.2.2"]
-                 [reagent "0.8.2-SNAPSHOT"]              ;;  Minimalistic React for ClojureScript
+                 [reagent "0.8.1"]                       ;;  Minimalistic React for ClojureScript
                  [re-frame "0.10.6"]                     ;;  A Clojurescript MVC-like Framework For Writing SPAs Using Reagent.
                  [ring/ring-core "1.6.3"]                ;;  a very thin HTTP abstraction
                  [ring/ring-codec "1.1.0"]               ;;  encoding and decoding into formats used in web
