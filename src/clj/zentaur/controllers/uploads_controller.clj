@@ -24,7 +24,6 @@
         params    (-> request :params)
         result    (model-upload/upload-file params user-id)
         message   (if (= result false) "wrong" "success") ]
-        ;; (log/info (str ">>> REQUEST >>>>> " request ))
     (-> (response/found "/admin/uploads")
         (assoc :flash message))))
 

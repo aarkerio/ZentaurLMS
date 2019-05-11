@@ -878,21 +878,6 @@ textarea {
     border: 1px dotted gray;
 }
 
-.div-separator {
-    padding: 5px;
-    margin: 5px;
-    border: 1px dotted gray;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    &:hover {
-        opacity:1;
-        transition: 1s ease;
-        background-color: #eaeaea;
-   }
-}
-
-
 .div-flex-container {
     padding: 5px;
     margin: 5px;
@@ -907,15 +892,52 @@ textarea {
    }
 }
 
+.div-separator {
+    padding: 5px;
+    margin: 5px;
+    border: 1px dotted gray;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    &:hover {
+        opacity:1;
+        transition: 1s ease;
+        background-color: #eaeaea;
+   }
+}
+
+.div-question-row {
+    padding: 5px;
+    margin: 15px 0 10px 0;
+    border: 1px dotted gray;
+    width: 100%;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-wrap: nowrap; /* default */
+    justify-content: space-between;
+    &:hover {
+        opacity:1;
+        transition: 1s ease;
+        background-color: #eaeaea;
+    }
+    .div-new-answer{
+      border: 1px dotted green;
+    }
+}
+
+.edit-icon-div{
+    margin: 3px;
+}
 
 .bold-font {
     font-weight: bolder;
 }
 
 .all-width {
-    width:70%;
+    width: 95%;
     margin: 9px;
-    padding:2px;
+    padding: 10px;
 }
 
 .all-width-green {
@@ -937,10 +959,6 @@ textarea {
     margin-right: 20px;
 }
 
-.edit-icon-div{
-    margin: 3px;
-}
-
 .all-width-green {
     font-weight: bold;
     color: green;
@@ -953,7 +971,6 @@ textarea {
 
 .img-delete-right {
     align-self: flex-end;
-    border: 1px dotted red;
 }
 
 table.some-table-class {

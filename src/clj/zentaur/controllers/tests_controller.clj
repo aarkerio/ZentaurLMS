@@ -47,7 +47,6 @@
   [request]
   (let [params       (-> request :params)
         new-params   (assoc params :active true)]
-    (log/info (str ">>> new-  new- PARAM >>>>> " params))
     (response/ok (model-test/update-answer! new-params))))
 
 (defn create-answer
@@ -68,7 +67,7 @@
      (merge base {:title "Quiz Tests" :contents (tests-view/index tests base) }))))
 
 (defn admin-edit
-  "GET /admin/tests/edit"
+  "GET /admin/tests/edit/:id"
   [request]
   (let [base     (basec/set-vars request)
         test-id  (-> request :params :id)]

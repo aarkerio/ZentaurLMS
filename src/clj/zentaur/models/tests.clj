@@ -104,4 +104,3 @@
   (let [test-id     (Integer/parseInt (:test-id params))
         question-id (:question-id params)]
     (db/remove-question! {:test-id test-id :question-id question-id})))
-

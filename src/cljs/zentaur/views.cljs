@@ -4,7 +4,7 @@
             [reagent.core  :as reagent]
             [re-frame.core :as re-frame]))
 
-(def ^:private api-url "https://conduit.site.net/api")
+(def ^:private api-url "https://some.site.net/api")
 
 (defn question-input [{:keys [question on-save on-stop]}]
   (let [val  (reagent/atom question)
@@ -57,14 +57,14 @@
        [:div {:class answer-class}
         [:div.edit-icon-div
          (if @editing
-           [:img.img-float-right {:title    "Cancel answer"
-                                  :alt      "Cancel answer"
+           [:img.img-float-right {:title    "Antwort abbrechen"
+                                  :alt      "Antwort abbrechen"
                                   :key      (str "cancel-answer-img-" id)
                                   :id       (str "cancel-answer-img-" id)
                                   :src      "/img/icon_cancel.png"
                                   :on-click #(swap! editing not)}]
-           [:img.img-float-right {:title    "Edit question"
-                                  :alt      "Edit question"
+           [:img.img-float-right {:title    "Frage bearbeiten"
+                                  :alt      "Frage bearbeiten"
                                   :key      (str "edit-question-img-" id)
                                   :id       (str "edit-question-img-" id)
                                   :src      "/img/icon_edit.png"
@@ -72,8 +72,8 @@
         (when @editing
           [answer-editing-input answer-record])
         [:span {:class answer-text} (str counter ".-  ("correct")")] "   " answer
-        [:img.img-float-right {:title    "Delete answer"
-                               :alt      "Delete answer"
+        [:img.img-float-right {:title    "Antwort löschen"
+                               :alt      "Antwort löschen"
                                :src      "/img/icon_delete.png"
                                :on-click #(re-frame/dispatch [:delete-answer {:answer-id id :question-id question-id}])}]]])))
 
@@ -84,9 +84,11 @@
         checked     (reagent/atom false)
         keyed-div   (str "div-sep-" question-id)]
     (fn []
-      [:div.div-separator {:id keyed-div :key keyed-div}
+      [:div.div-new-answer {:id keyed-div :key keyed-div}
        [:input (merge props
                       {:type        "text"
+                       :maxLength   180
+                       :size        80
                        :value       @inner
                        :on-change   #(reset! inner (-> % .-target .-value))
                        :on-key-down #(case (.-which %)
@@ -104,14 +106,15 @@
                                                                        :answer @inner}])
                                    (reset! checked false)
                                    (reset! inner ""))}]])))
-;; Polimorphysm for kind of question
+
+;; Polimorphysm for the kind of question
 (defmulti display-question (fn [question] (:qtype question)))
 
 ;; 1: multi 2: open, 3: fullfill, 4: composite questions (columns)
 (defmethod display-question 1
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
   (let [counter (atom 0)]
-    [:div [input-new-answer {:question-id id :on-stop #(js/console.log "stopp") :props   {:placeholder "New answer"}}]
+    [:div [input-new-answer {:question-id id :on-stop #(js/console.log "stopp") :props  {:placeholder "New answer"}}]
      (for [answer (:answers q)]
        [display-answer answer (swap! counter inc)])]))
 
@@ -182,7 +185,7 @@
   (let [counter (reagent/atom 0)
         editing (reagent/atom false)]
     (fn []
-      [:div.div-separator {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
+      [:div.div-question-row {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
        [:div.edit-icon-div
         (if @editing
           [:img.img-float-right {:title    "Cancel question"
@@ -197,7 +200,7 @@
                                  :id       (str "edit-question-img-" id)
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing not)}])]
-     [:p {:key (str "div-question" id) :id (str "div-question" id)} [:span.bold-font (str key ".-")] "Question: " question  "   ordnen:" ordnen "   id:" id]
+     [:p {:key (str "div-question" id) :id (str "div-question" id)} [:span.bold-font (str key ".-" "Question: ")] question  "   ordnen:" ordnen "   id:" id]
      [:p {:key (str "div-hint" id)     :id (str "div-hint" id)}     [:span.bold-font "Hint: "] hint]
      [:p {:key (str "div-explan" id)   :id (str "div-explan" id)}   [:span.bold-font "Explanation: "] explanation]
      (when @editing
@@ -213,9 +216,9 @@
 
 (defn questions-list
   []
-  (let [counter   (atom 0)]
+  (let [counter (atom 0)]
     (fn []
-      [:section {:key (str "question-list-key-" counter) :id (str "question-list-key-" counter)}
+      [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
        (for [question @(re-frame/subscribe [:questions])]
          [question-item (second (assoc-in question [1 :key] (swap! counter inc)))])])))
 
@@ -294,11 +297,11 @@
 (defn todo-app
   []
   (let [questions (re-frame/subscribe [:questions])]
-        [:div
-         [:section#todoapp
-          [test-display]
-          [question-entry]
-          (when (seq @questions)
-            [questions-list])]
-         [:footer#info
-          [:p "Drag and drop to reorder questions"]]]))
+    [:div
+     [:section#todoapp
+      [test-display]
+      [question-entry]
+      (when (seq @questions)
+        [questions-list])]
+     [:footer#info
+      [:p "Drag and drop to reorder the questions"]]]))
