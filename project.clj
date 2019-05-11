@@ -5,7 +5,7 @@
                  [binaryage/devtools "0.9.10"]           ;; Chrome DevTools enhancements
                  [buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [buddy/buddy-auth "2.1.0"]              ;; Authentication
-                 [cheshire "5.8.0"]                      ;; Clojure JSON and BSON encoding/decoding
+                 [cheshire "5.8.1"]                      ;; Clojure JSON and BSON encoding/decoding
                  [clj-time "0.14.0"]                     ;; date time-zone library
                  [cljs-ajax "0.7.4"]                     ;; Ajax
                  [cljs-http "0.1.45"]                    ;; cljs-http returns core.async channels
@@ -14,10 +14,11 @@
                  [com.fasterxml.jackson.core/jackson-core "2.9.6"]  ;; Streaming API, implementation for JSON
                  [com.fasterxml.jackson.datatype/jackson-datatype-joda "2.9.6"]  ;; time formats
                  [com.googlecode.log4jdbc/log4jdbc "1.2"]
+                 [com.walmartlabs/lacinia "0.33.0-alpha-3"] ;; Graphql for Clojure
                  [com.novemberain/pantomime "2.10.0"]    ;; A tiny Clojure library that deals with MIME types
                  [com.rpl/specter "1.1.1"]               ;; querying and transforming nested and recursive data
                  [compojure "1.6.1"]                     ;; routes for ring
-                 [conman "0.8.2"]                        ;; Luminus database connection management and SQL query generation library
+                 [conman "0.8.3"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.11"]                        ;; where all configuration properties converge
                  [day8.re-frame/http-fx "0.1.6"]         ;; Ajax for re-frame
                  [day8.re-frame/async-flow-fx "0.0.11"]  ;; async control flow
@@ -29,11 +30,13 @@
                  [org.immutant/web "2.1.10"]             ;; libraries Ring + Undertow
                  [luminus-migrations "0.5.3"]            ;; migratus esentially
                  [luminus/ring-ttl-session "0.3.2"]      ;; ring.middleware.session.store library
+                 [luminus-transit "0.1.1"]               ;; transit serialization helpers for Luminus
                  [markdown-clj "1.0.2"]                  ;; parses md files
                  [metosin/compojure-api "1.1.11"]        ;; Sweet web apis with Compojure & Swagger
                  [metosin/muuntaja "0.6.0"]              ;; library for fast http api format negotiation, encoding and decoding.
-                 [metosin/ring-http-response "0.9.0"]    ;; Handling HTTP Statuses with Clojure(Script)
-                 [mount "0.1.13"]                        ;; managing Clojure and ClojureScript app state
+                 [metosin/reitit "0.3.1"]                ;; A fast data-driven router for Clojure(Script).
+                 [metosin/ring-http-response "0.9.1"]    ;; Handling HTTP Statuses with Clojure(Script)
+                 [mount "0.1.16"]                        ;; managing Clojure and ClojureScript app state
                  [nrepl "0.6.0"]
                  [org.clojure/clojure "1.10.0"]
                  [org.clojure/clojurescript "1.10.439" :scope "provided"]
@@ -42,7 +45,7 @@
                  [org.clojure/tools.logging "0.4.0"]
                  [org.clojure/tools.reader "1.3.0"]      ;;  Clojure reader and an EDN-only reader
                  [org.clojars.frozenlock/reagent-modals "0.2.8"]  ;; Bootstrap Modals
-                 [org.postgresql/postgresql "42.2.2"]
+                 [org.postgresql/postgresql "42.2.5"]
                  [reagent "0.8.1"]                       ;;  Minimalistic React for ClojureScript
                  [re-frame "0.10.6"]                     ;;  A Clojurescript MVC-like Framework For Writing SPAs Using Reagent.
                  [ring/ring-core "1.6.3"]                ;;  a very thin HTTP abstraction
