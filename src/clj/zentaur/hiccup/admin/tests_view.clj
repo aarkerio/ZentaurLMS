@@ -44,7 +44,7 @@
 
 (defn edit [base test-id]
   [:div
-    [:h1 "Edit Quizz Test"]
+    [:h1 "Bearbeiten Quizz Test"]
     [:div {:id "cont"}
       (f/form-to [:post ""]
         (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")

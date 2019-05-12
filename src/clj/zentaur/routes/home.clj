@@ -40,4 +40,3 @@
   (GET    "/login"                      request   (cont-users/login-page request))
   (POST   "/login"                      request   (cont-users/post-login request))
   (GET    "/logout"                     request   (cont-users/clear-session! request)))
-

@@ -67,18 +67,12 @@
   :plugins [[cider/cider-nrepl "LATEST"]
             [com.jakemccrary/lein-test-refresh "LATEST"]  ;; faster tests
             [lein-auto "LATEST"]
-            [lein-cprop "LATEST"]          ;; loads configuration
+            [lein-cprop "LATEST"]           ;; loads configuration
             [lein-cljsbuild "LATEST"]
             [lein-figwheel "LATEST"]
-            [lein-sassc "LATEST"]
             [lein-kibit "LATEST"]           ;; rubocop for clojure
             [migratus-lein "LATEST"]]       ;; migrate everything!!
-  :sassc [{:src "resources/scss/styles.scss"
-           :output-to "resources/public/css/styles.css"
-           :style "nested"
-           :import-path "resources/scss"}]
   :auto {"sassc" {:file-pattern #"\.(scss|sass)$" :paths ["resources/scss"]}}
-  :hooks [leiningen.sassc]
   :clean-targets ^{:protect false :doc "Keeps the cache clean"}
   [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
   :aliases {"test-all" ["do" ["test"] ["specs"]]}

@@ -54,7 +54,6 @@
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn save-post! [params]
-  (log/info (str ">>> PARAM MODEL >>>>> " params))
   (if-let [errors (-> params (validate-post))]
     {:flash errors}
     (let [slug      (slugify (:title params))

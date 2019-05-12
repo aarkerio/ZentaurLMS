@@ -117,7 +117,7 @@
     (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! "))))
 
 (defn- load-tests []
-  (when-let [hform (gdom/getElement "button-show-div")]
+  (when-let [hform (gdom/getElement "button-show-div")]  ;; nur im Bearbeitungsmodus
     (events/listen hform EventType.CLICK
                    (fn [e]
                      (let [divh    (gdom/getElement "hidden-form")
