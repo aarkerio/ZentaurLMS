@@ -94,7 +94,7 @@
          :error-handler error-handler})))
 
 ;;;;    PROCESS LOADERS BLOCK
-(defn load-process []
+(defn- load-process []
   (events/listen (gdom/getElement "insert-question") EventType.CHANGE
                  (fn [e]
                    (let [value (.-value (gdom/getElement "insert-question"))]
@@ -106,12 +106,12 @@
   (events/listen (gdom/getElement "icon-add") EventType.CLICK
        (fn [] (.log js/console (str ">>> VALUE >>>>>  #####   >>>>>   events/listen  in users ns")))))
 
-(defn remove-flash []
+(defn- remove-flash []
   (.log js/console (str ">>> REMOVVING!!!! >>>>> "))
   (when-let [flash-msg (gdom/getElement "flash-msg")]
     (js/setTimeout (.-remove flash-msg) 9000)))
 
-(defn flash-timeout []
+(defn- flash-timeout []
   (if-let [flash-msg (gdom/getElement "flash-msg")]
     (js/setTimeout (remove-flash) 90000)
     (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! "))))
