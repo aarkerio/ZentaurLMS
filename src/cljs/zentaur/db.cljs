@@ -98,7 +98,7 @@
 ;;
 ;; We must supply a `sorted-map` but in LocalStore it is stored as a `map`.
 ;;
-(reframe/reg-cofx   ;; deprecated
+(reframe/reg-cofx
   :local-store-todos
   (fn [cofx _]
       ;; put the localstore todos into the coeffect under :local-store-todos

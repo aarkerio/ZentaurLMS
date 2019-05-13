@@ -73,9 +73,9 @@
 ;; Each event handler can have its own chain of interceptors.
 ;; We now create the interceptor chain shared by all event handlers which manipulate todos.
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
-(def todo-interceptors [check-spec-interceptor    ;; ensure the spec is still valid  (after)
+(def todo-interceptors [check-spec-interceptor     ;; ensure the spec is still valid  (after)
                         (re-frame/path :todos)     ;; the 1st param given to handler will be the value from this path within db
-                        ->local-store])           ;; write todos to localstore  (after)
+                        ->local-store])            ;; write todos to localstore  (after)
 
 (defn order-questions
   [db]
@@ -122,11 +122,11 @@
 ;; and look at the bottom of `db.cljs` for the `:local-store-todos` cofx
 ;; registration.
 (re-frame/reg-event-fx         ;; part of the re-frame API
- :initialise-db              ;; event id being handled
+ :initialise-db                ;; event id being handled
 
   ;; the interceptor chain (a vector of 2 interceptors in this case)
  [(re-frame/inject-cofx :local-store-todos)        ;; gets todos from localstore, and puts value into coeffects arg
-  check-spec-interceptor                          ;; after event handler runs, check app-db for correctness. Does it still match Spec?
+  check-spec-interceptor                           ;; after event handler runs, check app-db for correctness. Does it still match Spec?
   (.log js/console (str ">>> >>>I'm the initial Interceptor!!! "))]
 
   ;; the event handler (function) being registered
@@ -137,7 +137,7 @@
 ;; This event is dispatched when the user clicks on one of the 3
 ;; filter buttons at the bottom of the display.
 (re-frame/reg-event-db      ;; part of the re-frame API
-  :set-showing             ;; event-id
+  :set-showing              ;; event-id
 
   ;; only one interceptor
   [check-spec-interceptor]       ;; after event handler runs, check app-db for correctness. Does it still match Spec?
@@ -283,9 +283,9 @@
 ;; reg-event-fx == event handler's coeffects
 
 (re-frame/reg-event-fx    ;; <-- note the `-fx` extension
-  :request-test          ;; <-- the event id
-  (fn                     ;; <-- the handler function
-    [cfx _]              ;; <-- 1st argument is coeffect, from which we extract db
+  :request-test           ;; <-- the event id
+  (fn                      ;; <-- the handler function
+    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db
     (let [db         (:db cfx)
           test-id    (.-value (gdom/getElement "test-id"))
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]

@@ -135,4 +135,4 @@
       (s/includes? current_url "admin/tests")     (load-tests)
       :else "F")))
 
-(loader/set-loaded! :home)
+(loader/set-loaded! :home)    ;; clojurescript.org/guides/code-splitting

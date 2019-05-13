@@ -19,7 +19,7 @@
 ;; The event handler for `:initialise-db` can be found in `events.cljs`
 ;; Using the sync version of dispatch means that value is in
 ;; place before we go onto the next step.
-(reframe/dispatch-sync [:initialise-db])
+;; (reframe/dispatch-sync [:initialise-db])
 
 ;; -- Routes and History ------------------------------------------------------
 ;; Although we use the secretary library below, that's mostly a historical
