@@ -10,7 +10,7 @@ CREATE TABLE users(
    admin BOOLEAN NOT NULL DEFAULT false,
    last_login TIME,
    active BOOLEAN,
-   role_id int REFERENCES roles NOT NULL default 2
+   role_id int REFERENCES roles NOT NULL default 2,
    password VARCHAR(300) NOT NULL,
    created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
    updated_at timestamp(0) with time zone

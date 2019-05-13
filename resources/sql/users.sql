@@ -1,5 +1,7 @@
 /******************* USERS ***/
-
+-- CREATE USER zentaur WITH encrypted password 's0m3erty1WW';
+-- ALTER USER zentaur CREATEDB;
+-- CREATE DATABASE "zentaur_dev" ENCODING 'UTF8';
 -- :name create-user! :! :n
 -- :doc creates a new user record
 INSERT INTO users (fname, lname, uname, email, password, admin, active, role_id)
