@@ -1,4 +1,4 @@
-(ns zentaur.db
+(ns zentaur.reframe.tests.db
   (:require [cljs.reader]
             [cljs.spec.alpha :as s]
             [re-frame.core :as reframe]))

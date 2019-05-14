@@ -1,4 +1,4 @@
-(ns zentaur.views
+(ns zentaur.reframe.tests.views
   (:require [clojure.string :as str]
             [goog.dom :as gdom]
             [reagent.core  :as reagent]

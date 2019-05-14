@@ -1,4 +1,4 @@
-(ns zentaur.subs ^{:doc "Re-frame Subscriptions"}
+(ns zentaur.reframe.tests.subs ^{:doc "Re-frame Subscriptions"}
   (:require [re-frame.core :as reframe]))  ;; [reg-sub subscribe]
 
 ;; Subscribers automatically subscribe data from the global state and re-render on change.

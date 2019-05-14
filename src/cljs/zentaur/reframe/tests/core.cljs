@@ -1,15 +1,15 @@
-(ns zentaur.tests.core
+(ns zentaur.reframe.tests.core
   (:require [cljs.core.async :refer [<! chan close!]]
             [cljs-http.client :as http]
             [cljs.loader :as loader]
             [goog.dom :as gdom]
             [goog.events :as events]
             [reagent.core :as r]
-            [re-frame.core :as reframe] ;; [dispatch dispatch-sync]]
+            [re-frame.core :as reframe]       ;; [dispatch dispatch-sync]]
             [secretary.core :as secretary]
-            [zentaur.events]    ;; These two are only required to make the compiler
-            [zentaur.subs]      ;; my subscriptions
-            [zentaur.views])
+            [zentaur.reframe.tests.events]    ;; These two are only required to make the compiler
+            [zentaur.reframe.tests.subs]      ;; my subscriptions
+            [zentaur.reframe.tests.views])
   (:require-macros [cljs.core.async.macros :as m :refer [go]]
                    [secretary.core :refer [defroute]])
   (:import [goog History]

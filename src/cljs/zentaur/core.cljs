@@ -7,7 +7,7 @@
             [goog.events :as events]
             [goog.style :as style]
             [zentaur.users :as users]
-            [zentaur.tests.core :as ctests])
+            [zentaur.reframe.tests.core :as ctests])
   (:import [goog.events EventType]))
 
 (enable-console-print!)

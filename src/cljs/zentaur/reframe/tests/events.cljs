@@ -1,11 +1,11 @@
-(ns zentaur.events
+(ns zentaur.reframe.tests.events
   (:require [ajax.core :as ajax]
             [cljs.spec.alpha :as s]
             [day8.re-frame.async-flow-fx]
             [day8.re-frame.http-fx]
             [goog.dom :as gdom]
             [re-frame.core :as re-frame]    ;; [reg-event-db reg-event-fx inject-cofx path after]]
-            [zentaur.db    :as zdb]))
+            [zentaur.reframe.tests.db :as zdb]))
 
 ;; -- Interceptors --------------------------------------------------------------
 ;;
@@ -341,7 +341,7 @@
        (update-in [:questions] dissoc (keyword (str question-id)))
        (update  :loading?  not))))
 
-(re-frame/reg-event-fx        ;; <-- note the `-fx` extension
+(re-frame/reg-event-fx       ;; <-- note the `-fx` extension
  :delete-question            ;; <-- the event id
  (fn                          ;; <-- the handler function
    [cofx [dispatch-id question-id]]      ;; <-- 1st argument is coeffect, from which we extract db

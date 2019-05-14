@@ -85,9 +85,6 @@
                         {:min
                          {:source-paths ["src/cljs" "env/prod/cljs"]
                           :compiler
-                          :modules {:home {:entries #{"zentaur.core"}      :output-to "out/home.js"}
-                                    :site {:entries #{"zentaur.site.core"} :output-to "out/site.js"}
-                                    :tests {:entries #{"zentaur.tests.core"} :output-to "out/tests.js"}}
                           {:output-to "resources/public/js/app.js"
                            :optimizations :advanced
                            :pretty-print false
