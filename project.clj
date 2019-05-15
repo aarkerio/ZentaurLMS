@@ -127,8 +127,7 @@
                                                                  :output-dir "resources/public/js/out"
                                                                  :output-to  "resources/public/js/main.js"
                                                                  :modules {:home  {:entries #{"zentaur.core"}       :output-to "resources/public/js/out/home.js"}
-                                                                           :site  {:entries #{"zentaur.site.core"}  :output-to "resources/public/js/out/site.js"}
-                                                                           :tests {:entries #{"zentaur.tests.core"} :output-to "resources/public/js/out/tests.js"}
+                                                                           :tests {:entries #{"zentaur.reframe.tests.core"} :output-to "resources/public/js/out/tests.js"}
                                                                            :cljs-base {:output-to "resources/public/js/out/cljs_base.js"}}
                                                                  :main "zentaur.app"
                                                                  :source-map true

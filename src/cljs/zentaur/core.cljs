@@ -12,8 +12,6 @@
 
 (enable-console-print!)
 
-(println "I'm in the core aka home module!")
-
 ;; Ajax handlers
 (defn handler [response]
   (.log js/console (str response)))
@@ -117,7 +115,7 @@
     (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! "))))
 
 (defn- load-tests []
-  (when-let [hform (gdom/getElement "button-show-div")]  ;; nur im Bearbeitungsmodus
+  (when-let [hform (gdom/getElement "button-show-div")]  ;; versteckte Taste. Nur im Bearbeitungsmodus
     (events/listen hform EventType.CLICK
                    (fn [e]
                      (let [divh    (gdom/getElement "hidden-form")
@@ -134,5 +132,3 @@
       (s/includes? current_url "admin/posts")     (load-posts)
       (s/includes? current_url "admin/tests")     (load-tests)
       :else "F")))
-
-(loader/set-loaded! :home)    ;; clojurescript.org/guides/code-splitting

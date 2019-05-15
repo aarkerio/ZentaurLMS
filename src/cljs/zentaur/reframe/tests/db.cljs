@@ -35,7 +35,7 @@
 ;; My spec
 (s/def ::question string?)
 (s/def ::qtype int?)
-(s/def ::question (s/keys :req-un [::question ::qtype ::id]))
+(s/def ::question (s/keys :req-un [::question ::qtype ::id]))  ;; :req-un and :opt-un for "required" and "optional" unqualified keys
 
 (s/def ::test (s/and                                        ;; should use the :kind kw to s/map-of (not supported yet)
                  (s/map-of ::id ::question)                 ;; in this map, each todo is keyed by its :id

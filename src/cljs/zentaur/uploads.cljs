@@ -6,8 +6,6 @@
 
 (enable-console-print!)
 
-(.log js/console "I am in upload.cljs  !")
-
 (defn mount []
   (.log js/console (str ">>> VALUE >>>>> mount uploads !!!")))
 

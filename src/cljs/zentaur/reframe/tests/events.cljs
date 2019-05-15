@@ -55,7 +55,7 @@
     (throw (ex-info (str "spec check failed: " (s/explain-str a-spec db)) {}))))
 
 ;; now we create an interceptor using `after`
-(def check-spec-interceptor (re-frame/after (partial check-and-throw :zentaur.db/db)))  ;; PARTIAL: (def hundred-times (partial * 100))
+(def check-spec-interceptor (re-frame/after (partial check-and-throw :zentaur.reframe.tests.db/db)))  ;; PARTIAL: (def hundred-times (partial * 100))
 
 ;; -- Second Interceptor -----------------------------------------------------
 ;;
@@ -231,9 +231,9 @@
  (fn [db [_ on-change]]                ;; First argument: coeffects map which contains the current state of the world (including app state)
    (update db :count on-change)))     ;; Second argument the event to handle
 
-;; AJAX handlers
+;; Background (aka AJAX) handlers
 (re-frame/reg-event-db
- :process-response
+ :process-test-response
  [reorder-event]
  (fn
    [db [_ response]]               ;; destructure the response from the event vector
@@ -264,6 +264,27 @@
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
          (update-in [:questions qkeyword :answers] conj response)))))
 
+;; reg-event-fx == event handler's coeffects, fx == effect
+
+(re-frame/reg-event-fx    ;; <-- note the `-fx` extension
+  :request-test           ;; <-- the event id
+  (fn                      ;; <-- the handler function
+    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
+    (let [db         (:db cfx)
+          test-id    (.-value (gdom/getElement "test-id"))
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+
+      ;; we return a map of (side) effects
+      {:http-xhrio {:method          :post
+                    :uri             "/admin/tests/load"
+                    :format          (ajax/json-request-format)
+                    :params          {:test-id test-id}
+                    :headers         {"x-csrf-token" csrf-field}
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:process-test-response]  ;; <<----
+                    :on-failure      [:bad-response]}
+       :db (assoc db :loading? true)})))
+
 (re-frame/reg-event-fx
  :create-answer
  (fn
@@ -279,27 +300,6 @@
                    :response-format (ajax/json-response-format {:keywords? true})
                    :on-success      [:process-new-answer]
                    :on-failure      [:bad-response]}})))
-
-;; reg-event-fx == event handler's coeffects
-
-(re-frame/reg-event-fx    ;; <-- note the `-fx` extension
-  :request-test           ;; <-- the event id
-  (fn                      ;; <-- the handler function
-    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db
-    (let [db         (:db cfx)
-          test-id    (.-value (gdom/getElement "test-id"))
-          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-
-      ;; we return a map of (side) effects
-      {:http-xhrio {:method          :post
-                    :uri             "/admin/tests/load"
-                    :format          (ajax/json-request-format)
-                    :params          {:test-id test-id}
-                    :headers         {"x-csrf-token" csrf-field}
-                    :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:process-response]
-                    :on-failure      [:bad-response]}
-       :db (assoc db :loading? true)})))
 
 ;; AJAX handlers
 (re-frame/reg-event-db

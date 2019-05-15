@@ -4,7 +4,7 @@
             [reagent.core  :as reagent]
             [re-frame.core :as re-frame]))
 
-(def ^:private api-url "https://some.site.net/api")
+(def ^:private api-url "http://localhost:8080/graphql")
 
 (defn question-input [{:keys [question on-save on-stop]}]
   (let [val  (reagent/atom question)
