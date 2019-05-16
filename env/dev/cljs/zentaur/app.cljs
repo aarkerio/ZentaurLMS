@@ -9,8 +9,4 @@
 (devtools/install!)     ;; we love https://github.com/binaryage/cljs-devtools
 (enable-console-print!) ;; so that println writes to `console.log`
 
-(defn main
-  "main"
-  []
-  (core/init))
-
+(core/init)

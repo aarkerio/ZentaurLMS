@@ -40,7 +40,7 @@
                  [nrepl "0.6.0"]
                  [org.clojure/clojure "1.10.0"]
                  [org.clojure/clojurescript "1.10.520" :scope "provided"]
-                 [org.clojure/java.jdbc "0.7.1"]
+                 [org.clojure/java.jdbc "0.7.9"]
                  [org.clojure/tools.cli "0.3.5"]
                  [org.clojure/tools.logging "0.4.0"]
                  [org.clojure/tools.reader "1.3.0"]      ;;  Clojure reader and an EDN-only reader

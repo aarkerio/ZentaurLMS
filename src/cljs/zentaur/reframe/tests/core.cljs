@@ -28,19 +28,18 @@
 ;;   - https://github.com/juxt/bidi
 ;; We don't have a strong opinion.
 ;;
-(defroute "/" [] (reframe/dispatch [:set-showing :all]))
-(defroute "/:filter" [filter] (reframe/dispatch [:set-showing (keyword filter)]))
+;; (defroute "/" [] (reframe/dispatch [:set-showing :all]))
+;; (defroute "/:filter" [filter] (reframe/dispatch [:set-showing (keyword filter)]))
 
-(def history
-  (doto (History.)
-    (events/listen EventType.NAVIGATE
-                   (fn [event] (secretary/dispatch! (.-token event))))
-    (.setEnabled true)))
+;; (def history
+;;   (doto (History.)
+;;     (events/listen EventType.NAVIGATE
+;;                    (fn [event] (secretary/dispatch! (.-token event))))
+;;     (.setEnabled true)))
 
 (defn ^:export main
   []
   (when-let [hform (gdom/getElement "test-root-app")]
-    (.log js/console (str ">>> ******************* HFORM >>>>> " (.stringify js/JSON hform)))
     (reframe/dispatch-sync [:request-test])  ;; <--- boot process is started. Synchronously initialised *before*
     (r/render [zviews/todo-app]
               (.getElementById js/document "test-root-app"))))
