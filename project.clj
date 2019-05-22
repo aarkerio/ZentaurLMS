@@ -37,7 +37,7 @@
                  [metosin/reitit "0.3.1"]                ;; A fast data-driven router for Clojure(Script).
                  [metosin/ring-http-response "0.9.1"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.16"]                        ;; managing Clojure and ClojureScript app state
-                 [nrepl "0.6.0"]
+                 [nrepl "0.6.0"]                         ;; REPL that provides a server and client
                  [org.clojure/clojure "1.10.0"]
                  [org.clojure/clojurescript "1.10.520" :scope "provided"]
                  [org.clojure/java.jdbc "0.7.9"]

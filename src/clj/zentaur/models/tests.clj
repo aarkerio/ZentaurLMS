@@ -87,7 +87,9 @@
              (zipmap index-seq)  ;; add the index
              )))
 
-(defn get-test-nodes [test-id user-id]
+(defn get-test-nodes
+  "????"
+  [test-id user-id]
   (let [test         (db/get-one-test { :id test-id :user-id user-id })
         test-updated (update test :created_at #(helpers/format-time %))
         questions    (get-questions test-id)]
