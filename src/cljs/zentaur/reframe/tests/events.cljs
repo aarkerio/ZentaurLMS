@@ -5,7 +5,19 @@
             [day8.re-frame.http-fx]
             [goog.dom :as gdom]
             [re-frame.core :as re-frame]
+            [re-graph.core :as re-graph]
             [zentaur.reframe.tests.db :as zdb]))
+
+(re-frame/dispatch
+  [::re-graph/init
+    {:ws-url                  "wss://localhost:8888/graphql-ws" ;; override the websocket url (defaults to /graphql-ws, nil to disable)
+     :http-url                "http://localhost:8888/graphql"   ;; override the http url (defaults to /graphql)
+     :http-parameters         {:with-credentials? false   ;; any parameters to be merged with the request, see cljs-http for options
+                               :oauth-token "ah4rdSecr3t"}
+     :ws-reconnect-timeout    2000                      ;; attempt reconnect n milliseconds after disconnect (default 5000, nil to disable)
+     :resume-subscriptions?   true                      ;; start existing subscriptions again when websocket is reconnected after a disconnect
+     :connection-init-payload {}                        ;; the payload to send in the connection_init message, sent when a websocket connection is made
+     }])
 
 ;; -- Check Interceptor ------------------------------------------------------
 (defn check-and-throw
@@ -20,7 +32,6 @@
 ;; We now create the interceptor chain shared by all event handlers which manipulate todos.
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
 (def todo-interceptors [check-spec-interceptor])
-
 
 (defn order-questions
   "helper to reorder"
@@ -42,16 +53,26 @@
 (def reorder-after-interceptor (re-frame/after (partial order-questions)))
 
 ;; My new event DB handlers
+;; (re-frame/reg-event-db
+;;  :process-test-response
+;;  [reorder-event]
+;;  (fn
+;;    [db [_ response]]               ;; destructure the response from the event vector
+;;    (.log js/console (str ">>> First Call >>>>> " (:questions response)))
+;;    (-> db
+;;        (assoc :loading?  false)     ;; take away that "Loading ..." UI element
+;;        (assoc :test      (js->clj response))
+;;        (assoc :questions (js->clj (:questions response)))) ))
+
 (re-frame/reg-event-db
- :process-test-response
- [reorder-event]
- (fn
-   [db [_ response]]               ;; destructure the response from the event vector
-   (.log js/console (str ">>> First Call >>>>> " (:questions response)))
-   (-> db
-       (assoc :loading?  false)     ;; take away that "Loading ..." UI
-       (assoc :test      (js->clj response))
-       (assoc :questions (js->clj (:questions response))))))
+  :process-test-response
+  (fn [db [_ {:keys [data errors] :as payload}]]
+    ;; do things with data e.g. write it into the re-frame database
+    (.log js/console (str ">>> test-question Graphql Call >>>>> " data)
+    (-> db
+        (assoc :loading?  false)     ;; take away that "Loading ..." UI element
+        (assoc :test      (js->clj data))
+        (assoc :questions (js->clj data))))
 
 (re-frame/reg-event-db
  :bad-response

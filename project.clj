@@ -48,6 +48,7 @@
                  [org.postgresql/postgresql "42.2.5"]
                  [reagent "0.8.1"]                       ;;  Minimalistic React for ClojureScript
                  [re-frame "0.10.6"]                     ;;  A Clojurescript MVC-like Framework For Writing SPAs Using Reagent.
+                 [re-graph "0.1.8"]                      ;; 
                  [ring/ring-core "1.6.3"]                ;;  a very thin HTTP abstraction
                  [ring/ring-codec "1.1.0"]               ;;  encoding and decoding into formats used in web
                  [ring/ring-defaults "0.3.2"]            ;;  Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.

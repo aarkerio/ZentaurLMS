@@ -4,8 +4,6 @@
             [reagent.core  :as reagent]
             [re-frame.core :as re-frame]))
 
-(def ^:private api-url "http://localhost:8080/graphql")
-
 (defn question-input [{:keys [question on-save on-stop]}]
   (let [val  (reagent/atom question)
         stop #(do (reset! val "")
@@ -304,4 +302,4 @@
       (when (seq @questions)
         [questions-list])]
      [:footer#info
-      [:p "Drag and drop to reorder the questions"]]]))
+      [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))
