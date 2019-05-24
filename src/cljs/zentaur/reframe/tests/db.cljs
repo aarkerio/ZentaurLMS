@@ -1,7 +1,7 @@
 (ns zentaur.reframe.tests.db
   (:require [cljs.reader]
             [cljs.spec.alpha :as s]
-            [re-frame.core :as reframe]))
+            [re-frame.core :as re-frame]))
 
 ;; ####### CONTEXT
 ;;  {:coeffects {:event [:some-id :some-param]
@@ -52,7 +52,8 @@
 
 (def default-db             ;; what gets put into app-db by default.
   {:test      (sorted-map)
-   :questions (sorted-map)})
+   :questions (sorted-map)
+   :qform     false})
 
 ;; -- cofx Registrations  -----------------------------------------------------
 ;; Use `reg-cofx` to register a "coeffect handler" which will inject the todos
@@ -65,7 +66,7 @@
 ;;
 ;; We must supply a `sorted-map` but in LocalStore it is stored as a `map`.
 ;;
-(reframe/reg-cofx
+(re-frame/reg-cofx
   :reorder-questions
   (fn [cofx _]
     (let [questions (-> cofx :db :questions)]

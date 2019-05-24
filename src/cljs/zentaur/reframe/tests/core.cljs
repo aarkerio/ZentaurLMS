@@ -5,7 +5,7 @@
             [goog.dom :as gdom]
             [goog.events :as events]
             [reagent.core :as r]
-            [re-frame.core :as reframe]       ;; [dispatch dispatch-sync]]
+            [re-frame.core :as re-frame]       ;; [dispatch dispatch-sync]]
             [secretary.core :as secretary]
             [zentaur.reframe.tests.events]    ;; These two are only required to make the compiler
             [zentaur.reframe.tests.subs]      ;; my subscriptions
@@ -40,7 +40,7 @@
 (defn ^:export main
   []
   (when-let [hform (gdom/getElement "test-root-app")]
-    (reframe/dispatch-sync [:request-test])  ;; <--- boot process is started. Synchronously initialised *before*
+    (re-frame/dispatch-sync [:request-test])  ;; <--- boot process is started. Synchronously initialised *before*
     (r/render [zviews/todo-app]
               (.getElementById js/document "test-root-app"))))
 (main)

@@ -1,21 +1,21 @@
 (ns zentaur.middleware
-  (:require [zentaur.env :refer [defaults]]
+  (:require [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
+            [buddy.auth.accessrules :refer [restrict wrap-access-rules]]
+            [buddy.auth :refer [authenticated?]]
+            [buddy.auth.backends.session :refer [session-backend]]
             [cheshire.generate :as cheshire]
             [cognitect.transit :as transit]
             [clojure.tools.logging :as log]
-            [zentaur.layout :refer [error-page]]
-            [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
-            [ring.middleware.webjars :refer [wrap-webjars]]
-            [zentaur.middleware.formats :as formats]
-            [muuntaja.middleware :refer [wrap-format wrap-params]]
-            [zentaur.config :refer [env]]
-            [ring.middleware.flash :refer [wrap-flash]]
             [immutant.web.middleware :refer [wrap-session]]
+            [muuntaja.middleware :refer [wrap-format wrap-params]]
+            [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+            [ring.middleware.flash :refer [wrap-flash]]
             [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-            [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
-            [buddy.auth.accessrules :refer [restrict wrap-access-rules]]
-            [buddy.auth :refer [authenticated?]]
-            [buddy.auth.backends.session :refer [session-backend]])
+            [ring.middleware.webjars :refer [wrap-webjars]]
+            [zentaur.config :refer [env]]
+            [zentaur.env :refer [defaults]]
+            [zentaur.layout :refer [error-page]]
+            [zentaur.middleware.formats :as formats])
   (:import
            [org.joda.time ReadableInstant]))
 

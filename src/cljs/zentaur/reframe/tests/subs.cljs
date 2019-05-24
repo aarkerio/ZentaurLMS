@@ -1,5 +1,6 @@
 (ns zentaur.reframe.tests.subs ^{:doc "Re-frame Subscriptions"}
-  (:require [re-frame.core :as reframe]))  ;; [reg-sub subscribe]
+  (:require [re-frame.core :as re-frame]
+            [re-graph.core :as re-graph]))  ;; [reg-sub subscribe]
 
 ;; Subscribers automatically subscribe data from the global state and re-render on change.
 ;;
@@ -15,7 +16,7 @@
 ;; Why?  It is an efficiency thing. Every Layer 2 subscription will rerun any time
 ;; that `app-db` changes (in any way). As a result, we want Layer 2 to be trivial.
 ;;
-(reframe/reg-sub
+(re-frame/reg-sub
   :showing             ;; usage:   (subscribe [:showing])
   (fn [db _]            ;; db is the (map) value stored in the app-db atom
     (:showing db)))    ;; extract a value from the application state
@@ -28,7 +29,7 @@
   [db _]
   (:todos db))
 
-(reframe/reg-sub :sorted-todos sorted-todos)    ;; usage: (subscribe [:sorted-todos])
+(re-frame/reg-sub :sorted-todos sorted-todos)    ;; usage: (subscribe [:sorted-todos])
 
 ;; -------------------------------------------------------------------------------------
 ;; Layer 3
@@ -60,7 +61,7 @@
 ;; In the two simple examples at the top, we only supplied the 2nd of these functions.
 ;; But now we are dealing with intermediate (layer 3) nodes, we'll need to provide both fns.
 ;;
-(reframe/reg-sub
+(re-frame/reg-sub
   :todos             ;; usage:   (subscribe [:todos])
 
   ;; This function returns the input signals.
@@ -70,7 +71,7 @@
   ;; X will be the query vector and Y is an advanced feature and out of scope
   ;; for this explanation.
   (fn [query-v _]
-    (reframe/subscribe [:sorted-todos]))    ;; returns a single input signal
+    (re-frame/subscribe [:sorted-todos]))    ;; returns a single input signal
 
   ;; This 2nd fn does the computation. Data values in, derived data out.
   ;; It is the same as the two simple subscription handlers up at the top.
@@ -90,15 +91,15 @@
 ;; As a result note:
 ;;   - the first function (which returns the signals) returns a 2-vector
 ;;   - the second function (which is the computation) destructures this 2-vector as its first parameter
-(reframe/reg-sub
+(re-frame/reg-sub
   :visible-todos
 
   ;; Signal Function
   ;; Tells us what inputs flow into this node.
   ;; Returns a vector of two input signals (in this case)
   (fn [query-v _]
-    [(reframe/subscribe [:todos])
-     (reframe/subscribe [:showing])])
+    [(re-frame/subscribe [:todos])
+     (re-frame/subscribe [:showing])])
 
   ;; Computation Function
   (fn [[todos showing] _]   ;; that 1st parameter is a 2-vector of values
@@ -132,7 +133,7 @@
 ;; The purpose of the sugar is to remove boilerplate noise. To distill to the essential in 90% of cases.
 ;; Because it is so common to nominate 1 or more input signals, reg-sub provides some macro sugar so you can nominate a very minimal
 ;; vector of input signals. The 1st function is not needed. Here is the example above rewritten using the sugar.
-#_(reframe/reg-sub
+#_(re-frame/reg-sub
   :visible-todos
   :<- [:todos]
   :<- [:showing]
@@ -143,19 +144,19 @@
                       :all    identity)]
       (filter filter-fn todos))))
 
-(reframe/reg-sub
+(re-frame/reg-sub
   :all-complete?
   :<- [:todos]
   (fn [todos _]
     (every? :done todos)))
 
-(reframe/reg-sub
+(re-frame/reg-sub
   :completed-count
   :<- [:todos]
   (fn [todos _]
     (count (filter :done todos))))
 
-(reframe/reg-sub
+(re-frame/reg-sub
  :footer-counts
  :<- [:todos]
  :<- [:completed-count]
@@ -163,22 +164,23 @@
    [(- (count todos) completed) completed]))
 
 ;; My new subscription functions
-(reframe/reg-sub
+(re-frame/reg-sub
  :count
  (fn [db]
    (:count db)))
 
-(reframe/reg-sub
+(re-frame/reg-sub
  :test
  (fn [db]
    (:test db)))
 
-(reframe/reg-sub
+(re-frame/reg-sub
  :questions
  (fn [db]
    (get-in db [:questions])))
 
-(reframe/reg-sub
+(re-frame/reg-sub
  :qform
  (fn [db]
    (get-in db [:qform])))
+
