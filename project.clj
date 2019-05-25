@@ -50,7 +50,6 @@
                  [re-frame "0.10.6"]                     ;;  A Clojurescript MVC-like Framework For Writing SPAs Using Reagent.
                  [re-graph "0.1.8"]                      ;;  Graphql client
                  [ring/ring-core "1.6.3"]                ;;  a very thin HTTP abstraction
-                 [ring-cors "0.1.13"]                    ;;  
                  [ring/ring-codec "1.1.0"]               ;;  encoding and decoding into formats used in web
                  [ring/ring-defaults "0.3.2"]            ;;  Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
                  [ring-middleware-format "0.7.2"]        ;;  Middleware json + transit requests

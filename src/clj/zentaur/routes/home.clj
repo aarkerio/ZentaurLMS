@@ -39,4 +39,5 @@
   (GET    "/page/:page"                 request   (cont-company/load-page (:params request)))
   (GET    "/login"                      request   (cont-users/login-page request))
   (POST   "/login"                      request   (cont-users/post-login request))
+  (GET    "/notauthorized"              request   (cont-posts/get-posts request))
   (GET    "/logout"                     request   (cont-users/clear-session! request)))

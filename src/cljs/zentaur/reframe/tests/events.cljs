@@ -9,9 +9,7 @@
   [::re-graph/init
     {:ws-url                  nil                        ;; override the websocket url (defaults to /graphql-ws, nil to disable)
      :http-url                "http://localhost:8888/graphql" ;; override the http url (defaults to /graphql)
-     :http-parameters         {:headers {"Content-Type" "application/graphql"
-                                         "Access-Control-Allow-Origin" "http://localhost:8888/graphql"}
-                               :with-credentials? true ;; any parameters to be merged with the request, see cljs-http for options
+     :http-parameters         {:with-credentials? false   ;; any parameters to be merged with the request, see cljs-http for options
                                :oauth-token "ah4rdSecr3t"}
      :ws-reconnect-timeout    nil                       ;; attempt reconnect n milliseconds after disconnect (default 5000, nil to disable)
      :resume-subscriptions?   false                     ;; start existing subscriptions again when websocket is reconnected after a disconnect
@@ -62,6 +60,7 @@
   (fn [cfx _]
     ;; do things with data e.g. write it into the re-frame database
     (.log js/console (str ">>> test-question Graphql Call >>>>> " cfx))
+    (.log js/console (str ">>> test-questi _______ Call >>>>> " _))
     ;; (-> db
     ;;     (assoc :loading?  false)     ;; take away that "Loading ..." UI element
     ;;     (assoc :test      (js->clj data))
@@ -78,7 +77,7 @@
     (let [db         (:db cfx)
           test-id    (.-value (gdom/getElement "test-id"))
           query      (gstring/format "{questions_by_test(id: %i) {id question qtype explanation}}" test-id)]
-      (.log js/console (str ">>> GRAQL query  >>>>> " query))
+      (.log js/console (str ">>> GRAPHQL query  >>>>> " query))
       ;; perform a query, with the response sent to the callback event provided
       (re-frame/dispatch [::re-graph/query
                           "{questions_by_test(id: 5) {id question qtype explanation}}"  ;; your graphql query

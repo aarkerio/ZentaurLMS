@@ -1,5 +1,9 @@
 
 
+curl -X POST -H "Content-Type: application/json" --data '{ "query": "{questions_by_test(id: 5) {id question qtype explanation}}" }' http://localhost:8888/graphql
+
+curl -X POST -H "Content-Type: application/graphql" --data '{questions_by_test(id: 5) {id question qtype explanation}}' http://localhost:8888/graphql
+
 
 {:identity
  {:id 2, :first_name "Manuel", :last_name "Montoya", :email "admin@example.com", :admin true}, :ssl-client-cert nil,
