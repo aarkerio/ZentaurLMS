@@ -43,8 +43,6 @@
                             (set! (.-value (.getElementById js/document container)) "")
                             (send-ajax comment post_id csrf-value))))))
 
-(.log js/console "I am in posts.cljs  !")
-
 (defn set-country
   ([] (set-country "us" 98))
   ([country code] (println country code)))

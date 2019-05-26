@@ -7,4 +7,6 @@ Teilen Sie Quiztests und pädagogisches Material mit Ihren Kollegen.
 
 Clojure und ClojureScript Lernmanagementsystem. Mit Zentaur können Sie Quiz-Tests erstellen, speichern und teilen. Geben Sie nie wieder den gleichen Test ein!
 
+
+
 GPLv3 License 2018-2019.

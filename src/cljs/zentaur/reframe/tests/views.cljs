@@ -1,10 +1,8 @@
-(ns zentaur.views
+(ns zentaur.reframe.tests.views
   (:require [clojure.string :as str]
             [goog.dom :as gdom]
             [reagent.core  :as reagent]
             [re-frame.core :as re-frame]))
-
-(def ^:private api-url "https://some.site.net/api")
 
 (defn question-input [{:keys [question on-save on-stop]}]
   (let [val  (reagent/atom question)
@@ -304,4 +302,4 @@
       (when (seq @questions)
         [questions-list])]
      [:footer#info
-      [:p "Drag and drop to reorder the questions"]]]))
+      [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))

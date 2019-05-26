@@ -1,12 +1,12 @@
 (ns zentaur.core
-  (:require [zentaur.handler :as handler]
-            [zentaur.nrepl :as nrepl]
+  (:require [clojure.tools.cli :refer [parse-opts]]
+            [clojure.tools.logging :as log]
             [luminus.http-server :as http]
             [luminus-migrations.core :as migrations]
+            [mount.core :as mount]
             [zentaur.config :refer [env]]
-            [clojure.tools.cli :refer [parse-opts]]
-            [clojure.tools.logging :as log]
-            [mount.core :as mount])
+            [zentaur.handler :as handler]
+            [zentaur.nrepl :as nrepl])
   (:gen-class))
 
 (def cli-options
@@ -43,7 +43,7 @@
                         (parse-opts cli-options)
                         mount/start-with-args
                         :started)]
-    (log/info component "started"))
+    (log/info component "Luminus started"))
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]
@@ -63,4 +63,4 @@
       (System/exit 0))
     :else
     (start-app args)))
-  
+

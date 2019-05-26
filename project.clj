@@ -6,7 +6,7 @@
                  [buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [buddy/buddy-auth "2.1.0"]              ;; Authentication
                  [cheshire "5.8.1"]                      ;; Clojure JSON and BSON encoding/decoding
-                 [clj-time "0.14.0"]                     ;; date time-zone library
+                 [clj-time "0.15.0"]                     ;; date time-zone library
                  [cljs-ajax "0.7.4"]                     ;; Ajax
                  [cljs-http "0.1.45"]                    ;; cljs-http returns core.async channels
                  [cljsjs/jquery "3.2.1-0"]               ;; jQuery
@@ -37,10 +37,10 @@
                  [metosin/reitit "0.3.1"]                ;; A fast data-driven router for Clojure(Script).
                  [metosin/ring-http-response "0.9.1"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.16"]                        ;; managing Clojure and ClojureScript app state
-                 [nrepl "0.6.0"]
+                 [nrepl "0.6.0"]                         ;; REPL that provides a server and client
                  [org.clojure/clojure "1.10.0"]
-                 [org.clojure/clojurescript "1.10.439" :scope "provided"]
-                 [org.clojure/java.jdbc "0.7.1"]
+                 [org.clojure/clojurescript "1.10.520" :scope "provided"]
+                 [org.clojure/java.jdbc "0.7.9"]
                  [org.clojure/tools.cli "0.3.5"]
                  [org.clojure/tools.logging "0.4.0"]
                  [org.clojure/tools.reader "1.3.0"]      ;;  Clojure reader and an EDN-only reader
@@ -48,6 +48,7 @@
                  [org.postgresql/postgresql "42.2.5"]
                  [reagent "0.8.1"]                       ;;  Minimalistic React for ClojureScript
                  [re-frame "0.10.6"]                     ;;  A Clojurescript MVC-like Framework For Writing SPAs Using Reagent.
+                 [re-graph "0.1.8"]                      ;;  Graphql client
                  [ring/ring-core "1.6.3"]                ;;  a very thin HTTP abstraction
                  [ring/ring-codec "1.1.0"]               ;;  encoding and decoding into formats used in web
                  [ring/ring-defaults "0.3.2"]            ;;  Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
@@ -67,18 +68,12 @@
   :plugins [[cider/cider-nrepl "LATEST"]
             [com.jakemccrary/lein-test-refresh "LATEST"]  ;; faster tests
             [lein-auto "LATEST"]
-            [lein-cprop "LATEST"]          ;; loads configuration
+            [lein-cprop "LATEST"]           ;; loads configuration
             [lein-cljsbuild "LATEST"]
             [lein-figwheel "LATEST"]
-            [lein-sassc "LATEST"]
             [lein-kibit "LATEST"]           ;; rubocop for clojure
             [migratus-lein "LATEST"]]       ;; migrate everything!!
-  :sassc [{:src "resources/scss/styles.scss"
-           :output-to "resources/public/css/styles.css"
-           :style "nested"
-           :import-path "resources/scss"}]
   :auto {"sassc" {:file-pattern #"\.(scss|sass)$" :paths ["resources/scss"]}}
-  :hooks [leiningen.sassc]
   :clean-targets ^{:protect false :doc "Keeps the cache clean"}
   [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
   :aliases {"test-all" ["do" ["test"] ["specs"]]}
@@ -91,9 +86,6 @@
                         {:min
                          {:source-paths ["src/cljs" "env/prod/cljs"]
                           :compiler
-                          :modules {:home {:entries #{"zentaur.core"}      :output-to "out/home.js"}
-                                    :site {:entries #{"zentaur.site.core"} :output-to "out/site.js"}
-                                    :tests {:entries #{"zentaur.tests.core"} :output-to "out/tests.js"}}
                           {:output-to "resources/public/js/app.js"
                            :optimizations :advanced
                            :pretty-print false
@@ -136,8 +128,7 @@
                                                                  :output-dir "resources/public/js/out"
                                                                  :output-to  "resources/public/js/main.js"
                                                                  :modules {:home  {:entries #{"zentaur.core"}       :output-to "resources/public/js/out/home.js"}
-                                                                           :site  {:entries #{"zentaur.site.core"}  :output-to "resources/public/js/out/site.js"}
-                                                                           :tests {:entries #{"zentaur.tests.core"} :output-to "resources/public/js/out/tests.js"}
+                                                                           :tests {:entries #{"zentaur.reframe.tests.core"} :output-to "resources/public/js/out/tests.js"}
                                                                            :cljs-base {:output-to "resources/public/js/out/cljs_base.js"}}
                                                                  :main "zentaur.app"
                                                                  :source-map true
