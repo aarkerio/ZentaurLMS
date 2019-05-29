@@ -64,8 +64,8 @@
     (.log js/console (str ">>> test-questi _______ Call >>>>> " _))
     ;; (-> db
     ;;     (assoc :loading?  false)     ;; take away that "Loading ..." UI element
-    ;;     (assoc :test      (js->clj data))
-    ;;     (assoc :questions (js->clj data))
+    ;;     (assoc :test      (js->clj data :keywordize-keys true))
+    ;;     (assoc :questions (js->clj data :keywordize-keys true))
         ))
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
