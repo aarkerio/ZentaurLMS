@@ -81,16 +81,16 @@
              :uberjar {
                        :omit-source true
                        :prep-tasks ["compile" ["cljsbuild" "once" "min"]]
-                       :cljsbuild
-                       {:builds
-                        {:min
-                         {:source-paths ["src/cljs" "env/prod/cljs"]
-                          :compiler
-                          {:output-to "resources/public/js/app.js"
-                           :optimizations :advanced
-                           :pretty-print false
-                           :closure-warnings
-                           {:externs-validation :off :non-standard-jsdoc :off}}}}}
+                       :cljsbuild {
+                                   :builds
+                                   {:min
+                                    {:source-paths ["src/cljs" "env/prod/cljs"]
+                                     :compiler
+                                     {:output-to "resources/public/js/app.js"
+                                      :optimizations :advanced
+                                      :pretty-print false
+                                      :closure-warnings
+                                      {:externs-validation :off :non-standard-jsdoc :off}}}}}
                        :aot :all
                        :uberjar-name "zentaur.jar"
                        :source-paths ["env/prod/clj"]

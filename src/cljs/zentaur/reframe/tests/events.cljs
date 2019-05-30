@@ -64,8 +64,8 @@
     (.log js/console (str ">>> test-questi _______ Call >>>>> " _))
     ;; (-> db
     ;;     (assoc :loading?  false)     ;; take away that "Loading ..." UI element
-    ;;     (assoc :test      (js->clj data))
-    ;;     (assoc :questions (js->clj data))
+    ;;     (assoc :test      (js->clj data :keywordize-keys true))
+    ;;     (assoc :questions (js->clj data :keywordize-keys true))
         ))
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
@@ -81,7 +81,7 @@
       (.log js/console (str ">>> GRAPHQL query  >>>>> " query))
       ;; perform a query, with the response sent to the callback event provided
       (re-frame/dispatch [::re-graph/query
-                          "{questions_by_test(id: 5) {id question qtype explanation}}"  ;; your graphql query
+                          "{questions_by_test(id: 5) {id title description instructions}}"  ;; your graphql query
                           {:some "Pumas prros!! variable"}   ;; arguments map
                           [:process-test-response]])       ;; callback event when response is recieved
       )))
