@@ -1,10 +1,10 @@
 (ns zentaur.db.core
   (:require
     [cheshire.core :refer [generate-string parse-string]]
-    [clj-time.jdbc]
     [clojure.java.jdbc :as jdbc]
     [clojure.tools.logging :as log]
     [conman.core :as conman]
+    [java-time :as jt]
     [zentaur.config :refer [env]]
     [mount.core :refer [defstate]])
   (:import org.postgresql.util.PGobject
@@ -14,7 +14,6 @@
            [java.sql
             BatchUpdateException
             PreparedStatement]))
-
 (defstate ^:dynamic *db*
   :start (if-let [jdbc-url (env :database-url)]
            (conman/connect! {:jdbc-url jdbc-url})
@@ -25,10 +24,19 @@
 
 (conman/bind-connection *db* "sql/queries.sql")
 
+
 (extend-protocol jdbc/IResultSetReadColumn
+    java.sql.Timestamp
+  (result-set-read-column [v _2 _3]
+    (.toLocalDateTime v))
+  java.sql.Date
+  (result-set-read-column [v _2 _3]
+    (.toLocalDate v))
+  java.sql.Time
+  (result-set-read-column [v _2 _3]
+    (.toLocalTime v))
   Array
   (result-set-read-column [v _ _] (vec (.getArray v)))
-
   PGobject
   (result-set-read-column [pgobj _metadata _index]
     (let [type  (.getType pgobj)
@@ -40,9 +48,9 @@
         value))))
 
 (defn to-pg-json [value]
-      (doto (PGobject.)
-            (.setType "jsonb")
-            (.setValue (generate-string value))))
+  (doto (PGobject.)
+    (.setType "jsonb")
+    (.setValue (generate-string value))))
 
 (extend-type clojure.lang.IPersistentVector
   jdbc/ISQLParameter
@@ -55,13 +63,23 @@
         (.setObject stmt idx (to-pg-json v))))))
 
 (extend-protocol jdbc/ISQLValue
+    java.util.Date
+  (sql-value [v]
+    (java.sql.Timestamp. (.getTime v)))
+  java.time.LocalTime
+  (sql-value [v]
+    (jt/sql-time v))
+  java.time.LocalDate
+  (sql-value [v]
+    (jt/sql-date v))
+  java.time.LocalDateTime
+  (sql-value [v]
+    (jt/sql-timestamp v))
+  java.time.ZonedDateTime
+  (sql-value [v]
+    (jt/sql-timestamp v))
   IPersistentMap
   (sql-value [value] (to-pg-json value))
   IPersistentVector
   (sql-value [value] (to-pg-json value)))
 
-;; My stuff
-(extend-protocol cheshire.generate/JSONable
-  org.joda.time.DateTime
-  (to-json [dt gen]
-    (cheshire.generate/write-string gen (str dt))))

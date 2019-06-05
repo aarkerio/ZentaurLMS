@@ -1,13 +1,13 @@
 (ns ^:test-model zentaur.models.tests
   (:require [cheshire.core :as ches]
-            [clj-time.local :as l]
             [clojure.tools.logging :as log]
+            [java-time :as jt]
             [zentaur.db.core :as db]
             [zentaur.libs.helpers :as helpers]
             [zentaur.models.validations.validations-test :as val-test]))
 
 (defn get-tests [user-id]
-  (db/get-tests { :user-id user-id }))
+  (db/get-tests {:user-id user-id}))
 
 (defn get-one-test [user-id id]
   (db/get-one-test {:user-id user-id :id id}))
@@ -47,7 +47,7 @@
 (defn update-question! [params]
   (let [qtype       (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
         full-params (dissoc params :active)]
-    (db/update-question! (assoc full-params :qtype qtype :updated_at (l/local-now)))
+    (db/update-question! (assoc full-params :qtype qtype :updated_at (jt/local-date-time)))
     (db/get-question {:id (:id params)})))
 
 (defn- ^:private key-answer
@@ -74,13 +74,13 @@
 
 (defn update-answer! [params]
   (let [full-params (dissoc params :active)]
-    (db/update-answer! (assoc full-params :updated_at (l/local-now)))
+    (db/update-answer! (assoc full-params :updated_at (jt/local-date-time)))
     (db/get-answer {:id (:id params)})))
 
 (defn- ^:private get-questions
   "get and convert to map keyed"
   [test-id]
-  (let [questions  (db/get-questions { :test-id test-id })
+  (let [questions  (db/get-questions {:test-id test-id})
         index-seq  (map #(% :id) questions)]
         (->> questions
              (map get-answers)
@@ -102,7 +102,6 @@
   (db/admin-get-tests))
 
 (defn remove-question [params]
-  (log/info (str ">>>  remove-question >>>>> " params))
   (let [test-id     (Integer/parseInt (:test-id params))
         question-id (:question-id params)]
     (db/remove-question! {:test-id test-id :question-id question-id})))

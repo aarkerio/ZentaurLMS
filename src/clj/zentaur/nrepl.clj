@@ -1,6 +1,7 @@
 (ns zentaur.nrepl
-  (:require [nrepl.server :as nrepl]
-            [clojure.tools.logging :as log]))
+  (:require
+    [nrepl.server :as nrepl]
+    [clojure.tools.logging :as log]))
 
 (defn start
   "Start a network repl for debugging on specified port followed by

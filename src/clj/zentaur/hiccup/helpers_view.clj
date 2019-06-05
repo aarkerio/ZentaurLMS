@@ -1,12 +1,10 @@
 (ns zentaur.hiccup.helpers-view
-  (:require [clj-time [format :as timef] [coerce :as timec]]
+  (:require [java-time :as jt]
             [hiccup.form :as f]
             [hiccup.element :refer [link-to]]))
 
-(def custom-formatter (timef/formatter "yyyy/MM/dd hh:mm"))
-
 (defn format-date [date]
-  (timef/unparse custom-formatter date))
+  (jt/format "MMMM d y hh:mm" date))
 
 (defn index []
   [:div {:id "content"}

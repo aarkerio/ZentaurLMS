@@ -14,16 +14,17 @@
 (def msg-fehler "Etwas ging schief")
 
 (defn get-posts
-  ;; GET  /   (index site)
   [request]
+  "GET  /  (index site)"
+  (log/info (str ">>> request POSTS SSSSSS >>>>> " request))
   (let [base     (basec/set-vars request)
         posts    (model-post/get-posts)]
     (layout/application
      (merge base {:title "Posts" :contents (posts-view/index posts)}))))
 
 (defn save-comment
-  ;; POST /post/savecomment
   [request]
+  "POST /post/savecomment"
   (let [body-params (:body-params request)
         identity    (:identity request)
         comment     (:comment body-params)

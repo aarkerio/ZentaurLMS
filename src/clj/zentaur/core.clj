@@ -32,7 +32,6 @@
   (when repl-server
     (nrepl/stop repl-server)))
 
-
 (defn stop-app []
   (doseq [component (:stopped (mount/stop))]
     (log/info component "stopped"))
@@ -43,7 +42,7 @@
                         (parse-opts cli-options)
                         mount/start-with-args
                         :started)]
-    (log/info component "Luminus started"))
+    (log/info component "started"))
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]
