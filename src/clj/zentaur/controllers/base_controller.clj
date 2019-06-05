@@ -9,7 +9,7 @@
     (parser/render-file json-file map)))
 
 (defn set-vars [request]
-  (let [csrf-field (-> request :session :ring.middleware.anti-forgery/anti-forgery-token)
+  (let [csrf-field (:anti-forgery-token request)
         flash      (:flash request)
         identity   (:identity request)]
     {:identity identity :flash flash :csrf-field csrf-field}))

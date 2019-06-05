@@ -1,6 +1,6 @@
 (ns zentaur.middleware
   (:require [buddy.auth :refer [authenticated?]]
-            [buddy.auth.accessrules :refer [restrict]]
+            [buddy.auth.accessrules :refer [wrap-access-rules]]
             [buddy.auth.backends.session :refer [session-backend]]
             [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
             [cheshire.generate :as cheshire]
@@ -27,7 +27,9 @@
                      :title "Something very bad has happened!"
                      :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
-(defn wrap-csrf [handler]
+(defn wrap-csrf
+  "Called in routes/home.clj"
+  [handler]
   (wrap-anti-forgery
     handler
     {:error-response
@@ -35,22 +37,25 @@
        {:status 403
         :title "Invalid anti-forgery token"})}))
 
-
-(defn wrap-formats [handler]
+(defn wrap-formats
+  "Called in routes/home.clj"
+  [handler]
   (let [wrapped (-> handler wrap-params (wrap-format formats/instance))]
     (fn [request]
       ;; disable wrap-formats for websockets
       ;; since they're not compatible with this middleware
       ((if (:websocket? request) handler wrapped) request))))
 
-(defn on-error [request response]
+(def rules
+  [{:uri "/posts"
+    :handler authenticated?}])
+
+(defn on-error
+  "Buddy auth looks for this"
+  [request response]
   (error-page
     {:status 403
      :title (str "Access to " (:uri request) " is not authorized")}))
-
-(defn wrap-restricted [handler]
-  (restrict handler {:handler authenticated?
-                     :on-error on-error}))
 
 (defn wrap-auth [handler]
   (let [backend (session-backend)]
@@ -60,6 +65,8 @@
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
+      (wrap-access-rules {:rules rules :on-error on-error})
+      (wrap-authentication (session-backend))
       wrap-auth
       wrap-flash
       (wrap-session {:cookie-attrs {:http-only true}})
