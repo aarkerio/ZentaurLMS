@@ -15,7 +15,7 @@
         user-id    (-> request :identity :id)
         csrf-field (:csrf-field base)
         files      (model-upload/get-uploads user-id)]
-    (layout/application (merge base {:title "Posts" :contents (admin-uploads-view/index files csrf-field) }))))
+    (layout/application (merge base {:title "Uploads" :contents (admin-uploads-view/index files csrf-field) }))))
 
 (defn upload-file
   "POST /admin/uploads"
@@ -73,3 +73,9 @@
         csrf-field (:csrf-field base)
         file      (model-upload/get-upload id)]
     (-> (response/found "/admin/uploads"))))
+
+(defn token
+  "POST /uploads/token"
+  [request]
+  (let [csrf-field      (:anti-forgery-token request)]
+    (basec/json-response {:anti-forgery-token csrf-field})))

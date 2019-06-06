@@ -46,9 +46,20 @@
       ;; since they're not compatible with this middleware
       ((if (:websocket? request) handler wrapped) request))))
 
-(def rules
-  [{:uri "/posts"
-    :handler authenticated?}])
+;; AUTH CONFIG STARTS
+(defn admin-access [request]
+  (let [identity (:identity request)]
+    (= true (:admin identity))))
+
+(def rules [{:pattern #"^/admin.*"
+             :handler admin-access
+             :redirect "/notauthorized"}
+            {:pattern #"^/user/changepassword"
+             :handler authenticated?}
+            {:uris ["/post/savecomment" "/post/listing"]
+             :handler authenticated?}
+            {:pattern #"^/user.*"
+             :handler authenticated?}])
 
 (defn on-error
   "Buddy auth looks for this"
@@ -62,6 +73,7 @@
     (-> handler
         (wrap-authentication backend)
         (wrap-authorization backend))))
+;; AUTH CONFIG ENDS
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)

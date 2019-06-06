@@ -1,8 +1,8 @@
 (ns zentaur.controllers.base-controller
-  (:require [zentaur.models.posts :as modposts]
-            [zentaur.libs.helpers :as h]
-            [selmer.parser :as parser]
-            [ring.util.http-response :as resp]))
+  (:require [selmer.parser :as parser]
+            [ring.util.http-response :as response]
+            [zentaur.models.posts :as modposts]
+            [zentaur.libs.helpers :as h]))
 
 (defn json-response [file map]
   (let [json-file (str "json/" file ".json")]
@@ -14,3 +14,5 @@
         identity   (:identity request)]
     {:identity identity :flash flash :csrf-field csrf-field}))
 
+(defn parser [content]
+  (response/content-type (response/ok content) "text/html; charset=utf-8"))

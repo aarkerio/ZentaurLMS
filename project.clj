@@ -24,7 +24,7 @@
                  [metosin/ring-http-response "0.9.1"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.16"]                        ;; managing Clojure and ClojureScript app state
                  [nrepl "0.6.0"]                         ;; A Clojure network REPL
-                 [org.clojure/clojure "1.10.0"]          ;; The sweet core!!
+                 [org.clojure/clojure "1.10.1"]          ;; The sweet core!!
                  [org.clojure/clojurescript "1.10.520" :scope "provided"]
                  [org.clojure/tools.cli "0.4.2"]
                  [org.clojure/tools.logging "0.4.1"]

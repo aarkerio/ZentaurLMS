@@ -122,8 +122,22 @@
                            toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
                        (set! (.-className divh) toggle))))))
 
+(defn ask-csrf []
+  (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+    (POST "/admin/uploads/save"
+        {:params {:body "prima!"}
+         :headers {"x-csrf-token" csrf-field}
+         :handler set-message
+         :error-handler error-handler})))
+
+(defn refresh-csrf []
+  id="__anti-forgery-token"
+  (set! (.-className divh) toggle)
+  (js/setTimeout (ask-csrf) 600000))
+
 (defn ^:export init []
   (flash-timeout)
+  (refresh-csrf)
   (let [current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> CURRENT >>>>> " current_url))]
     (cond
