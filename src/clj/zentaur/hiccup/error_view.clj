@@ -1,56 +1,62 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Something bad happened</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% style "/assets/bootstrap/css/bootstrap.min.css" %}
-    {% style "/assets/bootstrap/css/bootstrap-theme.min.css" %}
-    <style type="text/css">
-        html {
-            height: 100%;
-            min-height: 100%;
-            min-width: 100%;
-            overflow: hidden;
-            width: 100%;
-        }
-        html body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-        }
-        html .container-fluid {
-            display: table;
-            height: 100%;
-            padding: 0;
-            width: 100%;
-        }
-        html .row-fluid {
-            display: table-cell;
-            height: 100%;
-            vertical-align: middle;
-        }
-    </style>
-</head>
-<body>
-<div class="container-fluid">
-    <div class="row-fluid">
-        <div class="col-lg-12">
-            <div class="centering text-center">
-                <div class="text-center">
-                    <h1><span class="text-danger">Error: {{status}}</span></h1>
-                    <hr>
-                    {% if title %}
-                      <h2 class="without-margin">{{title}}</h2>
-                    {% endif %}
-                    {% if message %}
-                      <h4 class="text-danger">{{message}}</h4>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-</body>
-</html>
+(ns zentaur.hiccup.layout-view
+  (:require [zentaur.hiccup.helpers-view :as helpers]
+            [hiccup.form :as f]
+            [hiccup.page :refer [html5 include-css include-js]]))
+
+(defn login-form [csrf-field]
+  [:div {:class "form-box"}
+    [:div {:class "login-form"}
+    [:form {:method "post" :action "/login" }
+      [:div {:class "login-form-group"}
+        (f/hidden-field { :value csrf-field } "__anti-forgery-token")
+        (f/email-field {:class "field-form" :maxlength 50 :size 20 :placeholder "Email"} "email")]
+      [:div {:class "login-form-group"}
+        (f/password-field {:class "field-form" :maxlength 50 :size 10 :placeholder "Password"} "password")]
+      [:div {:class "login-form-group"}
+        (f/submit-button  {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Anmeldung")]]]])
+
+(defn application [content]
+  (def vector-atom (atom (helpers/nav-links)))
+  (when-let [email (-> content :identity :email)]
+    (swap! vector-atom conj [:li {:class "nav-item"} [:a {:href "/admin/users" :class "nav-link"} "Benutzer"]]
+                            [:li {:class "nav-item"} [:a {:href "/admin/posts" :class "nav-link"} "Beiträge"]]
+                            [:li {:class "nav-item"} [:a {:href "/admin/tests" :class "nav-link"} "Quiztest"]]
+                            [:li {:class "nav-item"} [:a {:href "/admin/uploads" :class "nav-link"} "Dateien"]]
+                            [:li {:class "nav-item"} (str "Hallo" email "!")]
+                            [:li {:class "nav-item"} [:a {:href "/logout" :class "nav-link"} "Logout"]] ))
+
+  (html5 [:head
+          [:title (str ":: Zentaur :: Easy Quizz Tests for you " (:title content))]
+          [:meta {:http-equiv "Content-Type" :content "text/html;charset=utf-8"}]
+          [:link {:rel "shortcut icon" :href "/img/favicon.ico"}]
+          (include-js  "//cdnjs.cloudflare.com/ajax/libs/tether/1.4.3/js/tether.min.js")
+          (include-js  "https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js")
+          (include-css "/css/bootstrap.min.css")
+          (include-css "/css/zentaur.css")
+          (include-css "/css/styles.css")
+          (include-js  "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js")
+
+          [:body
+            (when-not (-> content :identity :email)
+                  (login-form (:csrf-field content)))
+            (when-let [flash (:flash content)]
+             (helpers/display-flash flash))
+            [:div {:class "blog-header"}
+                [:div {:class "blog-title" :id "blogtitle"} "Zentaur"]
+                [:div {:class "blog-description"} "Tausende von Fragen bereit zu verwenden."]]
+            [:nav {:class "navbar navbar-toggleable-md navbar-light bg-faded"}
+             [:button {:class "navbar-toggler navbar-toggler-right" :type "button" :data-toggle "collapse" :data-target "#navbarSupportedContent"
+                        :aria-controls "navbarSupportedContent" :aria-expanded "false" :aria-label "Toggle navigation"}
+                      [:span {:class "navbar-toggler-icon"}]]
+              [:a {:class "navbar-brand" :href "/"} "Home"]
+              [:div {:class"collapse navbar-collapse" :id "navbarSupportedContent"}
+                [:ul {:class"navbar-nav mr-auto"} (for [link @vector-atom] link) ]]]
+            [:div {:class "top-banner"}]
+            [:div {:class "container"}  (:contents content)]]
+            [:footer {:class "blog-footer"}
+              [:img {:src "/img/warning_clojure.png" :alt "Lisp" :title "Lisp"}]
+              [:p "Chipotle Software &copy; 2018-2019. MIT License."]
+              [:p [:a {:href "#"} "Back to top"]]]
+            (include-js "http://localhost:3449/js/app.js")
+            [:div {:id "root-app"} ""]]))
+

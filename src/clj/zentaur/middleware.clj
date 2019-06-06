@@ -1,48 +1,21 @@
 (ns zentaur.middleware
-  (:require [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
-            [buddy.auth.accessrules :refer [restrict wrap-access-rules]]
-            [buddy.auth :refer [authenticated?]]
+  (:require [buddy.auth :refer [authenticated?]]
+            [buddy.auth.accessrules :refer [wrap-access-rules]]
             [buddy.auth.backends.session :refer [session-backend]]
+            [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
             [cheshire.generate :as cheshire]
-            [cognitect.transit :as transit]
             [clojure.tools.logging :as log]
+            [cognitect.transit :as transit]
             [immutant.web.middleware :refer [wrap-session]]
             [muuntaja.middleware :refer [wrap-format wrap-params]]
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [ring.middleware.flash :refer [wrap-flash]]
             [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-            [ring.middleware.webjars :refer [wrap-webjars]]
-            [zentaur.config :refer [env]]
             [zentaur.env :refer [defaults]]
             [zentaur.layout :refer [error-page]]
             [zentaur.middleware.formats :as formats])
   (:import
-           [org.joda.time ReadableInstant]))
-
-;; ******  Using wrap-access-rules middleware STARTS.
-(defn admin-access [request]
-  (let [identity (:identity request)]
-    (= true (:admin identity))))
-
-(defn loggedin-access [request]
-  (some? (-> request :session :identity)))
-
-(defn on-error [request response]
-  {:status  403
-   :headers {"Content-Type" "text/plain"}
-   :body    (str "Access to " (:uri request) " is not authorized")})
-
-(def rules [{:pattern #"^/admin.*"
-             :handler admin-access
-             :redirect "/notauthorized"}
-            {:pattern #"^/user/changepassword"
-             :handler loggedin-access}
-            {:uris ["/post/savecomment" "/post/listing"]
-             :handler loggedin-access}
-            {:pattern #"^/user.*"
-             :handler loggedin-access}
-            ])
-;; ******  Using wrap-access-rules middleware ENDS.
+           ))
 
 (defn wrap-internal-error [handler]
   (fn [req]
@@ -51,10 +24,12 @@
       (catch Throwable t
         (log/error t (.getMessage t))
         (error-page {:status 500
-                     :title "Etwas sehr Schlechtes ist passiert!"
-                     :message "Wir haben ein Team von gut ausgebildeten Gnomen entsandt, um das Problem zu lösen."})))))
+                     :title "Something very bad has happened!"
+                     :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
-(defn wrap-csrf [handler]
+(defn wrap-csrf
+  "Called in routes/home.clj"
+  [handler]
   (wrap-anti-forgery
     handler
     {:error-response
@@ -62,38 +37,53 @@
        {:status 403
         :title "Invalid anti-forgery token"})}))
 
-(defn wrap-formats [handler]
+(defn wrap-formats
+  "Called in routes/home.clj"
+  [handler]
   (let [wrapped (-> handler wrap-params (wrap-format formats/instance))]
     (fn [request]
       ;; disable wrap-formats for websockets
       ;; since they're not compatible with this middleware
       ((if (:websocket? request) handler wrapped) request))))
 
-(defn on-error [request response]
+;; AUTH CONFIG STARTS
+(defn admin-access [request]
+  (let [identity (:identity request)]
+    (= true (:admin identity))))
+
+(def rules [{:pattern #"^/admin.*"
+             :handler admin-access
+             :redirect "/notauthorized"}
+            {:pattern #"^/user/changepassword"
+             :handler authenticated?}
+            {:uris ["/post/savecomment" "/post/listing"]
+             :handler authenticated?}
+            {:pattern #"^/user.*"
+             :handler authenticated?}])
+
+(defn on-error
+  "Buddy auth looks for this"
+  [request response]
   (error-page
     {:status 403
      :title (str "Access to " (:uri request) " is not authorized")}))
-
-(defn wrap-restricted [handler]
-  (restrict handler {:handler authenticated?
-                     :on-error on-error}))
 
 (defn wrap-auth [handler]
   (let [backend (session-backend)]
     (-> handler
         (wrap-authentication backend)
         (wrap-authorization backend))))
+;; AUTH CONFIG ENDS
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
       (wrap-access-rules {:rules rules :on-error on-error})
+      (wrap-authentication (session-backend))
       wrap-auth
-      wrap-webjars
       wrap-flash
-      (wrap-session {:timeout 0 :cookie-attrs {:http-only true}})   ;;  A :timeout value less than or equal to zero indicates the session should never expire.
+      (wrap-session {:cookie-attrs {:http-only true}})
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)
-            (assoc :timeout 0)
             (dissoc :session)))
       wrap-internal-error))

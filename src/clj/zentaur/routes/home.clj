@@ -1,43 +1,50 @@
 (ns zentaur.routes.home
-  (:require
-    [zentaur.controllers.company-controller :as cont-company]
-    [zentaur.controllers.posts-controller   :as cont-posts]
-    [zentaur.controllers.tests-controller   :as cont-tests]
-    [zentaur.controllers.uploads-controller :as cont-uploads]
-    [zentaur.controllers.users-controller   :as cont-users]
-    [compojure.core :refer [defroutes context GET POST PUT DELETE PATCH]]))
+  (:require [zentaur.controllers.company-controller :as cont-company]
+            [zentaur.controllers.posts-controller   :as cont-posts]
+            [zentaur.controllers.tests-controller   :as cont-tests]
+            [zentaur.controllers.uploads-controller :as cont-uploads]
+            [zentaur.controllers.users-controller   :as cont-users]
+            [zentaur.middleware :as middleware]))
 
-(defroutes home-routes
-  (GET    "/"                           request   (cont-posts/get-posts request))
-  (POST   "/admin/posts"                request   (cont-posts/save-post (:params request)))
-  (POST   "/post/savecomment"           request   (cont-posts/save-comment request))
-  (GET    "/post/:id"                   request   (cont-posts/single-post request))
-  (DELETE "/admin/posts/:id"            request   (cont-posts/delete-post request))
-  (GET    "/admin/posts/published/:id/:published" request (cont-posts/toggle-published (:params request)))
-  (GET    "/admin/posts"                request   (cont-posts/admin-posts request))
-  (GET    "/admin/posts/new"            request   (cont-posts/admin-new request))
-  (GET    "/tests"                      request   (cont-tests/get-tests request))
-  (GET    "/admin/tests"                request   (cont-tests/admin-index request))
-  (GET    "/admin/tests/edit/:id"       request   (cont-tests/admin-edit request))
-  (POST   "/admin/tests"                request   (cont-tests/create-test request))
-  (POST   "/admin/tests/load"           request   (cont-tests/load-json request))
-  (POST   "/admin/tests/createquestion" request   (cont-tests/create-question request))
-  (POST   "/admin/tests/updatequestion" request   (cont-tests/update-question request))
-  (POST   "/admin/tests/updateanswer"   request   (cont-tests/update-answer request))
-  (POST   "/admin/tests/deletequestion" request   (cont-tests/delete-question request))
-  (POST   "/admin/tests/createanswer"   request   (cont-tests/create-answer request))
-  (GET    "/admin/uploads"              request   (cont-uploads/admin-uploads request))
-  (POST   "/admin/uploads"              request   (cont-uploads/upload-file request))
-  (GET    "/admin/uploads/process/:id"  request   (cont-uploads/process request))
-  (POST   "/admin/uploads/export"       request   (cont-uploads/export-test request))
-  (POST   "/admin/uploads/save"         request   (cont-uploads/save-body (:params request)))
-  (GET    "/admin/uploads/archive/:id"  request   (cont-uploads/archive request))
-  (GET    "/admin/uploads/download/:id" request   (cont-uploads/download (:params request)))
-  (GET    "/admin/uploads/extract/:id"  request   (cont-uploads/extract  (:params request)))
-  (GET    "/admin/users"                request   (cont-users/admin-users request))
-  (POST   "/admin/users"                request   (cont-users/create-user request))
-  (GET    "/page/:page"                 request   (cont-company/load-page (:params request)))
-  (GET    "/login"                      request   (cont-users/login-page request))
-  (POST   "/login"                      request   (cont-users/post-login request))
-  (GET    "/notauthorized"              request   (cont-posts/get-posts request))
-  (GET    "/logout"                     request   (cont-users/clear-session! request)))
+(def user-routes
+  [["/"                  {:get  cont-posts/get-posts}]
+   ["/posts/savecomment" {:post cont-posts/save-comment}]
+   ["/posts/view/:id"    {:get  cont-posts/single-post}]
+   ["/tests"             {:get  cont-tests/get-tests}]
+   ["/uploads/token"     {:post cont-uploads/token}]
+   ["/page/:page"        {:get  cont-company/load-page}]
+   ["/login"             {:get  cont-users/login-page :post cont-users/post-login}]
+   ["/notauthorized"     {:get  cont-posts/get-posts}]
+   ["/logout"            {:get  cont-users/clear-session!}]])
+
+(def admin-routes
+  ["/admin"
+   ["/posts"                {:get  cont-posts/admin-posts :post cont-posts/save-post}]
+   ["/posts/delete/:id"     {:delete cont-posts/delete-post}]
+   ["/posts/published/:id/:published" {:get cont-posts/toggle-published}]
+   ["/posts/new"            {:get  cont-posts/admin-new}]
+   ["/tests"                {:get  cont-tests/admin-index :post cont-tests/create-test}]
+   ["/tests/edit/:id"       {:get  cont-tests/admin-edit}]
+   ["/tests/load"           {:post cont-tests/load-json}]
+   ["/tests/createquestion" {:post cont-tests/create-question}]
+   ["/tests/updatequestion" {:post cont-tests/update-question}]
+   ["/tests/updateanswer"   {:post cont-tests/update-answer}]
+   ["/tests/deletequestion" {:post cont-tests/delete-question}]
+   ["/tests/createanswer"   {:post cont-tests/create-answer}]
+   ["/uploads"              {:get  cont-uploads/admin-uploads :post cont-uploads/upload-file}]
+   ["/uploads/process/:id"  {:get  cont-uploads/process}]
+   ["/uploads/export"       {:post cont-uploads/export-test}]
+   ["/uploads/save"         {:post cont-uploads/save-body}]
+   ["/uploads/archive/:id"  {:get  cont-uploads/archive}]
+   ["/uploads/download/:id" {:get  cont-uploads/download}]
+   ["/uploads/extract/:id"  {:get  cont-uploads/extract}]
+   ["/users"                {:get  cont-users/admin-users :post cont-users/create-user}]
+])
+
+(defn home-routes []
+  [""
+   {:middleware [middleware/wrap-csrf
+                 middleware/wrap-formats]}
+   user-routes
+   admin-routes])
+

@@ -1,6 +1,6 @@
 (ns zentaur.models.posts
-  (:require [clj-time.local :as l]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
+            [java-time :as jt]
             [slugify.core :refer [slugify]]
             [struct.core :as st]
             [zentaur.db.core :as db]))
@@ -64,7 +64,7 @@
       {})))
 
 (defn update-post! [params]
-  {:updated_at (l/local-now)} )
+  {:updated_at (jt/local-date-time)})
 
 (defn toggle [{:keys [id published]}]
   (let [new-state (if (= published "true") false true)
