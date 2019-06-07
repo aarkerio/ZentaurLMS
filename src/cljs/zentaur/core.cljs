@@ -123,23 +123,25 @@
                        (set! (.-className divh) toggle))))))
 
 (defn ask-csrf []
-  (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-    (POST "/admin/uploads/save"
+  (if-let [csrf-field (gdom/getElement "__anti-forgery-token")]
+    (POST "/uploads/token"
         {:params {:body "prima!"}
          :headers {"x-csrf-token" csrf-field}
-         :handler set-message
-         :error-handler error-handler})))
+         :handler (fn [value]
+                    (.log js/console (str ">>> VALUE >>>>> " value ))
+                    (set! (.-value csrf-field) (:anti-forgery-token value)))
+         :error-handler error-handler})
+    (.log js/console (str ">>>  NOOO anti-forgery-token  !!!! "))))
 
 (defn refresh-csrf []
-  id="__anti-forgery-token"
-  (set! (.-className divh) toggle)
-  (js/setTimeout (ask-csrf) 600000))
+  (.log js/console (str ">>> HERE 600000!!! >>>>> "))
+  (js/setTimeout (ask-csrf) 600))
 
 (defn ^:export init []
   (flash-timeout)
   (refresh-csrf)
   (let [current_url (.-pathname (.-location js/document))
-        _           (.log js/console (str ">>> CURRENT >>>>> " current_url))]
+        _           (.log js/console (str ">>> tatsächliche Adresse >>>>> " current_url))]
     (cond
       (s/includes? current_url "admin/users")     (load-users)
       (s/includes? current_url "uploads/process") (load-process)

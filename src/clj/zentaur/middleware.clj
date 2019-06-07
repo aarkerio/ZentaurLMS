@@ -81,7 +81,7 @@
       (wrap-authentication (session-backend))
       wrap-auth
       wrap-flash
-      (wrap-session {:cookie-attrs {:http-only true}})
+      (wrap-session {:timeout 0 :cookie-attrs {:http-only true}})   ;;  A :timeout value less than or equal to zero indicates the session should never expire.
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)
