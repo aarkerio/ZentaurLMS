@@ -6,13 +6,15 @@
             [zentaur.hiccup.admin.users-view :as users-view]
             [ring.util.http-response :as response]))
 
-;; GET /admin/users
-(defn admin-users [request]
+(defn admin-users
+  "GET /admin/users"
+  [request]
   (let [base  (basec/set-vars request)
         users (model-user/get-users true)
         roles (model-user/get-roles)]
     (log/info (str ">>> R******** >>>>> " roles))
-    (layout/application (merge base {:contents (users-view/index base users roles)} ))))
+    (basec/parser
+     (layout/application (merge base {:contents (users-view/index base users roles)})))))
 
 ;; POST /admin/users
 (defn create-user [request]
@@ -25,7 +27,8 @@
 ;; GET /login
 (defn login-page [request]
   (let [base  (basec/set-vars request)]
-    (layout/application (merge base {:title "Login" :contents (users-view/login base) }))))
+    (basec/parser
+     (layout/application (merge base {:title "Login" :contents (users-view/login base) })))))
 
 ;; POST /login
 (defn post-login

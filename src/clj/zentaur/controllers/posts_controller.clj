@@ -42,8 +42,8 @@
         id       {:id (Integer/parseInt (get params :id))}
         post     (model-post/get-post id)
         comments (model-post/get-comments id)]
-    (basec/parser (layout/application
-       (merge base { :contents (posts-view/show post base comments) })))))
+    (basec/parser
+     (layout/application (merge base { :contents (posts-view/show post base comments) })))))
 
 (defn toggle-published
   "GET '/admin/posts/publish/:id/:published'"

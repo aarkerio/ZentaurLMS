@@ -5,7 +5,6 @@
             [zentaur.hiccup.page-view :as page-view]
             [ring.util.http-response :as response]))
 
-
 (defn get-admin [request]
   (let [base     (basec/set-vars request)]
     (layout/application "admin/index.html")))
@@ -29,6 +28,10 @@
   [page]
   {:title "Join us!" :contents (page-view/join)})
 
-(defn load-page [params]
-  (let [page (:page params)]
-    (layout/application (page-behavior {:page page}))))
+(defn load-page [request]
+  (let [base     (basec/set-vars request)
+        page     (-> request :path-params :page)
+        contents (page-behavior {:page page})]
+    (basec/parser
+     (layout/application
+      (merge base contents)))))

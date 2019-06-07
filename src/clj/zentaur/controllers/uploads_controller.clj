@@ -7,7 +7,6 @@
             [zentaur.hiccup.admin.uploads-view :as admin-uploads-view]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;     ADMIN FUNCTIONS    ;;;;;;;;;;;;;;;;;;;;
-
 (defn admin-uploads
   "GET /admin/uploads"
   [request]
@@ -15,7 +14,8 @@
         user-id    (-> request :identity :id)
         csrf-field (:csrf-field base)
         files      (model-upload/get-uploads user-id)]
-    (layout/application (merge base {:title "Uploads" :contents (admin-uploads-view/index files csrf-field) }))))
+    (basec/parser
+     (layout/application (merge base {:title "Uploads" :contents (admin-uploads-view/index files csrf-field) })))))
 
 (defn upload-file
   "POST /admin/uploads"
@@ -23,7 +23,8 @@
   (let [user-id   (-> request :identity :id)
         params    (-> request :params)
         result    (model-upload/upload-file params user-id)
-        message   (if (= result false) "wrong" "success") ]
+        message   (if (= result false) "wrong" "success")]
+    (log/info (str ">>> user-id >>>>> " user-id  ">>> params >> " params))
     (-> (response/found "/admin/uploads")
         (assoc :flash message))))
 
@@ -34,7 +35,8 @@
         id         (-> request :params :id)
         csrf-field (:csrf-field base)
         upload     (model-upload/get-upload id)]
-    (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process upload csrf-field) }))))
+    (basec/parser
+     (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process upload csrf-field) })))))
 
 (defn extract
   "GET /admin/uploads/extract/:id
@@ -46,8 +48,8 @@
 
 (defn download
   "GET /admin/uploads/download/:id"
-  [params]
-  (let [id (:id params)]
+  [request]
+  (let [id (-> request :path-params :id)]
     (model-upload/download id)))
 
 (defn export-test

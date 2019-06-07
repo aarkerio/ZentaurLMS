@@ -87,6 +87,7 @@
    :project/dev  {:jvm-opts ["-Dconf=dev-config.edn"]
                   :dependencies [[binaryage/devtools "0.9.10"]
                                  [cider/piggieback "0.4.0"]
+                                 [org.clojure/core.typed "0.6.0"]
                                  [doo "0.1.11"]     ;;  library and lein plugin to run cljs.test on different js environments
                                  [expound "0.7.2"]  ;;  Human-optimized error messages for clojure.spec
                                  [figwheel-sidecar "0.5.18"]
@@ -96,7 +97,8 @@
                                  [ring/ring-devel "1.7.1"]
                                  [ring/ring-mock "0.4.0"]]
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
-                                 [lein-doo "0.1.11"]  ;;  plugin to run clj.test on different js environments
+                                 [lein-doo "0.1.11"]      ;;  plugin to run clj.test on different js environments
+                                 [lein-environ "1.0.0"]   ;; elint for Clojure
                                  [lein-figwheel "0.5.18"]]
                   :cljsbuild{:builds
                    {:app

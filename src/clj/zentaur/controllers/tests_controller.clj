@@ -63,16 +63,16 @@
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
         tests    (model-test/get-tests user-id)]
-    (layout/application
-     (merge base {:title "Quiz Tests" :contents (tests-view/index tests base) }))))
+    (basec/parser
+     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base) })))))
 
 (defn admin-edit
   "GET /admin/tests/edit/:id"
   [request]
   (let [base     (basec/set-vars request)
         test-id  (-> request :params :id)]
-    (layout/application
-     (merge base {:title "New Quiz Tests" :contents (tests-view/edit base test-id) }))))
+    (basec/parser
+     (layout/application (merge base {:title "New Quiz Tests" :contents (tests-view/edit base test-id) })))))
 
 (defn load-json
   "POST /admin/tests/load"
