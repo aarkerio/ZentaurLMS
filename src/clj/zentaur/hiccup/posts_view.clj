@@ -12,7 +12,7 @@
    (let [div-blog [:div {:class "blog-post"} [:h2 {:class "blog-post-title"} (:title post)]
                     [:p {:class "blog-post-meta"} (helper/format-date (:created_at post)) " " [:a {:href "/user/"} (:uname post)]]
                     [:p {} (md/md-to-html-string (:body post))]]
-         view-link  (cond view (conj div-blog [:p [:a {:href (str "/post/" (:id post))} "View"]]))]
+         view-link  (cond view (conj div-blog [:p [:a {:href (str "/posts/view/" (:id post))} "View"]]))]
      (if (= view true)
        view-link
        div-blog))))

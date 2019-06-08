@@ -1,7 +1,8 @@
 (defproject zentaur "0.0.6"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
-  :dependencies [[binaryage/devtools "0.9.10"]           ;; Chrome DevTools enhancements
+  :dependencies [[acyclic/squiggly-clojure "0.1.8" :exclusions [org.clojure/tools.reader]]
+                 [binaryage/devtools "0.9.10"]           ;; Chrome DevTools enhancements
                  [buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [cheshire "5.8.1"]                      ;; Clojure JSON and BSON encoding/decoding
                  [cljs-ajax "0.7.4"]                     ;; Ajax
@@ -23,7 +24,6 @@
                  [metosin/reitit "0.3.5"]                ;; A fast data-driven router for Clojure(Script).
                  [metosin/ring-http-response "0.9.1"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.16"]                        ;; managing Clojure and ClojureScript app state
-                 [nrepl "0.6.0"]                         ;; A Clojure network REPL
                  [org.clojure/clojure "1.10.1"]          ;; The sweet core!!
                  [org.clojure/clojurescript "1.10.520" :scope "provided"]
                  [org.clojure/tools.cli "0.4.2"]
@@ -91,6 +91,7 @@
                                  [doo "0.1.11"]     ;;  library and lein plugin to run cljs.test on different js environments
                                  [expound "0.7.2"]  ;;  Human-optimized error messages for clojure.spec
                                  [figwheel-sidecar "0.5.18"]
+                                 [nrepl "0.6.0"]
                                  [pjstadig/humane-test-output "0.9.0"]
                                  [prone "1.6.3"]  ;; Better exception reporting middleware for Ring.
                                  [re-frisk "0.5.4.1"]
@@ -100,6 +101,8 @@
                                  [lein-doo "0.1.11"]      ;;  plugin to run clj.test on different js environments
                                  [lein-environ "1.0.0"]   ;; elint for Clojure
                                  [lein-figwheel "0.5.18"]]
+                  :squiggly {:checkers [:eastwood]
+                              :eastwood-exclude-linters [:unlimited-use]}
                   :cljsbuild{:builds
                    {:app
                     {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]

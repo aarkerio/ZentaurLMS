@@ -1,4 +1,4 @@
-(ns zentaur.controllers.posts-controller
+(ns ^{:doc "Posts controller"} zentaur.controllers.posts-controller
   (:require [clj-time.local :as l]
             [clojure.string :as str]
             [clojure.tools.logging :as log]
@@ -16,7 +16,6 @@
 (defn get-posts
   "GET  /  (index site)"
   [request]
-  (log/info (str ">>> request POSTS SSSSSS >>>>> " request))
   (let [base     (basec/set-vars request)
         posts    (model-post/get-posts)]
     (basec/parser
@@ -32,14 +31,15 @@
         user_id     (:id identity)]
     (model-post/save-comment!
      (assoc {} :created_at (l/local-now) :post_id post_id :comment comment :user_id user_id))
-    (basec/json-response { :comment comment :created_at (h/format-time) :last_name (:last_name identity) })))
+    (basec/json-parser {:comment comment :created_at (h/format-time) :last_name (:last_name identity)})))
 
 (defn single-post
-  "GET /posts/:id"
+  "GET /posts/view/:id"
   [request]
   (let [base     (basec/set-vars request)
-        params   (:params request)
-        id       {:id (Integer/parseInt (get params :id))}
+        pre-id   (-> request :path-params :id)
+        id       (Integer/parseInt pre-id)
+         _        (log/info (str ">>> ID >>> id >>>>> " id))
         post     (model-post/get-post id)
         comments (model-post/get-comments id)]
     (basec/parser

@@ -112,7 +112,7 @@
 (defn- flash-timeout []
   (if-let [flash-msg (gdom/getElement "flash-msg")]
     (js/setTimeout (remove-flash) 90000)
-    (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! "))))
+    (.log js/console (str ">>>  NOOOO FLASH MESSAGE HERE !!!!!! "))))
 
 (defn- load-tests []
   (when-let [hform (gdom/getElement "button-show-div")]  ;; versteckte Taste. Nur im Bearbeitungsmodus
@@ -141,7 +141,7 @@
   (flash-timeout)
   (refresh-csrf)
   (let [current_url (.-pathname (.-location js/document))
-        _           (.log js/console (str ">>> tatsächliche Adresse >>>>> " current_url))]
+        _           (.log js/console (str ">>> tatsächliche Adresse 666 >>>>> " current_url))]
     (cond
       (s/includes? current_url "admin/users")     (load-users)
       (s/includes? current_url "uploads/process") (load-process)

@@ -38,10 +38,10 @@
   (db/get-posts))
 
 (defn get-post [id]
-  (db/get-post id))
+  (db/get-post {:id id}))
 
 (defn get-comments [id]
-  (db/get-comments id))
+  (db/get-comments {:id id}))
 
 (defn save-comment! [params]
   (if-let [errors (validate-post params)]
@@ -54,7 +54,7 @@
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn save-post! [params]
-  (if-let [errors (-> params (validate-post))]
+  (if-let [errors (validate-post params)]
     {:flash errors}
     (let [slug      (slugify (:title params))
           published (contains? params :published)
