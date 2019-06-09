@@ -20,7 +20,7 @@
 (defn create-test
   "POST /admin/tests"
   [request]
-  (let [params       (-> request :params)
+  (let [params       (:params request)
         user-id      (-> request :identity :id)
         clean-params (dissoc params :__anti-forgery-token :submit :button-save)]
     (model-test/create-test! clean-params user-id)
@@ -29,7 +29,7 @@
 (defn create-question
   "POST /admin/tests/createquestion"
   [request]
-  (let [params       (-> request :params)
+  (let [params       (:params request)
         user-id      (-> request :identity :id)
         new-params   (assoc params :user-id user-id :active true)]
     (response/ok (model-test/create-question! new-params))))
@@ -37,7 +37,7 @@
 (defn update-question
   "POST /admin/tests/updatequestion"
   [request]
-  (let [params       (-> request :params)
+  (let [params       (:params request)
         user-id      (-> request :identity :id)
         new-params   (assoc params :user-id user-id :active true)]
     (response/ok (model-test/update-question! new-params))))
@@ -45,14 +45,14 @@
 (defn update-answer
   "POST /admin/tests/updateanswer"
   [request]
-  (let [params       (-> request :params)
+  (let [params       (:params request)
         new-params   (assoc params :active true)]
     (response/ok (model-test/update-answer! new-params))))
 
 (defn create-answer
   "POST /admin/tests/createanswer"
   [request]
-  (let [params       (-> request :params)
+  (let [params       (:params request)
         user-id      (-> request :identity :id)
         new-params   (assoc params :user-id user-id)]
     (response/ok (model-test/create-answer! new-params))))
@@ -78,7 +78,7 @@
   "POST /admin/tests/load"
   [{:keys [identity params]}]
   (let [user-id (:id identity)
-        test-id (Integer/parseInt (get params :test-id))]
+        test-id (Integer/parseInt (:test-id params))]
     (response/ok (model-test/get-test-nodes test-id user-id))))
 
 (defn delete-question

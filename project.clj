@@ -5,7 +5,7 @@
                  [binaryage/devtools "0.9.10"]           ;; Chrome DevTools enhancements
                  [buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [cheshire "5.8.1"]                      ;; Clojure JSON and BSON encoding/decoding
-                 [cljs-ajax "0.7.4"]                     ;; Ajax
+                 [cljs-ajax "0.8.0"]                     ;; simple Ajax client for ClojureScript and Clojure
                  [cljs-http "0.1.45"]                    ;; cljs-http returns core.async channels
                  [clojure.java-time "0.3.2"]             ;; Java 8 Date-Time API for Clojure
                  [com.cognitect/transit-clj "0.8.313"]   ;; Marshalling Transit data to/from Clojure

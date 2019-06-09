@@ -79,5 +79,6 @@
 (defn token
   "POST /uploads/token"
   [request]
+  (log/info (str ">>> REQUEST >>>>> " request))
   (let [csrf-field      (:anti-forgery-token request)]
-    (basec/json-response {:anti-forgery-token csrf-field})))
+    (basec/json-parser {:anti-forgery-token csrf-field})))
