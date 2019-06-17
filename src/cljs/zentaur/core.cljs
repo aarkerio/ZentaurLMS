@@ -122,25 +122,24 @@
                            toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
                        (set! (.-className divh) toggle))))))
 
-(defn ask-csrf []
-  (if-let [csrf-value  (.-value (gdom/getElement "__anti-forgery-token"))]
-    (do (.log js/console (str ">>>  csrf-fieldcsrf-fieldcsrf-fieldcsrf-field  !!!! " csrf-value))
+(defn ask-csrf [csrf-field]
+  (when-let [csrf-value  (.-value csrf-field)]
     (POST "/uploads/token"
         {:params {:foo "bar!"}
          :headers {"x-csrf-token" csrf-value}
          :handler (fn [value]
-                    (.log js/console (str ">>> VALUE >>>>> " value ))
-                    (set! (.-value csrf-value) (:anti-forgery-token value)))
-         :error-handler error-handler}))
-    (.log js/console (str ">>>  NOOO anti-forgery-token  !!!! "))))
+                    (.log js/console (str ">>> VALUE >>>>> " (:anti-forgery-token value) ))
+                    (set! (.-value csrf-field) (:anti-forgery-token value)))
+         :error-handler error-handler})))
 
 (defn refresh-csrf []
-  (.log js/console (str ">>> HERE 600000!!! >>>>> "))
-  (js/setTimeout (ask-csrf) 600))
+  (when-let [csrf-field (gdom/getElement "__anti-forgery-token")]
+    (.log js/console (str ">>> csrf-field >>>>> " csrf-field ))
+    (js/setTimeout (do (ask-csrf csrf-field)) 6000000)))
 
 (defn ^:export init []
   (flash-timeout)
-  (refresh-csrf)
+  ;; (refresh-csrf)
   (let [current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> 333 tatsächliche Adresse 33 >>>>> " current_url))]
     (cond

@@ -58,10 +58,11 @@
 
 (re-frame/reg-event-db
   :process-test-response
-  (fn [cfx _]
+  (fn [cfx data]
     ;; do things with data e.g. write it into the re-frame database
     (.log js/console (str ">>> test-question Graphql Call >>>>> " cfx))
-    (.log js/console (str ">>> test-questi _______ Call >>>>> " _))
+    (.log js/console (str ">>> test-questi _______ DJJJATA >>>>> " data))
+
     ;; (-> db
     ;;     (assoc :loading?  false)     ;; take away that "Loading ..." UI element
     ;;     (assoc :test      (js->clj data :keywordize-keys true))
@@ -77,7 +78,7 @@
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (let [db         (:db cfx)
           test-id    (.-value (gdom/getElement "test-id"))
-          query      (gstring/format "{questions_by_test(id: %i) {id question qtype explanation}}" test-id)]
+          query      (gstring/format "{ questions_by_test(id: %i) { id title description questions { id question qtype answers { id answer correct } }}}" test-id)]
       (.log js/console (str ">>> GRAPHQL query  >>>>> " query))
       ;; perform a query, with the response sent to the callback event provided
       (re-frame/dispatch [::re-graph/query

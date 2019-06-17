@@ -21,12 +21,10 @@
   "POST /admin/uploads"
   [request]
   (let [user-id   (-> request :identity :id)
-        params    (-> request :params)
+        params    (:params request)
         result    (model-upload/upload-file params user-id)
         message   (if (= result false) "wrong" "success")]
-    (log/info (str ">>> user-id >>>>> " user-id  ">>> params >> " params))
-    (-> (response/found "/admin/uploads")
-        (assoc :flash message))))
+    (assoc (response/found "/admin/uploads") :flash (assoc params :message message))))
 
 (defn process
   "GET /admin/uploads/process/:id"
@@ -44,7 +42,7 @@
   [params]
   (let [id    (:id params)
         file  (model-upload/extract-text id)]
-    (-> (response/found "/admin/uploads"))))
+    (response/found "/admin/uploads")))
 
 (defn download
   "GET /admin/uploads/download/:id"
@@ -65,7 +63,7 @@
   (let [body      (:body params)
         db-record (:id   params)
         response  (model-upload/save-body body db-record)]
-    (-> (response/ok response))))
+    (response/ok response)))
 
 (defn archive
   "GET /admin/uploads/archive/:id"
@@ -74,11 +72,10 @@
         id        (-> request :identity :id)
         csrf-field (:csrf-field base)
         file      (model-upload/get-upload id)]
-    (-> (response/found "/admin/uploads"))))
+    (response/found "/admin/uploads")))
 
 (defn token
   "POST /uploads/token"
   [request]
-  (log/info (str ">>> REQUEST >>>>> " request))
   (let [csrf-field      (:anti-forgery-token request)]
     (basec/json-parser {:anti-forgery-token csrf-field})))
