@@ -76,9 +76,11 @@
   :request-test
   (fn                      ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [db         (:db cfx)
-          test-id    (.-value (gdom/getElement "test-id"))
-          query      (gstring/format "{ questions_by_test(id: %i) { id title description questions { id question qtype answers { id answer correct } }}}" test-id)]
+    (let [db            (:db cfx)
+          pre-test-id   (.-value (gdom/getElement "test-id"))
+          test-id       (js/parseInt pre-test-id)
+          _             (.log js/console (str ">>> TEST id  >>>>> " pre-test-id))
+          query         (gstring/format "{ questions_by_test(id: %i) { id title description questions { id question qtype answers { id answer correct } }}}" test-id)]
       (.log js/console (str ">>> GRAPHQL query  >>>>> " query))
       ;; perform a query, with the response sent to the callback event provided
       (re-frame/dispatch [::re-graph/query

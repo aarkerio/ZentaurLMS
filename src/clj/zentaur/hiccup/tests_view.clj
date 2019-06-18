@@ -31,7 +31,6 @@
         [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
 
 (defn comment-form [base id]
-  (log/info (str ">>> BSEEEE >>>>> " base))
   (when-let [email (-> base :identity :email)]
             (f/form-to [:test ""]
                 (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
@@ -59,4 +58,3 @@
      (f/text-field {:class "form-control" :ng-model "yourName" :placeholder "Enter a name here"} "your-name")]]
    [:hr]
    [:h1 {:class "text-success"} "Hello {{yourName}}!"]])
-

@@ -7,7 +7,7 @@
             [ring.util.http-response :as response]))
 
 (defn get-tests
-  ;; GET /tests
+  "GET /tests"
   [request]
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
