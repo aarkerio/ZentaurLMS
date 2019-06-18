@@ -57,4 +57,4 @@
     [:div {:class "col-lg-4"}
      (f/text-field {:class "form-control" :ng-model "yourName" :placeholder "Enter a name here"} "your-name")]]
    [:hr]
-   [:h1 {:class "text-success"} "Hello {{yourName}}!"]])
+   [:h1 {:class "text-success"} "Hallo {{yourName}}!"]])

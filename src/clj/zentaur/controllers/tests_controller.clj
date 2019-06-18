@@ -70,7 +70,7 @@
   "GET /admin/tests/edit/:id"
   [request]
   (let [base     (basec/set-vars request)
-        test-id  (-> request :params :id)]
+        test-id  (-> request :path-params :id)]
     (basec/parser
      (layout/application (merge base {:title "New Quiz Tests" :contents (tests-view/edit base test-id) })))))
 
