@@ -60,14 +60,21 @@
   :process-test-response
   (fn [cfx data]
     ;; do things with data e.g. write it into the re-frame database
-    (.log js/console (str ">>> test-question Graphql Call >>>>> " cfx))
-    (.log js/console (str ">>> test-questi _______ DJJJATA >>>>> " data))
-
-    ;; (-> db
-    ;;     (assoc :loading?  false)     ;; take away that "Loading ..." UI element
-    ;;     (assoc :test      (js->clj data :keywordize-keys true))
-    ;;     (assoc :questions (js->clj data :keywordize-keys true))
-        ))
+    (.log js/console (str ">>> CFX >>>>> " cfx))
+    (.log js/console (str ">>> test-questi _______ DJJJATA >>>>> " (data 1)))
+    (let [db             (:db cfx)
+          full-data      (:data (data 1))
+          _              (.log js/console (str ">>> ***** >>>>> " full-data))
+          full-questions (:questions_by_test full-data)
+          questions      (:questions full-questions)
+          test           { :id (:id full-questions) :title (:title full-questions) :description (:description full-questions) } ]
+      (.log js/console (str ">>> TEST >>>>> " test ))
+      (.log js/console (str ">>> questions >>>>> " questions ))
+     (-> db
+         (assoc :loading?  false)     ;; take away that "Loading ..." UI element
+         (assoc :test      (js->clj test :keywordize-keys true))
+         (assoc :questions (js->clj questions :keywordize-keys true))
+        ))))
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
@@ -80,11 +87,11 @@
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
           _             (.log js/console (str ">>> TEST id  >>>>> " pre-test-id))
-          query         (gstring/format "{ questions_by_test(id: %i) { id title description questions { id question qtype answers { id answer correct } }}}" test-id)]
+          query         (gstring/format "{ questions_by_test(id: %i) { id title description questions { id question key qtype answers { id answer key correct } }}}" test-id)]
       (.log js/console (str ">>> GRAPHQL query  >>>>> " query))
       ;; perform a query, with the response sent to the callback event provided
       (re-frame/dispatch [::re-graph/query
-                          "{questions_by_test(id: 5) {id title description instructions}}"  ;; your graphql query
+                          query ;; graphql query
                           {:some "Pumas prros!! variable"}   ;; arguments map
                           [:process-test-response]])       ;; callback event when response is recieved
       )))
