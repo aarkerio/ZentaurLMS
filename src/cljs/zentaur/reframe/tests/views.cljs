@@ -45,10 +45,10 @@
        [:div [:input.btn {:type "button" :value "Save"
                           :on-click #(re-frame.core/dispatch [:update-answer {:answer @aanswer :correct @acorrect :id id}])}]]])))
 
-(defn display-answer [{:keys [id answer correct question-id] :as answer-record} counter]
+(defn display-answer [{:keys [id answer correct question-id key] :as answer-record}]
   (let [separator    (str "display-answer-div-" id)
-        answer-class (if (= correct false) "all-width-red" "all-width-green")
-        answer-text  (if (= correct false) "answer-text-red" "answer-text-green")
+        answer-class (if-not correct "all-width-red" "all-width-green")
+        answer-text  (if-not correct "answer-text-red" "answer-text-green")
         editing      (reagent/atom false)]
     (fn []
       [:div {:id separator :key separator}
@@ -68,8 +68,8 @@
                                   :src      "/img/icon_edit.png"
                                   :on-click #(swap! editing not)}])]
         (when @editing
-          [answer-editing-input answer-record])
-        [:span {:class answer-text} (str counter ".-  ("correct")")] "   " answer
+          (answer-editing-input answer-record))
+        [:span {:class answer-text} (str key ".-  ("correct")")] "   " answer
         [:img.img-float-right {:title    "Antwort löschen"
                                :alt      "Antwort löschen"
                                :src      "/img/icon_delete.png"
@@ -105,16 +105,16 @@
                                    (reset! checked false)
                                    (reset! inner ""))}]])))
 
-;; Polimorphysm for the kind of question
+;; Polimorphysm to the kind of question
 (defmulti display-question (fn [question] (:qtype question)))
 
 ;; 1: multi 2: open, 3: fullfill, 4: composite questions (columns)
 (defmethod display-question 1
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
   (let [counter (atom 0)]
-    [:div [input-new-answer {:question-id id :on-stop #(js/console.log "stopp") :props  {:placeholder "New answer"}}]
+    [:div [input-new-answer {:question-id id :on-stop #(js/console.log "stopp") :props {:placeholder "New answer"}}]
      (for [answer (:answers q)]
-       [display-answer answer (swap! counter inc)])]))
+       [display-answer (assoc answer :key (swap! counter inc))])]))
 
 (defmethod display-question 2
   [question]
@@ -122,13 +122,13 @@
 
 (defmethod display-question 3
   [question]
-  [:p "Question fullfill"])
+  [:p "Question to fullfill"])
 
 (defmethod display-question 4
   [question]
   [:p "Question columns"])
 
-(defn simple-input [{:keys [question id hint explanation qtype]}]
+(defn edit-question [{:keys [question id hint explanation qtype]}]
   (let [aquestion    (reagent/atom question)
         ahint        (reagent/atom hint)
         aexplanation (reagent/atom explanation)
@@ -174,43 +174,44 @@
                                                                                 :id          id
                                                                                 :qtype       @aqtype
                                                                                 :explanation @aexplanation}])}]]])))
-
 (def <sub (comp deref re-frame.core/subscribe))
 (def >evt re-frame.core/dispatch)
 
 (defn question-item
-  [{:keys [question explanation hint key qtype id ordnen] :as q}]
+  "Display any type of question"
+  [{:keys [question explanation hint qtype id ordnen key] :as q}]
   (let [counter (reagent/atom 0)
         editing (reagent/atom false)]
     (fn []
       [:div.div-question-row {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
-       [:div.edit-icon-div
+       [:div.edit-icon-div {:key (str "edit-icon-div-" id) :id (str "edit-icon-div-" id)}
         (if @editing
-          [:img.img-float-right {:title    "Cancel question"
-                                 :alt      "Cancel question"
+          [:img.img-float-right {:title    "Frage abbrechen"
+                                 :alt      "Frage abbrechen"
                                  :key      (str "cancel-question-img-" id)
                                  :id       (str "cancel-question-img-" id)
                                  :src      "/img/icon_cancel.png"
                                  :on-click #(swap! editing not)}]
-          [:img.img-float-right {:title    "Edit question"
-                                 :alt      "Edit question"
+          [:img.img-float-right {:title    "Frage bearbeiten"
+                                 :alt      "Frage bearbeiten"
                                  :key      (str "edit-question-img-" id)
                                  :id       (str "edit-question-img-" id)
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing not)}])]
-     [:p {:key (str "div-question" id) :id (str "div-question" id)} [:span.bold-font (str key ".-" "Question: ")] question  "   ordnen:" ordnen "   id:" id]
-     [:p {:key (str "div-hint" id)     :id (str "div-hint" id)}     [:span.bold-font "Hint: "] hint]
-     [:p {:key (str "div-explan" id)   :id (str "div-explan" id)}   [:span.bold-font "Explanation: "] explanation]
+     [:div.question-elements
+       [:div {:key (str "div-question-" id) :id (str "div-question-" id)} [:span.bold-font (str key ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+       [:div {:key (str "div-hint-" id)     :id (str "div-hint-" id)}     [:span.bold-font "Hint: "] hint]
+       [:div {:key (str "div-explan-" id)   :id (str "div-explan-" id)}   [:span.bold-font "Erläuterung: "] explanation]]
      (when @editing
-       [simple-input q])
+       (edit-question q))
      (display-question q)
      [:div.img-delete-right
-      [:img {:src    "/img/icon_delete.png"
-             :title  "Delete question"
-             :alt    "Delete question"
-             :key    (str "frage-btn-x" id)
-             :id     (str "frage-btn-x" id)
-             :on-click #(re-frame/dispatch [:delete-question id])}]]])))
+       [:img {:src    "/img/icon_delete.png"
+              :title  "Frage löschen"
+              :alt    "Frage löschen"
+              :key    (str "frage-btn-x-" id)
+              :id     (str "frage-btn-x-" id)
+              :on-click #(re-frame/dispatch [:delete-question id])}]]])))
 
 (defn questions-list
   []
@@ -218,9 +219,10 @@
     (fn []
       [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
        (for [question @(re-frame/subscribe [:questions])]
-         [question-item (second (assoc-in question [1 :key] (swap! counter inc)))])])))
+         [question-item (assoc question :key (swap! counter inc))])])))
 
 (defn question-entry
+  "Verstecken Form for a nue fragen"
   []
   (let [qform        (re-frame/subscribe [:qform])
         new-question (reagent/atom "")
@@ -288,7 +290,6 @@
     [:div
      [:h1 (:title @test)]
      [:div.someclass (str "tags: " (:tags @test) "    created: " (:created_at @test)) ]
-     ;; (prn "Current test: " @test)
      [:div [:input.btn {:type "button" :value "Fragen hinzüfugen"
                         :on-click #(re-frame.core/dispatch [:toggle-qform])}]]]))
 
@@ -299,7 +300,6 @@
      [:section#todoapp
       [test-display]
       [question-entry]
-      (when (seq @questions)
-        [questions-list])]
+      [questions-list]]
      [:footer#info
       [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))

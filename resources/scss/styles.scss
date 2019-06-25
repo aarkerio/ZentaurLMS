@@ -1,8 +1,8 @@
-/* My Typography ----------------------------------------------------------------------------- */
+/* ------------- My Typography ----------------- */
 
 /*** importing extras ***/
 
-@import 'libs/extra';
+@import "libs/extra";
 
 /** My Variables **/
 
@@ -919,15 +919,21 @@ textarea {
     &:hover {
         opacity:1;
         transition: 1s ease;
-        background-color: #eaeaea;
+        background-color: #fdfdfd;
     }
     .div-new-answer{
       border: 1px dotted green;
     }
 }
 
-.edit-icon-div{
+.edit-icon-div {
     margin: 3px;
+    border: 1px dotted orange;
+}
+
+.question-elements {
+    margin: 5px;
+    padding: 5px;
 }
 
 .bold-font {
@@ -991,7 +997,7 @@ table.some-table-class {
       }
 }
 
-.edit_question{
+.edit_question {
     margin: 9px;
     padding:7px;
     background-color: #fff;

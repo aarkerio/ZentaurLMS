@@ -2,7 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [hiccup.form :as f]
             [hiccup.core :as c]
-            [hiccup.element :only (link-to)]
+            [hiccup.element :refer [link-to]]
             [markdown.core :as md]
             [zentaur.hiccup.helpers-view :as helper]))
 

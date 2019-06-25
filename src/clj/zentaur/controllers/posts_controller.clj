@@ -39,7 +39,6 @@
   (let [base     (basec/set-vars request)
         pre-id   (-> request :path-params :id)
         id       (Integer/parseInt pre-id)
-         _        (log/info (str ">>> ID >>> id >>>>> " id))
         post     (model-post/get-post id)
         comments (model-post/get-comments id)]
     (basec/parser

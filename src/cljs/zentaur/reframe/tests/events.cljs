@@ -4,18 +4,8 @@
             [goog.dom :as gdom]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
-            [re-graph.core :as re-graph]))
-
-(re-frame/dispatch
-  [::re-graph/init
-    {:ws-url                  nil                        ;; override the websocket url (defaults to /graphql-ws, nil to disable)
-     :http-url                "http://localhost:8888/graphql" ;; override the http url (defaults to /graphql)
-     :http-parameters         {:with-credentials? false   ;; any parameters to be merged with the request, see cljs-http for options
-                               :oauth-token "ah4rdSecr3t"}
-     :ws-reconnect-timeout    nil                       ;; attempt reconnect n milliseconds after disconnect (default 5000, nil to disable)
-     :resume-subscriptions?   false                     ;; start existing subscriptions again when websocket is reconnected after a disconnect
-     :connection-init-payload {}                        ;; the payload to send in the connection_init message, sent when a websocket connection is made
-  }])
+            [re-graph.core :as re-graph]
+            [zentaur.reframe.tests.db :as zdb]))
 
 ;; -- Check Interceptor ------------------------------------------------------
 (defn check-and-throw
@@ -50,31 +40,22 @@
 
 (def reorder-after-interceptor (re-frame/after (partial order-questions)))
 
-;;;;;;;;;;;  DB EVENTS  ;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;  REGISTER DB EVENT HANDLERS  ;;;;;;;;;;;;;;;;;;;;;;;;;;
 (re-frame/reg-event-db
- :toggle-qform
+ :toggle-qform     ;; hidde/show forms
  (fn [db _]
    (update db :qform not)))
 
 (re-frame/reg-event-db
   :process-test-response
-  (fn [cfx data]
-    ;; do things with data e.g. write it into the re-frame database
-    (.log js/console (str ">>> CFX >>>>> " cfx))
-    (.log js/console (str ">>> test-questi _______ DJJJATA >>>>> " (data 1)))
-    (let [db             (:db cfx)
-          full-data      (:data (data 1))
-          _              (.log js/console (str ">>> ***** >>>>> " full-data))
-          full-questions (:questions_by_test full-data)
-          questions      (:questions full-questions)
-          test           { :id (:id full-questions) :title (:title full-questions) :description (:description full-questions) } ]
-      (.log js/console (str ">>> TEST >>>>> " test ))
-      (.log js/console (str ">>> questions >>>>> " questions ))
+  (fn [db [_ {:keys [data errors] :as payload}]]
+    (let [full-data   (:questions_by_test data)
+          questions   (:questions full-data)
+          test        (:test full-data)]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
          (assoc :test      (js->clj test :keywordize-keys true))
-         (assoc :questions (js->clj questions :keywordize-keys true))
-        ))))
+         (assoc :questions (js->clj questions :keywordize-keys true))))))
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
@@ -86,15 +67,24 @@
     (let [db            (:db cfx)
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
-          _             (.log js/console (str ">>> TEST id  >>>>> " pre-test-id))
-          query         (gstring/format "{ questions_by_test(id: %i) { id title description questions { id question key qtype answers { id answer key correct } }}}" test-id)]
-      (.log js/console (str ">>> GRAPHQL query  >>>>> " query))
-      ;; perform a query, with the response sent to the callback event provided
-      (re-frame/dispatch [::re-graph/query
-                          query ;; graphql query
-                          {:some "Pumas prros!! variable"}   ;; arguments map
-                          [:process-test-response]])       ;; callback event when response is recieved
-      )))
+          query         (gstring/format "{ questions_by_test(id: %i) { test {id title description tags created_at}
+                                           questions { id question qtype explanation hint ordnen
+                                           answers { id answer correct } }}}"
+                                        test-id)]
+          ;; perform a query, with the response sent to the callback event provided
+          (re-frame/dispatch [::re-graph/query
+                              query                              ;; graphql query
+                              {:some "Pumas prros!! variable"}   ;; arguments map
+                              [:process-test-response]])         ;; callback event when response is recieved
+          )))
+
+(re-frame/reg-event-fx       ;; part of the re-frame API
+ :initialise-db              ;; event id being handled
+  ;; the interceptor chain (a vector of 2 interceptors in this case)
+ [(.log js/console (str ">>> initialise-db initial Interceptor du dummes schwein!!! "))]
+  ;; the event handler (function) being registered
+  (fn [{:keys [db]} _]                       ;; take 2 values from coeffects. Ignore event vector itself.
+    {:db (assoc zdb/default-db :questions (sorted-map))}))   ;; all hail the new state to be put in app-db
 
 (re-frame/reg-event-fx
  :create-answer
