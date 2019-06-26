@@ -114,24 +114,36 @@
        (update :qform not)           ;; hide new question form
        (assoc-in [:questions (:id response)] response))))
 
-;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
+(re-frame/reg-event-db
+  :process-question-response
+  (fn [db [_ {:keys [data errors] :as payload}]]
+    (let [full-data   (:questions_by_test data)
+          questions   (:questions full-data)
+          test        (:test full-data)]
+     (-> db
+         (assoc :loading?  false)     ;; take away that "Loading ..." UI element
+         (assoc :test      (js->clj test :keywordize-keys true))
+         (assoc :questions (js->clj questions :keywordize-keys true))))))
 
-(re-frame/reg-event-fx      ;; <-- note the `-fx` extension
- :create-question           ;; <-- the event id
- (fn                         ;; <-- our handler function
-   [cofx [dispatch-name question]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (let [db         (:db cofx)
-         test-id    (.-value (gdom/getElement "test-id"))
-         csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-     ;; we return a map of (side) effects
-     {:http-xhrio {:method          :post
-                   :uri             "/admin/tests/createquestion"
-                   :format          (ajax/json-request-format)
-                   :params          question
-                   :headers         {"x-csrf-token" csrf-field}
-                   :response-format (ajax/json-response-format {:keywords? true})
-                   :on-success      [:process-new-question]
-                   :on-failure      [:bad-response]}})))
+;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
+(re-frame/reg-event-fx
+  :create-question
+  (fn                      ;; <-- the handler function
+    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
+    (let [db            (:db cfx)
+          pre-test-id   (.-value (gdom/getElement "test-id"))
+          test-id       (js/parseInt pre-test-id)
+          query         (gstring/format "mutation { add_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
+                                         qtype: %i, test_id: %i, user_id: %i, active: %b) { id question qtype }}"
+                                        question hint explanation qtype test-id user-id active)]
+          ;; perform a query, with the response sent to the callback event provided
+          (re-frame/dispatch [::re-graph/query
+                              query                              ;; graphql query
+                              {:some "Pumas prros!! variable"}   ;; arguments map
+                              [:process-question-response]])         ;; callback event when response is recieved
+          )))
+
+
 
 (re-frame/reg-event-db
  :process-after-delete-question

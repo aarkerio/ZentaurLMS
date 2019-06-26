@@ -50,20 +50,15 @@
     (db/update-question! (assoc full-params :qtype qtype :updated_at (jt/local-date-time)))
     (db/get-question {:id (:id params)})))
 
-(defn- ^:private key-answer
-  [answer]
-  (assoc answer :key (str "keyed-" (:id answer))))
-
 (defn create-answer! [params]
   (let [question-id  (:question-id params)
         next-ordnen  (or (:ordnen (get-last-ordnen "answers" question-id)) 0)
         full-params  (assoc params :ordnen (inc next-ordnen))
         errors       (val-test/validate-answer full-params)]
     (if (nil? errors)
-      (as-> full-params v
-        (db/create-answer! v)
-        (db/get-last-answer {:question-id question-id})
-        (key-answer v))
+      (do
+        (db/create-answer! full-params)
+        (db/get-last-answer {:question-id question-id}))
       {:flash errors :ok false})))
 
 (defn- ^:private get-answers [question]
