@@ -7,7 +7,7 @@
             [re-graph.core :as re-graph]
             [zentaur.reframe.tests.db :as zdb]))
 
-;; -- Check Interceptor (edit for subway) ------------------------------------------------------
+;; -- Check Interceptor    (edit for subway) ------------------------------------------------------
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
   [a-spec db]
