@@ -49,15 +49,11 @@
 ;; AUTH CONFIG STARTS
 (defn admin-access [request]
   (let [identity (:identity request)]
-    (= true (:admin identity))))
+    (true? (:admin identity))))
 
 (def rules [{:pattern #"^/admin.*"
              :handler admin-access
              :redirect "/notauthorized"}
-            {:pattern #"^/user/changepassword"
-             :handler authenticated?}
-            {:uris ["/post/savecomment" "/post/listing"]
-             :handler authenticated?}
             {:pattern #"^/user.*"
              :handler authenticated?}])
 
@@ -79,9 +75,8 @@
   (-> ((:middleware defaults) handler)
       (wrap-access-rules {:rules rules :on-error on-error})
       (wrap-authentication (session-backend))
-      wrap-auth
       wrap-flash
-      (wrap-session {:cookie-attrs {:http-only true}})
+      (wrap-session {:timeout 0 :cookie-attrs {:http-only true}})   ;;  A :timeout value less than or equal to zero indicates the session should never expire.
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)

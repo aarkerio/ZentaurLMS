@@ -14,5 +14,8 @@
         identity   (:identity request)]
     {:identity identity :flash flash :csrf-field csrf-field}))
 
+(defn json-parser [content]
+   (response/ok content))
+
 (defn parser [content]
   (response/content-type (response/ok content) "text/html; charset=utf-8"))

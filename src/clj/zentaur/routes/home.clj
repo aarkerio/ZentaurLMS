@@ -10,7 +10,6 @@
   [["/"                  {:get  cont-posts/get-posts}]
    ["/posts/savecomment" {:post cont-posts/save-comment}]
    ["/posts/view/:id"    {:get  cont-posts/single-post}]
-   ["/tests"             {:get  cont-tests/get-tests}]
    ["/uploads/token"     {:post cont-uploads/token}]
    ["/page/:page"        {:get  cont-company/load-page}]
    ["/login"             {:get  cont-users/login-page :post cont-users/post-login}]
@@ -38,13 +37,11 @@
    ["/uploads/archive/:id"  {:get  cont-uploads/archive}]
    ["/uploads/download/:id" {:get  cont-uploads/download}]
    ["/uploads/extract/:id"  {:get  cont-uploads/extract}]
-   ["/users"                {:get  cont-users/admin-users :post cont-users/create-user}]
-])
+   ["/users"                {:get  cont-users/admin-users :post cont-users/create-user}]])
 
 (defn home-routes []
   [""
    {:middleware [middleware/wrap-csrf
                  middleware/wrap-formats]}
-   user-routes
-   admin-routes])
+   (merge user-routes admin-routes)])
 

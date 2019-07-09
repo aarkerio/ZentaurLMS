@@ -1,8 +1,8 @@
 (ns zentaur.models.uploads
-  (:require [clj-time.local :as l]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [clojure.java.io :as io]
             [digest :as dgt]
+            [java-time :as jt]
             [pantomime.extract :as extract]
             [struct.core :as st]
             [zentaur.db.core :as db]
@@ -87,7 +87,7 @@
     (if-not (db/get-upload-by-hashvar {:hashvar hashvar})
       (do (copy-file tempfile (str root-path "/resources/public/uploads/" (str rand5 "-" filename)))
           (save-upload!
-           (assoc params :filename (str rand5 "-" filename) :created_at (l/local-now) :hashvar hashvar
+           (assoc params :filename (str rand5 "-" filename) :created_at (jt/local-date-time) :hashvar hashvar
                   :active true :user-id user-id :tags tags :done false)))
       false)))
 
@@ -135,6 +135,8 @@
       get-upload-from-db
       download-without-db))
 
-(defn catto []
+(defn catto
+  "?????"
+  []
   (let [files (mapv str (filter #(.isFile %) (file-seq (clojure.java.io/file "resources/sql/"))))]
       (apply str (for [f files] (slurp f)))))

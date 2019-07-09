@@ -1,6 +1,5 @@
 (ns zentaur.uploads
-  (:require [cljsjs.jquery]
-            [goog.dom :as gdom]
+  (:require [goog.dom :as gdom]
             [goog.events :as events])
   (:import [goog.events EventType]))
 

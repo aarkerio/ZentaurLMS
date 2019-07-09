@@ -7,7 +7,6 @@
             [zentaur.hiccup.admin.uploads-view :as admin-uploads-view]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;     ADMIN FUNCTIONS    ;;;;;;;;;;;;;;;;;;;;
-
 (defn admin-uploads
   "GET /admin/uploads"
   [request]
@@ -15,17 +14,17 @@
         user-id    (-> request :identity :id)
         csrf-field (:csrf-field base)
         files      (model-upload/get-uploads user-id)]
-    (layout/application (merge base {:title "Uploads" :contents (admin-uploads-view/index files csrf-field) }))))
+    (basec/parser
+     (layout/application (merge base {:title "Uploads" :contents (admin-uploads-view/index files csrf-field) })))))
 
 (defn upload-file
   "POST /admin/uploads"
   [request]
   (let [user-id   (-> request :identity :id)
-        params    (-> request :params)
+        params    (:params request)
         result    (model-upload/upload-file params user-id)
-        message   (if (= result false) "wrong" "success") ]
-    (-> (response/found "/admin/uploads")
-        (assoc :flash message))))
+        message   (if (= result false) "wrong" "success")]
+    (assoc (response/found "/admin/uploads") :flash (assoc params :message message))))
 
 (defn process
   "GET /admin/uploads/process/:id"
@@ -34,7 +33,8 @@
         id         (-> request :params :id)
         csrf-field (:csrf-field base)
         upload     (model-upload/get-upload id)]
-    (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process upload csrf-field) }))))
+    (basec/parser
+     (layout/application (merge base {:title "Process" :contents (admin-uploads-view/process upload csrf-field) })))))
 
 (defn extract
   "GET /admin/uploads/extract/:id
@@ -42,12 +42,12 @@
   [params]
   (let [id    (:id params)
         file  (model-upload/extract-text id)]
-    (-> (response/found "/admin/uploads"))))
+    (response/found "/admin/uploads")))
 
 (defn download
   "GET /admin/uploads/download/:id"
-  [params]
-  (let [id (:id params)]
+  [request]
+  (let [id (-> request :path-params :id)]
     (model-upload/download id)))
 
 (defn export-test
@@ -63,7 +63,7 @@
   (let [body      (:body params)
         db-record (:id   params)
         response  (model-upload/save-body body db-record)]
-    (-> (response/ok response))))
+    (response/ok response)))
 
 (defn archive
   "GET /admin/uploads/archive/:id"
@@ -72,10 +72,10 @@
         id        (-> request :identity :id)
         csrf-field (:csrf-field base)
         file      (model-upload/get-upload id)]
-    (-> (response/found "/admin/uploads"))))
+    (response/found "/admin/uploads")))
 
 (defn token
   "POST /uploads/token"
   [request]
   (let [csrf-field      (:anti-forgery-token request)]
-    (basec/json-response {:anti-forgery-token csrf-field})))
+    (basec/json-parser {:anti-forgery-token csrf-field})))

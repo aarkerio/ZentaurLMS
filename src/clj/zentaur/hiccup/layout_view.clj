@@ -3,7 +3,9 @@
             [hiccup.form :as f]
             [hiccup.page :refer [html5 include-css include-js]]))
 
-(defn login-form [csrf-field]
+(defn- ^{:private true} login-form
+  "Html helper"
+  [csrf-field]
   [:div {:class "form-box"}
     [:div {:class "login-form"}
     [:form {:method "post" :action "/login" }
@@ -51,12 +53,11 @@
               [:a {:class "navbar-brand" :href "/"} "Home"]
               [:div {:class"collapse navbar-collapse" :id "navbarSupportedContent"}
                 [:ul {:class"navbar-nav mr-auto"} (for [link @vector-atom] link) ]]]
-            [:div {:class "top-banner"}]
+           [:div {:class "top-banner"}]
             [:div {:class "container"}  (:contents content)]]
-            [:footer {:class "blog-footer"}
+          [:footer {:class "blog-footer"}
               [:img {:src "/img/warning_clojure.png" :alt "Lisp" :title "Lisp"}]
-              [:p "Chipotle Software &copy; 2018-2019. MIT License."]
+             [:p "Chipotle Software &copy; 2018-2019. MIT License."]
               [:p [:a {:href "#"} "Back to top"]]]
-            (include-js "http://localhost:3449/js/app.js")
-            [:div {:id "root-app"} ""]]))
-
+          (include-js "http://localhost:3449/js/app.js")
+          [:div {:id "root-app"} ""]]))

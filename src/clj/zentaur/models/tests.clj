@@ -15,8 +15,8 @@
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
   (let [full-params (assoc params :user-id user-id)
-        errors      (-> full-params (val-test/validate-test))]
-    (if (= errors nil)
+        errors      (val-test/validate-test full-params)]
+    (if (nil? errors)
       (db/create-minimal-test! full-params)
       {:flash errors})))
 
@@ -37,7 +37,7 @@
                         (update :qtype   #(Integer/parseInt %))
                         (update :test-id #(Integer/parseInt %)))
         errors      (val-test/validate-question full-params)]
-    (if (= errors nil)
+    (if (nil? errors)
       (as-> full-params v
         (db/create-question! v)
         (link-test-question! v (:test-id full-params))
@@ -50,20 +50,15 @@
     (db/update-question! (assoc full-params :qtype qtype :updated_at (jt/local-date-time)))
     (db/get-question {:id (:id params)})))
 
-(defn- ^:private key-answer
-  [answer]
-  (assoc answer :key (str "keyed-" (:id answer))))
-
 (defn create-answer! [params]
   (let [question-id  (:question-id params)
         next-ordnen  (or (:ordnen (get-last-ordnen "answers" question-id)) 0)
         full-params  (assoc params :ordnen (inc next-ordnen))
         errors       (val-test/validate-answer full-params)]
-    (if (= errors nil)
-      (as-> full-params v
-        (db/create-answer! v)
-        (db/get-last-answer {:question-id question-id})
-        (key-answer v))
+    (if (nil? errors)
+      (do
+        (db/create-answer! full-params)
+        (db/get-last-answer {:question-id question-id}))
       {:flash errors :ok false})))
 
 (defn- ^:private get-answers [question]
@@ -88,7 +83,7 @@
              )))
 
 (defn get-test-nodes
-  "????"
+  "JSON response for the API"
   [test-id user-id]
   (let [test         (db/get-one-test { :id test-id :user-id user-id })
         test-updated (update test :created_at #(helpers/format-time %))

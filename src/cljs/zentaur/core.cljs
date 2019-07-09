@@ -112,7 +112,7 @@
 (defn- flash-timeout []
   (if-let [flash-msg (gdom/getElement "flash-msg")]
     (js/setTimeout (remove-flash) 90000)
-    (.log js/console (str ">>>  NOOOO FLASH MESSAGE !!!!!! "))))
+    (.log js/console (str ">>>  NOOOO FLASH MESSAGE HERE !!!!!! "))))
 
 (defn- load-tests []
   (when-let [hform (gdom/getElement "button-show-div")]  ;; versteckte Taste. Nur im Bearbeitungsmodus
@@ -122,24 +122,26 @@
                            toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
                        (set! (.-className divh) toggle))))))
 
-(defn ask-csrf []
-  (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-    (POST "/admin/uploads/save"
-        {:params {:body "prima!"}
-         :headers {"x-csrf-token" csrf-field}
-         :handler set-message
+(defn ask-csrf [csrf-field]
+  (when-let [csrf-value  (.-value csrf-field)]
+    (POST "/uploads/token"
+        {:params {:foo "bar!"}
+         :headers {"x-csrf-token" csrf-value}
+         :handler (fn [value]
+                    (.log js/console (str ">>> VALUE >>>>> " (:anti-forgery-token value) ))
+                    (set! (.-value csrf-field) (:anti-forgery-token value)))
          :error-handler error-handler})))
 
 (defn refresh-csrf []
-  id="__anti-forgery-token"
-  (set! (.-className divh) toggle)
-  (js/setTimeout (ask-csrf) 600000))
+  (when-let [csrf-field (gdom/getElement "__anti-forgery-token")]
+    (.log js/console (str ">>> csrf-field >>>>> " csrf-field ))
+    (js/setTimeout (do (ask-csrf csrf-field)) 6000000)))
 
 (defn ^:export init []
   (flash-timeout)
-  (refresh-csrf)
+  ;; (refresh-csrf)
   (let [current_url (.-pathname (.-location js/document))
-        _           (.log js/console (str ">>> CURRENT >>>>> " current_url))]
+        _           (.log js/console (str ">>> 333 tatsächliche Adresse 33 >>>>> " current_url))]
     (cond
       (s/includes? current_url "admin/users")     (load-users)
       (s/includes? current_url "uploads/process") (load-process)

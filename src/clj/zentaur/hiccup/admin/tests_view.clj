@@ -2,7 +2,7 @@
   (:require [hiccup.form :as f]
             [hiccup.core :as c]
             [clojure.tools.logging :as log]
-            [hiccup.element :only (link-to)]
+            [hiccup.element :refer [link-to]]
             [hiccup.page :refer [include-css include-js]]))
 
 (defn formatted-test [{:keys [title created_at tags published id]}]
@@ -32,11 +32,11 @@
        [:table {:class "some-table-class"}
          [:thead
            [:tr
-             [:th "Edit"]
-             [:th "Title"]
-             [:th "Tags"]
-             [:th "Created"]
-             [:th "Delete"]]]
+             [:th "Bearbeiten"]
+             [:th "Titel"]
+             [:th "Stichworte"]
+             [:th "Erstellt"]
+             [:th "Löschen"]]]
           [:tbody formatted-tests]]]
       [:nav {:class "blog-pagination"}
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
