@@ -42,12 +42,13 @@
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
         [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
 
-(defn edit [base test-id]
+(defn edit [base test-id user-id]
   [:div
     [:h1 "Bearbeiten Quizz Test"]
     [:div {:id "cont"}
       (f/form-to [:post ""]
         (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
-        (f/hidden-field { :value test-id} "test-id"))]
+        (f/hidden-field { :value test-id} "test-id")
+        (f/hidden-field { :value user-id} "user-id"))]
     [:div {:id "test-root-app"}]])
 

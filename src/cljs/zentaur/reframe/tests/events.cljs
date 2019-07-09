@@ -7,7 +7,7 @@
             [re-graph.core :as re-graph]
             [zentaur.reframe.tests.db :as zdb]))
 
-;; -- Check Interceptor (edit for subway) --------------------------------
+;; -- Check Interceptor (edit for subway) ------------------------------------------------------
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
   [a-spec db]
@@ -130,18 +130,24 @@
   :create-question
   (fn                      ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [db            (:db cfx)
-          pre-test-id   (.-value (gdom/getElement "test-id"))
+    (.log js/console (str ">>>  und ebenfalls _ " (second _)))
+    ;; question hint explanation qtype test-id user-id active
+    (let [values        (second _)
+          question      (:question values)
+          hint          (:hint values)
+          explanation   (:explanation values)
+          qtype         (:qtype values)
+          user-id       (:qtype values)
+          pre-test-id   (:test-id values)
           test-id       (js/parseInt pre-test-id)
           query         (gstring/format "mutation { add_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, test_id: %i, user_id: %i, active: %b) { id question qtype }}"
-                                        question hint explanation qtype test-id user-id active)]
+                                         qtype: %i, test_id: %i, user_id: %i) { id question qtype }}"
+                                        question hint explanation qtype test-id user-id)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query
                               query                              ;; graphql query
                               {:some "Pumas prros!! variable"}   ;; arguments map
-                              [:process-question-response]])         ;; callback event when response is recieved
-          )))
+                              [:process-question-response]]))))
 
 
 
