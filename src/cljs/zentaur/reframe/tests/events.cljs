@@ -115,11 +115,12 @@
        (assoc-in [:questions (:id response)] response))))
 
 (re-frame/reg-event-db
-  :process-question-response
-  (fn [db [_ {:keys [data errors] :as payload}]]
-    (let [full-data   (:questions_by_test data)
-          questions   (:questions full-data)
-          test        (:test full-data)]
+ :process-question-response
+ (fn [db [_ {:keys [data errors] :as payload}]]
+   (.log js/console (str ">>> process-question-response OLE!! >>>>> " payload )) ;; {:data {:add_question {:id "97", :question "fghfghfgh", :qtype 1}}}
+   (let [full-data   (:questions_by_test data)
+         questions   (:questions full-data)
+         test        (:test full-data)]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
          (assoc :test      (js->clj test :keywordize-keys true))
@@ -137,19 +138,17 @@
           hint          (:hint values)
           explanation   (:explanation values)
           qtype         (:qtype values)
-          user-id       (:qtype values)
+          user-id       (:user-id values)
           pre-test-id   (:test-id values)
           test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "mutation { add_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
+          mutation      (gstring/format "mutation { add_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
                                          qtype: %i, test_id: %i, user_id: %i) { id question qtype }}"
                                         question hint explanation qtype test-id user-id)]
-          ;; perform a query, with the response sent to the callback event provided
-          (re-frame/dispatch [::re-graph/query
-                              query                              ;; graphql query
-                              {:some "Pumas prros!! variable"}   ;; arguments map
-                              [:process-question-response]]))))
-
-
+      ;; perform a query, with the response sent to the callback event provided
+      (re-frame/dispatch [::re-graph/mutate
+                          mutation                           ;; graphql query
+                          {:some "Pumas prros!! variable"}   ;; arguments map
+                          [:process-question-response]]))))
 
 (re-frame/reg-event-db
  :process-after-delete-question

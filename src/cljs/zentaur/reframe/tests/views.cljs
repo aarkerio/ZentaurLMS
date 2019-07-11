@@ -278,6 +278,7 @@
                                                                              :hint        @hint
                                                                              :qtype       @qtype
                                                                              :test-id     (.-value (gdom/getElement "test-id"))
+                                                                             :user-id     (.-value (gdom/getElement "user-id"))
                                                                              :explanation @explanation}
                                                            :toggle-qform])
                                   (reset! new-question "")
