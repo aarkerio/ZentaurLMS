@@ -48,6 +48,8 @@
     [:div {:id "cont"}
       (f/form-to [:post ""]
         (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
-        (f/hidden-field { :value test-id} "test-id"))]
+        (f/hidden-field { :value test-id} "test-id")
+        (f/hidden-field { :value (get-in base [:identity :id])} "user-id")
+        )]
     [:div {:id "test-root-app"}]])
 

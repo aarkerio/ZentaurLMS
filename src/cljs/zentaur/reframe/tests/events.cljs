@@ -7,7 +7,7 @@
             [re-graph.core :as re-graph]
             [zentaur.reframe.tests.db :as zdb]))
 
-;; -- Check Interceptor (edit for subway) --------------------------------
+;; -- Check Interceptor (edit for subway) ------------------------------
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
   [a-spec db]
@@ -115,11 +115,12 @@
        (assoc-in [:questions (:id response)] response))))
 
 (re-frame/reg-event-db
-  :process-question-response
-  (fn [db [_ {:keys [data errors] :as payload}]]
-    (let [full-data   (:questions_by_test data)
-          questions   (:questions full-data)
-          test        (:test full-data)]
+ :process-question-response
+ (fn [db [_ {:keys [data errors] :as payload}]]
+   (.log js/console (str ">>> process-question-response OLE!! >>>>> " payload )) ;; {:data {:add_question {:id "97", :question "fghfghfgh", :qtype 1}}}
+   (let [full-data   (:questions_by_test data)
+         questions   (:questions full-data)
+         test        (:test full-data)]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
          (assoc :test      (js->clj test :keywordize-keys true))
@@ -130,20 +131,24 @@
   :create-question
   (fn                      ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [db            (:db cfx)
-          pre-test-id   (.-value (gdom/getElement "test-id"))
+    (.log js/console (str ">>>  und ebenfalls _ " (second _)))
+    ;; question hint explanation qtype test-id user-id active
+    (let [values        (second _)
+          question      (:question values)
+          hint          (:hint values)
+          explanation   (:explanation values)
+          qtype         (:qtype values)
+          user-id       (:user-id values)
+          pre-test-id   (:test-id values)
           test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "mutation { add_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, test_id: %i, user_id: %i, active: %b) { id question qtype }}"
-                                        question hint explanation qtype test-id user-id active)]
-          ;; perform a query, with the response sent to the callback event provided
-          (re-frame/dispatch [::re-graph/query
-                              query                              ;; graphql query
-                              {:some "Pumas prros!! variable"}   ;; arguments map
-                              [:process-question-response]])         ;; callback event when response is recieved
-          )))
-
-
+          mutation      (gstring/format "mutation { add_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
+                                         qtype: %i, test_id: %i, user_id: %i) { id question qtype }}"
+                                        question hint explanation qtype test-id user-id)]
+      ;; perform a query, with the response sent to the callback event provided
+      (re-frame/dispatch [::re-graph/mutate
+                          mutation                           ;; graphql query
+                          {:some "Pumas prros!! variable"}   ;; arguments map
+                          [:process-question-response]]))))
 
 (re-frame/reg-event-db
  :process-after-delete-question
