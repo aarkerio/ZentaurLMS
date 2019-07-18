@@ -52,6 +52,7 @@
 (def default-db             ;; what gets put into app-db by default.
   {:test      (sorted-map)
    :questions (sorted-map)
+   :question-counter 0
    :qform     false})
 
 ;; -- cofx Registrations  -----------------------------------------------------

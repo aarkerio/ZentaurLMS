@@ -215,7 +215,8 @@
 
 (defn questions-list
   []
-  (let [counter (atom 0)]
+  (let [start-counter (re-frame/subscribe [:question-counter])
+        counter       (atom start-counter)]
     (fn []
       [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
        (for [question @(re-frame/subscribe [:questions])]
