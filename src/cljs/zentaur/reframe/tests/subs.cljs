@@ -184,3 +184,8 @@
  (fn [db]
    (get-in db [:qform])))
 
+(re-frame/reg-sub
+ :question-counter
+ (fn [db]
+   (get-in db [:question-counter])))
+

@@ -79,13 +79,12 @@
                               [:process-test-response]])         ;; callback event when response is recieved
           )))
 
-(re-frame/reg-event-fx       ;; part of the re-frame API
+(re-frame/reg-event-db       ;; part of the re-frame API
  :initialise-db              ;; event id being handled
   ;; the interceptor chain (a vector of 2 interceptors in this case)
- [(.log js/console (str ">>> initialise-db initial Interceptor du dummes schwein!!! "))]
   ;; the event handler (function) being registered
-  (fn [{:keys [db]} _]                       ;; take 2 values from coeffects. Ignore event vector itself.
-    {:db (assoc zdb/default-db :questions (sorted-map))}))   ;; all hail the new state to be put in app-db
+ (fn [_ _]                       ;; take 2 values from coeffects. Ignore event vector itself.
+   {:db (assoc zdb/default-db :questions (sorted-map) :question-counter 0)}))   ;; all hail the new state to be put in app-db
 
 (re-frame/reg-event-fx
  :create-answer
@@ -121,7 +120,7 @@
    (let [question         (:add_question data)]
      (.log js/console (str ">>> process-question-response Dquestion OLE!! >>>>> " question ))
      (-> db
-       (update :question-counter 0)
+       ;;(update :question-counter 0)
        (update-in [:questions] conj question)))))
 
 ;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
@@ -161,20 +160,20 @@
  :delete-question            ;; <-- the event id
  (fn                          ;; <-- the handler function
    [cofx [dispatch-id question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (.log js/console (str ">>> dispatch-id >>>>> " dispatch-id))
+   (.log js/console (str ">>> dispatch-id >>>>> " dispatch-id question-id))
    (when (js/confirm "Delete question?")
-    (let [db         (:db cofx)
-          test-id    (.-value (gdom/getElement "test-id"))
-          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-        ;; we return a map of (side) effects
-        {:http-xhrio {:method          :post
-                      :uri             "/admin/tests/deletequestion"
-                      :format          (ajax/json-request-format)
-                      :params          {:question-id question-id :test-id test-id}
-                      :headers         {"x-csrf-token" csrf-field}
-                      :response-format (ajax/json-response-format {:keywords? true})
-                      :on-success      [:process-after-delete-question question-id]
-                      :on-failure      [:bad-response]}}))))
+     (let [db         (:db cofx)
+           test-id    (.-value (gdom/getElement "test-id"))
+           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+       ;; we return a map of (side) effects
+       {:http-xhrio {:method          :post
+                     :uri             "/admin/tests/deletequestion"
+                     :format          (ajax/json-request-format)
+                     :params          {:question-id question-id :test-id test-id}
+                     :headers         {"x-csrf-token" csrf-field}
+                     :response-format (ajax/json-response-format {:keywords? true})
+                     :on-success      [:process-after-delete-question question-id]
+                     :on-failure      [:bad-response]}}))))
 
 (re-frame/reg-event-db
  :process-after-delete-answer

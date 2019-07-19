@@ -32,6 +32,8 @@
 (s/def ::question string?)
 (s/def ::qtype int?)
 (s/def ::questions (s/keys :req-un [::id ::question ::qtype]))  ;; :req-un and :opt-un for "required" and "optional" unqualified keys
+(s/def ::question-counter int?)
+(s/def ::qform boolean?)
 
 (s/def ::test (s/and                                        ;; should use the :kind kw to s/map-of (not supported yet)
                  (s/map-of ::id ::question)                 ;; in this map, each todo is keyed by its :id

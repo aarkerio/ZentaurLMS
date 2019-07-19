@@ -4,6 +4,8 @@
             [reagent.core  :as reagent]
             [re-frame.core :as re-frame]))
 
+;; The reagent magick lays here!!
+
 (defn question-input [{:keys [question on-save on-stop]}]
   (let [val  (reagent/atom question)
         stop #(do (reset! val "")
@@ -215,7 +217,8 @@
 
 (defn questions-list
   []
-  (let [start-counter (re-frame/subscribe [:question-counter])
+  (let [start-counter @(re-frame/subscribe [:question-counter])
+        _             (.log js/console (str ">>> start-counter >>>>> " start-counter ))
         counter       (atom start-counter)]
     (fn []
       [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
