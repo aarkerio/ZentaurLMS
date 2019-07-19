@@ -34,7 +34,8 @@
                  [org.webjars.npm/material-icons "0.3.0"]
                  [org.webjars/webjars-locator "0.36"]
                  [org.webjars/webjars-locator-jboss-vfs "0.1.0"]  ;; Extension For The JBoss AS Virtual File System
-                 [re-frame "0.10.6"]                     ;;  A Clojurescript MVC-like Framework For Writing SPAs Using Reagent.
+                 [re-frame "0.10.8"]                     ;;  A Clojurescript MVC-like Framework For Writing SPAs Using Reagent.
+                 [day8.re-frame/http-fx "0.1.6"]         ;;  A re-frame effects handler for performing Ajax tasks
                  [re-graph "0.1.9"]                      ;;  Graphql client
                  [reagent "0.8.1"]                       ;;  Minimalistic React for ClojureScript
                  [ring-webjars "0.2.0"]                  ;;  Web assets

@@ -84,4 +84,5 @@
 (defn delete-question
   "POST /admin/tests/deletequestion"
   [{:keys [params]}]
+  (log/info (str ">>> PARAMS >>>>> " params))
     (response/ok {:response (model-test/remove-question params)}))

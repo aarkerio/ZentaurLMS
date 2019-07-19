@@ -1,6 +1,7 @@
 (ns zentaur.reframe.tests.events
   (:require [ajax.core :as ajax]
             [cljs.spec.alpha :as s]
+            [day8.re-frame.http-fx]
             [goog.dom :as gdom]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
@@ -86,6 +87,11 @@
  (fn [_ _]                       ;; take 2 values from coeffects. Ignore event vector itself.
    {:db (assoc zdb/default-db :questions (sorted-map) :question-counter 0)}))   ;; all hail the new state to be put in app-db
 
+(defn bad-response
+  "Generic response"
+  [r]
+  (prn "Bad response: >>> " r))
+
 (re-frame/reg-event-fx
  :create-answer
  (fn
@@ -152,6 +158,7 @@
  [reorder-after-interceptor]
  (fn
    [db [_ question-id]]
+   (.log js/console (str ">>> process-after-delete-question  >>>> " question-id))
    (-> db
        (update-in [:questions] dissoc (keyword (str question-id)))
        (update  :loading?  not))))
@@ -160,16 +167,18 @@
  :delete-question            ;; <-- the event id
  (fn                          ;; <-- the handler function
    [cofx [dispatch-id question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (.log js/console (str ">>> dispatch-id >>>>> " dispatch-id question-id))
+   (.log js/console (str ">>> dispatch-id >>>>> " dispatch-id "  >>>> " question-id))
    (when (js/confirm "Delete question?")
-     (let [db         (:db cofx)
-           test-id    (.-value (gdom/getElement "test-id"))
-           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+     (let [db               (:db cofx)
+           question-id-int  (js/parseInt question-id)
+           test-id          (.-value (gdom/getElement "test-id"))
+           test-id-int      (js/parseInt test-id)
+           csrf-field       (.-value (gdom/getElement "__anti-forgery-token"))]
        ;; we return a map of (side) effects
        {:http-xhrio {:method          :post
                      :uri             "/admin/tests/deletequestion"
                      :format          (ajax/json-request-format)
-                     :params          {:question-id question-id :test-id test-id}
+                     :params          {:question-id question-id-int :test-id test-id-int}
                      :headers         {"x-csrf-token" csrf-field}
                      :response-format (ajax/json-response-format {:keywords? true})
                      :on-success      [:process-after-delete-question question-id]
