@@ -10,7 +10,7 @@
                  [cljs-http "0.1.45"]                    ;; cljs-http returns core.async channels
                  [clojure.java-time "0.3.2"]             ;; Java 8 Date-Time API for Clojure
                  [com.cognitect/transit-clj "0.8.313"]   ;; Marshalling Transit data to/from Clojure
-                 [com.novemberain/pantomime "2.10.0"]    ;; A tiny Clojure library that deals with MIME types
+                 [com.novemberain/pantomime "2.11.0"]    ;; A tiny Clojure library that deals with MIME types
                  [conman "0.8.3"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.13"]                        ;; where all configuration properties converge
                  [day8.re-frame/http-fx "0.1.6"]         ;; CLJS framework
@@ -18,7 +18,7 @@
                  [funcool/struct "1.3.0"]                ;; Structural validation library for Clojure(Script)
                  [kee-frame "0.3.3" :exclusions [metosin/reitit-core]] ;; re-frame libraries
                  [luminus-immutant "0.2.5"]              ;; Serve web requests using Ring handlers, Servlets, or Undertow HttpHandlers
-                 [luminus-migrations "0.6.5"]            ;; transit serialization helpers for Luminus
+                 [luminus-migrations "0.6.5"]            ;; The library is a command line wrapper for Migratus.
                  [luminus-transit "0.1.1"]               ;; Transit helpers
                  [markdown-clj "1.10.0"]                 ;; MD support
                  [metosin/muuntaja "0.6.4"]              ;; library for fast http api format negotiation, encoding and decoding.
@@ -29,7 +29,7 @@
                  [org.clojure/clojurescript "1.10.520" :scope "provided"]
                  [org.clojure/tools.cli "0.4.2"]
                  [org.clojure/tools.logging "0.4.1"]
-                 [org.postgresql/postgresql "42.2.5"]
+                 [org.postgresql/postgresql "42.2.6"]
                  [org.webjars.npm/bulma "0.7.4"]                  ;; WebJar for bulma (Bulma is a free, open source CSS framework)
                  [org.webjars.npm/material-icons "0.3.0"]
                  [org.webjars/webjars-locator "0.36"]
@@ -51,7 +51,8 @@
   :main ^:skip-aot zentaur.core
 
   :plugins [[lein-cljsbuild "1.1.7"]
-            [lein-immutant "2.1.0"]]  ;;  plugin for deploying/testing Immutant apps with WildFly
+            [lein-immutant "2.1.0"]
+            [migratus-lein "0.7.2"]]  ;;  plugin for deploying/testing Immutant apps with WildFly
   :clean-targets ^{:protect false}
   [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
   :figwheel
@@ -101,7 +102,6 @@
                                  [ring/ring-mock "0.4.0"]]
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                  [lein-doo "0.1.11"]      ;;  plugin to run clj.test on different js environments
-                                 [lein-environ "1.0.0"]   ;; elint for Clojure
                                  [lein-figwheel "0.5.18"]]
                   :squiggly {:checkers [:eastwood]
                               :eastwood-exclude-linters [:unlimited-use]}

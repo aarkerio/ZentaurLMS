@@ -3,6 +3,8 @@
             [cprop.source :as source]
             [mount.core :refer [args defstate]]))
 
+(System/setProperty "TIKA_CONFIG" "resources/tika-config.xml")
+
 (defstate env
   :start
   (load-config

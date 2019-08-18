@@ -5,7 +5,6 @@
             [re-frame.core :as re-frame]))
 
 ;; The reagent magick lays here!!
-
 (defn question-input [{:keys [question on-save on-stop]}]
   (let [val  (reagent/atom question)
         stop #(do (reset! val "")
