@@ -18,7 +18,7 @@
                  [funcool/struct "1.3.0"]                ;; Structural validation library for Clojure(Script)
                  [kee-frame "0.3.3" :exclusions [metosin/reitit-core]] ;; re-frame libraries
                  [luminus-immutant "0.2.5"]              ;; Serve web requests using Ring handlers, Servlets, or Undertow HttpHandlers
-                 [luminus-migrations "0.6.5"]            ;; The library is a command line wrapper for Migratus.
+                 [luminus-migrations "0.6.5"]            ;; Migrations library for Luminus
                  [luminus-transit "0.1.1"]               ;; Transit helpers
                  [markdown-clj "1.10.0"]                 ;; MD support
                  [metosin/muuntaja "0.6.4"]              ;; library for fast http api format negotiation, encoding and decoding.
@@ -49,7 +49,7 @@
   :resource-paths ["resources" "target/cljsbuild"]
   :target-path "target/%s/"
   :main ^:skip-aot zentaur.core
-
+  :migratus {:store :database}
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-immutant "2.1.0"]
             [migratus-lein "0.7.2"]]  ;;  plugin for deploying/testing Immutant apps with WildFly
