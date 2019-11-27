@@ -4,6 +4,7 @@
             [mount.core :refer [args defstate]]))
 
 (System/setProperty "tika.config" "tika-config.xml")
+
 (defstate env
   :start
   (load-config
