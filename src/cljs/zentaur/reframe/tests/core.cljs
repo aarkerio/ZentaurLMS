@@ -14,7 +14,6 @@
   (:import [goog History]
            [goog.history EventType]))
 
-
 (re-frame/dispatch
   [::re-graph/init
     {:ws-url                  nil                             ;; override the websocket url (defaults to /graphql-ws, nil to disable)

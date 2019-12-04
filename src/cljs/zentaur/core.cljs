@@ -105,8 +105,9 @@
        (fn [] (.log js/console (str ">>> VALUE >>>>>  #####   >>>>>   events/listen  in users ns")))))
 
 (defn- remove-flash []
-  (.log js/console (str ">>> REMOVVING!!!! >>>>> "))
+  (.log js/console (str ">>> REMOVVING FLASH MESSAGE !!!!>>>>> "))
   (when-let [flash-msg (gdom/getElement "flash-msg")]
+    (.log js/console (str ">>> flash-msg VALUE >>>>> " flash-msg ))
     (js/setTimeout (.-remove flash-msg) 9000)))
 
 (defn- flash-timeout []

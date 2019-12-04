@@ -15,6 +15,7 @@
                  [conman "0.8.4"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.14"]                        ;; where all configuration properties converge
                  [digest "1.4.9"]                        ;; Message digest library for Clojure.
+                 [expound "0.8.1"]                       ;; Human-optimized error messages for clojure.spec
                  [funcool/struct "1.4.0"]                ;; Structural validation library for Clojure(Script)
                  [kee-frame "0.3.3" :exclusions [metosin/reitit-core]] ;; re-frame libraries
                  [luminus-immutant "0.2.5"]              ;; Serve web requests using Ring handlers, Servlets, or Undertow HttpHandlers
@@ -26,7 +27,6 @@
                  [metosin/ring-http-response "0.9.1"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.16"]                        ;; managing Clojure and ClojureScript app state
                  [org.clojure/clojure "1.10.1"]          ;; The sweet core!!
-                 [org.clojure/clojurescript "1.10.597" :scope "provided"]
                  [org.clojure/tools.cli "0.4.2"]
                  [org.clojure/tools.logging "0.4.1"]
                  [org.postgresql/postgresql "42.2.8"]
@@ -48,19 +48,14 @@
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj"]
   :resource-paths ["resources" "target/cljsbuild"]
+  :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
+          "build-dev" ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]}
   :target-path "target/%s/"
   :main ^:skip-aot zentaur.core
   :migratus {:store :database}
-  :plugins [[lein-cljsbuild "1.1.7"]  ;; plugin to make ClojureScript development easy.
-            [migratus-lein "0.7.2"]]  ;;  plugin for deploying/testing Immutant apps with WildFly
+  :plugins [[migratus-lein "0.7.2"]]  ;;  plugin for deploying/testing Immutant apps with WildFly
   :clean-targets ^{:protect false}
   [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
-  :figwheel
-  {:http-server-root "public"
-   :server-logfile "log/figwheel-logfile.log"
-   :nrepl-port 7002
-   :css-dirs ["resources/public/css"]
-   :nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
 
   :profiles
   {:uberjar {:omit-source true
@@ -89,10 +84,11 @@
    :project/dev  {:jvm-opts ["-Dconf=dev-config.edn"]
                   :dependencies [[binaryage/devtools "0.9.11"]    ;;  Chrome DevTools enhancements for ClojureScript developers
                                  [cider/piggieback "0.4.2"]       ;;  nREPL support for ClojureScript REPLs
+                                 [org.clojure/clojurescript "1.10.597"]
+                                 [com.bhauman/figwheel-main "0.2.3"]     ;; Hot Reload cljs
+                                 [com.bhauman/rebel-readline-cljs "0.1.4"]
                                  ;; [org.clojure/core.typed "0.6.0"] ;;  An optional type system for Clojure
                                  [doo "0.1.11"]                   ;;  library and lein plugin to run cljs.test on different js environments
-                                 [expound "0.8.0"]                ;;  Human-optimized error messages for clojure.spec
-                                 [figwheel-sidecar "0.5.4-6"]     ;;  ClojureScript Autobuilder/Server which pushes changed files to the browser
                                  [nrepl "0.6.0"]                  ;;  nREPL is a Clojure network REPL that provides a REPL server and client
                                  [prone "2019-07-08"]             ;;  Better exception reporting middleware for Ring.
                                  [re-frisk "0.5.4"]               ;;  Visualize re-frame pattern data, watch re-frame events and export state in the debugger.
@@ -103,7 +99,7 @@
                   :cljsbuild {:builds
                    {:app
                     {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
-                     :figwheel {:on-jsload "zentaur.core/mount-components"}
+                     :figwheel {:on-jsload "zentaur.core/init"}
                      :compiler
                      {:output-dir "target/cljsbuild/public/js/out"
                       :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}

@@ -36,7 +36,7 @@
           (include-css "/css/bootstrap.min.css")
           (include-css "/css/zentaur.css")
           (include-css "/css/styles.css")
-          (include-js  "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js")
+          (include-js  "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js")]
 
           [:body
             (when-not (-> content :identity :email)
@@ -60,4 +60,4 @@
              [:p "Chipotle Software &copy; 2018-2019. MIT License."]
               [:p [:a {:href "#"} "Back to top"]]]
           (include-js "http://localhost:3449/js/app.js")
-          [:div {:id "root-app"} ""]]))
+          [:div {:id "root-app"} ""]))
