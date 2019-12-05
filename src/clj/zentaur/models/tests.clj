@@ -94,7 +94,7 @@
   (db/delete-test! params))
 
 (defn admin-get-tests [user-id]
-  (db/admin-get-tests))
+  (db/admin-get-tests user-id))
 
 (defn remove-question [params]
   (let [test-id     (:test-id params)

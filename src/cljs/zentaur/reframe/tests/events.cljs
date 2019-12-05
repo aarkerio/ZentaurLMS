@@ -62,6 +62,19 @@
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
 
+(re-frame/reg-event-db       ;; part of the re-frame API
+ :initialise-db              ;; event id being handled
+  ;; the interceptor chain (a vector of 2 interceptors in this case)
+  ;; the event handler (function) being registered
+ (fn [_ _]                       ;; take 2 values from coeffects. Ignore event vector itself.
+   {:db (assoc zdb/default-db :questions (sorted-map) :question-counter 0)}))   ;; all hail the new state to be put in app-db
+
+(re-frame/reg-event-db
+ :bad-response
+ (fn
+   [db [_ response]]
+   (.log js/console (str ">>> ERROR in ajax response: >>>>> " response "   " _))))
+
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :request-test              ;; <-- the event id
   (fn                         ;; <-- the handler function
@@ -75,20 +88,8 @@
                     :params          answer
                     :headers         {"x-csrf-token" csrf-field}
                     :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:process-after-update-question]
+                    :on-success      [:process-test-response]
                     :on-failure      [:bad-response]}})))
-
-(re-frame/reg-event-db       ;; part of the re-frame API
- :initialise-db              ;; event id being handled
-  ;; the interceptor chain (a vector of 2 interceptors in this case)
-  ;; the event handler (function) being registered
- (fn [_ _]                       ;; take 2 values from coeffects. Ignore event vector itself.
-   {:db (assoc zdb/default-db :questions (sorted-map) :question-counter 0)}))   ;; all hail the new state to be put in app-db
-
-(defn bad-response
-  "Generic response"
-  [r]
-  (prn "Bad response: >>> " r))
 
 (re-frame/reg-event-fx
  :create-answer
