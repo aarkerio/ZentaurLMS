@@ -13,7 +13,7 @@
         user-id  (-> request :identity :id)
         tests    (model-test/get-tests {:user-id user-id})]
     (layout/application
-     (merge base {:title "Tests" :contents (tests-view/index tests) }))))
+     (merge base {:title "List Tests" :contents (tests-view/index tests base) }))))
 
 ;;;;;  ADMIN FUNCTIONS
 
@@ -24,7 +24,7 @@
         user-id      (-> request :identity :id)
         clean-params (dissoc params :__anti-forgery-token :submit :button-save)]
     (model-test/create-test! clean-params user-id)
-    (-> (response/found "/admin/tests"))))
+    (response/found "/admin/tests")))
 
 (defn create-question
   "POST /admin/tests/createquestion"
@@ -75,7 +75,7 @@
      (layout/application (merge base {:title "New Quiz Tests" :contents (tests-view/edit base test-id) })))))
 
 (defn load-json
-  "POST /admin/tests/load"
+  "POST /admin/tests/load.  Build a JSON to charge one test in clojurescript"
   [{:keys [identity params]}]
   (let [user-id (:id identity)
         test-id (Integer/parseInt (:test-id params))]

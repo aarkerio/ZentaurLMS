@@ -62,23 +62,21 @@
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
 
-(re-frame/reg-event-fx
-  :request-test
-  (fn                      ;; <-- the handler function
-    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [db            (:db cfx)
-          pre-test-id   (.-value (gdom/getElement "test-id"))
-          test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "{ questions_by_test(id: %i) { test {id title description tags created_at}
-                                           questions { id question qtype explanation hint ordnen
-                                           answers { id answer correct } }}}"
-                                        test-id)]
-          ;; perform a query, with the response sent to the callback event provided
-          (re-frame/dispatch [::re-graph/query
-                              query                              ;; graphql query
-                              {:some "Pumas prros!! variable"}   ;; arguments map
-                              [:process-test-response]])         ;; callback event when response is recieved
-          )))
+(re-frame/reg-event-fx       ;; <-- note the `-fx` extension
+  :request-test              ;; <-- the event id
+  (fn                         ;; <-- the handler function
+    [cofx [_ answer]]        ;; <-- 1st argument is coeffect, from which we extract db
+    (let [db         (:db cofx)
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+      ;; we return a map of (side) effects
+      {:http-xhrio {:method          :post
+                    :uri             "/admin/tests/load"
+                    :format          (ajax/json-request-format)
+                    :params          answer
+                    :headers         {"x-csrf-token" csrf-field}
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:process-after-update-question]
+                    :on-failure      [:bad-response]}})))
 
 (re-frame/reg-event-db       ;; part of the re-frame API
  :initialise-db              ;; event id being handled

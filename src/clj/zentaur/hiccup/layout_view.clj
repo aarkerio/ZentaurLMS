@@ -54,10 +54,10 @@
               [:div {:class"collapse navbar-collapse" :id "navbarSupportedContent"}
                 [:ul {:class"navbar-nav mr-auto"} (for [link @vector-atom] link) ]]]
            [:div {:class "top-banner"}]
-            [:div {:class "container"}  (:contents content)]]
-          [:footer {:class "blog-footer"}
+            [:div {:class "container"}  (:contents content)]
+          [:div {:class "blog-footer" :id "footer"}
               [:img {:src "/img/warning_clojure.png" :alt "Lisp" :title "Lisp"}]
              [:p "Chipotle Software &copy; 2018-2019. MIT License."]
               [:p [:a {:href "#"} "Back to top"]]]
-          (include-js "http://localhost:3449/js/app.js")
-          [:div {:id "root-app"} ""]))
+          (include-js "/cljs-out/dev-main.js")
+          [:div {:id "root-app"} ""]]))
