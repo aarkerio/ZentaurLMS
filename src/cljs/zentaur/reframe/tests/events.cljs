@@ -5,10 +5,9 @@
             [goog.dom :as gdom]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
-            [re-graph.core :as re-graph]
             [zentaur.reframe.tests.db :as zdb]))
 
-;; -- Check Interceptor (edit for subway)  ------------------------------
+;; -- Check Interceptor (edit for subway)  ----------
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
   [a-spec db]
@@ -80,12 +79,13 @@
   (fn                         ;; <-- the handler function
     [cofx [_ answer]]        ;; <-- 1st argument is coeffect, from which we extract db
     (let [db         (:db cofx)
+          test-id    (.-value (gdom/getElement "test-id"))
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
       ;; we return a map of (side) effects
       {:http-xhrio {:method          :post
                     :uri             "/admin/tests/load"
                     :format          (ajax/json-request-format)
-                    :params          answer
+                    :params          {:test-id test-id}
                     :headers         {"x-csrf-token" csrf-field}
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:process-test-response]
@@ -147,10 +147,9 @@
                                          qtype: %i, test_id: %i, user_id: %i) { id question qtype hint explanation}}"
                                         question hint explanation qtype test-id user-id)]
       ;; perform a query, with the response sent to the callback event provided
-      (re-frame/dispatch [::re-graph/mutate
-                          mutation                           ;; graphql query
-                          {:some "Pumas prros!! variable"}   ;; arguments map
-                          [:process-question-response]]))))
+
+
+      )))
 
 (re-frame/reg-event-db
  :process-after-delete-question

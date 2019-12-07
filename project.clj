@@ -3,7 +3,6 @@
   :url "http://xalisco-labs.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [cheshire "5.9.0"]                      ;; Clojure JSON and BSON encoding/decoding
-                 [clj-time "0.15.2"]                     ;; A date and time library for Clojure, wrapping the Joda Time library.
                  [cljs-ajax "0.8.0"]                     ;; simple Ajax client for ClojureScript and Clojure
                  [clj-commons/secretary "1.2.4"]         ;; A client-side router for ClojureScript.
                  [cljs-http "0.1.46"]                    ;; cljs-http returns core.async channels

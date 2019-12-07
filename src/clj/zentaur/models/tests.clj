@@ -86,6 +86,7 @@
   "JSON response for the API"
   [test-id user-id]
   (let [test         (db/get-one-test { :id test-id :user-id user-id })
+        _            (log/info (str ">>> TESSST >>>>> " test))
         test-updated (update test :created_at #(helpers/format-time %))
         questions    (get-questions test-id)]
      (ches/generate-string (assoc test-updated :questions questions))))

@@ -1,16 +1,11 @@
 (ns zentaur.libs.helpers
-  (:require [clj-time.local :as l]
-            [clj-time.format :as f]
+  (:require [java-time :as time]
             [ring.util.codec :as c]))
 
-(def built-in-formatter (f/formatters :mysql))
-
-(def custom-formatter (f/formatter "yyyyMMdd"))
-
 (defn format-time
-  ([] (format-time (l/local-now)))
+  ([] (format-time (time/local-date)))
   ([time]
-     (f/unparse built-in-formatter time)))
+     (time/local-date "yyyy/MM/dd" time)))
 
 (defn sanitize [string]
   (c/url-encode string))
