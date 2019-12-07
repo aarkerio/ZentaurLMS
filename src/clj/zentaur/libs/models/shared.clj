@@ -1,7 +1,5 @@
 (ns zentaur.libs.models.shared
-  (:require [clj-time.local :as l]
-            [clj-time.format :as f]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [zentaur.db.core :as db]))
 
 (defn get-last-id [table]
@@ -25,11 +23,3 @@
            ~cleanup-block
            (let [~error-name e#] ~error-block))))))
 
-;; (with-resources [a 100 b 200 c 300]
-;;         ;;body
-;;         (+ a b c)
-;;         ;;cleanup
-;;         (println "cleanup:" :a a :b b :c c)
-;;         ;;error handler
-;;         (error (do (println "Error caught:" (.getMessage error))
-;;                    :error)))

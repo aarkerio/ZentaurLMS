@@ -1,6 +1,5 @@
 (ns ^{:doc "Posts controller"} zentaur.controllers.posts-controller
-  (:require [clj-time.local :as l]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
             [ring.util.http-response :as response]
             [zentaur.controllers.base-controller :as basec]
@@ -30,7 +29,7 @@
         post_id     (Integer/parseInt (:post_id body-params))
         user_id     (:id identity)]
     (model-post/save-comment!
-     (assoc {} :created_at (l/local-now) :post_id post_id :comment comment :user_id user_id))
+     (assoc {} :created_at (h/format-time) :post_id post_id :comment comment :user_id user_id))
     (basec/json-parser {:comment comment :created_at (h/format-time) :last_name (:last_name identity)})))
 
 (defn single-post

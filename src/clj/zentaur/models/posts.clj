@@ -1,9 +1,9 @@
 (ns zentaur.models.posts
   (:require [clojure.tools.logging :as log]
-            [java-time :as jt]
             [slugify.core :refer [slugify]]
             [struct.core :as st]
-            [zentaur.db.core :as db]))
+            [zentaur.db.core :as db]
+            [zentaur.libs.helpers :as h]))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;    VALIDATIONS
@@ -64,7 +64,7 @@
       {})))
 
 (defn update-post! [params]
-  {:updated_at (jt/local-date-time)})
+  {:updated_at (h/format-time)})
 
 (defn toggle [{:keys [id published]}]
   (let [new-state (if (= published "true") false true)

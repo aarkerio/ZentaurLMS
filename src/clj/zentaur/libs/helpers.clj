@@ -1,11 +1,13 @@
 (ns zentaur.libs.helpers
-  (:require [java-time :as time]
+  (:require [clojure.tools.logging :as log]
+            [java-time :as time]
             [ring.util.codec :as c]))
 
 (defn format-time
-  ([] (format-time (time/local-date)))
+  "time is a java.time.LocalDateTime object"
+  ([] (time/format "dd/MM/yyyy HH:ss" (time/local-date-time)))
   ([time]
-     (time/local-date "yyyy/MM/dd" time)))
+   (time/format "dd/MM/yyyy" time)))
 
 (defn sanitize [string]
   (c/url-encode string))

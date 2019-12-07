@@ -49,9 +49,10 @@
 (re-frame/reg-event-db
   :process-test-response
   (fn [db [_ {:keys [data errors] :as payload}]]
-    (let [full-data   (:questions_by_test data)
+    (let [_           (.log js/console (str ">>> FULL TEST DATA >>>>> " payload))
+          full-data   (:questions_by_test data)
           questions   (:questions full-data)
-          _           (.log js/console (str ">>> questions >>>>> " questions ))
+          _           (.log js/console (str ">>> questions >>>>> " questions))
           test        (:test full-data)]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
