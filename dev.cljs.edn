@@ -1,0 +1,7 @@
+^{:watch-dirs ["src/cljs"]}
+{
+ :main zentaur.core
+ :launch-js false
+ :open-url false
+ :optimizations :none
+ }

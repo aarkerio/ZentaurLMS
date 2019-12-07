@@ -3,7 +3,7 @@
             [clojure.tools.logging :as log]
             [java-time :as jt]
             [zentaur.db.core :as db]
-            [zentaur.libs.helpers :as helpers]
+            [zentaur.libs.helpers :as h]
             [zentaur.models.validations.validations-test :as val-test]))
 
 (defn get-tests [user-id]
@@ -64,12 +64,12 @@
 (defn- ^:private get-answers [question]
   (let [answers          (db/get-answers {:question-id (:id question)})
         keys-answers     (map #(assoc % :key (str "keyed-" (:id %))) answers)
-        question-updated (update question :created_at #(helpers/format-time %))]
+        question-updated (update question :created_at #(h/format-time %))]
     (assoc question-updated :answers keys-answers)))
 
 (defn update-answer! [params]
   (let [full-params (dissoc params :active)]
-    (db/update-answer! (assoc full-params :updated_at (jt/local-date-time)))
+    (db/update-answer! (assoc full-params :updated_at (h/format-time)))
     (db/get-answer {:id (:id params)})))
 
 (defn- ^:private get-questions
@@ -86,7 +86,8 @@
   "JSON response for the API"
   [test-id user-id]
   (let [test         (db/get-one-test { :id test-id :user-id user-id })
-        test-updated (update test :created_at #(helpers/format-time %))
+        _            (log/info (str ">>> TESSST >>>>> " test))
+        test-updated (update test :created_at #(h/format-time %))
         questions    (get-questions test-id)]
      (ches/generate-string (assoc test-updated :questions questions))))
 
@@ -94,9 +95,9 @@
   (db/delete-test! params))
 
 (defn admin-get-tests [user-id]
-  (db/admin-get-tests))
+  (db/admin-get-tests user-id))
 
 (defn remove-question [params]
-  (let [test-id     (Integer/parseInt (:test-id params))
+  (let [test-id     (:test-id params)
         question-id (:question-id params)]
     (db/remove-question! {:test-id test-id :question-id question-id})))

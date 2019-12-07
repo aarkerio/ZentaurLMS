@@ -1,13 +1,13 @@
 (ns zentaur.reframe.tests.events
   (:require [ajax.core :as ajax]
             [cljs.spec.alpha :as s]
+            [day8.re-frame.http-fx]
             [goog.dom :as gdom]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
-            [re-graph.core :as re-graph]
             [zentaur.reframe.tests.db :as zdb]))
 
-;; -- Check Interceptor (edit for subway) ------------------------------
+;; -- Check Interceptor (edit for subway)  ----------
 (defn check-and-throw
   "Throws an exception if `db` doesn't match the Spec `a-spec`."
   [a-spec db]
@@ -49,8 +49,10 @@
 (re-frame/reg-event-db
   :process-test-response
   (fn [db [_ {:keys [data errors] :as payload}]]
-    (let [full-data   (:questions_by_test data)
+    (let [_           (.log js/console (str ">>> FULL TEST DATA >>>>> " payload))
+          full-data   (:questions_by_test data)
           questions   (:questions full-data)
+          _           (.log js/console (str ">>> questions >>>>> " questions))
           test        (:test full-data)]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
@@ -60,31 +62,35 @@
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
 
-(re-frame/reg-event-fx
-  :request-test
-  (fn                      ;; <-- the handler function
-    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [db            (:db cfx)
-          pre-test-id   (.-value (gdom/getElement "test-id"))
-          test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "{ questions_by_test(id: %i) { test {id title description tags created_at}
-                                           questions { id question qtype explanation hint ordnen
-                                           answers { id answer correct } }}}"
-                                        test-id)]
-          ;; perform a query, with the response sent to the callback event provided
-          (re-frame/dispatch [::re-graph/query
-                              query                              ;; graphql query
-                              {:some "Pumas prros!! variable"}   ;; arguments map
-                              [:process-test-response]])         ;; callback event when response is recieved
-          )))
-
-(re-frame/reg-event-fx       ;; part of the re-frame API
+(re-frame/reg-event-db       ;; part of the re-frame API
  :initialise-db              ;; event id being handled
   ;; the interceptor chain (a vector of 2 interceptors in this case)
- [(.log js/console (str ">>> initialise-db initial Interceptor du dummes schwein!!! "))]
   ;; the event handler (function) being registered
-  (fn [{:keys [db]} _]                       ;; take 2 values from coeffects. Ignore event vector itself.
-    {:db (assoc zdb/default-db :questions (sorted-map))}))   ;; all hail the new state to be put in app-db
+ (fn [_ _]                       ;; take 2 values from coeffects. Ignore event vector itself.
+   {:db (assoc zdb/default-db :questions (sorted-map) :question-counter 0)}))   ;; all hail the new state to be put in app-db
+
+(re-frame/reg-event-db
+ :bad-response
+ (fn
+   [db [_ response]]
+   (.log js/console (str ">>> ERROR in ajax response: >>>>> " response "   " _))))
+
+(re-frame/reg-event-fx       ;; <-- note the `-fx` extension
+  :request-test              ;; <-- the event id
+  (fn                         ;; <-- the handler function
+    [cofx [_ answer]]        ;; <-- 1st argument is coeffect, from which we extract db
+    (let [db         (:db cofx)
+          test-id    (.-value (gdom/getElement "test-id"))
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+      ;; we return a map of (side) effects
+      {:http-xhrio {:method          :post
+                    :uri             "/admin/tests/load"
+                    :format          (ajax/json-request-format)
+                    :params          {:test-id test-id}
+                    :headers         {"x-csrf-token" csrf-field}
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:process-test-response]
+                    :on-failure      [:bad-response]}})))
 
 (re-frame/reg-event-fx
  :create-answer
@@ -117,14 +123,11 @@
 (re-frame/reg-event-db
  :process-question-response
  (fn [db [_ {:keys [data errors] :as payload}]]
-   (.log js/console (str ">>> process-question-response OLE!! >>>>> " payload )) ;; {:data {:add_question {:id "97", :question "fghfghfgh", :qtype 1}}}
-   (let [full-data   (:questions_by_test data)
-         questions   (:questions full-data)
-         test        (:test full-data)]
+   (let [question         (:add_question data)]
+     (.log js/console (str ">>> process-question-response Dquestion OLE!! >>>>> " question ))
      (-> db
-         (assoc :loading?  false)     ;; take away that "Loading ..." UI element
-         (assoc :test      (js->clj test :keywordize-keys true))
-         (assoc :questions (js->clj questions :keywordize-keys true))))))
+       ;;(update :question-counter 0)
+       (update-in [:questions] conj question)))))
 
 ;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
 (re-frame/reg-event-fx
@@ -142,19 +145,19 @@
           pre-test-id   (:test-id values)
           test-id       (js/parseInt pre-test-id)
           mutation      (gstring/format "mutation { add_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, test_id: %i, user_id: %i) { id question qtype }}"
+                                         qtype: %i, test_id: %i, user_id: %i) { id question qtype hint explanation}}"
                                         question hint explanation qtype test-id user-id)]
       ;; perform a query, with the response sent to the callback event provided
-      (re-frame/dispatch [::re-graph/mutate
-                          mutation                           ;; graphql query
-                          {:some "Pumas prros!! variable"}   ;; arguments map
-                          [:process-question-response]]))))
+
+
+      )))
 
 (re-frame/reg-event-db
  :process-after-delete-question
  [reorder-after-interceptor]
  (fn
    [db [_ question-id]]
+   (.log js/console (str ">>> process-after-delete-question  >>>> " question-id))
    (-> db
        (update-in [:questions] dissoc (keyword (str question-id)))
        (update  :loading?  not))))
@@ -163,20 +166,22 @@
  :delete-question            ;; <-- the event id
  (fn                          ;; <-- the handler function
    [cofx [dispatch-id question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (.log js/console (str ">>> dispatch-id >>>>> " dispatch-id))
+   (.log js/console (str ">>> dispatch-id >>>>> " dispatch-id "  >>>> " question-id))
    (when (js/confirm "Delete question?")
-    (let [db         (:db cofx)
-          test-id    (.-value (gdom/getElement "test-id"))
-          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-        ;; we return a map of (side) effects
-        {:http-xhrio {:method          :post
-                      :uri             "/admin/tests/deletequestion"
-                      :format          (ajax/json-request-format)
-                      :params          {:question-id question-id :test-id test-id}
-                      :headers         {"x-csrf-token" csrf-field}
-                      :response-format (ajax/json-response-format {:keywords? true})
-                      :on-success      [:process-after-delete-question question-id]
-                      :on-failure      [:bad-response]}}))))
+     (let [db               (:db cofx)
+           question-id-int  (js/parseInt question-id)
+           test-id          (.-value (gdom/getElement "test-id"))
+           test-id-int      (js/parseInt test-id)
+           csrf-field       (.-value (gdom/getElement "__anti-forgery-token"))]
+       ;; we return a map of (side) effects
+       {:http-xhrio {:method          :post
+                     :uri             "/admin/tests/deletequestion"
+                     :format          (ajax/json-request-format)
+                     :params          {:question-id question-id-int :test-id test-id-int}
+                     :headers         {"x-csrf-token" csrf-field}
+                     :response-format (ajax/json-response-format {:keywords? true})
+                     :on-success      [:process-after-delete-question question-id]
+                     :on-failure      [:bad-response]}}))))
 
 (re-frame/reg-event-db
  :process-after-delete-answer

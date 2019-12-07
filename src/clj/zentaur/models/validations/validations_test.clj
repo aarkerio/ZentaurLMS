@@ -1,6 +1,5 @@
 (ns zentaur.models.validations.validations-test
-  (:require [clj-time.local :as l]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [struct.core :as st]))
 
 ;;;;;;;;;;;;;;;;;;;;;;

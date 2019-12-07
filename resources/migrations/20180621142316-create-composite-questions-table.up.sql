@@ -1,7 +1,6 @@
 -- ;; lein migratus create create-composite-questions-table
 -- ;; lein run migrate
-
-CREATE TABLE composite_answers(
+CREATE TABLE composite_answers (
   id serial PRIMARY KEY,
   question_id INT NOT NULL REFERENCES questions(id),
   first_column VARCHAR(300) NOT NULL,

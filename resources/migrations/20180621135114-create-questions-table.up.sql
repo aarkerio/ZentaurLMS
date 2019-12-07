@@ -1,6 +1,5 @@
 -- ;; lein migratus create create-questions-table
 -- ;; lein run migrate
-
 CREATE TABLE questions(
   id serial PRIMARY KEY,
   user_id int NOT NULL REFERENCES users(id),
@@ -16,7 +15,7 @@ CREATE TABLE questions(
   created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
   updated_at timestamp(0) with time zone
  );
-
+--;;
 ALTER TABLE questions ADD CHECK (qtype IN (1,2,3,4));
-
+--;;
 COMMENT on column questions.qtype is '1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)';

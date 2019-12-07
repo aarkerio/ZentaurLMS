@@ -1,6 +1,5 @@
 (ns zentaur.reframe.tests.subs ^{:doc "Re-frame Subscriptions"}
-  (:require [re-frame.core :as re-frame]
-            [re-graph.core :as re-graph]))  ;; [reg-sub subscribe]
+  (:require [re-frame.core :as re-frame]))  ;; [reg-sub subscribe]
 
 ;; Subscribers automatically subscribe data from the global state and re-render on change.
 ;;
@@ -183,4 +182,9 @@
  :qform
  (fn [db]
    (get-in db [:qform])))
+
+(re-frame/reg-sub
+ :question-counter
+ (fn [db]
+   (get-in db [:question-counter])))
 

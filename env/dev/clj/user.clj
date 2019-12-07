@@ -3,7 +3,6 @@
             [clojure.spec.alpha :as s]
             [expound.alpha :as expound]
             [mount.core :as mount]
-            [zentaur.figwheel :refer [start-fw stop-fw cljs]]
             [zentaur.core :refer [start-app]]
             [zentaur.db.core]
             [conman.core :as conman]

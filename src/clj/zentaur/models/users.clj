@@ -3,8 +3,7 @@
             [zentaur.env :as env]
             [struct.core :as st]
             [clojure.tools.logging :as log]
-            [buddy.hashers :as hashers]
-            [clj-time.local :as l]))
+            [buddy.hashers :as hashers]))
 
 (defn uuid [] (java.util.UUID/randomUUID))
 

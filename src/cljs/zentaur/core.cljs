@@ -105,8 +105,9 @@
        (fn [] (.log js/console (str ">>> VALUE >>>>>  #####   >>>>>   events/listen  in users ns")))))
 
 (defn- remove-flash []
-  (.log js/console (str ">>> REMOVVING!!!! >>>>> "))
+  (.log js/console (str ">>> REMOVING FLASH MESSAGE !!!!>>>>> "))
   (when-let [flash-msg (gdom/getElement "flash-msg")]
+    (.log js/console (str ">>> flash-msg VALUE >>>>> " flash-msg ))
     (js/setTimeout (.-remove flash-msg) 9000)))
 
 (defn- flash-timeout []
@@ -141,7 +142,7 @@
   (flash-timeout)
   ;; (refresh-csrf)
   (let [current_url (.-pathname (.-location js/document))
-        _           (.log js/console (str ">>> 333 tatsächliche Adresse 33 >>>>> " current_url))]
+        _           (.log js/console (str ">>> **** tatsächliche Adresse **** >>>>> " current_url))]
     (cond
       (s/includes? current_url "admin/users")     (load-users)
       (s/includes? current_url "uploads/process") (load-process)

@@ -26,6 +26,7 @@
         formatted-tests (for [test tests]
                           (formatted-test test))]
     [:div {:id "cont"}
+     [:h1 "Dein genialer Quiz Test"]
      [:div [:img {:src "/img/icon_add.png" :alt "Quizz test hinzüfugen" :title "Quizz test hinzüfugen" :id "button-show-div"}]]
      (form-new csrf-field)
      [:div {:id "content"}

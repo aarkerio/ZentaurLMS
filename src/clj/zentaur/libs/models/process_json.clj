@@ -1,16 +1,10 @@
 (ns zentaur.libs.models.process-json
   (:require [cheshire.core :as ches]
-            [clj-time.local :as l]
-            [clj-time.format :as f]
             [clojure.tools.logging :as log]
             [ring.util.codec :as c]
             [zentaur.db.core :as db]
+            [zentaur.libs.helpers :as h]
             [zentaur.libs.models.shared :as shar]))
-
-(def built-in-formatter (f/formatters :mysql))
-
-(defn- insert-columns []
-  )
 
 (defn- build-test [{:keys [title description instructions level lang tags origin] :or {level "1"}} user-id]
    (let [int-level (Integer/parseInt level)]

@@ -1,6 +1,5 @@
 -- ;; lein migratus create create-users-table
 -- ;; lein run migrate
-
 CREATE TABLE users(
    id serial PRIMARY KEY,
    fname VARCHAR(30) NOT NULL,
@@ -15,7 +14,7 @@ CREATE TABLE users(
    created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
    updated_at timestamp(0) with time zone
  );
-
+--;;
 INSERT INTO users (fname,
   lname,
   uname,
