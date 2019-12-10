@@ -19,3 +19,6 @@ CREATE TABLE questions(
 ALTER TABLE questions ADD CHECK (qtype IN (1,2,3,4));
 --;;
 COMMENT on column questions.qtype is '1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)';
+
+-- ;; INSERT INTO questions (user_id, question, qtype, hint, explanation, created_at) VALUES (1, 'Some Question', 1, 'Some hint', 'Some explanation', NOW());
+-- ;; INSERT INTO question_tests (test_id, question_id, ordnen, created_at) VALUES (1, 2, 2, NOW());

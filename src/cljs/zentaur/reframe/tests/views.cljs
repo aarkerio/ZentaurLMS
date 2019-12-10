@@ -4,7 +4,7 @@
             [reagent.core  :as reagent]
             [re-frame.core :as re-frame]))
 
-;; The reagent magick lays here!!
+;; The reagent magick lays here!! -----
 (defn question-input [{:keys [question on-save on-stop]}]
   (let [val  (reagent/atom question)
         stop #(do (reset! val "")
@@ -77,7 +77,7 @@
                                :on-click #(re-frame/dispatch [:delete-answer {:answer-id id :question-id question-id}])}]]])))
 
 (defn input-new-answer
-  "note: this is one-way bound to the global atom, it doesn't subscribe to it"
+  "Note: this is one-way bound to the global atom, it doesn't subscribe to it"
   [{:keys [question-id on-stop props]}]
   (let [inner       (reagent/atom "")
         checked     (reagent/atom false)
@@ -93,7 +93,7 @@
                        :on-key-down #(case (.-which %)
                                           27 (on-stop) ; esc
                                           nil)})]
-       [:input.btn {:type "checkbox" :title "richtig?"
+       [:input.btn {:type "checkbox" :title "Richtig?" :aria-label "Richting?"
                     :key (str "new-answer-box-"question-id)
                     :id (str "new-answer-box-"question-id)
                     :checked @checked :on-change #(swap! checked not)}]
@@ -180,8 +180,10 @@
 
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen key] :as q}]
-  (let [counter (reagent/atom 0)
+  [{:keys [qid full-question key] :as all-row}]
+  (.log js/console (str ">>> FULL QUESTION  >>>>> " full-question ))
+  (let [{:keys [question explanation hint qtype id ordnen]} full-question
+        counter (reagent/atom 0)
         editing (reagent/atom false)]
     (fn []
       [:div.div-question-row {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
@@ -198,14 +200,14 @@
                                  :key      (str "edit-question-img-" id)
                                  :id       (str "edit-question-img-" id)
                                  :src      "/img/icon_edit.png"
-                                 :on-click #(swap! editing not)}])]
+                                 :on-click #(swap! editing not)}])]  ;; editing ends
      [:div.question-elements
        [:div {:key (str "div-question-" id) :id (str "div-question-" id)} [:span.bold-font (str key ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
        [:div {:key (str "div-hint-" id)     :id (str "div-hint-" id)}     [:span.bold-font "Hint: "] hint]
        [:div {:key (str "div-explan-" id)   :id (str "div-explan-" id)}   [:span.bold-font "Erläuterung: "] explanation]]
      (when @editing
-       (edit-question q))
-     (display-question q)
+       (edit-question full-question))
+       (display-question full-question) ;; Polimorphysm for the kind of question
      [:div.img-delete-right
        [:img {:src    "/img/icon_delete.png"
               :title  "Frage löschen"
@@ -215,9 +217,10 @@
               :on-click #(re-frame/dispatch [:delete-question id])}]]])))
 
 (defn questions-list
+  "Display all the questions"
   []
   (let [start-counter @(re-frame/subscribe [:question-counter])
-        _             (.log js/console (str ">>> start-counter >>>>> " start-counter ))
+        _             (.log js/console (str ">>> question list start-counter >>>>> " start-counter))
         counter       (atom start-counter)]
     (fn []
       [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}

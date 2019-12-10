@@ -5,7 +5,8 @@
             [goog.dom :as gdom]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
-            [zentaur.reframe.tests.db :as zdb]))
+            [zentaur.reframe.tests.db :as zdb]
+            [zentaur.reframe.tests.libs :as libs]))
 
 ;; -- Check Interceptor (edit for subway)  ----------
 (defn check-and-throw
@@ -48,12 +49,10 @@
 
 (re-frame/reg-event-db
   :process-test-response
-  (fn [db [_ {:keys [data errors] :as payload}]]
-    (let [_           (.log js/console (str ">>> FULL TEST DATA >>>>> " payload))
-          full-data   (:questions_by_test data)
-          questions   (:questions full-data)
-          _           (.log js/console (str ">>> questions >>>>> " questions))
-          test        (:test full-data)]
+  (fn [db [_ data]]
+    (let [questions   (:questions data)
+          _           (.log js/console (str ">>> EVENTS questions >>>>> " questions))
+          test        (dissoc data :questions)]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
          (assoc :test      (js->clj test :keywordize-keys true))
@@ -61,13 +60,12 @@
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
+(re-frame/reg-event-fx         ;; part of the re-frame API
+ :initialise-db                ;; event id being handled
 
-(re-frame/reg-event-db       ;; part of the re-frame API
- :initialise-db              ;; event id being handled
-  ;; the interceptor chain (a vector of 2 interceptors in this case)
   ;; the event handler (function) being registered
- (fn [_ _]                       ;; take 2 values from coeffects. Ignore event vector itself.
-   {:db (assoc zdb/default-db :questions (sorted-map) :question-counter 0)}))   ;; all hail the new state to be put in app-db
+  (fn [{:keys [db]} _]                       ;; take 2 values from coeffects. Ignore event vector itself.
+    {:db zdb/default-db}))   ;; all hail the new state to be put in app-db
 
 (re-frame/reg-event-db
  :bad-response
@@ -92,11 +90,29 @@
                     :on-success      [:process-test-response]
                     :on-failure      [:bad-response]}})))
 
+(re-frame/reg-event-db
+ :process-new-answer
+ (fn
+   [db [_ response]]            ;; destructure the response from the event vector
+   (.log js/console (str ">>> New answer response from Luminus >>>>> " response))
+   (let [qid           (:question_id response)
+         _             (.log js/console (str ">>> CURRENT Question id >>>>> " qid))
+         submap        (get-in db [:questions])
+         _             (.log js/console (str ">>> QUESTIONS SUBMAP GET-IN >>>>> " submap))
+         qindex        (libs/index-by-qid submap qid)
+         _             (.log js/console (str ">>>  QQQ-index >>>>> " qindex))
+         answers       (get-in db [:questions qindex :full-question :answers])
+         _             (.log js/console (str ">>>  ANSWERS answers ****>>>>> " answers))
+         ]
+     (-> db
+         (assoc  :loading?  false)     ;; take away that "Loading ..." UI
+         (update-in [:questions qindex :full-question :answers] conj response)
+         ))))
+
 (re-frame/reg-event-fx
  :create-answer
  (fn
    [cfx [_ answer]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (.log js/console (str ">>>   NEW ANSWER  >>>>> " answer ))
    (let [csrf-field  (.-value (gdom/getElement "__anti-forgery-token"))]
      ;; we return a map of (side) effects
      {:http-xhrio {:method          :post
@@ -113,7 +129,7 @@
  :process-new-question
  [reorder-event]
  (fn
-   [db [_ response]]               ;; destructure the response from the event vector
+   [db [_ response]]                 ;; destructure the response from the event vector
    (.log js/console (str ">>> New question response >>>>> " response))
    (-> db
        (assoc  :loading?  false)     ;; take away that "Loading ..." UI
@@ -130,27 +146,23 @@
        (update-in [:questions] conj question)))))
 
 ;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
-(re-frame/reg-event-fx
-  :create-question
-  (fn                      ;; <-- the handler function
-    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (.log js/console (str ">>>  und ebenfalls _ " (second _)))
-    ;; question hint explanation qtype test-id user-id active
-    (let [values        (second _)
-          question      (:question values)
-          hint          (:hint values)
-          explanation   (:explanation values)
-          qtype         (:qtype values)
-          user-id       (:user-id values)
-          pre-test-id   (:test-id values)
-          test-id       (js/parseInt pre-test-id)
-          mutation      (gstring/format "mutation { add_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, test_id: %i, user_id: %i) { id question qtype hint explanation}}"
-                                        question hint explanation qtype test-id user-id)]
-      ;; perform a query, with the response sent to the callback event provided
 
-
-      )))
+(re-frame/reg-event-fx      ;; <-- note the `-fx` extension
+ :create-question           ;; <-- the event id
+ (fn                         ;; <-- our handler function
+   [cofx [dispatch-name question]]      ;; <-- 1st argument is coeffect, from which we extract db
+   (let [db         (:db cofx)
+         test-id    (.-value (gdom/getElement "test-id"))
+         csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+     ;; we return a map of (side) effects
+     {:http-xhrio {:method          :post
+                   :uri             "/admin/tests/createquestion"
+                   :format          (ajax/json-request-format)
+                   :params          question
+                   :headers         {"x-csrf-token" csrf-field}
+                   :response-format (ajax/json-response-format {:keywords? true})
+                   :on-success      [:process-new-question]
+                   :on-failure      [:bad-response]}})))
 
 (re-frame/reg-event-db
  :process-after-delete-question

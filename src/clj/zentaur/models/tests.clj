@@ -61,35 +61,34 @@
         (db/get-last-answer {:question-id question-id}))
       {:flash errors :ok false})))
 
-(defn- ^:private get-answers [question]
-  (let [answers          (db/get-answers {:question-id (:id question)})
-        keys-answers     (map #(assoc % :key (str "keyed-" (:id %))) answers)
-        question-updated (update question :created_at #(h/format-time %))]
-    (assoc question-updated :answers keys-answers)))
-
-(defn update-answer! [params]
-  (let [full-params (dissoc params :active)]
-    (db/update-answer! (assoc full-params :updated_at (h/format-time)))
-    (db/get-answer {:id (:id params)})))
+(defn- ^:private get-answers [{:keys [id] :as question}]
+  (let [answers          (db/get-answers {:question-id id})
+        keys-answers     (map #(assoc % :key (str "keyed-" (:id %))) answers) ;; add a unique key so React doesn't complain.
+        question-updated (update question :created_at #(h/format-time %))
+        final-question   (assoc question-updated :answers keys-answers)]
+    (assoc {} :qid id :full-question final-question)))
 
 (defn- ^:private get-questions
-  "get and convert to map keyed"
+  "Get and convert to map keyed"
   [test-id]
-  (let [questions  (db/get-questions {:test-id test-id})
-        index-seq  (map #(% :id) questions)]
-        (->> questions
-             (map get-answers)
-             (zipmap index-seq)  ;; add the index
-             )))
+  (let [questions  (db/get-questions {:test-id test-id})]
+    (map get-answers questions)))
 
 (defn get-test-nodes
   "JSON response for the API"
   [test-id user-id]
-  (let [test         (db/get-one-test { :id test-id :user-id user-id })
-        _            (log/info (str ">>> TESSST >>>>> " test))
-        test-updated (update test :created_at #(h/format-time %))
-        questions    (get-questions test-id)]
-     (ches/generate-string (assoc test-updated :questions questions))))
+  (let [test          (db/get-one-test { :id test-id :user-id user-id })
+        test-updated  (update test :created_at #(h/format-time %))
+        questions     (get-questions test-id)]
+    (log/info (str ">>> All Questions >>>>> " (pr-str questions)))
+    (ches/encode (assoc test-updated :questions questions))))
+
+(defn update-answer!
+  "Update after editing with ClojureScript"
+  [params]
+  (let [full-params (dissoc params :active)]
+    (db/update-answer! (assoc full-params :updated_at (h/format-time)))
+    (db/get-answer {:id (:id params)})))
 
 (defn destroy [params]
   (db/delete-test! params))
