@@ -77,7 +77,7 @@
                                :on-click #(re-frame/dispatch [:delete-answer {:answer-id id :question-id question-id}])}]]])))
 
 (defn input-new-answer
-  "note: this is one-way bound to the global atom, it doesn't subscribe to it"
+  "Note: this is one-way bound to the global atom, it doesn't subscribe to it"
   [{:keys [question-id on-stop props]}]
   (let [inner       (reagent/atom "")
         checked     (reagent/atom false)
@@ -180,40 +180,41 @@
 
 (defn question-item
   "Display any type of question"
-  [{:keys [id full-question key] :as all-row}]
-  (let [{:keys [question explanation hint qtype qid ordnen]} full-question
+  [{:keys [qid full-question key] :as all-row}]
+  (.log js/console (str ">>> FULL QUESTION  >>>>> " full-question ))
+  (let [{:keys [question explanation hint qtype id ordnen]} full-question
         counter (reagent/atom 0)
         editing (reagent/atom false)]
     (fn []
-      [:div.div-question-row {:key (str "div-question-separator-" qid) :id (str "div-question-separator-" qid)}
-       [:div.edit-icon-div {:key (str "edit-icon-div-" qid) :id (str "edit-icon-div-" qid)}
+      [:div.div-question-row {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
+       [:div.edit-icon-div {:key (str "edit-icon-div-" id) :id (str "edit-icon-div-" id)}
         (if @editing
           [:img.img-float-right {:title    "Frage abbrechen"
                                  :alt      "Frage abbrechen"
-                                 :key      (str "cancel-question-img-" qid)
-                                 :id       (str "cancel-question-img-" qid)
+                                 :key      (str "cancel-question-img-" id)
+                                 :id       (str "cancel-question-img-" id)
                                  :src      "/img/icon_cancel.png"
                                  :on-click #(swap! editing not)}]
           [:img.img-float-right {:title    "Frage bearbeiten"
                                  :alt      "Frage bearbeiten"
-                                 :key      (str "edit-question-img-" qid)
-                                 :id       (str "edit-question-img-" qid)
+                                 :key      (str "edit-question-img-" id)
+                                 :id       (str "edit-question-img-" id)
                                  :src      "/img/icon_edit.png"
-                                 :on-click #(swap! editing not)}])]
+                                 :on-click #(swap! editing not)}])]  ;; editing ends
      [:div.question-elements
-       [:div {:key (str "div-question-" qid) :id (str "div-question-" qid)} [:span.bold-font (str key ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" qid]
-       [:div {:key (str "div-hint-" qid)     :id (str "div-hint-" qid)}     [:span.bold-font "Hint: "] hint]
-       [:div {:key (str "div-explan-" qid)   :id (str "div-explan-" qid)}   [:span.bold-font "Erläuterung: "] explanation]]
+       [:div {:key (str "div-question-" id) :id (str "div-question-" id)} [:span.bold-font (str key ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+       [:div {:key (str "div-hint-" id)     :id (str "div-hint-" id)}     [:span.bold-font "Hint: "] hint]
+       [:div {:key (str "div-explan-" id)   :id (str "div-explan-" id)}   [:span.bold-font "Erläuterung: "] explanation]]
      (when @editing
        (edit-question full-question))
-       (display-question full-question) ;; Polimorphysm to the kind of question
+       (display-question full-question) ;; Polimorphysm for the kind of question
      [:div.img-delete-right
        [:img {:src    "/img/icon_delete.png"
               :title  "Frage löschen"
               :alt    "Frage löschen"
-              :key    (str "frage-btn-x-" qid)
-              :id     (str "frage-btn-x-" qid)
-              :on-click #(re-frame/dispatch [:delete-question qid])}]]])))
+              :key    (str "frage-btn-x-" id)
+              :id     (str "frage-btn-x-" id)
+              :on-click #(re-frame/dispatch [:delete-question id])}]]])))
 
 (defn questions-list
   "Display all the questions"

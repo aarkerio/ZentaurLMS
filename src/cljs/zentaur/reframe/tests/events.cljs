@@ -6,7 +6,7 @@
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
             [zentaur.reframe.tests.db :as zdb]
-            [zentaur.reframe.tests.libs :as lib]))
+            [zentaur.reframe.tests.libs :as libs]))
 
 ;; -- Check Interceptor (edit for subway)  ----------
 (defn check-and-throw
@@ -95,17 +95,19 @@
  (fn
    [db [_ response]]            ;; destructure the response from the event vector
    (.log js/console (str ">>> New answer response from Luminus >>>>> " response))
-   (.log js/console (str ">>> CURRENT DB  >>>>> " db))
-   (let [qkeyword     (keyword (str (:question_id response)))
-         _            (.log js/console (str ">>> qkeyword >>>>> " qkeyword))
-         submap       (get-in db [:questions])
-         new-answers  (lib/add-answer response)
-         _            (.log js/console (str ">>> SUBMAP GET-IN >>>>> " submap))
-         modified     (conj submap response)
-         _            (.log js/console (str ">>> Modified >>>>> " modified))]
+   (let [qid           (:question_id response)
+         _             (.log js/console (str ">>> CURRENT Question id >>>>> " qid))
+         submap        (get-in db [:questions])
+         _             (.log js/console (str ">>> QUESTIONS SUBMAP GET-IN >>>>> " submap))
+         qindex        (libs/index-by-qid submap qid)
+         _             (.log js/console (str ">>>  QQQ-index >>>>> " qindex))
+         answers       (get-in db [:questions qindex :full-question :answers])
+         _             (.log js/console (str ">>>  ANSWERS answers ****>>>>> " answers))
+         ]
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
-         (update-in [:questions qkeyword])))))
+         (update-in [:questions qindex :full-question :answers] conj response)
+         ))))
 
 (re-frame/reg-event-fx
  :create-answer

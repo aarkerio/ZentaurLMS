@@ -66,7 +66,7 @@
         keys-answers     (map #(assoc % :key (str "keyed-" (:id %))) answers) ;; add a unique key so React doesn't complain.
         question-updated (update question :created_at #(h/format-time %))
         final-question   (assoc question-updated :answers keys-answers)]
-    (assoc {} (keyword (str id)) final-question)))
+    (assoc {} :qid id :full-question final-question)))
 
 (defn- ^:private get-questions
   "Get and convert to map keyed"
