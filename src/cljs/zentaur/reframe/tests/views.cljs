@@ -93,7 +93,7 @@
                        :on-key-down #(case (.-which %)
                                           27 (on-stop) ; esc
                                           nil)})]
-       [:input.btn {:type "checkbox" :title "richtig?"
+       [:input.btn {:type "checkbox" :title "Richtig?" :aria-label "Richting?"
                     :key (str "new-answer-box-"question-id)
                     :id (str "new-answer-box-"question-id)
                     :checked @checked :on-change #(swap! checked not)}]
@@ -180,44 +180,46 @@
 
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen key] :as q}]
-  (let [counter (reagent/atom 0)
+  [{:keys [id full-question key] :as all-row}]
+  (let [{:keys [question explanation hint qtype qid ordnen]} full-question
+        counter (reagent/atom 0)
         editing (reagent/atom false)]
     (fn []
-      [:div.div-question-row {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
-       [:div.edit-icon-div {:key (str "edit-icon-div-" id) :id (str "edit-icon-div-" id)}
+      [:div.div-question-row {:key (str "div-question-separator-" qid) :id (str "div-question-separator-" qid)}
+       [:div.edit-icon-div {:key (str "edit-icon-div-" qid) :id (str "edit-icon-div-" qid)}
         (if @editing
           [:img.img-float-right {:title    "Frage abbrechen"
                                  :alt      "Frage abbrechen"
-                                 :key      (str "cancel-question-img-" id)
-                                 :id       (str "cancel-question-img-" id)
+                                 :key      (str "cancel-question-img-" qid)
+                                 :id       (str "cancel-question-img-" qid)
                                  :src      "/img/icon_cancel.png"
                                  :on-click #(swap! editing not)}]
           [:img.img-float-right {:title    "Frage bearbeiten"
                                  :alt      "Frage bearbeiten"
-                                 :key      (str "edit-question-img-" id)
-                                 :id       (str "edit-question-img-" id)
+                                 :key      (str "edit-question-img-" qid)
+                                 :id       (str "edit-question-img-" qid)
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing not)}])]
      [:div.question-elements
-       [:div {:key (str "div-question-" id) :id (str "div-question-" id)} [:span.bold-font (str key ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
-       [:div {:key (str "div-hint-" id)     :id (str "div-hint-" id)}     [:span.bold-font "Hint: "] hint]
-       [:div {:key (str "div-explan-" id)   :id (str "div-explan-" id)}   [:span.bold-font "Erläuterung: "] explanation]]
+       [:div {:key (str "div-question-" qid) :id (str "div-question-" qid)} [:span.bold-font (str key ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" qid]
+       [:div {:key (str "div-hint-" qid)     :id (str "div-hint-" qid)}     [:span.bold-font "Hint: "] hint]
+       [:div {:key (str "div-explan-" qid)   :id (str "div-explan-" qid)}   [:span.bold-font "Erläuterung: "] explanation]]
      (when @editing
-       (edit-question q))
-     (display-question q)
+       (edit-question full-question))
+       (display-question full-question) ;; Polimorphysm to the kind of question
      [:div.img-delete-right
        [:img {:src    "/img/icon_delete.png"
               :title  "Frage löschen"
               :alt    "Frage löschen"
-              :key    (str "frage-btn-x-" id)
-              :id     (str "frage-btn-x-" id)
-              :on-click #(re-frame/dispatch [:delete-question id])}]]])))
+              :key    (str "frage-btn-x-" qid)
+              :id     (str "frage-btn-x-" qid)
+              :on-click #(re-frame/dispatch [:delete-question qid])}]]])))
 
 (defn questions-list
+  "Display all the questions"
   []
   (let [start-counter @(re-frame/subscribe [:question-counter])
-        _             (.log js/console (str ">>> question list start-counter >>>>> " start-counter ))
+        _             (.log js/console (str ">>> question list start-counter >>>>> " start-counter))
         counter       (atom start-counter)]
     (fn []
       [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}

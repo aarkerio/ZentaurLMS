@@ -1,4 +1,4 @@
-(ns zentaur.test.posts
+(ns zentaur.test.tests
   (:require [clojure.test :refer :all]
             [clojure.tools.logging :as log]
             [zentaur.routes.home :as fh]

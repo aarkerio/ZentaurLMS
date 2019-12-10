@@ -5,7 +5,8 @@
             [goog.dom :as gdom]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
-            [zentaur.reframe.tests.db :as zdb]))
+            [zentaur.reframe.tests.db :as zdb]
+            [zentaur.reframe.tests.libs :as lib]))
 
 ;; -- Check Interceptor (edit for subway)  ----------
 (defn check-and-throw
@@ -50,7 +51,7 @@
   :process-test-response
   (fn [db [_ data]]
     (let [questions   (:questions data)
-          _           (.log js/console (str ">>> questions >>>>> " questions))
+          _           (.log js/console (str ">>> EVENTS questions >>>>> " questions))
           test        (dissoc data :questions)]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
@@ -89,11 +90,27 @@
                     :on-success      [:process-test-response]
                     :on-failure      [:bad-response]}})))
 
+(re-frame/reg-event-db
+ :process-new-answer
+ (fn
+   [db [_ response]]            ;; destructure the response from the event vector
+   (.log js/console (str ">>> New answer response from Luminus >>>>> " response))
+   (.log js/console (str ">>> CURRENT DB  >>>>> " db))
+   (let [qkeyword     (keyword (str (:question_id response)))
+         _            (.log js/console (str ">>> qkeyword >>>>> " qkeyword))
+         submap       (get-in db [:questions])
+         new-answers  (lib/add-answer response)
+         _            (.log js/console (str ">>> SUBMAP GET-IN >>>>> " submap))
+         modified     (conj submap response)
+         _            (.log js/console (str ">>> Modified >>>>> " modified))]
+     (-> db
+         (assoc  :loading?  false)     ;; take away that "Loading ..." UI
+         (update-in [:questions qkeyword])))))
+
 (re-frame/reg-event-fx
  :create-answer
  (fn
    [cfx [_ answer]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (.log js/console (str ">>>   NEW ANSWER  >>>>> " answer ))
    (let [csrf-field  (.-value (gdom/getElement "__anti-forgery-token"))]
      ;; we return a map of (side) effects
      {:http-xhrio {:method          :post
@@ -110,7 +127,7 @@
  :process-new-question
  [reorder-event]
  (fn
-   [db [_ response]]               ;; destructure the response from the event vector
+   [db [_ response]]                 ;; destructure the response from the event vector
    (.log js/console (str ">>> New question response >>>>> " response))
    (-> db
        (assoc  :loading?  false)     ;; take away that "Loading ..." UI
