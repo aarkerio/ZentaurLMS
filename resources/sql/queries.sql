@@ -20,9 +20,11 @@ VALUES (:title, :body, :tags, :published, :discution, :slug)
 
 -- :name get-posts :? :*
 -- :doc retrieve array posts given the id.
-SELECT p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname FROM posts as p, users as u
-WHERE p.published = true AND p.user_id = u.id
-ORDER BY id DESC LIMIT 10
+SELECT p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
+FROM posts p INNER JOIN users u
+ON p.user_id = u.id
+WHERE p.published = true
+ORDER BY p.id DESC LIMIT 10
 
 -- :name get-post :? :1
 -- :doc retrieve a post given the id.
@@ -64,9 +66,14 @@ WHERE c.post_id = :id AND u.id=c.user_id ORDER BY c.id
 
 -- :name admin-get-posts :? :*
 -- :doc retrieve array posts given the user id.
-SELECT p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname FROM posts as p, users as u
-WHERE p.user_id = :user-id AND p.user_id = u.id
-ORDER BY id DESC
+SELECT
+    p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
+FROM
+    posts p INNER JOIN users u
+    ON p.user_id = u.id
+WHERE
+    p.user_id = :user-id
+ORDER BY p.id DESC;
 
 /*******************  UPLOADS   ***/
 

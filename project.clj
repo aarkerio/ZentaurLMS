@@ -69,7 +69,7 @@
                                           [re-frisk "0.5.4"]                  ;;  Visualize re-frame pattern data, watch re-frame events and export state in the debugger.
                                           [ring/ring-devel "1.8.0"]           ;;  Ring dev options
                                           [ring/ring-mock "0.4.0"]]           ;;  Library to create mock Ring requests for unit tests
-                           :source-paths ["env/dev/clj" "target"]
+                           :source-paths ["env/dev/clj" "target" "env/dev/cljs"]
                            :resource-paths ["env/dev/resources"]
                            :repl-options {:init-ns user}}
             :project/test {:jvm-opts ["-Dconf=test-config.edn"]

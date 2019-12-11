@@ -27,10 +27,22 @@
     "questions" (db/get-last-ordnen-questions {:test-id id})))
 
 (defn- ^:private link-test-question!
-  [last-question test-id]
-  (let [question-id (get-in (first last-question) [:id])
-        next-ordnen (or (:ordnen (get-last-ordnen "questions" test-id)) 0)]
+  [question-id test-id]
+  (let [next-ordnen (or (:ordnen (get-last-ordnen "questions" test-id)) 0)]
     (db/create-question-test! {:question-id question-id :test-id test-id :ordnen (inc next-ordnen)})))
+
+(defn- ^:private get-last-question
+  [params]
+  (log/info (str ">>> PARAMS LASTT  >>>>> " params))
+  (let [test-id        (:test-id params)
+        question-row   (db/create-question! params)
+        _              (log/info (str ">>> PARAM question-idquestion-idq YYYYYYYYY >>>>> " (pr-str (first question-row) )))
+        question-id    (:id (first question-row))
+        _              (log/info (str ">>> PARAM question-idquestion-idquestion-id >>>>> " question-id))
+        _              (link-test-question! question-id test-id)
+        last-question  (db/get-last-question {:question-id question-id})
+        qid            (:id last-question)]
+    (assoc {} :qid qid :full-question last-question)))
 
 (defn create-question! [params]
   (let [full-params (-> params
@@ -38,10 +50,7 @@
                         (update :test-id #(Integer/parseInt %)))
         errors      (val-test/validate-question full-params)]
     (if (nil? errors)
-      (as-> full-params v
-        (db/create-question! v)
-        (link-test-question! v (:test-id full-params))
-        (db/get-last-question {:test-id (:test-id full-params)}))
+      (get-last-question full-params)
       {:flash errors :ok false})))
 
 (defn update-question! [params]

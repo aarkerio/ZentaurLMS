@@ -1,7 +1,10 @@
-^{:watch-dirs ["src/cljs"]}
+^{:watch-dirs ["src/cljs" "env/dev/cljs"]}
 {
- :main zentaur.core
- :launch-js false
- :open-url false
+ :source-paths ["src/cljs" "env/dev/cljs"]
+ :main zentaur.app
  :optimizations :none
+ :pretty-print true
+ :source-map true
+ :reload-clj-files false
  }
+

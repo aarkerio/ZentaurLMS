@@ -30,7 +30,6 @@
   "POST /admin/tests/createquestion"
   [request]
   (let [params       (:params request)
-        _            (log/info (str ">>> PARAMS at TEST CONTROLLER >>>>> " params))
         user-id      (-> request :identity :id)
         new-params   (assoc params :user-id user-id :active true)]
     (response/ok (model-test/create-question! new-params))))

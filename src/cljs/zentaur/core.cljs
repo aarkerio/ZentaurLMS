@@ -12,7 +12,7 @@
 
 (enable-console-print!)
 
-;; Ajax handlers
+;;    Ajax handlers
 (defn handler [response]
   (.log js/console (str response)))
 
@@ -116,6 +116,7 @@
     (.log js/console (str ">>>  NOOOO FLASH MESSAGE HERE !!!!!! "))))
 
 (defn- load-tests []
+  (.log js/console (str ">>> IN LOAD TEST >>>>> "))
   (when-let [hform (gdom/getElement "button-show-div")]  ;; versteckte Taste. Nur im Bearbeitungsmodus
     (events/listen hform EventType.CLICK
                    (fn [e]
@@ -142,7 +143,7 @@
   (flash-timeout)
   ;; (refresh-csrf)
   (let [current_url (.-pathname (.-location js/document))
-        _           (.log js/console (str ">>> **** tatsächliche Adresse **** >>>>> " current_url))]
+        _           (.log js/console (str ">>> **** tatsächliche Adresse Jedoch However**** >>>>> " current_url))]
     (cond
       (s/includes? current_url "admin/users")     (load-users)
       (s/includes? current_url "uploads/process") (load-process)
