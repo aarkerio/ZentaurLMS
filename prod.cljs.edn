@@ -1,0 +1,8 @@
+;; prod.cljs.edn
+{:main zentaur.app
+ :optimizations :advanced
+ :pretty-print false
+ :source-map "resources/public/js/prod.js.map"
+ :asset-path "/js/prod"
+ :output-to "resources/public/js/prod.js"
+ :output-dir "resources/public/js/prod"}

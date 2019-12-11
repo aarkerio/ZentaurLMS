@@ -1,0 +1,4 @@
+{
+ :watch-dirs ["src/cljs"]
+ :open-url false
+ }
