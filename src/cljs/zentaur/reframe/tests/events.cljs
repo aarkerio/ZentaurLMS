@@ -129,9 +129,10 @@
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
    (.log js/console (str ">>> Nue frage antwort >>>>> " response))
-   (let [qid           (:question_id response)
+   (let [qid           (:qid response)
          submap        (get-in db [:questions])
-         qindex        (libs/index-by-qid submap qid)]
+         _             (.log js/console (str ">>> QIIDDDDDD >>>>> " qid))
+         _             (.log js/console (str ">>> SUNBBBBBBMAP >>>>> " submap))]
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
          (update :qform not)           ;; hide new question form

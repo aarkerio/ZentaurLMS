@@ -28,7 +28,9 @@
 
 (defn- ^:private link-test-question!
   [question-id test-id]
+  (log/info (str ">>> PARAM test-id >>>>> " test-id))
   (let [next-ordnen (or (:ordnen (get-last-ordnen "questions" test-id)) 0)]
+    (log/info (str ">>> next-ordnen next-ordnen next-ordnen >>>>> " next-ordnen))
     (db/create-question-test! {:question-id question-id :test-id test-id :ordnen (inc next-ordnen)})))
 
 (defn- ^:private get-last-question
@@ -40,7 +42,7 @@
         question-id    (:id (first question-row))
         _              (log/info (str ">>> PARAM question-idquestion-idquestion-id >>>>> " question-id))
         _              (link-test-question! question-id test-id)
-        last-question  (db/get-last-question {:question-id question-id})
+        last-question  (db/get-last-question {:question-id question-id :test-id test-id})
         qid            (:id last-question)]
     (assoc {} :qid qid :full-question last-question)))
 
