@@ -128,8 +128,10 @@
  (fn
    [db [_ question-id]]
    (.log js/console (str ">>> process-after-delete-question  >>>> " question-id))
+   (let [submap        (get-in db [:questions])
+         qindex        (libs/index-by-qid submap question-id)]
    (-> db
-       (update-in [:questions] dissoc (keyword (str question-id)))
+       (update-in [:questions qindex ] dissoc (keyword (str question-id)))
        (update  :loading?  not))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
