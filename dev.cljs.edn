@@ -1,6 +1,7 @@
 ^{:watch-dirs ["src/cljs" "env/dev/cljs"]}
+^{:extra-main-files {:testing {:main zentaur.core-test}}}
 {
- :source-paths ["src/cljs" "env/dev/cljs"]
+ :source-paths ["src/cljs" "env/dev/cljs" "test"]
  :main zentaur.app
  :optimizations :none
  :pretty-print true

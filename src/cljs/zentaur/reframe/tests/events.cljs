@@ -51,7 +51,6 @@
   :process-test-response
   (fn [db [_ data]]
     (let [questions   (:questions data)
-          _           (.log js/console (str ">>> Ganze data >>>>> " data))
           test        (dissoc data :questions)]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
@@ -90,37 +89,6 @@
                     :on-success      [:process-test-response]
                     :on-failure      [:bad-response]}})))
 
-(re-frame/reg-event-db
- :process-new-answer
- (fn
-   [db [_ response]]            ;; destructure the response from the event vector
-   (.log js/console (str ">>> New answer response from Luminus >>>>> " response))
-   (let [qid           (:question_id response)
-         submap        (get-in db [:questions])
-         qindex        (libs/index-by-qid submap qid)
-          _             (.log js/console (str ">>>  QQQ-index >>>>> " qindex))
-         answers       (get-in db [:questions qindex :full-question :answers])
-         _             (.log js/console (str ">>>  ANSWERS answers ****>>>>> " answers))
-         ]
-     (-> db
-         ;; (assoc :loading?  false)     ;; take away that "Loading ..." UI
-         (update-in [:questions qindex :full-question :answers] conj response)))))
-
-(re-frame/reg-event-fx
- :create-answer
- (fn
-   [cfx [_ answer]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (let [csrf-field  (.-value (gdom/getElement "__anti-forgery-token"))]
-     ;; we return a map of (side) effects
-     {:http-xhrio {:method          :post
-                   :uri             "/admin/tests/createanswer"
-                   :format          (ajax/json-request-format)
-                   :params          answer
-                   :headers         {"x-csrf-token" csrf-field}
-                   :response-format (ajax/json-response-format {:keywords? true})
-                   :on-success      [:process-new-answer]
-                   :on-failure      [:bad-response]}})))
-
 ;; AJAX handlers
 (re-frame/reg-event-db
  :process-new-question
@@ -130,10 +98,11 @@
    (.log js/console (str ">>> Nue frage antwort >>>>> " response))
    (let [submap        (get-in db [:questions])
          _             (.log js/console (str ">>> SUNBBBBBBMAP >>>>> " submap))]
-         ;; (update db :qform not)           ;; hide new question form
-     (update-in db [:questions] conj response)
-     )
-     ))
+     ;; (update db :qform not)           ;; hide new question form
+     (-> db
+         (assoc  :loading?  false)     ;; take away that "Loading ..." UI
+         (update :qform not)           ;; hide new question form
+         (update-in [:questions] conj response)))))
 
 ;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
 
@@ -141,8 +110,7 @@
  :create-question           ;; <-- the event id
  (fn                         ;; <-- our handler function
    [cofx [dispatch-name question]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (let [db         (:db cofx)
-         test-id    (.-value (gdom/getElement "test-id"))
+   (let [test-id    (.-value (gdom/getElement "test-id"))
          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
      ;; we return a map of (side) effects
      {:http-xhrio {:method          :post
@@ -184,6 +152,37 @@
                      :response-format (ajax/json-response-format {:keywords? true})
                      :on-success      [:process-after-delete-question question-id]
                      :on-failure      [:bad-response]}}))))
+
+(re-frame/reg-event-db
+ :process-new-answer
+ (fn
+   [db [_ response]]            ;; destructure the response from the event vector
+   (.log js/console (str ">>> New answer response from Luminus >>>>> " response))
+   (let [qid           (:question_id response)
+         submap        (get-in db [:questions])
+         qindex        (libs/index-by-qid submap qid)
+          _             (.log js/console (str ">>>  QQQ-index >>>>> " qindex))
+         answers       (get-in db [:questions qindex :full-question :answers])
+         _             (.log js/console (str ">>>  ANSWERS answers ****>>>>> " answers))
+         ]
+     (-> db
+         ;; (assoc :loading?  false)     ;; take away that "Loading ..." UI
+         (update-in [:questions qindex :full-question :answers] conj response)))))
+
+(re-frame/reg-event-fx
+ :create-answer
+ (fn
+   [cfx [_ answer]]      ;; <-- 1st argument is coeffect, from which we extract db
+   (let [csrf-field  (.-value (gdom/getElement "__anti-forgery-token"))]
+     ;; we return a map of (side) effects
+     {:http-xhrio {:method          :post
+                   :uri             "/admin/tests/createanswer"
+                   :format          (ajax/json-request-format)
+                   :params          answer
+                   :headers         {"x-csrf-token" csrf-field}
+                   :response-format (ajax/json-response-format {:keywords? true})
+                   :on-success      [:process-new-answer]
+                   :on-failure      [:bad-response]}})))
 
 (re-frame/reg-event-db
  :process-after-delete-answer
