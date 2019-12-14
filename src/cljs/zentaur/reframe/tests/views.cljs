@@ -181,7 +181,6 @@
 (defn question-item
   "Display any type of question"
   [{:keys [qid full-question key] :as all-row}]
-  (.log js/console (str ">>> FULL QUESTION  >>>>> " full-question ))
   (let [{:keys [question explanation hint qtype id ordnen]} full-question
         counter (reagent/atom 0)
         editing (reagent/atom false)]
@@ -286,7 +285,8 @@
                                                                              :test-id     (.-value (gdom/getElement "test-id"))
                                                                              :user-id     (.-value (gdom/getElement "user-id"))
                                                                              :explanation @explanation}
-                                                           :toggle-qform])
+                                                           :toggle-qform
+                                                           ])
                                   (reset! new-question "")
                                   (reset! hint "")
                                   (reset! explanation ""))}]]])))

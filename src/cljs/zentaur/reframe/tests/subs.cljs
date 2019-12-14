@@ -24,12 +24,6 @@
 ;; First, we `defn` a pure handler function.  Then, we use `reg-sub` to register it.
 ;; Two steps. This is different to that first registration, above, which was done
 ;; in one step using an anonymous function.
-(defn sorted-todos
-  [db _]
-  (:todos db))
-
-(re-frame/reg-sub :sorted-todos sorted-todos)    ;; usage: (subscribe [:sorted-todos])
-
 ;; -------------------------------------------------------------------------------------
 ;; Layer 3
 ;;
@@ -60,54 +54,6 @@
 ;; In the two simple examples at the top, we only supplied the 2nd of these functions.
 ;; But now we are dealing with intermediate (layer 3) nodes, we'll need to provide both fns.
 ;;
-(re-frame/reg-sub
-  :todos             ;; usage:   (subscribe [:todos])
-
-  ;; This function returns the input signals.
-  ;; In this case, it returns a single signal.
-  ;; Although not required in this example, it is called with two parameters
-  ;; being the two values supplied in the originating `(subscribe X Y)`.
-  ;; X will be the query vector and Y is an advanced feature and out of scope
-  ;; for this explanation.
-  (fn [query-v _]
-    (re-frame/subscribe [:sorted-todos]))    ;; returns a single input signal
-
-  ;; This 2nd fn does the computation. Data values in, derived data out.
-  ;; It is the same as the two simple subscription handlers up at the top.
-  ;; Except they took the value in app-db as their first argument and, instead,
-  ;; this function takes the value delivered by another input signal, supplied by the
-  ;; function above: (subscribe [:sorted-todos])
-  ;;
-  ;; Subscription handlers can take 3 parameters:
-  ;;  - the input signals (a single item, a vector or a map)
-  ;;  - the query vector supplied to query-v  (the query vector argument
-  ;; to the "subscribe") and the 3rd one is for advanced cases, out of scope for this discussion.
-  (fn [sorted-todos query-v _]
-    (vals sorted-todos)))
-
-;; So here we define the handler for another intermediate node.
-;; This time the computation involves two input signals.
-;; As a result note:
-;;   - the first function (which returns the signals) returns a 2-vector
-;;   - the second function (which is the computation) destructures this 2-vector as its first parameter
-(re-frame/reg-sub
-  :visible-todos
-
-  ;; Signal Function
-  ;; Tells us what inputs flow into this node.
-  ;; Returns a vector of two input signals (in this case)
-  (fn [query-v _]
-    [(re-frame/subscribe [:todos])
-     (re-frame/subscribe [:showing])])
-
-  ;; Computation Function
-  (fn [[todos showing] _]   ;; that 1st parameter is a 2-vector of values
-    (let [filter-fn (case showing
-                      :active (complement :done)
-                      :done   :done
-                      :all    identity)]
-      (filter filter-fn todos))))
-
 ;; -------------------------------------------------------------------------------------
 ;; Hey, wait on!!
 ;;
@@ -132,35 +78,6 @@
 ;; The purpose of the sugar is to remove boilerplate noise. To distill to the essential in 90% of cases.
 ;; Because it is so common to nominate 1 or more input signals, reg-sub provides some macro sugar so you can nominate a very minimal
 ;; vector of input signals. The 1st function is not needed. Here is the example above rewritten using the sugar.
-#_(re-frame/reg-sub
-  :visible-todos
-  :<- [:todos]
-  :<- [:showing]
-  (fn [[todos showing] _]
-    (let [filter-fn (case showing
-                      :active (complement :done)
-                      :done   :done
-                      :all    identity)]
-      (filter filter-fn todos))))
-
-(re-frame/reg-sub
-  :all-complete?
-  :<- [:todos]
-  (fn [todos _]
-    (every? :done todos)))
-
-(re-frame/reg-sub
-  :completed-count
-  :<- [:todos]
-  (fn [todos _]
-    (count (filter :done todos))))
-
-(re-frame/reg-sub
- :footer-counts
- :<- [:todos]
- :<- [:completed-count]
- (fn [[todos completed] _]
-   [(- (count todos) completed) completed]))
 
 ;; My new subscription functions
 (re-frame/reg-sub

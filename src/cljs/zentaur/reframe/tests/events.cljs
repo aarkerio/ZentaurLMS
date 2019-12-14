@@ -39,7 +39,7 @@
                (let [ordered-questions (order-questions (-> context  :effects :db)) ]
                  (assoc-in context [:effects :db :questions] ordered-questions)))))
 
-(def reorder-after-interceptor (re-frame/after (partial order-questions)))
+;; (def reorder-after-interceptor (re-frame/after (partial order-questions)))
 
 ;;;;;;;;;;;  REGISTER DB EVENT HANDLERS  ;;;;;;;;;;;;;;;;;;;;;;;;;;
 (re-frame/reg-event-db
@@ -103,9 +103,8 @@
          _             (.log js/console (str ">>>  ANSWERS answers ****>>>>> " answers))
          ]
      (-> db
-         (assoc  :loading?  false)     ;; take away that "Loading ..." UI
-         (update-in [:questions qindex :full-question :answers] conj response)
-         ))))
+         ;; (assoc :loading?  false)     ;; take away that "Loading ..." UI
+         (update-in [:questions qindex :full-question :answers] conj response)))))
 
 (re-frame/reg-event-fx
  :create-answer
@@ -125,18 +124,16 @@
 ;; AJAX handlers
 (re-frame/reg-event-db
  :process-new-question
- [reorder-event]
+ []
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
    (.log js/console (str ">>> Nue frage antwort >>>>> " response))
-   (let [qid           (:qid response)
-         submap        (get-in db [:questions])
-         _             (.log js/console (str ">>> QIIDDDDDD >>>>> " qid))
+   (let [submap        (get-in db [:questions])
          _             (.log js/console (str ">>> SUNBBBBBBMAP >>>>> " submap))]
-     (-> db
-         (assoc  :loading?  false)     ;; take away that "Loading ..." UI
-         (update :qform not)           ;; hide new question form
-         (update-in [:questions] conj response)))))
+         ;; (update db :qform not)           ;; hide new question form
+     (update-in db [:questions] conj response)
+     )
+     ))
 
 ;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
 
@@ -159,7 +156,7 @@
 
 (re-frame/reg-event-db
  :process-after-delete-question
- [reorder-after-interceptor]
+ []
  (fn
    [db [_ question-id]]
    (.log js/console (str ">>> process-after-delete-question  >>>> " question-id))
@@ -190,7 +187,7 @@
 
 (re-frame/reg-event-db
  :process-after-delete-answer
- [reorder-after-interceptor]
+ []
  (fn
    [db [_ question-id]]
    (-> db
@@ -218,7 +215,7 @@
 
 (re-frame/reg-event-db
  :process-after-update-question
- [reorder-after-interceptor]
+ []
  (fn
    [db [_ response]]
    (let [qkeyword  (keyword (str (:id response)))]
@@ -247,7 +244,7 @@
 ;; ### UPDATE ANSWER
 (re-frame/reg-event-db
  :process-after-update-answer
- [reorder-after-interceptor]
+ []
  (fn
    [db [_ response]]
    (let [qkeyword  (keyword (str (:id response)))]
@@ -272,5 +269,3 @@
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:process-after-update-question]
                     :on-failure      [:bad-response]}})))
-
-

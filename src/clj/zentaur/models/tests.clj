@@ -28,9 +28,7 @@
 
 (defn- ^:private link-test-question!
   [question-id test-id]
-  (log/info (str ">>> PARAM test-id >>>>> " test-id))
   (let [next-ordnen (or (:ordnen (get-last-ordnen "questions" test-id)) 0)]
-    (log/info (str ">>> next-ordnen next-ordnen next-ordnen >>>>> " next-ordnen))
     (db/create-question-test! {:question-id question-id :test-id test-id :ordnen (inc next-ordnen)})))
 
 (defn- ^:private get-last-question
@@ -38,13 +36,14 @@
   (log/info (str ">>> PARAMS LASTT  >>>>> " params))
   (let [test-id        (:test-id params)
         question-row   (db/create-question! params)
-        _              (log/info (str ">>> PARAM question-idquestion-idq YYYYYYYYY >>>>> " (pr-str (first question-row) )))
         question-id    (:id (first question-row))
-        _              (log/info (str ">>> PARAM question-idquestion-idquestion-id >>>>> " question-id))
         _              (link-test-question! question-id test-id)
         last-question  (db/get-last-question {:question-id question-id :test-id test-id})
-        qid            (:id last-question)]
-    (assoc {} :qid qid :full-question last-question)))
+        full-question  (assoc last-question :answers [])
+        _              (log/info (str ">>> PARfull-questionfull-questionfull-question >>>>> " full-question "      CLASS >>>>" (class (:created_at full-question))))
+        ;;all-question   (update full-question :created_at (h/format-time (:created_at full-question)))
+        qid            (:id full-question)]
+    (assoc {} :qid qid :full-question full-question)))
 
 (defn create-question! [params]
   (let [full-params (-> params
@@ -91,7 +90,6 @@
   (let [test          (db/get-one-test { :id test-id :user-id user-id })
         test-updated  (update test :created_at #(h/format-time %))
         questions     (get-questions test-id)]
-    (log/info (str ">>> All Questions >>>>> " (pr-str questions)))
     (ches/encode (assoc test-updated :questions questions))))
 
 (defn update-answer!
