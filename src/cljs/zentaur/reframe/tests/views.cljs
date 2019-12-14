@@ -181,7 +181,6 @@
 (defn question-item
   "Display any type of question"
   [{:keys [qid full-question key] :as all-row}]
-  (.log js/console (str ">>> FULL QUESTION  >>>>> " full-question ))
   (let [{:keys [question explanation hint qtype id ordnen]} full-question
         counter (reagent/atom 0)
         editing (reagent/atom false)]
@@ -244,8 +243,8 @@
                  :value         @new-question
                  :id           "new-question"
                  :key          "new-question"
-                 :placeholder  "New question"
-                 :title        "New question"
+                 :placeholder  "Neu Frage"
+                 :title        "Neu Frage"
                  :maxLength    180
                  :on-change    #(reset! new-question (-> % .-target .-value))
                  :size         100}]]
@@ -255,8 +254,8 @@
                  :on-change    #(reset! hint (-> % .-target .-value))
                  :id           "question-hint"
                  :key          "question-hint"
-                 :placeholder  "Question hint"
-                 :title        "Question hint"
+                 :placeholder  "Frage Hinweis"
+                 :title        "Frage Hinweis"
                  :maxLength    180
                  :size         100}]]
        [:div.div-separator {:id "question-explanation-div" :key "question-explanation-div"}
@@ -279,14 +278,13 @@
          [:option {:value "3"} "Fullfill"]
          [:option {:value "4"} "Columns"]]]
      [:div
-      [:input.btn {:type "button" :value "Save new question"
+      [:input.btn {:type "button" :value "Neue Frage speichern"
                    :on-click #(do (re-frame.core/dispatch [:create-question {:question    @new-question
                                                                              :hint        @hint
                                                                              :qtype       @qtype
                                                                              :test-id     (.-value (gdom/getElement "test-id"))
                                                                              :user-id     (.-value (gdom/getElement "user-id"))
-                                                                             :explanation @explanation}
-                                                           :toggle-qform])
+                                                                             :explanation @explanation}])
                                   (reset! new-question "")
                                   (reset! hint "")
                                   (reset! explanation ""))}]]])))

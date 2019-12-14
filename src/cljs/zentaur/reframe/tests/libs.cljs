@@ -16,3 +16,9 @@
 
 (defn get-index [needle haystack]
   (keep-indexed #(when (= %2 needle) %1) haystack))
+
+(defn vec-remove-by-id
+  "Remove element in coll"
+  [coll id]
+  (let [pos (index-by-qid coll id)]
+  (vec (concat (subvec coll 0 pos) (subvec coll (inc pos))))))

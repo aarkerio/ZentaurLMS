@@ -27,10 +27,23 @@
     "questions" (db/get-last-ordnen-questions {:test-id id})))
 
 (defn- ^:private link-test-question!
-  [last-question test-id]
-  (let [question-id (get-in (first last-question) [:id])
-        next-ordnen (or (:ordnen (get-last-ordnen "questions" test-id)) 0)]
+  [question-id test-id]
+  (let [next-ordnen (or (:ordnen (get-last-ordnen "questions" test-id)) 0)]
     (db/create-question-test! {:question-id question-id :test-id test-id :ordnen (inc next-ordnen)})))
+
+(defn- ^:private get-last-question
+  [params]
+  (log/info (str ">>> PARAMS LASTT  >>>>> " params))
+  (let [test-id        (:test-id params)
+        question-row   (db/create-question! params)
+        question-id    (:id (first question-row))
+        _              (link-test-question! question-id test-id)
+        last-question  (db/get-last-question {:question-id question-id :test-id test-id})
+        full-question  (assoc last-question :answers [])
+        _              (log/info (str ">>> PARfull-questionfull-questionfull-question >>>>> " full-question "      CLASS >>>>" (class (:created_at full-question))))
+        ;;all-question   (update full-question :created_at (h/format-time (:created_at full-question)))
+        qid            (:id full-question)]
+    (assoc {} :qid qid :full-question full-question)))
 
 (defn create-question! [params]
   (let [full-params (-> params
@@ -38,10 +51,7 @@
                         (update :test-id #(Integer/parseInt %)))
         errors      (val-test/validate-question full-params)]
     (if (nil? errors)
-      (as-> full-params v
-        (db/create-question! v)
-        (link-test-question! v (:test-id full-params))
-        (db/get-last-question {:test-id (:test-id full-params)}))
+      (get-last-question full-params)
       {:flash errors :ok false})))
 
 (defn update-question! [params]
@@ -80,7 +90,6 @@
   (let [test          (db/get-one-test { :id test-id :user-id user-id })
         test-updated  (update test :created_at #(h/format-time %))
         questions     (get-questions test-id)]
-    (log/info (str ">>> All Questions >>>>> " (pr-str questions)))
     (ches/encode (assoc test-updated :questions questions))))
 
 (defn update-answer!
