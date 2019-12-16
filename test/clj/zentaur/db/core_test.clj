@@ -1,4 +1,4 @@
-(ns zentaur.test.db.core
+(ns zentaur.db.core-test
   (:require [clojure.test :refer :all]
             [clojure.java.jdbc :as jdbc]
             [luminus-migrations.core :as migrations]
