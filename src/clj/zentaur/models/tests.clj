@@ -41,9 +41,9 @@
         last-question  (db/get-last-question {:question-id question-id :test-id test-id})
         full-question  (assoc last-question :answers [])
         _              (log/info (str ">>> PARfull-questionfull-questionfull-question >>>>> " full-question "      CLASS >>>>" (class (:created_at full-question))))
-        ;;all-question   (update full-question :created_at (h/format-time (:created_at full-question)))
+        all-question (update full-question :created_at #(h/format-time %))
         qid            (:id full-question)]
-    (assoc {} :qid qid :full-question full-question)))
+    (assoc {} :qid qid :full-question all-question)))
 
 (defn create-question! [params]
   (let [full-params (-> params
@@ -74,15 +74,21 @@
 (defn- ^:private get-answers [{:keys [id] :as question}]
   (let [answers          (db/get-answers {:question-id id})
         keys-answers     (map #(assoc % :key (str "keyed-" (:id %))) answers) ;; add a unique key so React doesn't complain.
+        index-seq        (map #(keyword (% :id)) keys-answers)
         question-updated (update question :created_at #(h/format-time %))
-        final-question   (assoc question-updated :answers keys-answers)]
+        mapped-answers   (zipmap index-seq keys-answers)
+        final-question   (assoc question-updated :answers mapped-answers)]
     (assoc {} :qid id :full-question final-question)))
 
 (defn- ^:private get-questions
   "Get and convert to map keyed"
   [test-id]
-  (let [questions  (db/get-questions {:test-id test-id})]
-    (map get-answers questions)))
+  (let [questions  (db/get-questions { :test-id test-id })
+        index-seq  (map #(keyword (% :id)) questions)]
+    (->> questions
+         (map get-answers)
+         (zipmap index-seq)  ;; add the index
+         )))
 
 (defn get-test-nodes
   "JSON response for the API"

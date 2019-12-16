@@ -1,4 +1,4 @@
-(ns zentaur.test.factories.user-factory
+(ns zentaur.factories.user-factory
  (:require [factory-time.core :refer :all]))
 
 (defn fixed-length-password
@@ -28,7 +28,6 @@
                :fname (fn [n] (rand-str 9))
                :lname (fn [n] (rand-str 9))
                })
-
 
 (deffactory :teacher {:fname "Ludwig"}
   :extends-factory :user

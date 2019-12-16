@@ -37,12 +37,14 @@
   :managed-dependencies [[org.clojure/core.rrb-vector "0.0.13"]
                          [org.flatland/ordered "1.5.7"]]
   :min-lein-version "2.0.0"
-  :source-paths ["src/clj" "src/cljs" "src/cljc" "target"]
+  :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj"]
   :resource-paths ["resources" "target/cljsbuild"]
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
             "fig:dev" ["trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
-            "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "deploy"]}
+            "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "deploy"]
+            "l:test" ["test" ":only" "zentaur.model.tests-test/test-fuction"]
+            "l:bl" ["test" ":only" "business-logic"]}
   :target-path "target/%s/"
   :main ^:skip-aot zentaur.core
   :migratus {:store :database}
@@ -65,10 +67,10 @@
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
                                           [day8.re-frame/re-frame-10x "0.4.5"]       ;;  Debugging re-frame applications.
                                           [doo "0.1.11"]                        ;;  library and lein plugin to run cljs.test on different js environments
+                                          [factory-time "0.1.2"]                ;;  Factory bot like for tests
                                           [nrepl "0.6.0"]                       ;;  nREPL is a Clojure network REPL that provides a REPL server and client
                                           [org.clojure/clojurescript "1.10.597"]
                                           [prone "2019-07-08"]                  ;;  Better exception reporting middleware for Ring.
-                                          [re-frisk "0.5.4"]                    ;;  Visualize re-frame pattern data, watch re-frame events and export state in the debugger.
                                           [ring/ring-devel "1.8.0"]             ;;  Ring dev options
                                           [ring/ring-mock "0.4.0"]]             ;;  Library to create mock Ring requests for unit tests
                            :source-paths ["env/dev/clj" "target" "env/dev/cljs"]
@@ -76,14 +78,9 @@
                            :repl-options {:init-ns user}}
             :project/test {:jvm-opts ["-Dconf=test-config.edn"]
                            :resource-paths ["env/test/resources"]
-                           :cljsbuild
-                           {:builds
-                   {:test
-                    {:source-paths ["src/cljc" "src/cljs" "test/cljs"]
-                     :compiler
-                     {:output-to "target/test.js"
-                      :main "zentaur.doo-runner"
-                      :optimizations :whitespace
-                      :pretty-print true}}}}}
+                           :source-paths ["env/test/clj" "test/clj"]
+                           :test-selectors {:default (complement :integration)
+                                            :integration :integration
+                                            :business-logic :business-logic}}
              :profiles/dev {}
              :profiles/test {}})

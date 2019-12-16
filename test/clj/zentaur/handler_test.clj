@@ -1,4 +1,4 @@
-(ns zentaur.test.handler
+(ns zentaur.handler-test
   (:require [clojure.test :as ct]   ;; [deftest testing is run-tests]
             [muuntaja.core :as m]
             [mount.core :as mount]
