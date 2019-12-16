@@ -41,22 +41,6 @@
 
 ;; (def reorder-after-interceptor (re-frame/after (partial order-questions)))
 
-;;;;;;;;;;;  REGISTER DB EVENT HANDLERS  ;;;;;;;;;;;;;;;;;;;;;;;;;;
-(re-frame/reg-event-db
- :toggle-qform     ;; hidde/show forms
- (fn [db _]
-   (update db :qform not)))
-
-(re-frame/reg-event-db
-  :process-test-response
-  (fn [db [_ data]]
-    (let [questions   (:questions data)
-          test        (dissoc data :questions)]
-     (-> db
-         (assoc :loading?  false)     ;; take away that "Loading ..." UI element
-         (assoc :test      (js->clj test :keywordize-keys true))
-         (assoc :questions (js->clj questions :keywordize-keys true))))))
-
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
 (re-frame/reg-event-fx         ;; part of the re-frame API
@@ -71,6 +55,22 @@
  (fn
    [db [_ response]]
    (.log js/console (str ">>> Fheler aus ajax antwort : >>>>> " response "   " _))))
+
+(re-frame/reg-event-db
+ :toggle-qform     ;; hidde/show forms
+ (fn [db _]
+   (update db :qform not)))
+
+(re-frame/reg-event-db
+  :process-test-response
+  (fn [db [_ data]]
+    (let [questions   (:questions data)
+          test        (dissoc data :questions)]
+      (.log js/console (str ">>> GANZ db  ll KKK >>>>> " db ))
+      (-> db
+          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
+          (assoc :test      (js->clj test :keywordize-keys true))
+          (assoc :questions (js->clj questions :keywordize-keys true))))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :request-test              ;; <-- the event id
@@ -88,7 +88,6 @@
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:process-test-response]
                     :on-failure      [:bad-response]}})))
-
 ;; AJAX handlers
 (re-frame/reg-event-db
  :process-new-question
@@ -97,7 +96,7 @@
    [db [_ response]]                 ;; destructure the response from the event vector
    (.log js/console (str ">>> Nue frage antwort >>>>> " response))
    (let [submap        (get-in db [:questions])
-         _             (.log js/console (str ">>> SUNBBBBBBMAP >>>>> " submap))]
+         _             (.log js/console (str ">>> SUBBBBBBMAP >>>>> " submap))]
      ;; (update db :qform not)           ;; hide new question form
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI

@@ -1,4 +1,4 @@
-^{:watch-dirs ["src/cljs" "env/dev/cljs"]}
+^{:watch-dirs ["env/dev/cljs" "src/cljs"]}
 ^{:extra-main-files {:testing {:main zentaur.core-test}}}
 {
  :source-paths ["src/cljs" "env/dev/cljs" "test/cljs"]

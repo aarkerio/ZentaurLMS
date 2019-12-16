@@ -66,13 +66,13 @@
                                           [com.bhauman/figwheel-main "0.2.3"]        ;; Hot Reload cljs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
                                           [day8.re-frame/re-frame-10x "0.4.5"]       ;;  Debugging re-frame applications.
-                                          [doo "0.1.11"]                        ;;  library and lein plugin to run cljs.test on different js environments
-                                          [factory-time "0.1.2"]                ;;  Factory bot like for tests
-                                          [nrepl "0.6.0"]                       ;;  nREPL is a Clojure network REPL that provides a REPL server and client
+                                          [doo "0.1.11"]                             ;;  library and lein plugin to run cljs.test on different js environments
+                                          [factory-time "0.1.2"]                     ;;  Factory bot like for tests
+                                          [nrepl "0.6.0"]                            ;;  nREPL is a Clojure network REPL that provides a REPL server and client
                                           [org.clojure/clojurescript "1.10.597"]
-                                          [prone "2019-07-08"]                  ;;  Better exception reporting middleware for Ring.
-                                          [ring/ring-devel "1.8.0"]             ;;  Ring dev options
-                                          [ring/ring-mock "0.4.0"]]             ;;  Library to create mock Ring requests for unit tests
+                                          [prone "2019-07-08"]                       ;;  Better exception reporting middleware for Ring.
+                                          [ring/ring-devel "1.8.0"]                  ;;  Ring dev options
+                                          [ring/ring-mock "0.4.0"]]                  ;;  Library to create mock Ring requests for unit tests
                            :source-paths ["env/dev/clj" "target" "env/dev/cljs"]
                            :resource-paths ["env/dev/resources"]
                            :repl-options {:init-ns user}}

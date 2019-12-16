@@ -175,9 +175,6 @@
                                                                                 :id          id
                                                                                 :qtype       @aqtype
                                                                                 :explanation @aexplanation}])}]]])))
-(def <sub (comp deref re-frame.core/subscribe))
-(def >evt re-frame.core/dispatch)
-
 (defn question-item
   "Display any type of question"
   [{:keys [qid full-question key] :as all-row}]
@@ -219,7 +216,7 @@
   "Display all the questions"
   []
   (let [start-counter @(re-frame/subscribe [:question-counter])
-        _             (.log js/console (str ">>> question list start-counter >>>>> " start-counter))
+        _             (.log js/console (str ">>>QQQuestion list start-counter >>>>> " start-counter))
         counter       (atom start-counter)]
     (fn []
       [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
