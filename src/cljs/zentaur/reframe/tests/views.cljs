@@ -177,40 +177,42 @@
                                                                                 :explanation @aexplanation}])}]]])))
 (defn question-item
   "Display any type of question"
-  [{:keys [qid full-question key] :as all-row}]
-  (let [{:keys [question explanation hint qtype id ordnen]} full-question
-        counter (reagent/atom 0)
-        editing (reagent/atom false)]
-    (fn []
-      [:div.div-question-row {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
-       [:div.edit-icon-div {:key (str "edit-icon-div-" id) :id (str "edit-icon-div-" id)}
-        (if @editing
-          [:img.img-float-right {:title    "Frage abbrechen"
-                                 :alt      "Frage abbrechen"
-                                 :key      (str "cancel-question-img-" id)
-                                 :id       (str "cancel-question-img-" id)
-                                 :src      "/img/icon_cancel.png"
-                                 :on-click #(swap! editing not)}]
-          [:img.img-float-right {:title    "Frage bearbeiten"
-                                 :alt      "Frage bearbeiten"
-                                 :key      (str "edit-question-img-" id)
-                                 :id       (str "edit-question-img-" id)
-                                 :src      "/img/icon_edit.png"
-                                 :on-click #(swap! editing not)}])]  ;; editing ends
-     [:div.question-elements
-       [:div {:key (str "div-question-" id) :id (str "div-question-" id)} [:span.bold-font (str key ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
-       [:div {:key (str "div-hint-" id)     :id (str "div-hint-" id)}     [:span.bold-font "Hint: "] hint]
-       [:div {:key (str "div-explan-" id)   :id (str "div-explan-" id)}   [:span.bold-font "Erläuterung: "] explanation]]
-     (when @editing
-       (edit-question full-question))
-       (display-question full-question) ;; Polimorphysm for the kind of question
-     [:div.img-delete-right
-       [:img {:src    "/img/icon_delete.png"
-              :title  "Frage löschen"
-              :alt    "Frage löschen"
-              :key    (str "frage-btn-x-" id)
-              :id     (str "frage-btn-x-" id)
-              :on-click #(re-frame/dispatch [:delete-question id])}]]])))
+  [fullq]
+  (.log js/console (str ">>>  fullqfullqfullq KKK >>>>> " fullq ))
+  ;; (let [{:keys [question explanation hint qtype id ordnen key]} fullq
+  ;;       counter (reagent/atom 0)
+  ;;       editing (reagent/atom false)]
+  ;;   (fn []
+  ;;     [:div.div-question-row {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
+  ;;      [:div.edit-icon-div {:key (str "edit-icon-div-" id) :id (str "edit-icon-div-" id)}
+  ;;       (if @editing
+  ;;         [:img.img-float-right {:title    "Frage abbrechen"
+  ;;                                :alt      "Frage abbrechen"
+  ;;                                :key      (str "cancel-question-img-" id)
+  ;;                                :id       (str "cancel-question-img-" id)
+  ;;                                :src      "/img/icon_cancel.png"
+  ;;                                :on-click #(swap! editing not)}]
+  ;;         [:img.img-float-right {:title    "Frage bearbeiten"
+  ;;                                :alt      "Frage bearbeiten"
+  ;;                                :key      (str "edit-question-img-" id)
+  ;;                                :id       (str "edit-question-img-" id)
+  ;;                                :src      "/img/icon_edit.png"
+  ;;                                :on-click #(swap! editing not)}])]  ;; editing ends
+  ;;    [:div.question-elements
+  ;;      [:div {:key (str "div-question-" id) :id (str "div-question-" id)} [:span.bold-font (str key ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+  ;;      [:div {:key (str "div-hint-" id)     :id (str "div-hint-" id)}     [:span.bold-font "Hint: "] hint]
+  ;;      [:div {:key (str "div-explan-" id)   :id (str "div-explan-" id)}   [:span.bold-font "Erläuterung: "] explanation]]
+  ;;    (when @editing
+  ;;      (edit-question fullq))
+  ;;    (display-question fullq) ;; Polimorphysm for the kind of question
+  ;;    [:div.img-delete-right
+  ;;      [:img {:src    "/img/icon_delete.png"
+  ;;             :title  "Frage löschen"
+  ;;             :alt    "Frage löschen"
+  ;;             :key    (str "frage-btn-x-" id)
+  ;;             :id     (str "frage-btn-x-" id)
+  ;;             :on-click #(re-frame/dispatch [:delete-question id])}]]]))
+  )
 
 (defn questions-list
   "Display all the questions"
@@ -221,7 +223,9 @@
     (fn []
       [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
        (for [question @(re-frame/subscribe [:questions])]
-         [question-item (assoc question :key (swap! counter inc))])])))
+         ;; [question-item (assoc question :key (swap! counter inc))]
+         (.log js/console (str ">>>  QAAAWWWWWW >>>>> " question ))
+         )])))
 
 (defn question-entry
   "Verstecken Form for a nue fragen"

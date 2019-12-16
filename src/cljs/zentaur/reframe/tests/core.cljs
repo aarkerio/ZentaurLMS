@@ -25,5 +25,6 @@
     (re-frame/dispatch-sync [:request-test])  ;; <--- boot process is started. Synchronously initialised *before*
     (r/render [zviews/todo-app]               ;; Load views
               (.getElementById js/document "test-root-app"))))
+
 (main)
 

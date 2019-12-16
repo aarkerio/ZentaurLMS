@@ -77,18 +77,18 @@
         keys-answers     (map #(assoc % :key (str "keyed-" (:id %))) answers) ;; add a unique key so React doesn't complain.
         index-seq        (map #(keyword (% :id)) keys-answers)
         question-updated (update question :created_at #(h/format-time %))
-        mapped-answers   (zipmap index-seq keys-answers)
-        final-question   (assoc question-updated :answers mapped-answers)]
-    (assoc {} :qid id :full-question final-question)))
+        mapped-answers   (zipmap index-seq keys-answers)]
+    (assoc question-updated :answers mapped-answers)))
 
 (defn- ^:private get-questions
   "Get and convert to map keyed"
   [test-id]
-  (let [questions  (db/get-questions { :test-id test-id })
-        index-seq  (map #(keyword (% :id)) questions)]
+  (let [questions  (db/get-questions { :test-id test-id })]
     (->> questions
          (map get-answers)
-         (zipmap index-seq)  ;; add the index
+         ;; (#(zipmap (map :id %) %)) ;; adding the index
+         (into {} (map (juxt :id identity)))
+         ;;      (zipmap (map #(keyword (% :id)) ) )
          )))
 
 (defn get-test-nodes
