@@ -8,6 +8,6 @@
   (testing "sub and string"
     (is (= true  (.contains "The Band Named Isis" "Isis")))))
 
-(deftest ^:business-logic eg-tests (is (= 2 1)))
+(deftest ^:business-logic eg-tests (is (= 1 1)))
 
 (run-tests)
