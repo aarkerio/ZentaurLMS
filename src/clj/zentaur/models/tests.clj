@@ -75,7 +75,7 @@
 (defn- ^:private get-answers [{:keys [id] :as question}]
   (let [answers          (db/get-answers {:question-id id})
         keys-answers     (map #(assoc % :key (str "keyed-" (:id %))) answers) ;; add a unique key so React doesn't complain.
-        index-seq        (map #(keyword (% :id)) keys-answers)
+        index-seq        (map #(keyword (str (% :id))) keys-answers)
         question-updated (update question :created_at #(h/format-time %))
         mapped-answers   (zipmap index-seq keys-answers)]
     (assoc question-updated :answers mapped-answers)))
@@ -83,12 +83,13 @@
 (defn- ^:private get-questions
   "Get and convert to map keyed"
   [test-id]
-  (let [questions  (db/get-questions { :test-id test-id })]
+  (let [questions  (db/get-questions { :test-id test-id })
+        _          (log/info (str ">>> QUESTIONS >>>>> " (pr-str questions)))
+        index-seq  (map #(keyword (str (% :id))) questions)
+        _          (log/info (str ">>> index-seq >>>>> " (pr-str index-seq)))]
     (->> questions
          (map get-answers)
-         ;; (#(zipmap (map :id %) %)) ;; adding the index
-         (into {} (map (juxt :id identity)))
-         ;;      (zipmap (map #(keyword (% :id)) ) )
+;;         (zipmap index-seq)  ;; add the index
          )))
 
 (defn get-test-nodes
@@ -97,6 +98,7 @@
   (let [test          (db/get-one-test { :id test-id :user-id user-id })
         test-updated  (update test :created_at #(h/format-time %))
         questions     (get-questions test-id)]
+    (log/info (str ">>> questions QQQQQ >>>>> " questions))
     (ches/encode (assoc test-updated :questions questions))))
 
 (defn update-answer!

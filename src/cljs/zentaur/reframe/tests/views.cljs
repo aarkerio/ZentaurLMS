@@ -223,8 +223,7 @@
     (fn []
       [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
        (for [question @(re-frame/subscribe [:questions])]
-         ;; [question-item (assoc question :key (swap! counter inc))]
-         (.log js/console (str ">>>  QAAAWWWWWW >>>>> " question ))
+          [question-item (assoc question :key (swap! counter inc))]
          )])))
 
 (defn question-entry

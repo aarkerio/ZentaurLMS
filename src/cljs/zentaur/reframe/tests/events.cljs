@@ -64,8 +64,8 @@
   :process-test-response
   (fn [db [_ data]]
     (let [questions   (:questions data)
-          test        (dissoc data :questions)]
-      (.log js/console (str ">>> GANZ DATEIN  ll KKK >>>>> " data ))
+          test        (dissoc data :questions)
+          _           (.log js/console (str ">>> GANZ DATEIN  ll KKK >>>>> " data ))]
       (-> db
           (assoc :loading?  false)     ;; take away that "Loading ..." UI element
           (assoc :test      (js->clj test :keywordize-keys true))
