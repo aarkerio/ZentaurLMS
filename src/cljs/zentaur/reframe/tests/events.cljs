@@ -160,7 +160,7 @@
    (let [qid  (:question_id response)]
      (-> db
          ;; (assoc :loading?  false)     ;; take away that "Loading ..." UI
-         (update-in [:questions qid :full-question :answers] conj response)))))
+         (update-in [:questions qid :answers] conj response)))))
 
 (re-frame/reg-event-fx
  :create-answer

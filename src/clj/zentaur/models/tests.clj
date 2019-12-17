@@ -1,7 +1,6 @@
 (ns ^:test-model zentaur.models.tests
   "Business logic for the tests section"
-  (:require [cheshire.core :as ches]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [java-time :as jt]
             [zentaur.db.core :as db]
             [zentaur.libs.helpers :as h]
@@ -44,7 +43,7 @@
         _              (log/info (str ">>> PARfull-questionfull-questionfull-question >>>>> " full-question "      CLASS >>>>" (class (:created_at full-question))))
         all-question (update full-question :created_at #(h/format-time %))
         qid            (:id full-question)]
-    (assoc {} :qid qid :full-question all-question)))
+    (assoc {} qid all-question)))
 
 (defn create-question! [params]
   (let [full-params (-> params
@@ -89,7 +88,7 @@
         _          (log/info (str ">>> index-seq >>>>> " (pr-str index-seq)))]
     (->> questions
          (map get-answers)
-;;         (zipmap index-seq)  ;; add the index
+         (zipmap index-seq)  ;; add the index
          )))
 
 (defn get-test-nodes
@@ -98,8 +97,7 @@
   (let [test          (db/get-one-test { :id test-id :user-id user-id })
         test-updated  (update test :created_at #(h/format-time %))
         questions     (get-questions test-id)]
-    (log/info (str ">>> questions QQQQQ >>>>> " questions))
-    (ches/encode (assoc test-updated :questions questions))))
+    (assoc test-updated :questions questions)))
 
 (defn update-answer!
   "Update after editing with ClojureScript"
