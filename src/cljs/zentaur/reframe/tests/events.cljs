@@ -157,9 +157,10 @@
  (fn
    [db [_ response]]            ;; destructure the response from the event vector
    (.log js/console (str ">>> New answer response from Luminus >>>>> " response))
-   (let [qid  (:question_id response)]
+   (let [qid  (:question_id response)
+         qq   (keyword (str qid))]
      (-> db
-         ;; (assoc :loading?  false)     ;; take away that "Loading ..." UI
+         (assoc :loading?  false)     ;; take away that "Loading ..." UI
          (update-in [:questions qid :answers] conj response)))))
 
 (re-frame/reg-event-fx

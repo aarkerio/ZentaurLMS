@@ -114,7 +114,7 @@
   (let [counter (reagent/atom 0)]
     [:div [input-new-answer {:question-id id :on-stop #(js/console.log "stopp") :props {:placeholder "New answer"}}]
      (for [answer (:answers q)]
-       [display-answer (assoc answer :key (swap! counter inc))])]))
+       [display-answer (assoc (second answer) :key (swap! counter inc))])]))
 
 (defmethod display-question 2
   [question]
