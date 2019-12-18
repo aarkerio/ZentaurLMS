@@ -211,13 +211,11 @@
     ))
 
 (defn questions-list
-  "Display all the questions"
   []
-  (let [counter  (reagent/atom 0)]
-    [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
-     (for [question @(re-frame/subscribe [:questions])]
-       [question-item (assoc (second question) :key (swap! counter inc))]
-       )]))
+  (let [counter       (reagent/atom 0)]
+      [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
+       (for [question @(re-frame/subscribe [:questions])]
+         [question-item (assoc (second question) :key (swap! counter inc))])]))
 
 (defn question-entry
   "Verstecken Form for a nue fragen"
@@ -226,8 +224,7 @@
         new-question (reagent/atom "")
         hint         (reagent/atom "")
         explanation  (reagent/atom "")
-        qtype        (reagent/atom "1")
-        questions    (re-frame/subscribe [:questions])]
+        qtype        (reagent/atom "1")]
     (fn []
       [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
        [:h3.class "Hinzifugen neue fragen"]

@@ -64,8 +64,7 @@
   :process-test-response
   (fn [db [_ data]]
     (let [questions   (:questions data)
-          test        (dissoc data :questions)
-          _           (.log js/console (str ">>> GANZ DATEIN  ll KKK >>>>> " data ))]
+          test        (dissoc data :questions)]
       (-> db
           (assoc :loading?  false)     ;; take away that "Loading ..." UI element
           (assoc :test      (js->clj test :keywordize-keys true))
@@ -94,9 +93,7 @@
  []
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
-   (.log js/console (str ">>> Nue frage antwort >>>>> " response))
-   (let [submap        (get-in db [:questions])
-         _             (.log js/console (str ">>> SUBBBBBBMAP >>>>> " submap))]
+   (let [submap        (get-in db [:questions])]
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
          (update :qform not)           ;; hide new question form
@@ -157,11 +154,17 @@
  (fn
    [db [_ response]]            ;; destructure the response from the event vector
    (.log js/console (str ">>> New answer response from Luminus >>>>> " response))
-   (let [qid  (:question_id response)
-         qq   (keyword (str qid))]
+   (.log js/console (str ">>> Full DB >>>>> " db))
+   (let [answer      (second (first response))
+         _           (.log js/console (str ">>> WWQQQQQQQ  ANSWER >>>>> " answer))
+         qid         (:question_id answer)
+         _           (.log js/console (str ">>> QID >>>>> " qid))
+         question-id (keyword (str qid))
+         _           (.log js/console (str ">>> VALUE KEYWORD question-id >>>>> " question-id ))
+         _           (.log js/console (str ">>> QUESTION ID >>>>>  qid: " qid "question-id: " question-id))]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI
-         (update-in [:questions qid :answers] conj response)))))
+         (update-in [:questions question-id :answers] conj response)))))
 
 (re-frame/reg-event-fx
  :create-answer

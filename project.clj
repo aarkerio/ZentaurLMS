@@ -41,7 +41,7 @@
   :test-paths ["test/clj"]
   :resource-paths ["resources" "target/cljsbuild"]
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
-            "fig:dev" ["trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
+            "fig:dev" ["with-profile" "dev" "trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
             "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "deploy"]
             "l:test" ["test" ":only" "zentaur.model.tests-test/test-fuction"]
             "l:bl" ["test" ":only" "business-logic"]}
@@ -65,10 +65,10 @@
                            :dependencies [[binaryage/devtools "0.9.11"]              ;; CLJS DevTools
                                           [com.bhauman/figwheel-main "0.2.3"]        ;; Hot Reload cljs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
-                                          [day8.re-frame/re-frame-10x "0.4.5"]       ;;  Debugging re-frame applications.
-                                          [doo "0.1.11"]                             ;;  library and lein plugin to run cljs.test on different js environments
-                                          [factory-time "0.1.2"]                     ;;  Factory bot like for tests
-                                          [nrepl "0.6.0"]                            ;;  nREPL is a Clojure network REPL that provides a REPL server and client
+                                          [day8.re-frame/re-frame-10x "0.4.5"]       ;; Debugging re-frame applications.
+                                          [doo "0.1.11"]                             ;; Library and lein plugin to run cljs.test on different JS environments
+                                          [factory-time "0.1.2"]                     ;; Factory bot like for tests
+                                          [nrepl "0.6.0"]                            ;; Clojure network REPL that provides a REPL server and client
                                           [org.clojure/clojurescript "1.10.597"]
                                           [prone "2019-07-08"]                       ;;  Better exception reporting middleware for Ring.
                                           [ring/ring-devel "1.8.0"]                  ;;  Ring dev options
