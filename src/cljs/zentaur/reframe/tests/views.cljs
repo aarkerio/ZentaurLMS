@@ -4,7 +4,6 @@
             [reagent.core  :as reagent]
             [re-frame.core :as re-frame]))
 
-;; The reagent magick lays here!! -----
 (defn question-input [{:keys [question on-save on-stop]}]
   (let [val  (reagent/atom question)
         stop #(do (reset! val "")
@@ -112,10 +111,10 @@
 ;; 1: multi 2: open, 3: fullfill, 4: composite questions (columns)
 (defmethod display-question 1
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
-  (let [counter (atom 0)]
+  (let [counter (reagent/atom 0)]
     [:div [input-new-answer {:question-id id :on-stop #(js/console.log "stopp") :props {:placeholder "New answer"}}]
      (for [answer (:answers q)]
-       [display-answer (assoc answer :key (swap! counter inc))])]))
+       [display-answer (assoc (second answer) :key (swap! counter inc))])]))
 
 (defmethod display-question 2
   [question]
@@ -175,15 +174,10 @@
                                                                                 :id          id
                                                                                 :qtype       @aqtype
                                                                                 :explanation @aexplanation}])}]]])))
-(def <sub (comp deref re-frame.core/subscribe))
-(def >evt re-frame.core/dispatch)
-
 (defn question-item
   "Display any type of question"
-  [{:keys [qid full-question key] :as all-row}]
-  (let [{:keys [question explanation hint qtype id ordnen]} full-question
-        counter (reagent/atom 0)
-        editing (reagent/atom false)]
+  [{:keys [question explanation hint qtype id ordnen key] :as q}]
+  (let [editing (reagent/atom false)]
     (fn []
       [:div.div-question-row {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
        [:div.edit-icon-div {:key (str "edit-icon-div-" id) :id (str "edit-icon-div-" id)}
@@ -205,26 +199,23 @@
        [:div {:key (str "div-hint-" id)     :id (str "div-hint-" id)}     [:span.bold-font "Hint: "] hint]
        [:div {:key (str "div-explan-" id)   :id (str "div-explan-" id)}   [:span.bold-font "Erläuterung: "] explanation]]
      (when @editing
-       (edit-question full-question))
-       (display-question full-question) ;; Polimorphysm for the kind of question
+       (edit-question q))
+       (display-question q) ;; Polimorphysm for the kind of question
      [:div.img-delete-right
        [:img {:src    "/img/icon_delete.png"
               :title  "Frage löschen"
               :alt    "Frage löschen"
               :key    (str "frage-btn-x-" id)
               :id     (str "frage-btn-x-" id)
-              :on-click #(re-frame/dispatch [:delete-question id])}]]])))
+              :on-click #(re-frame/dispatch [:delete-question id])}]]])
+    ))
 
 (defn questions-list
-  "Display all the questions"
   []
-  (let [start-counter @(re-frame/subscribe [:question-counter])
-        _             (.log js/console (str ">>> question list start-counter >>>>> " start-counter))
-        counter       (atom start-counter)]
-    (fn []
+  (let [counter       (reagent/atom 0)]
       [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
        (for [question @(re-frame/subscribe [:questions])]
-         [question-item (assoc question :key (swap! counter inc))])])))
+         [question-item (assoc (second question) :key (swap! counter inc))])]))
 
 (defn question-entry
   "Verstecken Form for a nue fragen"
@@ -233,14 +224,12 @@
         new-question (reagent/atom "")
         hint         (reagent/atom "")
         explanation  (reagent/atom "")
-        qtype        (reagent/atom "1")
-        questions    (re-frame/subscribe [:questions])]
+        qtype        (reagent/atom "1")]
     (fn []
       [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
        [:h3.class "Hinzifugen neue fragen"]
        [:div.div-separator {:id "question-title-div" :key "question-title-div"}
-        [:input {:type         "text"
-                 :value         @new-question
+        [:input {:type         "text" :value @new-question
                  :id           "new-question"
                  :key          "new-question"
                  :placeholder  "Neu Frage"

@@ -1,19 +1,22 @@
 (ns zentaur.controllers.tests-controller
-  (:require [clojure.tools.logging :as log]
+  (:require [cheshire.core :as ches]
+            [clojure.tools.logging :as log]
             [zentaur.controllers.base-controller :as basec]
             [zentaur.models.tests :as model-test]
             [zentaur.hiccup.layout-view :as layout]
             [zentaur.hiccup.admin.tests-view :as tests-view]
             [ring.util.http-response :as response]))
 
+(def non-ascii {:escape-non-ascii true}) ;; UTF-8 support for cheshire
+
 (defn get-tests
-  "GET /tests"
+  "GET /tests. HTML response."
   [request]
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
         tests    (model-test/get-tests {:user-id user-id})]
     (layout/application
-     (merge base {:title "List Tests" :contents (tests-view/index tests base) }))))
+     (merge base {:title "List Tests" :contents (tests-view/index tests base)}))))
 
 ;;;;;  ADMIN FUNCTIONS
 
@@ -27,47 +30,51 @@
     (response/found "/admin/tests")))
 
 (defn create-question
-  "POST /admin/tests/createquestion"
+  "POST /admin/tests/createquestion. JSON reponse."
   [request]
   (let [params       (:params request)
         user-id      (-> request :identity :id)
-        new-params   (assoc params :user-id user-id :active true)]
-    (response/ok (model-test/create-question! new-params))))
+        new-params   (assoc params :user-id user-id :active true)
+        response     (model-test/create-question! new-params)]
+    (response/ok (ches/encode response non-ascii))))
 
 (defn update-question
-  "POST /admin/tests/updatequestion"
+  "POST /admin/tests/updatequestion. JSON reponse."
   [request]
   (let [params       (:params request)
         user-id      (-> request :identity :id)
-        new-params   (assoc params :user-id user-id :active true)]
-    (response/ok (model-test/update-question! new-params))))
+        new-params   (assoc params :user-id user-id :active true)
+        response     (model-test/update-question! new-params)]
+    (response/ok (ches/encode response non-ascii))))
 
 (defn update-answer
-  "POST /admin/tests/updateanswer"
+  "POST /admin/tests/updateanswer. JSON reponse."
   [request]
   (let [params       (:params request)
-        new-params   (assoc params :active true)]
-    (response/ok (model-test/update-answer! new-params))))
+        new-params   (assoc params :active true)
+        response     (model-test/update-answer! new-params)]
+    (response/ok (ches/encode response non-ascii))))
 
 (defn create-answer
-  "POST /admin/tests/createanswer"
+  "POST /admin/tests/createanswer. JSON reponse."
   [request]
   (let [params       (:params request)
         user-id      (-> request :identity :id)
-        new-params   (assoc params :user-id user-id)]
-    (response/ok (model-test/create-answer! new-params))))
+        new-params   (assoc params :user-id user-id)
+        response     (model-test/create-answer! new-params)]
+    (response/ok (ches/encode response non-ascii))))
 
 (defn admin-index
-  "GET /admin/tests"
+  "GET /admin/tests."
   [request]
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
         tests    (model-test/get-tests user-id)]
     (basec/parser
-     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base) })))))
+     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base)})))))
 
 (defn admin-edit
-  "GET /admin/tests/edit/:id"
+  "GET /admin/tests/edit/:id. Html response."
   [request]
   (let [base     (basec/set-vars request)
         test-id  (-> request :path-params :id)]
@@ -75,14 +82,14 @@
      (layout/application (merge base {:title "New Quiz Tests" :contents (tests-view/edit base test-id) })))))
 
 (defn load-json
-  "POST /admin/tests/load.  Build a JSON to charge one test in clojurescript"
+  "POST /admin/tests/load.  Build a JSON to charge one test in ClojureScript"
   [{:keys [identity params]}]
-  (let [user-id (:id identity)
-        test-id (Integer/parseInt (:test-id params))]
-    (response/ok (model-test/get-test-nodes test-id user-id))))
+  (let [user-id  (:id identity)
+        test-id  (Integer/parseInt (:test-id params))
+        response (model-test/get-test-nodes test-id user-id)]
+    (response/ok (ches/encode response non-ascii))))
 
 (defn delete-question
   "POST /admin/tests/deletequestion"
   [{:keys [params]}]
-  (log/info (str ">>> PARAMS >>>>> " params))
     (response/ok {:response (model-test/remove-question params)}))

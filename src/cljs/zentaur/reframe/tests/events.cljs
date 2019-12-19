@@ -34,14 +34,27 @@
 
 (def reorder-event
   (re-frame/->interceptor
-    :id      :reorder-event
-    :after   (fn [context]
-               (let [ordered-questions (order-questions (-> context  :effects :db)) ]
-                 (assoc-in context [:effects :db :questions] ordered-questions)))))
+   :id      :reorder-event
+   :after   (fn [context]
+              (let [ordered-questions (order-questions (-> context  :effects :db)) ]
+                (assoc-in context [:effects :db :questions] ordered-questions)))))
 
 ;; (def reorder-after-interceptor (re-frame/after (partial order-questions)))
 
-;;;;;;;;;;;  REGISTER DB EVENT HANDLERS  ;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
+;; reg-event-fx == event handler's coeffects, fx == effect
+(re-frame/reg-event-fx         ;; part of the re-frame API
+ :initialise-db                ;; event id being handled
+ ;; the event handler (function) being registered
+ (fn [{:keys [db]} _]                       ;; take 2 values from coeffects. Ignore event vector itself.
+   {:db zdb/default-db}))   ;; all hail the new state to be put in app-db
+
+(re-frame/reg-event-db
+ :bad-response
+ (fn
+   [db [_ response]]
+   (.log js/console (str ">>> Fheler aus ajax antwort : >>>>> " response "   " _))))
+
 (re-frame/reg-event-db
  :toggle-qform     ;; hidde/show forms
  (fn [db _]
@@ -52,25 +65,10 @@
   (fn [db [_ data]]
     (let [questions   (:questions data)
           test        (dissoc data :questions)]
-     (-> db
-         (assoc :loading?  false)     ;; take away that "Loading ..." UI element
-         (assoc :test      (js->clj test :keywordize-keys true))
-         (assoc :questions (js->clj questions :keywordize-keys true))))))
-
-;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
-;; reg-event-fx == event handler's coeffects, fx == effect
-(re-frame/reg-event-fx         ;; part of the re-frame API
- :initialise-db                ;; event id being handled
-
-  ;; the event handler (function) being registered
-  (fn [{:keys [db]} _]                       ;; take 2 values from coeffects. Ignore event vector itself.
-    {:db zdb/default-db}))   ;; all hail the new state to be put in app-db
-
-(re-frame/reg-event-db
- :bad-response
- (fn
-   [db [_ response]]
-   (.log js/console (str ">>> Fheler aus ajax antwort : >>>>> " response "   " _))))
+      (-> db
+          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
+          (assoc :test      (js->clj test :keywordize-keys true))
+          (assoc :questions (js->clj questions :keywordize-keys true))))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :request-test              ;; <-- the event id
@@ -95,10 +93,7 @@
  []
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
-   (.log js/console (str ">>> Nue frage antwort >>>>> " response))
-   (let [submap        (get-in db [:questions])
-         _             (.log js/console (str ">>> SUNBBBBBBMAP >>>>> " submap))]
-     ;; (update db :qform not)           ;; hide new question form
+   (let [submap        (get-in db [:questions])]
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
          (update :qform not)           ;; hide new question form
@@ -128,17 +123,16 @@
  (fn
    [db [_ question-id]]
    (.log js/console (str ">>> process-after-delete-question  >>>> " question-id))
-   (let [submap        (get-in db [:questions])
-         qindex        (libs/index-by-qid submap question-id)]
-   (-> db
-       (update-in [:questions qindex ] dissoc (keyword (str question-id)))
-       (update  :loading?  not))))
+   (let [submap  (get-in db [:questions])]
+     (-> db
+         (update-in [:questions] dissoc (keyword (str question-id)))
+         (update  :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
  :delete-question            ;; <-- the event id
  (fn                          ;; <-- the handler function
    [cofx [dispatch-id question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (.log js/console (str ">>> dispatch-id >>>>> " dispatch-id "  >>>> " question-id))
+   (.log js/console (str ">>> dispatch-id   OOO>>>>> " dispatch-id "  >>>> " question-id))
    (when (js/confirm "Delete question?")
      (let [db               (:db cofx)
            question-id-int  (js/parseInt question-id)
@@ -160,16 +154,17 @@
  (fn
    [db [_ response]]            ;; destructure the response from the event vector
    (.log js/console (str ">>> New answer response from Luminus >>>>> " response))
-   (let [qid           (:question_id response)
-         submap        (get-in db [:questions])
-         qindex        (libs/index-by-qid submap qid)
-          _             (.log js/console (str ">>>  QQQ-index >>>>> " qindex))
-         answers       (get-in db [:questions qindex :full-question :answers])
-         _             (.log js/console (str ">>>  ANSWERS answers ****>>>>> " answers))
-         ]
+   (.log js/console (str ">>> Full DB >>>>> " db))
+   (let [answer      (second (first response))
+         _           (.log js/console (str ">>> WWQQQQQQQ  ANSWER >>>>> " answer))
+         qid         (:question_id answer)
+         _           (.log js/console (str ">>> QID >>>>> " qid))
+         question-id (keyword (str qid))
+         _           (.log js/console (str ">>> VALUE KEYWORD question-id >>>>> " question-id ))
+         _           (.log js/console (str ">>> QUESTION ID >>>>>  qid: " qid "question-id: " question-id))]
      (-> db
-         ;; (assoc :loading?  false)     ;; take away that "Loading ..." UI
-         (update-in [:questions qindex :full-question :answers] conj response)))))
+         (assoc :loading?  false)     ;; take away that "Loading ..." UI
+         (update-in [:questions question-id :answers] conj response)))))
 
 (re-frame/reg-event-fx
  :create-answer

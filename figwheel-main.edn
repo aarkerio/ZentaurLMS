@@ -1,4 +1,3 @@
 {
  :watch-dirs ["src/cljs"]
- :reload-clj-files false
- }
+}

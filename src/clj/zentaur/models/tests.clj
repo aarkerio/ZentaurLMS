@@ -1,6 +1,6 @@
 (ns ^:test-model zentaur.models.tests
-  (:require [cheshire.core :as ches]
-            [clojure.tools.logging :as log]
+  "Business logic for the tests section"
+  (:require [clojure.tools.logging :as log]
             [java-time :as jt]
             [zentaur.db.core :as db]
             [zentaur.libs.helpers :as h]
@@ -39,11 +39,11 @@
         question-id    (:id (first question-row))
         _              (link-test-question! question-id test-id)
         last-question  (db/get-last-question {:question-id question-id :test-id test-id})
-        full-question  (assoc last-question :answers [])
+        full-question  (assoc last-question :answers {})
         _              (log/info (str ">>> PARfull-questionfull-questionfull-question >>>>> " full-question "      CLASS >>>>" (class (:created_at full-question))))
         all-question (update full-question :created_at #(h/format-time %))
         qid            (:id full-question)]
-    (assoc {} :qid qid :full-question all-question)))
+    (assoc {} qid all-question)))
 
 (defn create-question! [params]
   (let [full-params (-> params
@@ -60,31 +60,38 @@
     (db/update-question! (assoc full-params :qtype qtype :updated_at (jt/local-date-time)))
     (db/get-question {:id (:id params)})))
 
+(defn- ^:private create-new-answer
+  [params question-id]
+  (let [new-answer     (db/create-answer! params)
+        last-answer    (db/get-last-answer {:question-id question-id})
+        updated-answer (update last-answer :created_at #(h/format-time %))]
+    (assoc {} (:id updated-answer) updated-answer)
+    ))
+
 (defn create-answer! [params]
   (let [question-id  (:question-id params)
         next-ordnen  (or (:ordnen (get-last-ordnen "answers" question-id)) 0)
         full-params  (assoc params :ordnen (inc next-ordnen))
         errors       (val-test/validate-answer full-params)]
     (if (nil? errors)
-      (do
-        (db/create-answer! full-params)
-        (db/get-last-answer {:question-id question-id}))
+      (create-new-answer full-params question-id)
       {:flash errors :ok false})))
 
 (defn- ^:private get-answers [{:keys [id] :as question}]
   (let [answers          (db/get-answers {:question-id id})
         keys-answers     (map #(assoc % :key (str "keyed-" (:id %))) answers) ;; add a unique key so React doesn't complain.
-        index-seq        (map #(keyword (% :id)) keys-answers)
+        index-seq        (map #(keyword (str (% :id))) keys-answers)
         question-updated (update question :created_at #(h/format-time %))
-        mapped-answers   (zipmap index-seq keys-answers)
-        final-question   (assoc question-updated :answers mapped-answers)]
-    (assoc {} :qid id :full-question final-question)))
+        mapped-answers   (zipmap index-seq keys-answers)]
+    (assoc question-updated :answers mapped-answers)))
 
 (defn- ^:private get-questions
   "Get and convert to map keyed"
   [test-id]
   (let [questions  (db/get-questions { :test-id test-id })
-        index-seq  (map #(keyword (% :id)) questions)]
+        _          (log/info (str ">>> QUESTIONS >>>>> " (pr-str questions)))
+        index-seq  (map #(keyword (str (% :id))) questions)
+        _          (log/info (str ">>> index-seq >>>>> " (pr-str index-seq)))]
     (->> questions
          (map get-answers)
          (zipmap index-seq)  ;; add the index
@@ -96,7 +103,7 @@
   (let [test          (db/get-one-test { :id test-id :user-id user-id })
         test-updated  (update test :created_at #(h/format-time %))
         questions     (get-questions test-id)]
-    (ches/encode (assoc test-updated :questions questions))))
+    (assoc test-updated :questions questions)))
 
 (defn update-answer!
   "Update after editing with ClojureScript"
