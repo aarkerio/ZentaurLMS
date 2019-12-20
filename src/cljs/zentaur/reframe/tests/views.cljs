@@ -178,7 +178,7 @@
   "Display any type of question"
   [{:keys [question explanation hint qtype id ordnen key] :as q}]
   (let [editing (reagent/atom false)]
-    (fn []
+    (fn [{:keys [question explanation hint qtype id ordnen key] :as q}]
       [:div.div-question-row {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
        [:div.edit-icon-div {:key (str "edit-icon-div-" id) :id (str "edit-icon-div-" id)}
         (if @editing
@@ -207,12 +207,12 @@
               :alt    "Frage löschen"
               :key    (str "frage-btn-x-" id)
               :id     (str "frage-btn-x-" id)
-              :on-click #(re-frame/dispatch [:delete-question id])}]]])
-    ))
+              :on-click #(re-frame/dispatch [:delete-question id])}]]]
+     )))
 
 (defn questions-list
   []
-  (let [counter       (reagent/atom 0)]
+  (let [counter (reagent/atom 0)]
       [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
        (for [question @(re-frame/subscribe [:questions])]
          [question-item (assoc (second question) :key (swap! counter inc))])]))

@@ -7,11 +7,11 @@
 
 (defn formatted-test [{:keys [title created_at tags published id]}]
   [:tr
-    [:td [:a {:href (str "/admin/tests/edit/" id)}  "Edit"]]
-    [:td title]
-    [:td tags]
-    [:td created_at]
-    [:td [:a {:href (str "/admin/tests/delete/" id)}  "Delete"]]])
+   [:td [:a {:href (str "/admin/tests/edit/" id)}  "Edit"]]
+   [:td title]
+   [:td tags]
+   [:td created_at]
+   [:td [:button {:class "btn btn-success" :onClick (str "zentaur.core.deletetest("id")")} "Löschen"]]])
 
 (defn- form-new [csrf-field]
   [:div.hidden-div {:id "hidden-form"}
@@ -48,9 +48,8 @@
     [:h1 "Bearbeiten Quizz Test"]
     [:div {:id "cont"}
       (f/form-to [:post ""]
-        (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
-        (f/hidden-field { :value test-id} "test-id")
-        (f/hidden-field { :value (get-in base [:identity :id])} "user-id")
-        )]
+        (f/hidden-field {:value (:csrf-field base)} "__anti-forgery-token")
+        (f/hidden-field {:value test-id} "test-id")
+        (f/hidden-field {:value (get-in base [:identity :id])} "user-id"))]
     [:div {:id "test-root-app"}]])
 

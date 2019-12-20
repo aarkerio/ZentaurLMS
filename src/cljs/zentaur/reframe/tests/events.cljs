@@ -140,7 +140,7 @@
            test-id-int      (js/parseInt test-id)
            csrf-field       (.-value (gdom/getElement "__anti-forgery-token"))]
        ;; we return a map of (side) effects
-       {:http-xhrio {:method          :post
+       {:http-xhrio {:method          :delete
                      :uri             "/admin/tests/deletequestion"
                      :format          (ajax/json-request-format)
                      :params          {:question-id question-id-int :test-id test-id-int}
@@ -185,10 +185,13 @@
  :process-after-delete-answer
  []
  (fn
-   [db [_ question-id]]
-   (-> db
-       (update-in [:questions] dissoc (keyword (str question-id)))
-       (update  :loading?  not))))
+   [db [_ response]]
+   (let [_ (.log js/console (str ">>> RESPSNE AFEREDELET ANSWER  >>>>> " response ))
+         ;;question-id (keyword (str qid))
+         ]
+     (-> db
+         (update-in [:questions question-id :answers] dissoc (keyword (str question-id)))
+         (update :loading? not)))))
 
 (re-frame/reg-event-fx        ;; <-- note the `-fx` extension
  :delete-answer               ;; <-- the event id
@@ -200,8 +203,8 @@
           test-id    (.-value (gdom/getElement "test-id"))
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
         ;; we return a map of  v(side) effects
-        {:http-xhrio {:method          :post
-                      :uri             "/admin/tests/deletequestion"
+        {:http-xhrio {:method          :delete
+                      :uri             "/admin/tests/deleteanswer"
                       :format          (ajax/json-request-format)
                       :params          {:answer-id answer-id}
                       :headers         {"x-csrf-token" csrf-field}

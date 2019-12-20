@@ -41,7 +41,7 @@
   :test-paths ["test/clj"]
   :resource-paths ["resources" "target/cljsbuild"]
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
-            "fig:dev" ["with-profile" "dev" "trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
+            "fig:dev" ["trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
             "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "deploy"]
             "l:test" ["test" ":only" "zentaur.model.tests-test/test-fuction"]
             "l:bl" ["test" ":only" "business-logic"]}

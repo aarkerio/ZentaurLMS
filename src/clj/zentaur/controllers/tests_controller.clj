@@ -65,7 +65,7 @@
     (response/ok (ches/encode response non-ascii))))
 
 (defn admin-index
-  "GET /admin/tests."
+  "GET /admin/tests. Display user's tests."
   [request]
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
@@ -89,7 +89,19 @@
         response (model-test/get-test-nodes test-id user-id)]
     (response/ok (ches/encode response non-ascii))))
 
-(defn delete-question
-  "POST /admin/tests/deletequestion"
+(defn delete-test
+  "DELETE /admin/tests/deletetest. JSON response."
   [{:keys [params]}]
-    (response/ok {:response (model-test/remove-question params)}))
+  (log/info (str ">>> PARAMS >>>>> " params))
+  (response/ok {:response (model-test/remove-test params)}))
+
+(defn delete-question
+  "DELETE /admin/tests/deletequestion. JSON response."
+  [{:keys [params]}]
+  (response/ok {:response (model-test/remove-question params)}))
+
+(defn delete-answer
+  "DELETE /admin/tests/deleteanswer. JSON response."
+  [{:keys [params]}]
+  (log/info (str ">>> PARAMs  delete-answer XXXX >>>>> " params))
+    (response/ok {:response (model-test/remove-answer params)}))

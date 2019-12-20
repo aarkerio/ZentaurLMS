@@ -65,8 +65,7 @@
   (let [new-answer     (db/create-answer! params)
         last-answer    (db/get-last-answer {:question-id question-id})
         updated-answer (update last-answer :created_at #(h/format-time %))]
-    (assoc {} (:id updated-answer) updated-answer)
-    ))
+    (assoc {} (:id updated-answer) updated-answer)))
 
 (defn create-answer! [params]
   (let [question-id  (:question-id params)
@@ -112,13 +111,16 @@
     (db/update-answer! (assoc full-params :updated_at (h/format-time)))
     (db/get-answer {:id (:id params)})))
 
-(defn destroy [params]
-  (db/delete-test! params))
-
-(defn admin-get-tests [user-id]
-  (db/admin-get-tests user-id))
+(defn remove-test [params]
+  (let [test-id (:test-id params)]
+    (db/remove-test! {:test-id test-id})))
 
 (defn remove-question [params]
   (let [test-id     (:test-id params)
         question-id (:question-id params)]
     (db/remove-question! {:test-id test-id :question-id question-id})))
+
+(defn remove-answer [params]
+  (let [new-map  {:answer-id (:answer-id params) :question-id (:question-id params) }
+        result   (db/remove-answer! new-map)]
+    (assoc new-map :ok result)))

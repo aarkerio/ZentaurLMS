@@ -11,5 +11,5 @@
  :source-map true
  :reload-clj-files false
  :open-url false
- }
+}
 
