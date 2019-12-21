@@ -33,7 +33,6 @@
 
 (defn- ^:private get-last-question
   [params]
-  (log/info (str ">>> PARAMS LASTT  >>>>> " params))
   (let [test-id        (:test-id params)
         question-row   (db/create-question! params)
         question-id    (:id (first question-row))
