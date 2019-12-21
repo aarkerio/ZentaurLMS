@@ -149,11 +149,7 @@ INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question-id,
 
 -- :name get-tests :? :*
 -- :doc retrieve a test given the id.
-SELECT * FROM tests WHERE user_id = :user-id AND active = true ORDER BY id DESC
-
--- :name admin-get-tests :? :*
--- :doc retrieve all tests.
-SELECT * FROM tests WHERE active = true ORDER BY id DESC LIMIT 10
+SELECT * FROM tests WHERE user_id = :user-id AND active = true AND archived = false ORDER BY id DESC
 
 -- :name get-one-test :? :1
 -- :doc retrieve a test given the id.
@@ -187,11 +183,11 @@ SELECT id, question_id, answer, correct FROM answers WHERE question_id = :questi
 -- :doc delete a test given the id
 UPDATE tests SET active = false WHERE id = :test-id RETURNING TRUE
 
--- :name remove-question! :! :n
+-- :name remove-question! :! :raw
 -- :doc remove a question given the test-id
 DELETE FROM question_tests WHERE test_id = :test-id AND question_id = :question-id  RETURNING TRUE
 
--- :name remove-answer! :! :1
+-- :name remove-answer! :! :raw
 -- :doc remove an answer given the question-id
 DELETE FROM answers WHERE question_id = :question-id AND id = :answer-id RETURNING TRUE
 

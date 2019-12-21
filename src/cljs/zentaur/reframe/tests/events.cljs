@@ -187,7 +187,7 @@
  (fn
    [db [_ response]]
    (let [_ (.log js/console (str ">>> RESPSNE AFEREDELET ANSWER  >>>>> " response ))
-         ;;question-id (keyword (str qid))
+         question-id (keyword (str "s"))
          ]
      (-> db
          (update-in [:questions question-id :answers] dissoc (keyword (str question-id)))
@@ -196,21 +196,22 @@
 (re-frame/reg-event-fx        ;; <-- note the `-fx` extension
  :delete-answer               ;; <-- the event id
  (fn                           ;; <-- the handler function
-   [cofx [_ answer-id]]       ;; <-- 1st argument is coeffect, from which we extract db
-   (.log js/console (str ">>> Delete  answer-id >>>>> " answer-id))
+   [cofx [_ data]]       ;; <-- 1st argument is coeffect, from which we extract db
+   (.log js/console (str ">>> Delete  answer data >>>>> " data))
    (when (js/confirm "Delete answer?")
-    (let [db         (:db cofx)
-          test-id    (.-value (gdom/getElement "test-id"))
-          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-        ;; we return a map of  v(side) effects
-        {:http-xhrio {:method          :delete
-                      :uri             "/admin/tests/deleteanswer"
-                      :format          (ajax/json-request-format)
-                      :params          {:answer-id answer-id}
-                      :headers         {"x-csrf-token" csrf-field}
-                      :response-format (ajax/json-response-format {:keywords? true})
-                      :on-success      [:process-after-delete-answer answer-id]
-                      :on-failure      [:bad-response]}}))))
+     (let [db           (:db cofx)
+           answer-id    (:answer-id data)
+           question-id  (:question-id data)
+           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+       ;; we return a map of  v(side) effects
+       {:http-xhrio {:method          :delete
+                     :uri             "/admin/tests/deleteanswer"
+                     :format          (ajax/json-request-format)
+                     :params          {:answer-id answer-id :question-id question-id}
+                     :headers         {"x-csrf-token" csrf-field}
+                     :response-format (ajax/json-response-format {:keywords? true})
+                     :on-success      [:process-after-delete-answer]
+                     :on-failure      [:bad-response]}}))))
 
 (re-frame/reg-event-db
  :process-after-update-question

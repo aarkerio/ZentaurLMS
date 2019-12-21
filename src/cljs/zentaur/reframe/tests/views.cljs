@@ -45,7 +45,8 @@
        [:div [:input.btn {:type "button" :value "Save"
                           :on-click #(re-frame.core/dispatch [:update-answer {:answer @aanswer :correct @acorrect :id id}])}]]])))
 
-(defn display-answer [{:keys [id answer correct question-id key] :as answer-record}]
+(defn display-answer [{:keys [id answer correct question_id key] :as answer-record}]
+  (.log js/console (str ">>> answer-record >>>>> " answer-record ))
   (let [separator    (str "display-answer-div-" id)
         answer-class (if-not correct "all-width-red" "all-width-green")
         answer-text  (if-not correct "answer-text-red" "answer-text-green")
@@ -73,7 +74,7 @@
         [:img.img-float-right {:title    "Antwort löschen"
                                :alt      "Antwort löschen"
                                :src      "/img/icon_delete.png"
-                               :on-click #(re-frame/dispatch [:delete-answer {:answer-id id :question-id question-id}])}]]])))
+                               :on-click #(re-frame/dispatch [:delete-answer {:answer-id id :question-id question_id}])}]]])))
 
 (defn input-new-answer
   "Note: this is one-way bound to the global atom, it doesn't subscribe to it"

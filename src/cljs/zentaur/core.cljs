@@ -131,7 +131,7 @@
          :error-handler error-handler})))
 
 (defn ^:export deletetest [test-id]
-  (when (js/confirm (str "Delete test?"))
+  (when (js/confirm "Delete test?")
     (delete-test test-id)))
 
 (defn ask-csrf [csrf-field]
@@ -140,7 +140,6 @@
         {:params {:foo "bar!"}
          :headers {"x-csrf-token" csrf-value}
          :handler (fn [value]
-                    (.log js/console (str ">>> VALUE >>>>> " (:anti-forgery-token value) ))
                     (set! (.-value csrf-field) (:anti-forgery-token value)))
          :error-handler error-handler})))
 

@@ -122,5 +122,6 @@
 
 (defn remove-answer [params]
   (let [new-map  {:answer-id (:answer-id params) :question-id (:question-id params) }
-        result   (db/remove-answer! new-map)]
+        result   (db/remove-answer! new-map)
+        _ (log/info (str ">>> AFTER DELETE ANSWER  >>>>> " result))]
     (assoc new-map :ok result)))
