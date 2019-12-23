@@ -89,6 +89,13 @@
         response (model-test/get-test-nodes test-id user-id)]
     (response/ok (ches/encode response non-ascii))))
 
+(defn export-test
+  "GET /admin/tests/exporttest/:id. Create PDF."
+  [{:keys [params]}]
+  (let [test-id  (:id params)
+        user-id  (:user-id params)]
+    (model-test/export-pdf test-id user-id)))
+
 (defn delete-test
   "DELETE /admin/tests/deletetest. JSON response."
   [{:keys [params]}]

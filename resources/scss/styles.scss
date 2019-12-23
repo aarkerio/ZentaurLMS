@@ -1,5 +1,5 @@
 /* ------------- My Typography ----------------- */
-
+/**  $ sass scss/styles.scss public/css/styles.css **/
 /*** importing extras ***/
 
 @import "libs/extra";
@@ -10,7 +10,7 @@ $font-stack:    Helvetica, sans-serif;
 $font-main: 'Open Sans', sans-serif;
 $primary-color: #333;
 $table-cell-padding:	0.5em 0.75em;
-
+$my-green-color: #0b9e00;
 $table-border-color: gray;
 
 $font-size-base:          14px;
@@ -970,7 +970,7 @@ textarea {
     color: green;
 }
 
-.all-width-red{
+.all-width-red {
     font-weight: bold;
     color: red;
 }
@@ -1001,4 +1001,39 @@ table.some-table-class {
     margin: 9px;
     padding:7px;
     background-color: #fff;
+}
+
+/** My boostrap button and link **/
+.btn-outline-primary-green {
+  color: $my-green-color;
+  border-color: $my-green-color;
+}
+
+.btn-outline-primary-green:hover {
+  color: #fff;
+  background-color: $my-green-color;
+  border-color: $my-green-color;
+}
+
+.btn-outline-primary-green:focus, .btn-outline-primary-green.focus {
+  box-shadow: 0 0 0 0.2rem rgba(11, 158, 0, 0.5);
+}
+
+.btn-outline-primary-green.disabled, .btn-outline-primary-green:disabled {
+  color: $my-green-color;
+  background-color: transparent;
+}
+
+.btn-outline-primary-green:not(:disabled):not(.disabled):active, .btn-outline-primary-green:not(:disabled):not(.disabled).active,
+
+.show > .btn-outline-primary-green.dropdown-toggle {
+  color: #fff;
+  background-color: $my-green-color;
+  border-color: $my-green-color;
+}
+
+.btn-outline-primary-green:not(:disabled):not(.disabled):active:focus, .btn-outline-primary-green:not(:disabled):not(.disabled).active:focus,
+
+.show > .btn-outline-primary-green.dropdown-toggle:focus {
+  box-shadow: 0 0 0 0.2rem rgba(11, 158, 0, 0.5);
 }

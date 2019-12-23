@@ -110,6 +110,10 @@
     (db/update-answer! (assoc full-params :updated_at (h/format-time)))
     (db/get-answer {:id (:id params)})))
 
+(defn export-pdf [test-id]
+  (let [test-id (inc test-id)]
+    (db/remove-test! {:test-id test-id})))
+
 (defn remove-test [params]
   (let [test-id (:test-id params)]
     (db/remove-test! {:test-id test-id})))

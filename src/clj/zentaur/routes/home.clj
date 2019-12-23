@@ -24,6 +24,7 @@
    ["/posts/new"            {:get  cont-posts/admin-new}]
    ["/tests"                {:get  cont-tests/admin-index :post cont-tests/create-test}]
    ["/tests/edit/:id"       {:get  cont-tests/admin-edit}]
+   ["/tests/exporttest/:id" {:get  cont-tests/export-test}]
    ["/tests/load"           {:post cont-tests/load-json}]
    ["/tests/createquestion" {:post cont-tests/create-question}]
    ["/tests/updatequestion" {:post cont-tests/update-question}]
