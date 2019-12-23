@@ -45,7 +45,8 @@
        [:div [:input.btn {:type "button" :value "Save"
                           :on-click #(re-frame.core/dispatch [:update-answer {:answer @aanswer :correct @acorrect :id id}])}]]])))
 
-(defn display-answer [{:keys [id answer correct question-id key] :as answer-record}]
+(defn display-answer [{:keys [id answer correct question_id key] :as answer-record}]
+  (.log js/console (str ">>> answer-record >>>>> " answer-record ))
   (let [separator    (str "display-answer-div-" id)
         answer-class (if-not correct "all-width-red" "all-width-green")
         answer-text  (if-not correct "answer-text-red" "answer-text-green")
@@ -73,7 +74,7 @@
         [:img.img-float-right {:title    "Antwort löschen"
                                :alt      "Antwort löschen"
                                :src      "/img/icon_delete.png"
-                               :on-click #(re-frame/dispatch [:delete-answer {:answer-id id :question-id question-id}])}]]])))
+                               :on-click #(re-frame/dispatch [:delete-answer {:answer-id id :question-id question_id}])}]]])))
 
 (defn input-new-answer
   "Note: this is one-way bound to the global atom, it doesn't subscribe to it"
@@ -178,7 +179,7 @@
   "Display any type of question"
   [{:keys [question explanation hint qtype id ordnen key] :as q}]
   (let [editing (reagent/atom false)]
-    (fn []
+    (fn [{:keys [question explanation hint qtype id ordnen key] :as q}]
       [:div.div-question-row {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
        [:div.edit-icon-div {:key (str "edit-icon-div-" id) :id (str "edit-icon-div-" id)}
         (if @editing
@@ -207,12 +208,12 @@
               :alt    "Frage löschen"
               :key    (str "frage-btn-x-" id)
               :id     (str "frage-btn-x-" id)
-              :on-click #(re-frame/dispatch [:delete-question id])}]]])
-    ))
+              :on-click #(re-frame/dispatch [:delete-question id])}]]]
+     )))
 
 (defn questions-list
   []
-  (let [counter       (reagent/atom 0)]
+  (let [counter (reagent/atom 0)]
       [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
        (for [question @(re-frame/subscribe [:questions])]
          [question-item (assoc (second question) :key (swap! counter inc))])]))

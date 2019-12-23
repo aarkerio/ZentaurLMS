@@ -6,6 +6,7 @@
                  [cljs-ajax "0.8.0"]                     ;; simple Ajax client for ClojureScript and Clojure
                  [clj-commons/secretary "1.2.4"]         ;; A client-side router for ClojureScript.
                  [cljs-http "0.1.46"]                    ;; cljs-http returns core.async channels
+                 [clj-pdf "2.4.0"]                       ;; PDF generation library
                  [clojure.java-time "0.3.2"]             ;; Java 8 Date-Time API for Clojure
                  [com.cognitect/transit-clj "0.8.319"]   ;; Marshalling Transit data to/from Clojure
                  [com.novemberain/pantomime "2.11.0"]    ;; A tiny Clojure library that deals with MIME types
@@ -34,14 +35,14 @@
                  [ring/ring-defaults "0.3.2"]            ;;  Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
                  [selmer "1.12.12"]                      ;;  Templates
                  [slugify "0.0.1"]]
-  :managed-dependencies [[org.clojure/core.rrb-vector "0.0.13"]
+  :managed-dependencies [[org.clojure/core.rrb-vector "0.0.13"]  ;; necessary for JDK 11
                          [org.flatland/ordered "1.5.7"]]
   :min-lein-version "2.0.0"
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj"]
   :resource-paths ["resources" "target/cljsbuild"]
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
-            "fig:dev" ["with-profile" "dev" "trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
+            "fig:dev" ["trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
             "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "deploy"]
             "l:test" ["test" ":only" "zentaur.model.tests-test/test-fuction"]
             "l:bl" ["test" ":only" "business-logic"]}

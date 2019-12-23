@@ -12,7 +12,15 @@ CREATE TABLE tests(
   instructions VARCHAR(300),
   level INT NOT NULL DEFAULT 1,
   active BOOLEAN NOT NULL DEFAULT true,
+  archived BOOLEAN NOT NULL DEFAULT false,
   shared BOOLEAN NOT NULL DEFAULT true,
   created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
   updated_at timestamp(0) with time zone
  );
+
+CREATE RULE test_del_protect AS ON DELETE TO tests DO INSTEAD NOTHING;
+
+COMMENT on column tests.origin is 'OPTIONAL. URL Where the test came from. Only used if the test was imported';
+COMMENT on column tests.active is 'This boolean flag acts as a fake delete since a test is actually never deleted';
+COMMENT on column tests.archived is 'Flag marks a test disposed bythe user';
+COMMENT on column tests.level is 'Diffcult leve, id est, how hard is the test';

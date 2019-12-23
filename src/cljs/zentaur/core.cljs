@@ -1,5 +1,5 @@
 (ns zentaur.core
-  (:require [ajax.core :refer [GET POST]]
+  (:require [ajax.core :refer [GET POST DELETE]]
             [cljs.loader :as loader]
             [clojure.string :as s]
             [goog.dom :as gdom]
@@ -122,13 +122,24 @@
                            toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
                        (set! (.-className divh) toggle))))))
 
+(defn delete-test [test-id]
+  (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+    (DELETE "/admin/tests/deletetest"
+        {:params  {:test-id test-id}
+         :headers {"x-csrf-token" csrf-field}
+         :handler (fn [] (set! js/window.location.href "/admin/tests"))
+         :error-handler error-handler})))
+
+(defn ^:export deletetest [test-id]
+  (when (js/confirm "Delete test?")
+    (delete-test test-id)))
+
 (defn ask-csrf [csrf-field]
   (when-let [csrf-value  (.-value csrf-field)]
     (POST "/uploads/token"
         {:params {:foo "bar!"}
          :headers {"x-csrf-token" csrf-value}
          :handler (fn [value]
-                    (.log js/console (str ">>> VALUE >>>>> " (:anti-forgery-token value) ))
                     (set! (.-value csrf-field) (:anti-forgery-token value)))
          :error-handler error-handler})))
 
@@ -139,7 +150,7 @@
 
 (defn ^:export init []
   (flash-timeout)
-  ;; (refresh-csrf)
+  (refresh-csrf)
   (let [current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> **** tatsächliche: current. Jedoch However**** >>>>> " current_url))]
     (cond

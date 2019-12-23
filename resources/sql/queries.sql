@@ -1,4 +1,5 @@
 /****
+  HugSQL is a Clojure library for embracing SQL.
   Structure: :name :command :result
   Type of commands
      :? = fetch (query)
@@ -73,7 +74,7 @@ FROM
     ON p.user_id = u.id
 WHERE
     p.user_id = :user-id
-ORDER BY p.id DESC;
+ORDER BY p.id DESC
 
 /*******************  UPLOADS   ***/
 
@@ -148,11 +149,7 @@ INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question-id,
 
 -- :name get-tests :? :*
 -- :doc retrieve a test given the id.
-SELECT * FROM tests WHERE user_id = :user-id AND active = true ORDER BY id DESC
-
--- :name admin-get-tests :? :*
--- :doc retrieve all tests.
-SELECT * FROM tests WHERE active = true ORDER BY id DESC LIMIT 10
+SELECT * FROM tests WHERE user_id = :user-id AND active = true AND archived = false ORDER BY id DESC
 
 -- :name get-one-test :? :1
 -- :doc retrieve a test given the id.
@@ -182,14 +179,17 @@ SELECT ordnen FROM answers WHERE question_id = :question-id ORDER BY ordnen DESC
 -- :doc retrieve all tests.
 SELECT id, question_id, answer, correct FROM answers WHERE question_id = :question-id  ORDER BY ordnen DESC
 
--- :name delete-test! :! :n
+-- :name remove-test! :! :1
 -- :doc delete a test given the id
-DELETE FROM tests WHERE id = :id
+UPDATE tests SET active = false WHERE id = :test-id RETURNING TRUE
 
-remove-question!
--- :name remove-question! :! :n
+-- :name remove-question! :! :raw
 -- :doc remove a question given the test-id
-DELETE FROM question_tests WHERE test_id = :test-id AND question_id = :question-id
+DELETE FROM question_tests WHERE test_id = :test-id AND question_id = :question-id  RETURNING TRUE
+
+-- :name remove-answer! :! :raw
+-- :doc remove an answer given the question-id
+DELETE FROM answers WHERE question_id = :question-id AND id = :answer-id RETURNING TRUE
 
 /**** ROLES   ****/
 
@@ -245,7 +245,7 @@ WHERE email = :email AND password = :password
 
 -- :name delete-user! :! :n
 -- :doc delete a user given the id
-DELETE FROM users WHERE id = :id
+DELETE FROM users WHERE id = :id  RETURNING TRUE
 
 -- :name delete-all-tables! :! :n
 -- :doc delete all contest ONLY in TEST env

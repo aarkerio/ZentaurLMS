@@ -7,11 +7,12 @@
 
 (defn formatted-test [{:keys [title created_at tags published id]}]
   [:tr
-    [:td [:a {:href (str "/admin/tests/edit/" id)}  "Edit"]]
-    [:td title]
-    [:td tags]
-    [:td created_at]
-    [:td [:a {:href (str "/admin/tests/delete/" id)}  "Delete"]]])
+   [:td [:a {:class "btn btn-outline-primary-green" :href (str "/admin/tests/edit/" id)}  "Edit"]]
+   [:td title]
+   [:td tags]
+   [:td created_at]
+   [:td [:a {:class "btn btn-outline-primary-green" :href  (str "/admin/tests/exporttest/" id)} "Export"]]
+   [:td [:button {:class "btn btn-outline-primary-green" :onClick (str "zentaur.core.deletetest("id")")} "Löschen"]]])
 
 (defn- form-new [csrf-field]
   [:div.hidden-div {:id "hidden-form"}
@@ -33,24 +34,24 @@
        [:table {:class "some-table-class"}
          [:thead
            [:tr
-             [:th "Bearbeiten"]
-             [:th "Titel"]
-             [:th "Stichworte"]
-             [:th "Erstellt"]
-             [:th "Löschen"]]]
+            [:th "Bearbeiten"]
+            [:th "Titel"]
+            [:th "Stichworte"]
+            [:th "Erstellt"]
+            [:th "Export"]
+            [:th "Löschen"]]]
           [:tbody formatted-tests]]]
       [:nav {:class "blog-pagination"}
-        [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
-        [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
+        [:a {:class "btn btn-outline-primary-green" :href "#"} "Older"]
+        [:a {:class "btn btn-outline-primary-green disabled" :href "#"} "Newer"]]]))
 
 (defn edit [base test-id]
   [:div
     [:h1 "Bearbeiten Quizz Test"]
     [:div {:id "cont"}
       (f/form-to [:post ""]
-        (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
-        (f/hidden-field { :value test-id} "test-id")
-        (f/hidden-field { :value (get-in base [:identity :id])} "user-id")
-        )]
+        (f/hidden-field {:value (:csrf-field base)} "__anti-forgery-token")
+        (f/hidden-field {:value test-id} "test-id")
+        (f/hidden-field {:value (get-in base [:identity :id])} "user-id"))]
     [:div {:id "test-root-app"}]])
 
