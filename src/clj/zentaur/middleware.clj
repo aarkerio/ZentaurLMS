@@ -13,9 +13,7 @@
             [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
             [zentaur.env :refer [defaults]]
             [zentaur.layout :refer [error-page]]
-            [zentaur.middleware.formats :as formats])
-  (:import
-           ))
+            [zentaur.middleware.formats :as formats]))
 
 (defn wrap-internal-error [handler]
   (fn [req]

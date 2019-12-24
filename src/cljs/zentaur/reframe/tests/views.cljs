@@ -31,45 +31,35 @@
        [:div "Answer: " [:br]
         [:input {:type      "text"
                  :value     @aanswer
-                 :key       (str "edit-answer-text-" id)
-                 :id        (str "edit-answer-text-" id)
                  :maxLength 180
                  :size      40
                  :on-change #(reset! aanswer (-> % .-target .-value))}]]
        [:input {:type      "checkbox"
                 :title     "richtig?"
-                :key       (str "edit-answer-box-" id)
-                :id        (str "edit-answer-box-" id)
                 :checked   @acorrect
                 :on-change #(swap! acorrect not)}]
-       [:div [:input.btn {:type "button" :value "Save"
+       [:div [:input.btn {:type "button" :value "Speichern"
                           :on-click #(re-frame.core/dispatch [:update-answer {:answer @aanswer :correct @acorrect :id id}])}]]])))
 
 (defn display-answer [{:keys [id answer correct question_id key] :as answer-record}]
-  (.log js/console (str ">>> answer-record >>>>> " answer-record ))
-  (let [separator    (str "display-answer-div-" id)
-        answer-class (if-not correct "all-width-red" "all-width-green")
-        answer-text  (if-not correct "answer-text-red" "answer-text-green")
-        editing      (reagent/atom false)]
+  (let [answer-class    (if-not correct "all-width-red" "all-width-green")
+        answer-text     (if-not correct "answer-text-red" "answer-text-green")
+        editing-answer  (reagent/atom false)]
     (fn []
-      [:div {:id separator :key separator}
+      [:div
        [:div {:class answer-class}
         [:div.edit-icon-div
-         (if @editing
+         (if @editing-answer
            [:img.img-float-right {:title    "Antwort abbrechen"
                                   :alt      "Antwort abbrechen"
-                                  :key      (str "cancel-answer-img-" id)
-                                  :id       (str "cancel-answer-img-" id)
                                   :src      "/img/icon_cancel.png"
-                                  :on-click #(swap! editing not)}]
+                                  :on-click #(swap! editing-answer not)}]
            [:img.img-float-right {:title    "Frage bearbeiten"
                                   :alt      "Frage bearbeiten"
-                                  :key      (str "edit-question-img-" id)
-                                  :id       (str "edit-question-img-" id)
                                   :src      "/img/icon_edit.png"
-                                  :on-click #(swap! editing not)}])]
-        (when @editing
-          (answer-editing-input answer-record))
+                                  :on-click #(swap! editing-answer not)}])]
+        (when @editing-answer
+          [answer-editing-input answer-record])
         [:span {:class answer-text} (str key ".-  ("correct")")] "   " answer
         [:img.img-float-right {:title    "Antwort löschen"
                                :alt      "Antwort löschen"
@@ -80,10 +70,9 @@
   "Note: this is one-way bound to the global atom, it doesn't subscribe to it"
   [{:keys [question-id on-stop props]}]
   (let [inner       (reagent/atom "")
-        checked     (reagent/atom false)
-        keyed-div   (str "div-sep-" question-id)]
+        checked     (reagent/atom false)]
     (fn []
-      [:div.div-new-answer {:id keyed-div :key keyed-div}
+      [:div.div-new-answer
        [:input (merge props
                       {:type        "text"
                        :maxLength   180
@@ -94,12 +83,8 @@
                                           27 (on-stop) ; esc
                                           nil)})]
        [:input.btn {:type "checkbox" :title "Richtig?" :aria-label "Richting?"
-                    :key (str "new-answer-box-"question-id)
-                    :id (str "new-answer-box-"question-id)
                     :checked @checked :on-change #(swap! checked not)}]
        [:input.btn {:type "button" :value "Antwort hinzufügen"
-                    :key (str "new-answer-btn" question-id)
-                    :id  (str "new-answer-btn" question-id)
                     :on-click #(do (re-frame/dispatch [:create-answer {:question-id question-id
                                                                        :correct @checked
                                                                        :answer @inner}])
@@ -113,7 +98,8 @@
 (defmethod display-question 1
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
   (let [counter (reagent/atom 0)]
-    [:div [input-new-answer {:question-id id :on-stop #(js/console.log "stopp") :props {:placeholder "New answer"}}]
+    [:div
+     [input-new-answer {:question-id id :on-stop #(js/console.log "stop") :props {:placeholder "New answer"}}]
      (for [answer (:answers q)]
        [display-answer (assoc (second answer) :key (swap! counter inc))])]))
 
@@ -139,37 +125,32 @@
        [:div "Question: " [:br]
         [:input {:type      "text"
                  :value     @aquestion
-                 :key       (str "edit-question-id-" id)
-                 :id        (str "edit-question-id-" id)
                  :maxLength 180
                  :size      100
                  :on-change #(reset! aquestion (-> % .-target .-value))}]]
        [:div "Hint: " [:br]
         [:input {:type      "text"
                  :value     @ahint
-                 :key       (str "edit-hint-id-" id)
-                 :id        (str "edit-hint-id-" id)
                  :maxLength 180
                  :size      100
                  :on-change #(reset! ahint (-> % .-target .-value))}]]
        [:div "Explanation: " [:br]
         [:input {:type      "text"
                  :value     @aexplanation
-                 :key       (str "edit-hint-id-" id)
-                 :id        (str "edit-hint-id-" id)
                  :maxLength 180
                  :size      100
                  :on-change #(reset! aexplanation (-> % .-target .-value))}]]
-       [:div.div-separator {:id "question-qtype-div" :key "question-qtype-div"}
+       [:div.div-separator
         [:select.form-control.mr-sm-2 {:name      "qtype"
                                        :value     @aqtype
                                        :on-change #(reset! aqtype (-> % .-target .-value))
-                                       :id        "qtype-select"}
+                                       :id        (str "edit-qtype-select-" id)}
          [:option {:value "1"} "Multiple"]
          [:option {:value "2"} "Open"]
          [:option {:value "3"} "Fullfill"]
          [:option {:value "4"} "Columns"]]]
-       [:div [:input.btn {:type "button" :value "Save"
+       [:div [:input.btn {:type  "button"
+                          :value "Save"
                           :on-click #(re-frame.core/dispatch [:update-question {:question    @aquestion
                                                                                 :hint        @ahint
                                                                                 :id          id
@@ -177,46 +158,43 @@
                                                                                 :explanation @aexplanation}])}]]])))
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen key] :as q}]
-  (let [editing (reagent/atom false)]
-    (fn [{:keys [question explanation hint qtype id ordnen key] :as q}]
-      [:div.div-question-row {:key (str "div-question-separator-" id) :id (str "div-question-separator-" id)}
-       [:div.edit-icon-div {:key (str "edit-icon-div-" id) :id (str "edit-icon-div-" id)}
-        (if @editing
+  [{:keys [question explanation hint qtype id ordnen counter] :as q}]
+  (let [editing-question (reagent/atom false)]
+    (fn []
+      [:div.div-question-row
+       [:div.edit-icon-div
+        (if @editing-question
           [:img.img-float-right {:title    "Frage abbrechen"
                                  :alt      "Frage abbrechen"
-                                 :key      (str "cancel-question-img-" id)
-                                 :id       (str "cancel-question-img-" id)
                                  :src      "/img/icon_cancel.png"
-                                 :on-click #(swap! editing not)}]
+                                 :on-click #(swap! editing-question not)}]
           [:img.img-float-right {:title    "Frage bearbeiten"
                                  :alt      "Frage bearbeiten"
-                                 :key      (str "edit-question-img-" id)
-                                 :id       (str "edit-question-img-" id)
                                  :src      "/img/icon_edit.png"
-                                 :on-click #(swap! editing not)}])]  ;; editing ends
+                                 :on-click #(swap! editing-question not)}])]  ;; editing ends
      [:div.question-elements
-       [:div {:key (str "div-question-" id) :id (str "div-question-" id)} [:span.bold-font (str key ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
-       [:div {:key (str "div-hint-" id)     :id (str "div-hint-" id)}     [:span.bold-font "Hint: "] hint]
-       [:div {:key (str "div-explan-" id)   :id (str "div-explan-" id)}   [:span.bold-font "Erläuterung: "] explanation]]
-     (when @editing
-       (edit-question q))
-       (display-question q) ;; Polimorphysm for the kind of question
+       [:div [:span.bold-font (str counter ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+       [:div [:span.bold-font "Hint: "] hint]
+       [:div [:span.bold-font "Erläuterung: "] explanation]]
+     (when @editing-question
+       [edit-question q])
+       [display-question q] ;; Polimorphysm for the kind of question
      [:div.img-delete-right
        [:img {:src    "/img/icon_delete.png"
               :title  "Frage löschen"
               :alt    "Frage löschen"
-              :key    (str "frage-btn-x-" id)
-              :id     (str "frage-btn-x-" id)
               :on-click #(re-frame/dispatch [:delete-question id])}]]]
      )))
 
 (defn questions-list
   []
-  (let [counter (reagent/atom 0)]
-      [:section {:key (str "question-list-key-" @counter) :id (str "question-list-key-" @counter)}
+  (let [counter (atom 0)]
+      [:section
        (for [question @(re-frame/subscribe [:questions])]
-         [question-item (assoc (second question) :key (swap! counter inc))])]))
+         (do
+           (swap! counter inc)
+           (.log js/console (str ">>> counter KEY >>>>> " @counter))
+           ^{:key @counter} [question-item (assoc (second question) :counter @counter)]))]))
 
 (defn question-entry
   "Verstecken Form for a nue fragen"
@@ -229,40 +207,33 @@
     (fn []
       [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
        [:h3.class "Hinzifugen neue fragen"]
-       [:div.div-separator {:id "question-title-div" :key "question-title-div"}
+       [:div.div-separator
         [:input {:type         "text" :value @new-question
-                 :id           "new-question"
-                 :key          "new-question"
                  :placeholder  "Neu Frage"
                  :title        "Neu Frage"
                  :maxLength    180
                  :on-change    #(reset! new-question (-> % .-target .-value))
                  :size         100}]]
-       [:div.div-separator {:id "question-hint-div" :key "question-hint-div"}
+       [:div.div-separator
         [:input {:type         "text"
                  :value        @hint
                  :on-change    #(reset! hint (-> % .-target .-value))
-                 :id           "question-hint"
-                 :key          "question-hint"
                  :placeholder  "Frage Hinweis"
                  :title        "Frage Hinweis"
                  :maxLength    180
                  :size         100}]]
-       [:div.div-separator {:id "question-explanation-div" :key "question-explanation-div"}
+       [:div.div-separator
         [:input {:type         "text"
                  :value        @explanation
-                 :id           "explanation-description"
-                 :key          "explanation-description"
                  :on-change    #(reset! explanation (-> % .-target .-value))
                  :placeholder  "Question explanation"
                  :title        "Question explanation"
                  :maxLength    180
                  :size         100}]]
-       [:div.div-separator {:id "question-qtype-div" :key "question-qtype-div"}
+       [:div.div-separator
         [:select.form-control.mr-sm-2 {:name      "qtype"
                                        :value     @qtype
-                                       :on-change #(reset! qtype (-> % .-target .-value))
-                                       :id        "qtype-select"}
+                                       :on-change #(reset! qtype (-> % .-target .-value))}
          [:option {:value "1"} "Multiple"]
          [:option {:value "2"} "Open"]
          [:option {:value "3"} "Fullfill"]
@@ -296,5 +267,5 @@
       [test-display]
       [question-entry]
       [questions-list]]
-     [:footer#info
+     [:div {:class "footer"}
       [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))
