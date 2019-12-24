@@ -2,8 +2,9 @@
   HugSQL is a Clojure library for embracing SQL.
   Structure: :name :command :result
   Type of commands
-     :? = fetch (query)
-     :! = execute (statetment like INSERT)
+     :?  = fetch (query)
+     :!  = execute (statetment like INSERT) RETURNING DOESN'T WORK WITH THIS
+     :<! = returning-execute, for INSERT or DELETE with RETURNING
   Type of results:
     :* = vectors [1, 3, 4]
     :affected or :n = number of rows affected (inserted/updated/deleted)
@@ -13,11 +14,11 @@
 
 /*************************** POSTS ***/
 
--- :name save-message! :! :n
+-- :name save-message! :<! :n
 -- :doc creates a new message record
 INSERT INTO comments
 (title, body, tags, published, discution, slug)
-VALUES (:title, :body, :tags, :published, :discution, :slug)
+VALUES (:title, :body, :tags, :published, :discution, :slug) RETURNING id
 
 -- :name get-posts :? :*
 -- :doc retrieve array posts given the id.
@@ -35,7 +36,7 @@ SELECT * FROM posts WHERE id = :id
 -- :doc creates a new post record
 INSERT INTO posts
 (title, body, published, discution, tags, user_id, slug)
-VALUES (:title, :body, :published, :discution, :tags, :user_id, :slug)
+VALUES (:title, :body, :published, :discution, :tags, :user_id, :slug) RETURNING id
 
 -- :name update-post! :! :n
 -- :doc update an existing post record
@@ -82,7 +83,7 @@ ORDER BY p.id DESC
 -- :doc creates a new upload record
 INSERT INTO uploads
 (filename, active, tags, user_id, created_at, hashvar, done)
-VALUES (:filename, :active, :tags, :user-id, :created_at, :hashvar, :done) returning id
+VALUES (:filename, :active, :tags, :user-id, :created_at, :hashvar, :done) RETURNING id
 
 -- :name get-uploads :? :*
 -- :doc retrieve uploads given the user id.
@@ -104,14 +105,14 @@ SELECT id FROM uploads WHERE hashvar = :hashvar
 INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id)
 VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id) returning id
 
--- :name create-minimal-test! :! :n
+-- :name create-minimal-test! :<! :n
 -- :doc creates a minimal test record
-INSERT INTO tests (title, tags, user_id) VALUES (:title, :tags, :user-id)
+INSERT INTO tests (title, tags, user_id) VALUES (:title, :tags, :user-id) RETURNING id
 
 -- :name create-question! :<!
 -- :doc creates a new question record
 INSERT INTO questions (question, qtype, hint, explanation, active, user_id)
-VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) returning id
+VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) RETURNING id
 
 -- :name update-question! :! :affected
 -- :doc updates a question record
@@ -145,7 +146,7 @@ INSERT INTO question_tests (question_id, test_id, ordnen) VALUES (:question-id, 
 
 -- :name create-answer! :<!
 -- :doc creates a new answer record
-INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question-id, :answer, :correct, :ordnen) returning id
+INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question-id, :answer, :correct, :ordnen) RETURNING id
 
 -- :name get-tests :? :*
 -- :doc retrieve a test given the id.
@@ -179,15 +180,15 @@ SELECT ordnen FROM answers WHERE question_id = :question-id ORDER BY ordnen DESC
 -- :doc retrieve all tests.
 SELECT id, question_id, answer, correct FROM answers WHERE question_id = :question-id  ORDER BY ordnen DESC
 
--- :name remove-test! :! :1
+-- :name remove-test! :<! :1
 -- :doc delete a test given the id
 UPDATE tests SET active = false WHERE id = :test-id RETURNING TRUE
 
--- :name remove-question! :! :raw
+-- :name remove-question! :<! :raw
 -- :doc remove a question given the test-id
 DELETE FROM question_tests WHERE test_id = :test-id AND question_id = :question-id  RETURNING TRUE
 
--- :name remove-answer! :! :raw
+-- :name remove-answer! :<! :1
 -- :doc remove an answer given the question-id
 DELETE FROM answers WHERE question_id = :question-id AND id = :answer-id RETURNING TRUE
 
@@ -243,10 +244,11 @@ WHERE active = :active ORDER BY id DESC
 SELECT id, fname, lname, uname, email, admin FROM users
 WHERE email = :email AND password = :password
 
--- :name delete-user! :! :n
+-- :name delete-user! :<! :n
 -- :doc delete a user given the id
 DELETE FROM users WHERE id = :id  RETURNING TRUE
 
 -- :name delete-all-tables! :! :n
 -- :doc delete all contest ONLY in TEST env
+DROP RULE test_del_protect ON tests;
 TRUNCATE pages, composite_answers, roles, users, posts, question_tests, tests, uploads, questions, answers, comments

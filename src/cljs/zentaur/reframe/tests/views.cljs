@@ -196,7 +196,9 @@
          (do
            (swap! counter inc)
            (.log js/console (str ">>> counter KEY >>>>> " @counter))
-           ^{:key @counter} [question-item (assoc (second question) :counter @counter)]))])))
+            [question-item (assoc (second question) :counter @counter :key @counter)]
+            ))]
+      )))
 
 (defn question-entry
   "Verstecken Form for a neue fragen"

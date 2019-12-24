@@ -86,13 +86,10 @@
   "Get and convert to map keyed"
   [test-id]
   (let [questions  (db/get-questions { :test-id test-id })
-        _          (log/info (str ">>> QUESTIONS >>>>> " (pr-str questions)))
-        index-seq  (map #(keyword (str (% :id))) questions)
-        _          (log/info (str ">>> index-seq >>>>> " (pr-str index-seq)))]
+        index-seq  (map #(keyword (str (% :id))) questions)]
     (->> questions
          (map get-answers)
-         (zipmap index-seq)  ;; add the index
-         )))
+         (zipmap index-seq))))
 
 (defn get-test-nodes
   "JSON response for the API"
@@ -123,7 +120,5 @@
     (db/remove-question! {:test-id test-id :question-id question-id})))
 
 (defn remove-answer [params]
-  (let [new-map  {:answer-id (:answer-id params) :question-id (:question-id params) }
-        result   (db/remove-answer! new-map)
-        _ (log/info (str ">>> AFTER DELETE ANSWER  >>>>> " result))]
-    (assoc new-map :ok result)))
+  (let [result   (db/remove-answer! params)]
+    (assoc params :ok (:bool result))))

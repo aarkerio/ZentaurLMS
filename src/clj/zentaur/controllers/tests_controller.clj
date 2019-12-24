@@ -110,5 +110,4 @@
 (defn delete-answer
   "DELETE /admin/tests/deleteanswer. JSON response."
   [{:keys [params]}]
-  (log/info (str ">>> PARAMs  delete-answer XXXX >>>>> " params))
     (response/ok {:response (model-test/remove-answer params)}))

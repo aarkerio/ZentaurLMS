@@ -186,11 +186,12 @@
  []
  (fn
    [db [_ response]]
-   (let [_ (.log js/console (str ">>> RESPSNE AFEREDELET ANSWER  >>>>> " response ))
-         question-id (keyword (str "s"))
-         ]
+   (let [_           (.log js/console (str ">>> RESPONSE AFTER DELETE ANSWER  >>>>> " response ))
+         answer      (:response response)
+         question-id (keyword (str (:question-id answer)))
+         answer-id   (keyword (str (:answer-id answer)))]
      (-> db
-         (update-in [:questions question-id :answers] dissoc (keyword (str question-id)))
+         (update-in [:questions question-id :answers] dissoc answer-id)
          (update :loading? not)))))
 
 (re-frame/reg-event-fx        ;; <-- note the `-fx` extension
