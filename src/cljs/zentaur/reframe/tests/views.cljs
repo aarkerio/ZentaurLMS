@@ -98,10 +98,11 @@
 (defmethod display-question 1
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
   (let [counter (reagent/atom 0)]
+    (fn [{:keys [question explanation hint qtype id ordnen] :as q}]
     [:div
-     [input-new-answer {:question-id id :on-stop #(js/console.log "stop") :props {:placeholder "New answer"}}]
+     [input-new-answer {:question-id id :on-stop #(js/console.log "stop") :props {:placeholder "Neue antwort"}}]
      (for [answer (:answers q)]
-       [display-answer (assoc (second answer) :key (swap! counter inc))])]))
+       [display-answer (assoc (second answer) :key (swap! counter inc))])])))
 
 (defmethod display-question 2
   [question]
@@ -189,15 +190,16 @@
 (defn questions-list
   []
   (let [counter (atom 0)]
+    (fn []
       [:section
        (for [question @(re-frame/subscribe [:questions])]
          (do
            (swap! counter inc)
            (.log js/console (str ">>> counter KEY >>>>> " @counter))
-           ^{:key @counter} [question-item (assoc (second question) :counter @counter)]))]))
+           ^{:key @counter} [question-item (assoc (second question) :counter @counter)]))])))
 
 (defn question-entry
-  "Verstecken Form for a nue fragen"
+  "Verstecken Form for a neue fragen"
   []
   (let [qform        (re-frame/subscribe [:qform])
         new-question (reagent/atom "")
@@ -209,8 +211,8 @@
        [:h3.class "Hinzifugen neue fragen"]
        [:div.div-separator
         [:input {:type         "text" :value @new-question
-                 :placeholder  "Neu Frage"
-                 :title        "Neu Frage"
+                 :placeholder  "Neue Frage"
+                 :title        "Neue Frage"
                  :maxLength    180
                  :on-change    #(reset! new-question (-> % .-target .-value))
                  :size         100}]]
@@ -226,8 +228,8 @@
         [:input {:type         "text"
                  :value        @explanation
                  :on-change    #(reset! explanation (-> % .-target .-value))
-                 :placeholder  "Question explanation"
-                 :title        "Question explanation"
+                 :placeholder  "Frage erklärung"
+                 :title        "Frage erklärung"
                  :maxLength    180
                  :size         100}]]
        [:div.div-separator

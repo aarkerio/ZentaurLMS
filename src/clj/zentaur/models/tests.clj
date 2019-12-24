@@ -39,7 +39,6 @@
         _              (link-test-question! question-id test-id)
         last-question  (db/get-last-question {:question-id question-id :test-id test-id})
         full-question  (assoc last-question :answers {})
-        _              (log/info (str ">>> PARfull-questionfull-questionfull-question >>>>> " full-question "      CLASS >>>>" (class (:created_at full-question))))
         all-question (update full-question :created_at #(h/format-time %))
         qid            (:id full-question)]
     (assoc {} qid all-question)))
