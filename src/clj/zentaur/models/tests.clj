@@ -1,7 +1,6 @@
 (ns ^:test-model zentaur.models.tests
   "Business logic for the tests section"
   (:require [clojure.tools.logging :as log]
-            [java-time :as jt]
             [zentaur.db.core :as db]
             [zentaur.libs.helpers :as h]
             [zentaur.models.validations.validations-test :as val-test]))
@@ -54,15 +53,16 @@
 
 (defn update-question! [params]
   (let [qtype       (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
-        full-params (dissoc params :active)]
-    (db/update-question! (assoc full-params :qtype qtype :updated_at (jt/local-date-time)))
-    (db/get-question {:id (:id params)})))
+        full-params (dissoc params :active)
+        _           (db/update-question! (assoc full-params :qtype qtype :updated_at (h/format-time)))
+        question    (db/get-question {:id (:id params)})]
+    (h/update-dates question)))
 
 (defn- ^:private create-new-answer
   [params question-id]
   (let [new-answer     (db/create-answer! params)
         last-answer    (db/get-last-answer {:question-id question-id})
-        updated-answer (update last-answer :created_at #(h/format-time %))]
+        updated-answer (h/update-dates last-answer)]
     (assoc {} (:id updated-answer) updated-answer)))
 
 (defn create-answer! [params]
@@ -78,7 +78,7 @@
   (let [answers          (db/get-answers {:question-id id})
         keys-answers     (map #(assoc % :key (str "keyed-" (:id %))) answers) ;; add a unique key so React doesn't complain.
         index-seq        (map #(keyword (str (% :id))) keys-answers)
-        question-updated (update question :created_at #(h/format-time %))
+        question-updated (h/update-dates question)
         mapped-answers   (zipmap index-seq keys-answers)]
     (assoc question-updated :answers mapped-answers)))
 
@@ -95,7 +95,7 @@
   "JSON response for the API"
   [test-id user-id]
   (let [test          (db/get-one-test { :id test-id :user-id user-id })
-        test-updated  (update test :created_at #(h/format-time %))
+        test-updated  (h/update-dates test)
         questions     (get-questions test-id)]
     (assoc test-updated :questions questions)))
 
@@ -103,8 +103,8 @@
   "Update after editing with ClojureScript"
   [params]
   (let [full-params (dissoc params :active)]
-    (db/update-answer! (assoc full-params :updated_at (h/format-time)))
-    (db/get-answer {:id (:id params)})))
+    (db/update-answer! (assoc full-params :updated_at (h/format-time))
+    (db/get-answer {:id (:id params)}))))
 
 (defn export-pdf [test-id]
   (let [test-id (inc test-id)]

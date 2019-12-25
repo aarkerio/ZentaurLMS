@@ -5,12 +5,18 @@
 
 (defn format-time
   "time is a java.time.LocalDateTime object"
-  ([] (time/format "dd/MM/yyyy HH:ss" (time/local-date-time)))
+  ([] (time/local-date-time))
   ([time]
-   (time/format "dd/MM/yyyy" time)))
+   (if (nil? time)
+     (format-time)
+     (time/format "dd/MM/yyyy" time))))
 
 (defn sanitize [string]
   (c/url-encode string))
+
+(defn update-dates [data]
+  (let [data-one  (update data :created_at #(format-time %))]
+    (update data-one :updated_at #(format-time %))))
 
 (defmulti paginate
   "Paginate the incoming collection/length"

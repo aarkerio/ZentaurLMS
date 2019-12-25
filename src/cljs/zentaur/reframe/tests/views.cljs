@@ -189,14 +189,14 @@
 
 (defn questions-list
   []
-  (let [counter (atom 0)]
+  (let [counter (reagent/atom 1000)]
     (fn []
       [:section
        (for [question @(re-frame/subscribe [:questions])]
          (do
            (swap! counter inc)
            (.log js/console (str ">>> counter KEY >>>>> " @counter))
-            [question-item (assoc (second question) :counter @counter :key @counter)]
+            ^{:key @counter} [question-item (assoc (second question) :counter @counter)]
             ))]
       )))
 

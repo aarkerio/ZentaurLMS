@@ -219,7 +219,8 @@
  []
  (fn
    [db [_ response]]
-   (let [qkeyword  (keyword (str (:id response)))]
+   (let [qkeyword  (keyword (str (:id response)))
+         _ (.log js/console (str ">>> RESPONSE UPDATE QUESTION    >>>>>   " response))]
      (-> db
          (update-in [:questions qkeyword] conj response)
          (update :loading?  not)))))
