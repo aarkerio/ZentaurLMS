@@ -120,17 +120,17 @@ UPDATE questions
 SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, updated_at = :updated_at
 WHERE id = :id
 
--- :name update-question! :! :affected
+-- :name update-question! :>! :1
 -- :doc updates a question record
 UPDATE questions
 SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, updated_at = :updated_at
-WHERE id = :id
+WHERE id = :id RETURNING true
 
--- :name update-answer! :! :affected
+-- :name update-answer! :>! :1
 -- :doc updates an answer record
 UPDATE answers
 SET answer = :answer, correct = :correct, updated_at = :updated_at
-WHERE id = :id
+WHERE id = :id RETURNING true
 
 -- :name get-question :? :1
 -- :doc retrieve a question given the id.

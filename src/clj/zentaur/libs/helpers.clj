@@ -5,10 +5,10 @@
 
 (defn format-time
   "time is a java.time.LocalDateTime object"
-  ([] (time/local-date-time))
+  ([] (time/format "yyyy-MM-dd HH:ss" (time/local-date-time)))
   ([time]
    (if (nil? time)
-     (format-time)
+     (time/format "dd/MM/yyyy HH:ss" (time/local-date-time))
      (time/format "dd/MM/yyyy" time))))
 
 (defn sanitize [string]

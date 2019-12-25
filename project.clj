@@ -26,7 +26,7 @@
                  [org.clojure/clojure "1.10.1"]          ;; The sweet core!!
                  [org.clojure/tools.cli "0.4.2"]
                  [org.clojure/tools.logging "0.4.1"]
-                 [org.postgresql/postgresql "42.2.8"]
+                 [org.postgresql/postgresql "42.2.9"]
                  [org.webjars.npm/bulma "0.7.1"]         ;; WebJar for bulma (Bulma is a free, open source CSS framework)
                  [re-frame "0.11.0-rc3"]                 ;;  A Reagent Framework For Writing SPAs, in Clojurescript.
                  [reagent "0.9.0-rc3"]                   ;;  Minimalistic React for ClojureScript

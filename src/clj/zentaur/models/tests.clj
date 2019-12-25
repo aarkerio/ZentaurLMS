@@ -38,7 +38,7 @@
         _              (link-test-question! question-id test-id)
         last-question  (db/get-last-question {:question-id question-id :test-id test-id})
         full-question  (assoc last-question :answers {})
-        all-question (update full-question :created_at #(h/format-time %))
+        all-question   (h/update-dates full-question)
         qid            (:id full-question)]
     (assoc {} qid all-question)))
 
@@ -76,10 +76,9 @@
 
 (defn- ^:private get-answers [{:keys [id] :as question}]
   (let [answers          (db/get-answers {:question-id id})
-        keys-answers     (map #(assoc % :key (str "keyed-" (:id %))) answers) ;; add a unique key so React doesn't complain.
-        index-seq        (map #(keyword (str (% :id))) keys-answers)
+        index-seq        (map #(keyword (str (% :id))) answers)
         question-updated (h/update-dates question)
-        mapped-answers   (zipmap index-seq keys-answers)]
+        mapped-answers   (zipmap index-seq answers)]
     (assoc question-updated :answers mapped-answers)))
 
 (defn- ^:private get-questions
