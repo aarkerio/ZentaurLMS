@@ -14,8 +14,8 @@ CREATE TABLE tests(
   active BOOLEAN NOT NULL DEFAULT true,
   archived BOOLEAN NOT NULL DEFAULT false,
   shared BOOLEAN NOT NULL DEFAULT true,
-  created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
-  updated_at timestamp(0) with time zone
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone
  );
 
 CREATE RULE test_del_protect AS ON DELETE TO tests DO INSTEAD NOTHING;

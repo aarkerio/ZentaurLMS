@@ -8,6 +8,6 @@ CREATE TABLE answers(
   ordnen SMALLINT NOT NULL DEFAULT 1,
   correct BOOLEAN NOT NULL DEFAULT false,
   active BOOLEAN NOT NULL DEFAULT false,
-  created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
-  updated_at timestamp(0) with time zone
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone
  );

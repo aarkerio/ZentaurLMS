@@ -1,10 +1,13 @@
 (ns zentaur.hiccup.helpers-view
-  (:require [java-time :as jt]
+  (:require [clojure.tools.logging :as log]
+            [java-time :as jt]
             [hiccup.form :as f]
-            [hiccup.element :refer [link-to]]))
+            [hiccup.element :refer [link-to]])
+  (:import [java.time ZoneId]))
 
 (defn format-date [date]
-  (jt/format "MMMM d y hh:mm" date))
+  (log/info (str ">>> DATE >>>>> " date "und type >>> " (type date)))
+  (jt/format "yyyy-MM-dd HH:mm" (.atZone (jt/instant) (ZoneId/systemDefault))))
 
 (defn index []
   [:div {:id "content"}
