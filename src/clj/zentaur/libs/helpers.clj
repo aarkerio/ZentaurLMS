@@ -3,12 +3,6 @@
             [java-time :as time]
             [ring.util.codec :as c]))
 
-(defn format-time
-  "time is a java.time.LocalDateTime object"
-  ([] (time/format "dd/MM/yyyy HH:ss" (time/local-date-time)))
-  ([time]
-   (time/format "dd/MM/yyyy" time)))
-
 (defn sanitize [string]
   (c/url-encode string))
 

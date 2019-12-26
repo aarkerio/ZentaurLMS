@@ -13,5 +13,10 @@ CREATE TABLE uploads (
    content text,
    hashvar varchar(250) NOT NULL UNIQUE, -- MD5 file checksum   ALTER TABLE uploads ADD CONSTRAINT hashvar_unique UNIQUE (hashvar);
    created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
-   updated_at timestamp(0) with time zone
+   updated_at timestamp(0) with time zone NOT NULL DEFAULT now()
 );
+
+CREATE TRIGGER trig_uploads
+BEFORE UPDATE ON "uploads"
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();

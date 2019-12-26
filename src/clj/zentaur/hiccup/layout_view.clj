@@ -57,7 +57,7 @@
             [:div {:class "container"}  (:contents content)]
           [:div {:class "blog-footer" :id "footer"}
               [:img {:src "/img/warning_clojure.png" :alt "Lisp" :title "Lisp"}]
-             [:p "Chipotle Software &copy; 2018-2019. MIT License."]
+             [:p "Chipotle Software &copy; 2018-2020. MIT License."]
               [:p [:a {:href "#"} "Back to top"]]]
           (include-js "/cljs-out/dev-main.js")
           [:div {:id "root-app"} ""]]))

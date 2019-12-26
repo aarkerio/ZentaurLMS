@@ -14,8 +14,8 @@ CREATE TABLE tests(
   active BOOLEAN NOT NULL DEFAULT true,
   archived BOOLEAN NOT NULL DEFAULT false,
   shared BOOLEAN NOT NULL DEFAULT true,
-  created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
-  updated_at timestamp(0) with time zone
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  updated_at timestamp with time zone NOT NULL DEFAULT now()
  );
 
 CREATE RULE test_del_protect AS ON DELETE TO tests DO INSTEAD NOTHING;
@@ -24,3 +24,8 @@ COMMENT on column tests.origin is 'OPTIONAL. URL Where the test came from. Only 
 COMMENT on column tests.active is 'This boolean flag acts as a fake delete since a test is actually never deleted';
 COMMENT on column tests.archived is 'Flag marks a test disposed bythe user';
 COMMENT on column tests.level is 'Diffcult leve, id est, how hard is the test';
+
+CREATE TRIGGER trig_tests
+BEFORE UPDATE ON "tests"
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();

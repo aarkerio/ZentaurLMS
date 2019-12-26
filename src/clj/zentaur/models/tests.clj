@@ -1,9 +1,9 @@
 (ns ^:test-model zentaur.models.tests
   "Business logic for the tests section"
   (:require [clojure.tools.logging :as log]
-            [java-time :as jt]
             [zentaur.db.core :as db]
             [zentaur.libs.helpers :as h]
+            [zentaur.hiccup.helpers-view :as hv]
             [zentaur.models.validations.validations-test :as val-test]))
 
 (defn get-tests [user-id]
@@ -33,16 +33,13 @@
 
 (defn- ^:private get-last-question
   [params]
-  (let [test-id        (:test-id params)
-        question-row   (db/create-question! params)
-        question-id    (:id (first question-row))
-        _              (link-test-question! question-id test-id)
-        last-question  (db/get-last-question {:question-id question-id :test-id test-id})
-        full-question  (assoc last-question :answers {})
-        _              (log/info (str ">>> PARfull-questionfull-questionfull-question >>>>> " full-question "      CLASS >>>>" (class (:created_at full-question))))
-        all-question (update full-question :created_at #(h/format-time %))
-        qid            (:id full-question)]
-    (assoc {} qid all-question)))
+  (let [test-id         (:test-id params)
+        create-question (db/create-question! params)
+        last-question   (first create-question)
+        question-id     (:id last-question)
+        _               (link-test-question! question-id test-id)
+        full-question   (assoc last-question :answers {})]
+    (assoc {} question-id full-question)))
 
 (defn create-question! [params]
   (let [full-params (-> params
@@ -54,17 +51,14 @@
       {:flash errors :ok false})))
 
 (defn update-question! [params]
-  (let [qtype       (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
-        full-params (dissoc params :active)]
-    (db/update-question! (assoc full-params :qtype qtype :updated_at (jt/local-date-time)))
-    (db/get-question {:id (:id params)})))
+  (let [qtype        (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
+        full-params  (dissoc params :active)]
+   (db/update-question! (assoc full-params :qtype qtype))))
 
 (defn- ^:private create-new-answer
-  [params question-id]
-  (let [new-answer     (db/create-answer! params)
-        last-answer    (db/get-last-answer {:question-id question-id})
-        updated-answer (update last-answer :created_at #(h/format-time %))]
-    (assoc {} (:id updated-answer) updated-answer)))
+  [params]
+  (let [last-answer  (db/create-answer! params)]
+    (assoc {} (:id last-answer) last-answer)))
 
 (defn create-answer! [params]
   (let [question-id  (:question-id params)
@@ -72,42 +66,36 @@
         full-params  (assoc params :ordnen (inc next-ordnen))
         errors       (val-test/validate-answer full-params)]
     (if (nil? errors)
-      (create-new-answer full-params question-id)
+      (create-new-answer full-params)
       {:flash errors :ok false})))
 
 (defn- ^:private get-answers [{:keys [id] :as question}]
   (let [answers          (db/get-answers {:question-id id})
-        keys-answers     (map #(assoc % :key (str "keyed-" (:id %))) answers) ;; add a unique key so React doesn't complain.
-        index-seq        (map #(keyword (str (% :id))) keys-answers)
-        question-updated (update question :created_at #(h/format-time %))
-        mapped-answers   (zipmap index-seq keys-answers)]
-    (assoc question-updated :answers mapped-answers)))
+        index-seq        (map #(keyword (str (% :id))) answers)
+        mapped-answers   (zipmap index-seq answers)]
+    (assoc question :answers mapped-answers)))
 
 (defn- ^:private get-questions
   "Get and convert to map keyed"
   [test-id]
   (let [questions  (db/get-questions { :test-id test-id })
-        _          (log/info (str ">>> QUESTIONS >>>>> " (pr-str questions)))
-        index-seq  (map #(keyword (str (% :id))) questions)
-        _          (log/info (str ">>> index-seq >>>>> " (pr-str index-seq)))]
+        index-seq  (map #(keyword (str (% :id))) questions)]
     (->> questions
          (map get-answers)
-         (zipmap index-seq)  ;; add the index
-         )))
+         (zipmap index-seq))))
 
 (defn get-test-nodes
   "JSON response for the API"
   [test-id user-id]
   (let [test          (db/get-one-test { :id test-id :user-id user-id })
-        test-updated  (update test :created_at #(h/format-time %))
         questions     (get-questions test-id)]
-    (assoc test-updated :questions questions)))
+    (assoc test :questions questions)))
 
 (defn update-answer!
   "Update after editing with ClojureScript"
   [params]
   (let [full-params (dissoc params :active)]
-    (db/update-answer! (assoc full-params :updated_at (h/format-time)))
+    (db/update-answer! full-params)
     (db/get-answer {:id (:id params)})))
 
 (defn export-pdf [test-id]
@@ -124,7 +112,5 @@
     (db/remove-question! {:test-id test-id :question-id question-id})))
 
 (defn remove-answer [params]
-  (let [new-map  {:answer-id (:answer-id params) :question-id (:question-id params) }
-        result   (db/remove-answer! new-map)
-        _ (log/info (str ">>> AFTER DELETE ANSWER  >>>>> " result))]
-    (assoc new-map :ok result)))
+  (let [result   (db/remove-answer! params)]
+    (assoc params :ok (:bool result))))

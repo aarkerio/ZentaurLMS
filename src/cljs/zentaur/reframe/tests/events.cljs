@@ -122,7 +122,6 @@
  []
  (fn
    [db [_ question-id]]
-   (.log js/console (str ">>> process-after-delete-question  >>>> " question-id))
    (let [submap  (get-in db [:questions])]
      (-> db
          (update-in [:questions] dissoc (keyword (str question-id)))
@@ -161,7 +160,7 @@
          _           (.log js/console (str ">>> QID >>>>> " qid))
          question-id (keyword (str qid))
          _           (.log js/console (str ">>> VALUE KEYWORD question-id >>>>> " question-id ))
-         _           (.log js/console (str ">>> QUESTION ID >>>>>  qid: " qid "question-id: " question-id))]
+         _           (.log js/console (str ">>> QUESTION ID >>>>>  qid: " qid "   question-id: " question-id))]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI
          (update-in [:questions question-id :answers] conj response)))))
@@ -170,7 +169,8 @@
  :create-answer
  (fn
    [cfx [_ answer]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (let [csrf-field  (.-value (gdom/getElement "__anti-forgery-token"))]
+   (let [csrf-field  (.-value (gdom/getElement "__anti-forgery-token"))
+         _           (.log js/console (str ">>> answer AT create-answer >>>>> " answer))]
      ;; we return a map of (side) effects
      {:http-xhrio {:method          :post
                    :uri             "/admin/tests/createanswer"
@@ -186,11 +186,12 @@
  []
  (fn
    [db [_ response]]
-   (let [_ (.log js/console (str ">>> RESPSNE AFEREDELET ANSWER  >>>>> " response ))
-         question-id (keyword (str "s"))
-         ]
+   (let [_           (.log js/console (str ">>> RESPONSE AFTER DELETE ANSWER  >>>>> " response ))
+         answer      (:response response)
+         question-id (keyword (str (:question-id answer)))
+         answer-id   (keyword (str (:answer-id answer)))]
      (-> db
-         (update-in [:questions question-id :answers] dissoc (keyword (str question-id)))
+         (update-in [:questions question-id :answers] dissoc answer-id)
          (update :loading? not)))))
 
 (re-frame/reg-event-fx        ;; <-- note the `-fx` extension
@@ -218,7 +219,8 @@
  []
  (fn
    [db [_ response]]
-   (let [qkeyword  (keyword (str (:id response)))]
+   (let [qkeyword  (keyword (str (:id response)))
+         _ (.log js/console (str ">>> RESPONSE UPDATE QUESTION    >>>>>   " response))]
      (-> db
          (update-in [:questions qkeyword] conj response)
          (update :loading?  not)))))
