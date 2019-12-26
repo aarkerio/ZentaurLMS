@@ -13,7 +13,7 @@ CREATE TABLE questions(
   reviewed_fact BOOLEAN NOT NULL DEFAULT false,
   reviewed_cr BOOLEAN NOT NULL DEFAULT false,    -- reviewed copyright
   created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
-  updated_at timestamp(0) with time zone
+  updated_at timestamp(0) with time zone NOT NULL DEFAULT now()
  );
 --;;
 ALTER TABLE questions ADD CHECK (qtype IN (1,2,3,4));
@@ -22,3 +22,8 @@ COMMENT on column questions.qtype is '1: multiple option, 2: open, 3: fullfill, 
 
 -- ;; INSERT INTO questions (user_id, question, qtype, hint, explanation, created_at) VALUES (1, 'Some Question', 1, 'Some hint', 'Some explanation', NOW());
 -- ;; INSERT INTO question_tests (test_id, question_id, ordnen, created_at) VALUES (1, 2, 2, NOW());
+
+CREATE TRIGGER trig_questions
+BEFORE UPDATE ON "questions"
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();

@@ -5,9 +5,14 @@
             [hiccup.element :refer [link-to]])
   (:import [java.time ZoneId]))
 
-(defn format-date [date]
-  (log/info (str ">>> DATE >>>>> " date "und type >>> " (type date)))
-  (jt/format "yyyy-MM-dd HH:mm" (.atZone (jt/instant) (ZoneId/systemDefault))))
+(defn- formatted-date [fields datetime]
+  (jt/format fields (.atZone datetime (ZoneId/systemDefault))))
+
+(defn format-date
+  ([datetime]
+   (formatted-date "dd/MM/yyyy HH:mm" datetime))
+  ([datetime date-only]
+    (formatted-date "dd/MM/yyyy" datetime)))
 
 (defn index []
   [:div {:id "content"}

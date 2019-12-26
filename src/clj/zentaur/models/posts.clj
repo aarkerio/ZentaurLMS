@@ -64,7 +64,7 @@
       {})))
 
 (defn update-post! [params]
-  {:updated_at (h/format-time)})
+  {:updated_at true})
 
 (defn toggle [{:keys [id published]}]
   (let [new-state (if (= published "true") false true)

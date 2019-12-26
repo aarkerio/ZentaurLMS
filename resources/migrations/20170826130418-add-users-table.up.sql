@@ -12,7 +12,7 @@ CREATE TABLE users(
    role_id int REFERENCES roles NOT NULL default 2,
    password VARCHAR(300) NOT NULL,
    created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
-   updated_at timestamp(0) with time zone
+   updated_at timestamp(0) with time zone NOT NULL DEFAULT now()
  );
 --;;
 INSERT INTO users (fname,
@@ -31,3 +31,8 @@ INSERT INTO users (fname,
           true,
           true,
           'bcrypt+sha512$31663163343233343262646331656136$12$472ab1393ef857b0b30769ebe654e627c0b0a4a3847a6f4e');
+
+CREATE TRIGGER trig_users
+BEFORE UPDATE ON "users"
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();

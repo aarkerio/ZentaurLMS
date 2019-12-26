@@ -9,5 +9,10 @@ CREATE TABLE answers(
   correct BOOLEAN NOT NULL DEFAULT false,
   active BOOLEAN NOT NULL DEFAULT false,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
-  updated_at timestamp with time zone
+  updated_at timestamp with time zone NOT NULL DEFAULT now()
  );
+
+CREATE TRIGGER trig_answers
+BEFORE UPDATE ON "answers"
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_timestamp();

@@ -29,8 +29,8 @@
         post_id     (Integer/parseInt (:post_id body-params))
         user_id     (:id identity)]
     (model-post/save-comment!
-     (assoc {} :created_at (h/format-time) :post_id post_id :comment comment :user_id user_id))
-    (basec/json-parser {:comment comment :created_at (h/format-time) :last_name (:last_name identity)})))
+     (assoc {} :post_id post_id :comment comment :user_id user_id))
+    (basec/json-parser {:comment comment :last_name (:last_name identity)})))
 
 (defn single-post
   "GET /posts/view/:id"

@@ -3,20 +3,8 @@
             [java-time :as time]
             [ring.util.codec :as c]))
 
-(defn format-time
-  "time is a java.time.LocalDateTime object"
-  ([] (time/format "yyyy-MM-dd HH:ss" (time/local-date-time)))
-  ([time]
-   (if (nil? time)
-     (time/format "dd/MM/yyyy HH:ss" (time/local-date-time))
-     (time/format "dd/MM/yyyy" time))))
-
 (defn sanitize [string]
   (c/url-encode string))
-
-(defn update-dates [data]
-  (let [data-one  (update data :created_at #(format-time %))]
-    (update data-one :updated_at #(format-time %))))
 
 (defmulti paginate
   "Paginate the incoming collection/length"

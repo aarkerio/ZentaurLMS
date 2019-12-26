@@ -3,16 +3,18 @@
             [hiccup.core :as c]
             [clojure.tools.logging :as log]
             [hiccup.element :refer [link-to]]
-            [hiccup.page :refer [include-css include-js]]))
+            [hiccup.page :refer [include-css include-js]]
+            [zentaur.hiccup.helpers-view :as hv]))
 
 (defn formatted-test [{:keys [title created_at tags published id]}]
+  (let [formatted-date (hv/format-date created_at true)]
   [:tr
    [:td [:a {:class "btn btn-outline-primary-green" :href (str "/admin/tests/edit/" id)}  "Edit"]]
    [:td title]
    [:td tags]
-   [:td created_at]
+   [:td formatted-date]
    [:td [:a {:class "btn btn-outline-primary-green" :href  (str "/admin/tests/exporttest/" id)} "Export"]]
-   [:td [:button {:class "btn btn-outline-primary-green" :onClick (str "zentaur.core.deletetest("id")")} "Löschen"]]])
+   [:td [:button {:class "btn btn-outline-primary-green" :onClick (str "zentaur.core.deletetest("id")")} "Löschen"]]]))
 
 (defn- form-new [csrf-field]
   [:div.hidden-div {:id "hidden-form"}
