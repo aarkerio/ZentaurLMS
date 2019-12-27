@@ -35,10 +35,9 @@
   [params]
   (let [test-id         (:test-id params)
         create-question (db/create-question! params)
-        last-question   (first create-question)
-        question-id     (:id last-question)
+        question-id     (:id create-question)
         _               (link-test-question! question-id test-id)
-        full-question   (assoc last-question :answers {})]
+        full-question   (assoc create-question :answers {})]
     (assoc {} question-id full-question)))
 
 (defn create-question! [params]
@@ -49,11 +48,6 @@
     (if (nil? errors)
       (get-last-question full-params)
       {:flash errors :ok false})))
-
-(defn update-question! [params]
-  (let [qtype        (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
-        full-params  (dissoc params :active)]
-   (db/update-question! (assoc full-params :qtype qtype))))
 
 (defn- ^:private create-new-answer
   [params]
@@ -91,17 +85,19 @@
         questions     (get-questions test-id)]
     (assoc test :questions questions)))
 
+;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn update-question! [params]
+  (let [qtype        (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
+        full-params  (dissoc params :active)]
+    (db/update-question! (assoc full-params :qtype qtype))))
+
 (defn update-answer!
   "Update after editing with ClojureScript"
   [params]
   (let [full-params (dissoc params :active)]
-    (db/update-answer! full-params)
-    (db/get-answer {:id (:id params)})))
+    (db/update-answer! full-params)))
 
-(defn export-pdf [test-id]
-  (let [test-id (inc test-id)]
-    (db/remove-test! {:test-id test-id})))
-
+;;;;;;;;;;;;    DELETES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn remove-test [params]
   (let [test-id (:test-id params)]
     (db/remove-test! {:test-id test-id})))
@@ -114,3 +110,15 @@
 (defn remove-answer [params]
   (let [result   (db/remove-answer! params)]
     (assoc params :ok (:bool result))))
+
+;;;;;;;; EXPORTS  ;;;;;;;
+
+(defn export-pdf [test-id]
+  (let [test-id (inc test-id)]
+    (db/remove-test! {:test-id test-id})))
+
+(defn export-odf
+  "Export to open document format"
+  [test-id]
+  (let [test-id (inc test-id)]
+    (db/remove-test! {:test-id test-id})))

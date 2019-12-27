@@ -219,8 +219,7 @@
  []
  (fn
    [db [_ response]]
-   (let [qkeyword  (keyword (str (:id response)))
-         _ (.log js/console (str ">>> RESPONSE UPDATE QUESTION    >>>>>   " response))]
+   (let [qkeyword  (keyword (str (:id response)))]
      (-> db
          (update-in [:questions qkeyword] conj response)
          (update :loading?  not)))))
@@ -229,10 +228,8 @@
   :update-question           ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ question]]      ;; <-- 1st argument is coeffect, from which we extract db
-    (.log js/console (str ">>>   QUUUUUUUUUUUUUESTION    >>>>>   " question))
     (let [db         (:db cofx)
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-
       ;; we return a map of (side) effects
       {:http-xhrio {:method          :post
                     :uri             "/admin/tests/updatequestion"
@@ -249,12 +246,16 @@
  []
  (fn
    [db [_ response]]
-   (let [qkeyword  (keyword (str (:id response)))]
-     (.log js/console (str ">>> response answer >>>>> " response ))
-     ; (-> db
-     ;    (update-in [:questions qkeyword :answers] conj response)
-     ;    (update :loading?  not))
-     )))
+   (.log js/console (str ">>> response answer GGGG >>>>> " response)
+   (let [dsfdsf (inc 6)
+         ;;answer-keyword    (keyword (str (:id response)))
+         ;; question-keyword  (keyword (str (:question_id response)))
+         ]
+     ;; (.log js/console (str ">>> response answer >>>>> " response " --- answer-keyword >> " answer-keyword "--  UND question-keyword >>> " question-keyword))
+      ;; (-> db
+      ;;    (update-in [:questions question-keyword :answers answer-keyword] conj response)
+      ;;    (update :loading?  not))
+     ))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-answer             ;; <-- the event id

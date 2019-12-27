@@ -53,6 +53,7 @@
   (let [params       (:params request)
         new-params   (assoc params :active true)
         response     (model-test/update-answer! new-params)]
+    (log/info (str ">>> update-answer response >>>>> " response))
     (response/ok (ches/encode response non-ascii))))
 
 (defn create-answer
@@ -89,17 +90,23 @@
         response (model-test/get-test-nodes test-id user-id)]
     (response/ok (ches/encode response non-ascii))))
 
-(defn export-test
-  "GET /admin/tests/exporttest/:id. Create PDF."
+(defn export-test-pdf
+  "GET /admin/tests/exporttestpdf/:id. Create PDF."
   [{:keys [params]}]
   (let [test-id  (:id params)
         user-id  (:user-id params)]
     (model-test/export-pdf test-id user-id)))
 
+(defn export-test-odf
+  "GET /admin/tests/exporttestodf/:id. Create PDF."
+  [{:keys [params]}]
+  (let [test-id  (:id params)
+        user-id  (:user-id params)]
+    (model-test/export-odf test-id user-id)))
+
 (defn delete-test
   "DELETE /admin/tests/deletetest. JSON response."
   [{:keys [params]}]
-  (log/info (str ">>> PARAMS >>>>> " params))
   (response/ok {:response (model-test/remove-test params)}))
 
 (defn delete-question

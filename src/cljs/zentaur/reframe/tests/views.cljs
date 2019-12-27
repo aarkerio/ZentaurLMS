@@ -189,7 +189,7 @@
 
 (defn questions-list
   []
-  (let [counter (reagent/atom 1000)]
+  (let [counter (reagent/atom 0)]
     (fn []
       [:section
        (for [question @(re-frame/subscribe [:questions])]
