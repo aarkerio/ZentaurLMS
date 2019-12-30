@@ -184,21 +184,16 @@
        [:img {:src    "/img/icon_delete.png"
               :title  "Frage löschen"
               :alt    "Frage löschen"
-              :on-click #(re-frame/dispatch [:delete-question id])}]]]
-     )))
+              :on-click #(re-frame/dispatch [:delete-question id])}]]])))
 
 (defn questions-list
   []
-  (let [counter (reagent/atom 0)]
+  (let [counter (atom 1)]
     (fn []
-      [:section
-       (for [question @(re-frame/subscribe [:questions])]
-         (do
-           (swap! counter inc)
-           (.log js/console (str ">>> counter KEY >>>>> " @counter))
-            ^{:key @counter} [question-item (assoc (second question) :counter @counter)]
-            ))]
-      )))
+        (into [:section]
+              (for [question @(re-frame/subscribe [:questions])]                 ;; for returns a lazy data-structure, so reagent can't see that current-subject is actually being dereffed.
+                ^{:key (swap! counter inc)} [question-item (assoc (second question) :counter @counter)]  ;; Wrapping for in a doall or into forces the lazy list to evaluate, and then reagent should pick up on the changes.
+                )))))
 
 (defn question-entry
   "Verstecken Form for a neue fragen"

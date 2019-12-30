@@ -246,16 +246,13 @@
  []
  (fn
    [db [_ response]]
-   (.log js/console (str ">>> response answer GGGG >>>>> " response)
-   (let [dsfdsf (inc 6)
-         ;;answer-keyword    (keyword (str (:id response)))
-         ;; question-keyword  (keyword (str (:question_id response)))
-         ]
-     ;; (.log js/console (str ">>> response answer >>>>> " response " --- answer-keyword >> " answer-keyword "--  UND question-keyword >>> " question-keyword))
-      ;; (-> db
-      ;;    (update-in [:questions question-keyword :answers answer-keyword] conj response)
-      ;;    (update :loading?  not))
-     ))))
+   (let [answer-keyword    (keyword (str (:id response)))
+         question-keyword  (keyword (str (:question_id response)))]
+      (.log js/console (str ">>> response answer >>>>> " response " --- answer-keyword >> " answer-keyword "--  UND question-keyword >>> " question-keyword))
+       (-> db
+          (update-in [:questions question-keyword :answers answer-keyword] conj response)
+          (update :loading?  not))
+     )))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-answer             ;; <-- the event id
@@ -270,5 +267,5 @@
                     :params          answer
                     :headers         {"x-csrf-token" csrf-field}
                     :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:process-after-update-question]
+                    :on-success      [:process-after-update-answer]
                     :on-failure      [:bad-response]}})))
