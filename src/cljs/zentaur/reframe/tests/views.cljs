@@ -188,12 +188,14 @@
 
 (defn questions-list
   []
-  (fn []
-    [:section
-     (doall
-      (map-indexed
-       (fn [idx question]
-         [question-item (assoc (second question) :index (inc idx) :key idx)]) @(re-frame/subscribe [:questions])))]))
+  (let [counter (atom 1000)]
+    (fn []
+      [:section
+       (for [question @(re-frame/subscribe [:questions])]
+         (do
+           (swap! counter inc)
+            ^{:key @counter} [question-item (second question)]
+            ))])))
 
 (defn question-entry
   "Verstecken Form for a neue fragen"

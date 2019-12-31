@@ -72,9 +72,12 @@
 (defn- ^:private get-questions
   "Get and convert to map keyed"
   [test-id]
-  (let [questions  (db/get-questions { :test-id test-id })
-        index-seq  (map #(keyword (str (% :id))) questions)]
-    (->> questions
+  (let [questions        (db/get-questions { :test-id test-id })
+        questions-index  (map-indexed
+                            (fn [idx question]
+                              (assoc question :index (inc idx))) questions)
+        index-seq        (map #(keyword (str (% :id))) questions-index)]
+    (->> questions-index
          (map get-answers)
          (zipmap index-seq))))
 
@@ -83,7 +86,11 @@
   [test-id user-id]
   (let [test          (db/get-one-test { :id test-id :user-id user-id })
         questions     (get-questions test-id)]
-    (assoc test :questions questions)))
+    (try
+      (log/info (str ">>> RRRR questions ***** >>>>> " questions))
+      (assoc test :questions questions)
+      (catch Exception e (str "Caught exception: " (.getMessage e)))
+      (finally (prn "Release some resource")))))
 
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn update-question! [params]
