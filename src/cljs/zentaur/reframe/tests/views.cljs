@@ -159,7 +159,7 @@
                                                                                 :explanation @aexplanation}])}]]])))
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen counter] :as q}]
+  [{:keys [question explanation hint qtype id ordnen index] :as q}]
   (let [editing-question (reagent/atom false)]
     (fn []
       [:div.div-question-row
@@ -174,7 +174,7 @@
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing-question not)}])]  ;; editing ends
      [:div.question-elements
-       [:div [:span.bold-font (str counter ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+       [:div [:span.bold-font (str index ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
        [:div [:span.bold-font "Hint: "] hint]
        [:div [:span.bold-font "Erläuterung: "] explanation]]
      (when @editing-question
@@ -188,12 +188,12 @@
 
 (defn questions-list
   []
-  (let [counter (atom 1)]
-    (fn []
-        (into [:section]
-              (for [question @(re-frame/subscribe [:questions])]                 ;; for returns a lazy data-structure, so reagent can't see that current-subject is actually being dereffed.
-                ^{:key (swap! counter inc)} [question-item (assoc (second question) :counter @counter)]  ;; Wrapping for in a doall or into forces the lazy list to evaluate, and then reagent should pick up on the changes.
-                )))))
+  (fn []
+    [:section
+     (doall
+      (map-indexed
+       (fn [idx question]
+         [question-item (assoc (second question) :index (inc idx) :key idx)]) @(re-frame/subscribe [:questions])))]))
 
 (defn question-entry
   "Verstecken Form for a neue fragen"
