@@ -12,9 +12,9 @@
                  [com.novemberain/pantomime "2.11.0"]    ;; A tiny Clojure library that deals with MIME types
                  [conman "0.8.4"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.14"]                        ;; where all configuration properties converge
+                 [day8.re-frame/http-fx "v0.2.0"]        ;; A re-frame effects handler for performing Ajax tasks
                  [digest "1.4.9"]                        ;; Message digest library for Clojure.
                  [funcool/struct "1.4.0"]                ;; Structural validation library for Clojure(Script)
-                 [kee-frame "0.3.3" :exclusions [metosin/reitit-core]] ;; re-frame libraries
                  [luminus-immutant "0.2.5"]              ;; Serve web requests using Ring handlers, Servlets, or Undertow HttpHandlers
                  [luminus-migrations "0.6.5"]            ;; Migrations library for Luminus
                  [luminus-transit "0.1.2"]               ;; Transit helpers
@@ -28,12 +28,12 @@
                  [org.clojure/tools.logging "0.4.1"]
                  [org.postgresql/postgresql "42.2.9"]
                  [org.webjars.npm/bulma "0.7.1"]         ;; WebJar for bulma (Bulma is a free, open source CSS framework)
-                 [re-frame "0.11.0-rc3"]                 ;;  A Reagent Framework For Writing SPAs, in Clojurescript.
-                 [reagent "0.9.0-rc3"]                   ;;  Minimalistic React for ClojureScript
-                 [ring-webjars "0.2.0"]                  ;;  Web assets
-                 [ring/ring-core "1.8.0"]                ;;  a very thin HTTP abstraction
-                 [ring/ring-defaults "0.3.2"]            ;;  Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
-                 [selmer "1.12.12"]                      ;;  Templates
+                 [re-frame "0.11.0-rc3"]                 ;; A Reagent Framework For Writing SPAs, in Clojurescript.
+                 [reagent "0.9.0-rc3"]                   ;; Minimalistic React for ClojureScript
+                 [ring-webjars "0.2.0"]                  ;; Web assets
+                 [ring/ring-core "1.8.0"]                ;; A very thin HTTP abstraction
+                 [ring/ring-defaults "0.3.2"]            ;; Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
+                 [selmer "1.12.12"]                      ;; Templates
                  [slugify "0.0.1"]]
   :managed-dependencies [[org.clojure/core.rrb-vector "0.0.13"]  ;; necessary for JDK 11
                          [org.flatland/ordered "1.5.7"]]
