@@ -109,7 +109,7 @@ VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :use
 -- :doc creates a minimal test record
 INSERT INTO tests (title, tags, user_id) VALUES (:title, :tags, :user-id) RETURNING id
 
--- :name create-question! :<!
+-- :name create-question! :<! :1
 -- :doc creates a new question record
 INSERT INTO questions (question, qtype, hint, explanation, active, user_id)
 VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) RETURNING *
@@ -123,8 +123,8 @@ WHERE id = :id RETURNING *
 -- :name update-answer! :>! :1
 -- :doc updates an answer record
 UPDATE answers
-SET answer = :answer, correct = :correct, updated_at = :updated_at
-WHERE id = :id RETURNING true
+SET answer = :answer, correct = :correct
+WHERE id = :id RETURNING *
 
 -- :name get-question :? :1
 -- :doc retrieve a question given the id.

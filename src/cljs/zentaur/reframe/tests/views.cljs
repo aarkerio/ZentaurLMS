@@ -159,7 +159,7 @@
                                                                                 :explanation @aexplanation}])}]]])))
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen counter] :as q}]
+  [{:keys [question explanation hint qtype id ordnen index] :as q}]
   (let [editing-question (reagent/atom false)]
     (fn []
       [:div.div-question-row
@@ -174,7 +174,7 @@
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing-question not)}])]  ;; editing ends
      [:div.question-elements
-       [:div [:span.bold-font (str counter ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+       [:div [:span.bold-font (str index ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
        [:div [:span.bold-font "Hint: "] hint]
        [:div [:span.bold-font "Erläuterung: "] explanation]]
      (when @editing-question
@@ -184,21 +184,18 @@
        [:img {:src    "/img/icon_delete.png"
               :title  "Frage löschen"
               :alt    "Frage löschen"
-              :on-click #(re-frame/dispatch [:delete-question id])}]]]
-     )))
+              :on-click #(re-frame/dispatch [:delete-question id])}]]])))
 
 (defn questions-list
   []
-  (let [counter (reagent/atom 1000)]
+  (let [counter (atom 1000)]
     (fn []
       [:section
        (for [question @(re-frame/subscribe [:questions])]
          (do
            (swap! counter inc)
-           (.log js/console (str ">>> counter KEY >>>>> " @counter))
-            ^{:key @counter} [question-item (assoc (second question) :counter @counter)]
-            ))]
-      )))
+            ^{:key @counter} [question-item (second question)]
+            ))])))
 
 (defn question-entry
   "Verstecken Form for a neue fragen"
