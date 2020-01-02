@@ -52,11 +52,11 @@
 ;;
 
 (def default-db             ;; what gets put into app-db by default.
-  {:test      (sorted-map)
-   :questions (sorted-map)
-   :loading?   false
-   :question-counter 0
-   :qform     false})
+  {:test             (sorted-map)
+   :questions        (sorted-map)
+   :loading?         false
+   :qform            false
+   :testform  false})
 
 ;; -- cofx Registrations  -----------------------------------------------------
 ;; Use `reg-cofx` to register a "coeffect handler" which will inject the todos

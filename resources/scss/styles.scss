@@ -906,6 +906,18 @@ textarea {
    }
 }
 
+.div-simple-separator {
+    padding: 5px;
+    margin: 5px;
+    border: 1px dotted gray;
+    display: block;
+    &:hover {
+        opacity:1;
+        transition: 1s ease;
+        background-color: #eaeaea;
+   }
+}
+
 .div-question-row {
     padding: 5px;
     margin: 15px 0 10px 0;

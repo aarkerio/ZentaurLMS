@@ -99,10 +99,16 @@
     (db/update-question! (assoc full-params :qtype qtype))))
 
 (defn update-answer!
-  "Update after editing with ClojureScript"
+  "Update answer after editing with ClojureScript"
   [params]
   (let [full-params (dissoc params :active)]
     (db/update-answer! full-params)))
+
+(defn update-test!
+  "Update test after editing with ClojureScript"
+  [params]
+  (let [full-params (dissoc params :active)]
+    (db/update-test! full-params)))
 
 ;;;;;;;;;;;;    DELETES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn remove-test [params]

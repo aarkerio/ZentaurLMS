@@ -6,55 +6,42 @@
 (defn edit-test-form
   "Verstecken Form for test bearbeiten"
   []
-  (let [qform        (re-frame/subscribe [:toggle-testform])
-        new-question (reagent/atom "")
-        hint         (reagent/atom "")
-        explanation  (reagent/atom "")
-        qtype        (reagent/atom "1")]
+  (let [test-form     (re-frame/subscribe [:toggle-testform])
+        title         (atom "")
+        description   (atom "")
+        tags          (atom "")]
     (fn []
-      [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
-       [:h3.class "Hinzifugen neue fragen"]
+      [:div {:id "hidden-form" :class (if @test-form "visible-div" "hidden-div")}
+       [:h3.class "Bearbeit test"]
        [:div.div-separator
-        [:input {:type         "text" :value @new-question
-                 :placeholder  "Neue Frage"
-                 :title        "Neue Frage"
+        [:input {:type         "text" :value @title
+                 :placeholder  "Title"
+                 :title        "Title"
                  :maxLength    180
-                 :on-change    #(reset! new-question (-> % .-target .-value))
+                 :on-change    #(reset! title (-> % .-target .-value))
                  :size         100}]]
        [:div.div-separator
         [:input {:type         "text"
-                 :value        @hint
-                 :on-change    #(reset! hint (-> % .-target .-value))
-                 :placeholder  "Frage Hinweis"
-                 :title        "Frage Hinweis"
+                 :value        @description
+                 :on-change    #(reset! description (-> % .-target .-value))
+                 :placeholder  "Erklärung"
+                 :title        "Erklärung"
                  :maxLength    180
                  :size         100}]]
        [:div.div-separator
         [:input {:type         "text"
-                 :value        @explanation
-                 :on-change    #(reset! explanation (-> % .-target .-value))
-                 :placeholder  "Frage erklärung"
-                 :title        "Frage erklärung"
+                 :value        @tags
+                 :on-change    #(reset! tags (-> % .-target .-value))
+                 :placeholder  "Tags"
+                 :title        "Tags"
                  :maxLength    180
                  :size         100}]]
-       [:div.div-separator
-        [:select.form-control.mr-sm-2 {:name      "qtype"
-                                       :value     @qtype
-                                       :on-change #(reset! qtype (-> % .-target .-value))}
-         [:option {:value "1"} "Multiple"]
-         [:option {:value "2"} "Open"]
-         [:option {:value "3"} "Fullfill"]
-         [:option {:value "4"} "Columns"]]]
      [:div
-      [:input.btn {:type "button" :value "Neue Frage speichern"
-                   :on-click #(do (re-frame.core/dispatch [:create-question {:question    @new-question
-                                                                             :hint        @hint
-                                                                             :qtype       @qtype
-                                                                             :test-id     (.-value (gdom/getElement "test-id"))
-                                                                             :user-id     (.-value (gdom/getElement "user-id"))
-                                                                             :explanation @explanation}])
-                                  (reset! new-question "")
-                                  (reset! hint "")
-                                  (reset! explanation ""))}]]])))
+      [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"
+               :on-click (re-frame.core/dispatch [:update-test {:title        @title
+                                                                :description  @description
+                                                                :tags         @tags
+                                                                :test-id      (.-value (gdom/getElement "test-id"))
+                                                                :user-id      (.-value (gdom/getElement "user-id"))}])} ]]])))
 
 

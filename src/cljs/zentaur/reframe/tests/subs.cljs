@@ -81,11 +81,6 @@
 
 ;; My new subscription functions
 (re-frame/reg-sub
- :count
- (fn [db]
-   (:count db)))
-
-(re-frame/reg-sub
  :test
  (fn [db]
    (:test db)))
@@ -101,7 +96,8 @@
    (get-in db [:qform])))
 
 (re-frame/reg-sub
- :question-counter
+ :toggle-testform
  (fn [db]
-   (get-in db [:question-counter])))
+   (get-in db [:testform])))
+
 

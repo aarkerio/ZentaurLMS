@@ -114,6 +114,25 @@
   (if-let [flash-msg (gdom/getElement "flash-msg")]
     (js/setTimeout (remove-flash) 90000)))
 
+(defn validate-minimal-test []
+  (let [title  (.getElementById js/document "title")
+        tags   (.getElementById js/document "tags")]
+    (if (and (> (count (.-value title)) 0)
+             (> (count (.-value tags)) 0))
+      true
+      (do (js/alert "Please, complete the form!")
+          false))))
+
+(defn init-form []
+  ;; verify that js/document exists and that it has a getElementById
+  ;; property
+  (if (and js/document
+           (.-getElementById js/document))
+    ;; get loginForm by element id and set its onsubmit property to
+    ;; our validate-form function
+    (let [test-form (.getElementById js/document "submit-test-form")]
+      (set! (.-onsubmit test-form) validate-minimal-test))))
+
 (defn- load-tests []
   (when-let [hform (gdom/getElement "button-show-div")]  ;; versteckte Taste. Nur im Bearbeitungsmodus
     (events/listen hform EventType.CLICK
@@ -157,5 +176,5 @@
       (s/includes? current_url "admin/users")     (load-users)
       (s/includes? current_url "uploads/process") (load-process)
       (s/includes? current_url "admin/posts")     (load-posts)
-      (= current_url "/admin/tests")              (load-tests)
+      (= current_url "/admin/tests")              (do (init-form)(load-tests))
       :else "F")))

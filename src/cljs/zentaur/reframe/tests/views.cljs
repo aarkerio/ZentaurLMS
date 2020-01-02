@@ -2,7 +2,8 @@
   (:require [clojure.string :as str]
             [goog.dom :as gdom]
             [reagent.core  :as reagent]
-            [re-frame.core :as re-frame]))
+            [re-frame.core :as re-frame]
+            [zentaur.reframe.tests.forms.blocks :as blk]))
 
 (defn question-input [{:keys [question on-save on-stop]}]
   (let [val  (reagent/atom question)
@@ -197,12 +198,12 @@
             ^{:key @counter} [question-item (second question)]
             ))])))
 
-(defn question-entry
+(defn edit-question-form
   "Verstecken Form for a neue fragen"
   []
   (let [qform        (re-frame/subscribe [:qform])
         new-question (reagent/atom "")
-        hint         (reagent/atom "")
+        hint         (atom "")
         explanation  (reagent/atom "")
         qtype        (reagent/atom "1")]
     (fn []
@@ -240,7 +241,7 @@
          [:option {:value "3"} "Fullfill"]
          [:option {:value "4"} "Columns"]]]
      [:div
-      [:input.btn {:type "button" :value "Neue Frage speichern"
+      [:input.btn {:class "btn btn-outline-primary-green" :type "button" :value "Neue Frage speichern"
                    :on-click #(do (re-frame.core/dispatch [:create-question {:question    @new-question
                                                                              :hint        @hint
                                                                              :qtype       @qtype
@@ -255,10 +256,12 @@
   (let [test  (re-frame/subscribe [:test])
         qform (re-frame/subscribe [:qform])]
     [:div
+     [:div [:input {:class "btn btn-outline-primary-green" :type "button" :value "Test bearbeiten" :on-click #(re-frame.core/dispatch [:toggle-testform])}]]
+     [blk/edit-test-form]
      [:h1 (:title @test)]
-     [:div.someclass (str "tags: " (:tags @test) "    created: " (:created_at @test)) ]
-     [:div [:input.btn {:type "button" :value "Fragen hinzüfugen"
-                        :on-click #(re-frame.core/dispatch [:toggle-qform])}]]]))
+     [:div.div-simple-separator [:span {:class "bold-font"} "Tags: "] (:tags @test) [:span {:class "bold-font"} " Created:"] (:created_at @test)]
+     [:div.div-simple-separator [:span {:class "bold-font"}  "Description: "] (:description @test)]
+     [:div [:input {:class "btn btn-outline-primary-green" :type "button" :value "Fragen hinzüfugen" :on-click #(re-frame.core/dispatch [:toggle-qform])}]]]))
 
 (defn todo-app
   []
@@ -266,7 +269,7 @@
     [:div
      [:section#todoapp
       [test-display]
-      [question-entry]
+      [edit-question-form]
       [questions-list]]
      [:div {:class "footer"}
       [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))

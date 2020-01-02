@@ -126,6 +126,12 @@ UPDATE answers
 SET answer = :answer, correct = :correct
 WHERE id = :id RETURNING *
 
+-- :name update-test! :>! :1
+-- :doc updates an answer record
+UPDATE tests
+SET title = :title, tags = :tags, description = :description
+WHERE id = :test-id AND user_id = :user-id RETURNING *
+
 -- :name get-question :? :1
 -- :doc retrieve a question given the id.
 SELECT * FROM questions WHERE id = :id
