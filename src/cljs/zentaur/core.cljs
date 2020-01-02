@@ -163,8 +163,7 @@
          :error-handler error-handler})))
 
 (defn refresh-csrf []
-  (when-let [csrf-field (gdom/getElement "__anti-forgery-token")]
-    (.log js/console (str ">>> csrf-field >>>>> " csrf-field ))
+  (when-let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
     (js/setTimeout (do (ask-csrf csrf-field)) 6000000)))
 
 (defn ^:export init []

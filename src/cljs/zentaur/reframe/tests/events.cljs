@@ -253,7 +253,6 @@
    [db [_ response]]
    (let [answer-keyword    (keyword (str (:id response)))
          question-keyword  (keyword (str (:question_id response)))]
-      (.log js/console (str ">>> response answer >>>>> " response " --- answer-keyword >> " answer-keyword "--  UND question-keyword >>> " question-keyword))
        (-> db
           (update-in [:questions question-keyword :answers answer-keyword] conj response)
           (update :loading?  not))
@@ -283,11 +282,12 @@
    [db [_ response]]
    (let [answer-keyword    (keyword (str (:id response)))
          question-keyword  (keyword (str (:question_id response)))]
-      (.log js/console (str ">>> response answer >>>>> " response " --- answer-keyword >> " answer-keyword "--  UND question-keyword >>> " question-keyword))
+       (.log js/console (str ">>> response answer >>>>> " response " --- answer-keyword >> " answer-keyword "--  UND question-keyword >>> " question-keyword))
        (-> db
-          (update-in [:questions question-keyword :answers answer-keyword] conj response)
-          (update :loading?  not))
-     )))
+           ;; (update :test   (conj response))
+           (update :loading?  not)
+           (update :testform  not))
+       )))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-test             ;; <-- the event id

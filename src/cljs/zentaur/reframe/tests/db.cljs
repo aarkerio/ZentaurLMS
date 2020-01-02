@@ -56,7 +56,7 @@
    :questions        (sorted-map)
    :loading?         false
    :qform            false
-   :testform  false})
+   :testform         false})
 
 ;; -- cofx Registrations  -----------------------------------------------------
 ;; Use `reg-cofx` to register a "coeffect handler" which will inject the todos

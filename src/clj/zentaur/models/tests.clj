@@ -89,8 +89,8 @@
     (try
       (log/info (str ">>> RRRR questions ***** >>>>> " questions))
       (assoc test :questions questions)
-      (catch Exception e (str "Caught exception: " (.getMessage e)))
-      (finally (prn "Release some resource")))))
+      (catch Exception e (str "******** >>> Caught exception: " (.getMessage e)))
+      (finally (assoc {} :error "function get-test-nodes in model error")))))
 
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn update-question! [params]
@@ -108,7 +108,9 @@
   "Update test after editing with ClojureScript"
   [params]
   (let [full-params (dissoc params :active)]
-    (db/update-test! full-params)))
+    (log/info (str ">>> update-test! >>>>> full-params: " full-params))
+    ;; (db/update-test! full-params)
+    ))
 
 ;;;;;;;;;;;;    DELETES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn remove-test [params]

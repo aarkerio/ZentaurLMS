@@ -5,24 +5,141 @@
             [re-frame.core :as re-frame]
             [zentaur.reframe.tests.forms.blocks :as blk]))
 
-(defn question-input [{:keys [question on-save on-stop]}]
-  (let [val  (reagent/atom question)
-        stop #(do (reset! val "")
-                  (when on-stop (on-stop)))
-        save #(let [v (-> @val str str/trim)]
-                (on-save v)
-                (stop))]
-    (fn [props]
-      [:input (merge (dissoc props :on-save :on-stop :question)
-                     {:type        "text"
-                      :value       @val
-                      :auto-focus  true
-                      :on-blur     save
-                      :on-change   #(reset! val (-> % .-target .-value))
-                      :on-key-down #(case (.-which %)
-                                      13 (save)
-                                      27 (stop)
-                                      nil)})])))
+;;;;;; FORMS
+(defn edit-test-form
+  "Verstecken Form for test bearbeiten"
+  []
+  (let [test-form     (re-frame/subscribe [:toggle-testform])
+        title         (reagent/atom "")
+        description   (reagent/atom "")
+        tags          (reagent/atom "")]
+    (fn []
+      [:div {:id "hidden-form" :class (if @test-form "visible-div" "hidden-div")}
+       [:h3.class "Bearbeit test"]
+       [:div.div-separator
+        [:input {:type         "text" :value @title
+                 :placeholder  "Title"
+                 :title        "Title"
+                 :maxLength    180
+                 :on-change    #(reset! title (-> % .-target .-value))
+                 :size         100}]]
+       [:div.div-separator
+        [:input {:type         "text"
+                 :value        @description
+                 :on-change    #(reset! description (-> % .-target .-value))
+                 :placeholder  "Erklärung"
+                 :title        "Erklärung"
+                 :maxLength    180
+                 :size         100}]]
+       [:div.div-separator
+        [:input {:type         "text"
+                 :value        @tags
+                 :on-change    #(reset! tags (-> % .-target .-value))
+                 :placeholder  "Tags"
+                 :title        "Tags"
+                 :maxLength    180
+                 :size         100}]]
+     [:div
+      [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"
+               :on-click (re-frame.core/dispatch [:update-test {:title        @title
+                                                                :description  @description
+                                                                :tags         @tags
+                                                                :test-id      (.-value (gdom/getElement "test-id"))}])}]]])))
+
+(defn edit-question-form
+  "Verstecken Form for a neue fragen"
+  []
+  (let [qform        (re-frame/subscribe [:qform])
+        new-question (reagent/atom "")
+        hint         (reagent/atom "")
+        explanation  (reagent/atom "")
+        qtype        (reagent/atom "1")]
+    (fn []
+      [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
+       [:h3.class "Hinzifugen neue fragen"]
+       [:div.div-separator
+        [:input {:type         "text" :value @new-question
+                 :placeholder  "Neue Frage"
+                 :title        "Neue Frage"
+                 :maxLength    180
+                 :on-change    #(reset! new-question (-> % .-target .-value))
+                 :size         100}]]
+       [:div.div-separator
+        [:input {:type         "text"
+                 :value        @hint
+                 :on-change    #(reset! hint (-> % .-target .-value))
+                 :placeholder  "Frage Hinweis"
+                 :title        "Frage Hinweis"
+                 :maxLength    180
+                 :size         100}]]
+       [:div.div-separator
+        [:input {:type         "text"
+                 :value        @explanation
+                 :on-change    #(reset! explanation (-> % .-target .-value))
+                 :placeholder  "Frage erklärung"
+                 :title        "Frage erklärung"
+                 :maxLength    180
+                 :size         100}]]
+       [:div.div-separator
+        [:select.form-control.mr-sm-2 {:name      "qtype"
+                                       :value     @qtype
+                                       :on-change #(reset! qtype (-> % .-target .-value))}
+         [:option {:value "1"} "Multiple"]
+         [:option {:value "2"} "Open"]
+         [:option {:value "3"} "Fullfill"]
+         [:option {:value "4"} "Columns"]]]
+     [:div
+      [:input.btn {:class "btn btn-outline-primary-green" :type "button" :value "Neue Frage speichern"
+                   :on-click #(do (re-frame.core/dispatch [:create-question {:question    @new-question
+                                                                             :hint        @hint
+                                                                             :qtype       @qtype
+                                                                             :test-id     (.-value (gdom/getElement "test-id"))
+                                                                             :explanation @explanation}])
+                                  (reset! new-question "")
+                                  (reset! hint "")
+                                  (reset! explanation ""))}]]])))
+
+(defn edit-question [{:keys [question id hint explanation qtype]}]
+  (let [aquestion    (reagent/atom question)
+        ahint        (reagent/atom hint)
+        aexplanation (reagent/atom explanation)
+        aqtype       (reagent/atom qtype)]
+    (fn []
+      [:div.edit_question
+       [:div "Question: " [:br]
+        [:input {:type      "text"
+                 :value     @aquestion
+                 :maxLength 180
+                 :size      100
+                 :on-change #(reset! aquestion (-> % .-target .-value))}]]
+       [:div "Hint: " [:br]
+        [:input {:type      "text"
+                 :value     @ahint
+                 :maxLength 180
+                 :size      100
+                 :on-change #(reset! ahint (-> % .-target .-value))}]]
+       [:div "Explanation: " [:br]
+        [:input {:type      "text"
+                 :value     @aexplanation
+                 :maxLength 180
+                 :size      100
+                 :on-change #(reset! aexplanation (-> % .-target .-value))}]]
+       [:div.div-separator
+        [:select.form-control.mr-sm-2 {:name      "qtype"
+                                       :value     @aqtype
+                                       :on-change #(reset! aqtype (-> % .-target .-value))
+                                       :id        (str "edit-qtype-select-" id)}
+         [:option {:value "1"} "Multiple"]
+         [:option {:value "2"} "Open"]
+         [:option {:value "3"} "Fullfill"]
+         [:option {:value "4"} "Columns"]]]
+       [:div [:input.btn {:type  "button"
+                          :value "Save"
+                          :on-click #(re-frame.core/dispatch [:update-question {:question    @aquestion
+                                                                                :hint        @ahint
+                                                                                :id          id
+                                                                                :qtype       @aqtype
+                                                                                :explanation @aexplanation}])}]]])))
 
 (defn answer-editing-input [{:keys [answer correct id]}]
   (let [aanswer   (reagent/atom answer)
@@ -41,6 +158,8 @@
                 :on-change #(swap! acorrect not)}]
        [:div [:input.btn {:type "button" :value "Speichern"
                           :on-click #(re-frame.core/dispatch [:update-answer {:answer @aanswer :correct @acorrect :id id}])}]]])))
+;;;;;;;; FORMS ENDS
+
 
 (defn display-answer [{:keys [id answer correct question_id key] :as answer-record}]
   (let [answer-class    (if-not correct "all-width-red" "all-width-green")
@@ -117,47 +236,6 @@
   [question]
   [:p "Question columns"])
 
-(defn edit-question [{:keys [question id hint explanation qtype]}]
-  (let [aquestion    (reagent/atom question)
-        ahint        (reagent/atom hint)
-        aexplanation (reagent/atom explanation)
-        aqtype       (reagent/atom qtype)]
-    (fn []
-      [:div.edit_question
-       [:div "Question: " [:br]
-        [:input {:type      "text"
-                 :value     @aquestion
-                 :maxLength 180
-                 :size      100
-                 :on-change #(reset! aquestion (-> % .-target .-value))}]]
-       [:div "Hint: " [:br]
-        [:input {:type      "text"
-                 :value     @ahint
-                 :maxLength 180
-                 :size      100
-                 :on-change #(reset! ahint (-> % .-target .-value))}]]
-       [:div "Explanation: " [:br]
-        [:input {:type      "text"
-                 :value     @aexplanation
-                 :maxLength 180
-                 :size      100
-                 :on-change #(reset! aexplanation (-> % .-target .-value))}]]
-       [:div.div-separator
-        [:select.form-control.mr-sm-2 {:name      "qtype"
-                                       :value     @aqtype
-                                       :on-change #(reset! aqtype (-> % .-target .-value))
-                                       :id        (str "edit-qtype-select-" id)}
-         [:option {:value "1"} "Multiple"]
-         [:option {:value "2"} "Open"]
-         [:option {:value "3"} "Fullfill"]
-         [:option {:value "4"} "Columns"]]]
-       [:div [:input.btn {:type  "button"
-                          :value "Save"
-                          :on-click #(re-frame.core/dispatch [:update-question {:question    @aquestion
-                                                                                :hint        @ahint
-                                                                                :id          id
-                                                                                :qtype       @aqtype
-                                                                                :explanation @aexplanation}])}]]])))
 (defn question-item
   "Display any type of question"
   [{:keys [question explanation hint qtype id ordnen index] :as q}]
@@ -179,7 +257,7 @@
        [:div [:span.bold-font "Hint: "] hint]
        [:div [:span.bold-font "Erläuterung: "] explanation]]
      (when @editing-question
-       [edit-question q])
+        [edit-question q])
        [display-question q] ;; Polimorphysm for the kind of question
      [:div.img-delete-right
        [:img {:src    "/img/icon_delete.png"
@@ -189,75 +267,20 @@
 
 (defn questions-list
   []
-  (let [counter (atom 1000)]
+  (let [counter (atom 0)]
     (fn []
       [:section
        (for [question @(re-frame/subscribe [:questions])]
          (do
-           (swap! counter inc)
-            ^{:key @counter} [question-item (second question)]
+            ^{:key (swap! counter inc)} [question-item (second question)]
             ))])))
-
-(defn edit-question-form
-  "Verstecken Form for a neue fragen"
-  []
-  (let [qform        (re-frame/subscribe [:qform])
-        new-question (reagent/atom "")
-        hint         (atom "")
-        explanation  (reagent/atom "")
-        qtype        (reagent/atom "1")]
-    (fn []
-      [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
-       [:h3.class "Hinzifugen neue fragen"]
-       [:div.div-separator
-        [:input {:type         "text" :value @new-question
-                 :placeholder  "Neue Frage"
-                 :title        "Neue Frage"
-                 :maxLength    180
-                 :on-change    #(reset! new-question (-> % .-target .-value))
-                 :size         100}]]
-       [:div.div-separator
-        [:input {:type         "text"
-                 :value        @hint
-                 :on-change    #(reset! hint (-> % .-target .-value))
-                 :placeholder  "Frage Hinweis"
-                 :title        "Frage Hinweis"
-                 :maxLength    180
-                 :size         100}]]
-       [:div.div-separator
-        [:input {:type         "text"
-                 :value        @explanation
-                 :on-change    #(reset! explanation (-> % .-target .-value))
-                 :placeholder  "Frage erklärung"
-                 :title        "Frage erklärung"
-                 :maxLength    180
-                 :size         100}]]
-       [:div.div-separator
-        [:select.form-control.mr-sm-2 {:name      "qtype"
-                                       :value     @qtype
-                                       :on-change #(reset! qtype (-> % .-target .-value))}
-         [:option {:value "1"} "Multiple"]
-         [:option {:value "2"} "Open"]
-         [:option {:value "3"} "Fullfill"]
-         [:option {:value "4"} "Columns"]]]
-     [:div
-      [:input.btn {:class "btn btn-outline-primary-green" :type "button" :value "Neue Frage speichern"
-                   :on-click #(do (re-frame.core/dispatch [:create-question {:question    @new-question
-                                                                             :hint        @hint
-                                                                             :qtype       @qtype
-                                                                             :test-id     (.-value (gdom/getElement "test-id"))
-                                                                             :user-id     (.-value (gdom/getElement "user-id"))
-                                                                             :explanation @explanation}])
-                                  (reset! new-question "")
-                                  (reset! hint "")
-                                  (reset! explanation ""))}]]])))
 
 (defn test-display []
   (let [test  (re-frame/subscribe [:test])
         qform (re-frame/subscribe [:qform])]
     [:div
-     [:div [:input {:class "btn btn-outline-primary-green" :type "button" :value "Test bearbeiten" :on-click #(re-frame.core/dispatch [:toggle-testform])}]]
-     [blk/edit-test-form]
+     [:div [:img {:class "foo" :src "/img/icon_edit_test.png" :alt "Edit test" :title "Edit test" :on-click #(re-frame.core/dispatch [:toggle-testform])}]]
+     [edit-test-form]
      [:h1 (:title @test)]
      [:div.div-simple-separator [:span {:class "bold-font"} "Tags: "] (:tags @test) [:span {:class "bold-font"} " Created:"] (:created_at @test)]
      [:div.div-simple-separator [:span {:class "bold-font"}  "Description: "] (:description @test)]
