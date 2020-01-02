@@ -8,6 +8,6 @@ CREATE TABLE composite_answers (
   correct_column VARCHAR(300) NOT NULL,
   name_column VARCHAR(300) NOT NULL,
   created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
-  updated_at timestamp(0) with time zone
+  updated_at timestamp(0) with time zone NOT NULL DEFAULT now()
 );
 
