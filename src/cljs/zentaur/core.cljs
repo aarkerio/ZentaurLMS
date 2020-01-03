@@ -91,6 +91,27 @@
          :handler set-message
          :error-handler error-handler})))
 
+(defn validate-new-post []
+  (let [title  (.getElementById js/document "title")
+        tags   (.getElementById js/document "body")]
+    (if (and (> (count (.-value title)) 0)
+             (> (count (.-value tags)) 0))
+      true
+      (do (js/alert "Please, complete the form!")
+          false))))
+
+(defn new-post-validation []
+  ;; verify that js/document exists and that it has a getElementById
+  ;; property
+  (if (and js/document
+           (.-getElementById js/document))
+    ;; get loginForm by element id and set its onsubmit property to
+    ;; our validate-form function
+    (let [test-form (.getElementById js/document "new-post-form")
+          _ (.log js/console (str ">>> test-formtest-formtest-form FROM TEST********* >>>>> "))]
+      (set! (.-onsubmit test-form) validate-new-post))
+    ))
+
 ;;;;    PROCESS LOADERS BLOCK
 (defn- load-process []
   (events/listen (gdom/getElement "insert-question") EventType.CHANGE
@@ -105,8 +126,7 @@
        (fn [] (.log js/console (str ">>> VALUE >>>>>  #####   >>>>>   events/listen  in users ns")))))
 
 (defn- remove-flash []
-  (.log js/console (str ">>> REMOVING FLASH MESSAGE !!!!>>>>> "))
-  (when-let [flash-msg (gdom/getElement "flash-msg")]
+  (when-let [flash-msg (.-value (gdom/getElement "flash-msg"))]
     (.log js/console (str ">>> flash-msg VALUE >>>>> " flash-msg ))
     (js/setTimeout (.-remove flash-msg) 9000)))
 
@@ -169,11 +189,13 @@
 (defn ^:export init []
   (flash-timeout)
   (refresh-csrf)
+  (new-post-validation)
   (let [current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> **** tatsächliche: current. Jedoch However**** >>>>> " current_url))]
     (cond
       (s/includes? current_url "admin/users")     (load-users)
       (s/includes? current_url "uploads/process") (load-process)
       (s/includes? current_url "admin/posts")     (load-posts)
+      (= current_url "/admin/posts/new")          (.log js/console (str ">>> test-formtest(new-post-validation)"))
       (= current_url "/admin/tests")              (do (init-form)(load-tests))
       :else "F")))
