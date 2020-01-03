@@ -290,7 +290,7 @@
        )))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
-  :update-test             ;; <-- the event id
+  :update-test               ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ answer]]        ;; <-- 1st argument is coeffect, from which we extract db
     (let [db         (:db cofx)

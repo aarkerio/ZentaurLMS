@@ -5,48 +5,7 @@
             [re-frame.core :as re-frame]
             [zentaur.reframe.tests.forms.blocks :as blk]))
 
-;;;;;; FORMS
-(defn edit-test-form
-  "Verstecken Form for test bearbeiten"
-  []
-  (let [test-form     (re-frame/subscribe [:toggle-testform])
-        title         (reagent/atom "")
-        description   (reagent/atom "")
-        tags          (reagent/atom "")]
-    (fn []
-      [:div {:id "hidden-form" :class (if @test-form "visible-div" "hidden-div")}
-       [:h3.class "Bearbeit test"]
-       [:div.div-separator
-        [:input {:type         "text" :value @title
-                 :placeholder  "Title"
-                 :title        "Title"
-                 :maxLength    180
-                 :on-change    #(reset! title (-> % .-target .-value))
-                 :size         100}]]
-       [:div.div-separator
-        [:input {:type         "text"
-                 :value        @description
-                 :on-change    #(reset! description (-> % .-target .-value))
-                 :placeholder  "Erklärung"
-                 :title        "Erklärung"
-                 :maxLength    180
-                 :size         100}]]
-       [:div.div-separator
-        [:input {:type         "text"
-                 :value        @tags
-                 :on-change    #(reset! tags (-> % .-target .-value))
-                 :placeholder  "Tags"
-                 :title        "Tags"
-                 :maxLength    180
-                 :size         100}]]
-     [:div
-      [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"
-               :on-click (re-frame.core/dispatch [:update-test {:title        @title
-                                                                :description  @description
-                                                                :tags         @tags
-                                                                :test-id      (.-value (gdom/getElement "test-id"))}])}]]])))
-
-(defn edit-question-form
+(defn create-question-form
   "Verstecken Form for a neue fragen"
   []
   (let [qform        (re-frame/subscribe [:qform])
@@ -275,12 +234,104 @@
             ^{:key (swap! counter inc)} [question-item (second question)]
             ))])))
 
+(defn edit-test-form
+  "Verstecken Form for test bearbeiten"
+  [test]
+  (let [_             (.log js/console (str ">>> **** TESTS  **** >>>>> " test ))
+        editing-form  (reagent/atom false)
+        title         (reagent/atom (:title test))
+        description   (reagent/atom (:description test))
+        tags          (reagent/atom (:tags test))]
+    (fn []
+      [:div
+       [:div.edit-icon-div
+        (if @editing-form
+          [:img.img-float-right {:title    "Bearbeiten abbrechen"
+                                :alt      "Bearbeiten abbrechen"
+                                :src      "/img/icon_cancel.png"
+                                :on-click #(swap! editing-form not)}]
+          [:img.img-float-right {:title    "Frage bearbeiten"
+                                :alt      "Frage bearbeiten"
+                                :src      "/img/icon_edit_test.png"
+                                :on-click #(swap! editing-form not)}])]  ;; editing ends
+
+       [:div {:id "hidden-form" :class (if @editing-form "visible-div" "hidden-div")}
+        [:h3.class "Bearbeit test"]
+        [:div.div-separator
+         [:input {:type         "text" :value @title
+                  :placeholder  "Title"
+                  :title        "Title"
+                  :maxLength    180
+                  :on-change    #(reset! title (-> % .-target .-value))
+                  :size         100}]]
+        [:div.div-separator
+         [:input {:type         "text"
+                  :value        @description
+                  :on-change    #(reset! description (-> % .-target .-value))
+                  :placeholder  "Erklärung"
+                  :title        "Erklärung"
+                  :maxLength    180
+                  :size         100}]]
+        [:div.div-separator
+         [:input {:type         "text"
+                  :value        @tags
+                  :on-change    #(reset! tags (-> % .-target .-value))
+                  :placeholder  "Tags"
+                  :title        "Tags"
+                  :maxLength    180
+                  :size         100}]]
+        [:div
+         [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"
+                  :on-click (re-frame.core/dispatch [:update-test {:title        @title
+                                                                   :description  @description
+                                                                   :tags         @tags
+                                                                   :test-id      (:test-id test)}])}]]]])))
 (defn test-display []
-  (let [test  (re-frame/subscribe [:test])
-        qform (re-frame/subscribe [:qform])]
+  (let [test (re-frame/subscribe [:test])]
+    (.log js/console (str ">>> VALUE TTTTTTT >>>>> " @test ))
+           [:div.edit-icon-div
+        (if @editing-form
+          [:img.img-float-right {:title    "Bearbeiten abbrechen"
+                                :alt      "Bearbeiten abbrechen"
+                                :src      "/img/icon_cancel.png"
+                                :on-click #(swap! editing-form not)}]
+          [:img.img-float-right {:title    "Frage bearbeiten"
+                                :alt      "Frage bearbeiten"
+                                :src      "/img/icon_edit_test.png"
+                                :on-click #(swap! editing-form not)}])]  ;; editing ends
+
+       [:div {:id "hidden-form" :class (if @editing-form "visible-div" "hidden-div")}
+        [:h3.class "Bearbeit test"]
+        [:div.div-separator
+         [:input {:type         "text" :value @title
+                  :placeholder  "Title"
+                  :title        "Title"
+                  :maxLength    180
+                  :on-change    #(reset! title (-> % .-target .-value))
+                  :size         100}]]
+        [:div.div-separator
+         [:input {:type         "text"
+                  :value        @description
+                  :on-change    #(reset! description (-> % .-target .-value))
+                  :placeholder  "Erklärung"
+                  :title        "Erklärung"
+                  :maxLength    180
+                  :size         100}]]
+        [:div.div-separator
+         [:input {:type         "text"
+                  :value        @tags
+                  :on-change    #(reset! tags (-> % .-target .-value))
+                  :placeholder  "Tags"
+                  :title        "Tags"
+                  :maxLength    180
+                  :size         100}]]
+        [:div
+         [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"
+                  :on-click (re-frame.core/dispatch [:update-test {:title        @title
+                                                                   :description  @description
+                                                                   :tags         @tags
+                                                                   :test-id      (:test-id test)}])}]]]])
     [:div
-     [:div [:img {:class "foo" :src "/img/icon_edit_test.png" :alt "Edit test" :title "Edit test" :on-click #(re-frame.core/dispatch [:toggle-testform])}]]
-     [edit-test-form]
      [:h1 (:title @test)]
      [:div.div-simple-separator [:span {:class "bold-font"} "Tags: "] (:tags @test) [:span {:class "bold-font"} " Created:"] (:created_at @test)]
      [:div.div-simple-separator [:span {:class "bold-font"}  "Description: "] (:description @test)]
@@ -288,11 +339,11 @@
 
 (defn todo-app
   []
-  (let [questions (re-frame/subscribe [:questions])]
+  (let []
     [:div
      [:section#todoapp
       [test-display]
-      [edit-question-form]
+      [create-question-form]
       [questions-list]]
      [:div {:class "footer"}
       [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))

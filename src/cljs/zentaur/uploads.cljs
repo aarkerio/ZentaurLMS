@@ -50,3 +50,41 @@
 
     (.val textbox finalStr)))
 
+
+(defn set-message [response]
+  (.log js/console (str ">>> Set msg :::  #####  >>>>> " response))
+  (let [div-message (gdom/getElement "display-message")
+        msg         (:msg response)]
+    (set! (.-innerHTML div-message) msg)
+    (style/showElement div-message true)))
+
+(defn export-json []
+  (let [json       (.-value (gdom/getElement "json-field"))
+        id         (.-value (gdom/getElement "upload-id"))
+        csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+    (POST "/admin/uploads/export"
+        {:params {:body  json
+                  :id    id}
+         :headers {"x-csrf-token" csrf-field}
+         :handler set-message
+         :error-handler error-handler})))
+
+(defn save-json []
+  (let [json       (.-value (gdom/getElement "json-field"))
+        id         (.-value (gdom/getElement "upload-id"))
+        csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+    (POST "/admin/uploads/save"
+        {:params {:body json
+                  :id id}
+         :headers {"x-csrf-token" csrf-field}
+         :handler set-message
+         :error-handler error-handler})))
+
+;;;;    PROCESS LOADERS BLOCK
+(defn load-process []
+  (events/listen (gdom/getElement "insert-question") EventType.CHANGE
+                 (fn [e]
+                   (let [value (.-value (gdom/getElement "insert-question"))]
+                     (insert-text (js/parseInt value)))))
+  (events/listen (gdom/getElement "export-button") EventType.CLICK export-json)
+  (events/listen (gdom/getElement "save-button") EventType.CLICK save-json))

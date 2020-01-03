@@ -3,11 +3,9 @@
             [zentaur.uploads :as uploads]
             [ajax.core :refer [GET POST DELETE]]))
 
-(enable-console-print!)
-
 (defn- handler [response]
   (let [parsed       (str "t   /  read r response")
-        __           (.log js/console (str ">>> PARSED >>>>> " (type parsed) ">>>>" parsed))
+        __            (.log js/console (str ">>> PARSED >>>>> " (type parsed) ">>>>" parsed))
         comment      (get parsed "comment")
         created_at   (get parsed "created_at")
         last_name    (get parsed "last_name")
@@ -33,7 +31,7 @@
      (.addEventListener (.getElementById js/document elem) event
                         (fn [evt]
                           (.log js/console (str "evt: >>>>> " evt))
-                          (let [atxt (-> evt (.-currentTarget) (.-innerHTML))
+                          (let [atxt       (-> evt (.-currentTarget) (.-innerHTML))
                                 csrf-token (.getElementById js/document "__anti-forgery-token")
                                 csrf-value (-> csrf-token (.-value))
                                 post_id    (-> (.getElementById js/document "post_id") (.-value))
@@ -62,3 +60,6 @@
 (defn mount []
   (.log js/console (str ">>> VALUE >>>>> mount POSTS !!!")))
 
+(defn load-posts []
+  (events/listen (gdom/getElement "icon-add") EventType.CLICK
+       (fn [] (.log js/console (str ">>> VALUE >>>>>  #####   >>>>>   events/listen  in users ns")))))
