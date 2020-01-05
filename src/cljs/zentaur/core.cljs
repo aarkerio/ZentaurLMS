@@ -29,12 +29,8 @@
           false))))
 
 (defn new-post-validation []
-  ;; verify that js/document exists and that it has a getElementById
-  ;; property
   (if (and js/document
            (.-getElementById js/document))
-    ;; get loginForm by element id and set its onsubmit property to
-    ;; our validate-form function
     (when-let [test-form (.getElementById js/document "new-post-form")]
       (set! (.-onsubmit test-form) validate-new-post))))
 
@@ -59,9 +55,7 @@
 (defn show-new-test-form []
   (if (and js/document
            (.-getElementById js/document))
-    ;; get loginForm by element id and set its onsubmit property to
-    ;; our validate-form function
-    (let [test-form (.getElementById js/document "submit-test-form")]
+    (when-let [test-form (.getElementById js/document "submit-test-form")]
       (set! (.-onsubmit test-form) validate-minimal-test))))
 
 (defn- load-tests []

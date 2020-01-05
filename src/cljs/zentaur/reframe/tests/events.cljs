@@ -249,14 +249,12 @@
 (re-frame/reg-event-db
  :process-after-update-answer
  []
- (fn
-   [db [_ response]]
+ (fn [db [_ response]]
    (let [answer-keyword    (keyword (str (:id response)))
          question-keyword  (keyword (str (:question_id response)))]
        (-> db
           (update-in [:questions question-keyword :answers answer-keyword] conj response)
-          (update :loading?  not))
-     )))
+          (update :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-answer             ;; <-- the event id
@@ -278,8 +276,7 @@
 (re-frame/reg-event-db
  :process-after-update-test
  []
- (fn
-   [db [_ response]]
+ (fn [db [_ response]]
    (let [answer-keyword    (keyword (str (:id response)))
          question-keyword  (keyword (str (:question_id response)))]
        (.log js/console (str ">>> response answer >>>>> " response " --- answer-keyword >> " answer-keyword "--  UND question-keyword >>> " question-keyword))

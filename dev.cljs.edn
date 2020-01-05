@@ -6,9 +6,5 @@
  :main zentaur.app
  :optimizations :none
  :pretty-print true
- :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}
- :preloads [devtools.preload day8.re-frame-10x.preload]
  :source-map true
- :reload-clj-files false
- :open-url false
 }
