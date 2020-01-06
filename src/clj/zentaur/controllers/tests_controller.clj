@@ -30,7 +30,7 @@
     (response/found "/admin/tests")))
 
 (defn create-question
-  "POST /admin/tests/createquestion. JSON reponse."
+  "POST /admin/tests/createquestion. JSON response."
   [request]
   (let [params       (:params request)
         user-id      (-> request :identity :id)
@@ -39,7 +39,7 @@
     (response/ok (ches/encode response non-ascii))))
 
 (defn update-question
-  "POST /admin/tests/updatequestion. JSON reponse."
+  "POST /admin/tests/updatequestion. JSON response."
   [request]
   (let [params       (:params request)
         user-id      (-> request :identity :id)
@@ -48,7 +48,7 @@
     (response/ok (ches/encode response non-ascii))))
 
 (defn update-answer
-  "POST /admin/tests/updateanswer. JSON reponse."
+  "POST /admin/tests/updateanswer. JSON response."
   [request]
   (let [params       (:params request)
         new-params   (assoc params :active true)
@@ -56,7 +56,7 @@
     (response/ok (ches/encode response non-ascii))))
 
 (defn update-test
-  "POST /admin/tests/updatetest. JSON reponse."
+  "POST /admin/tests/updatetest. JSON response."
   [request]
   (let [params       (:params request)
         user-id      (-> request :identity :id)
@@ -66,7 +66,7 @@
     (response/ok (ches/encode response non-ascii))))
 
 (defn create-answer
-  "POST /admin/tests/createanswer. JSON reponse."
+  "POST /admin/tests/createanswer. JSON response."
   [request]
   (let [params       (:params request)
         user-id      (-> request :identity :id)

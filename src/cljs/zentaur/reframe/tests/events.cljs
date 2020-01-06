@@ -277,11 +277,10 @@
  :process-after-update-test
  []
  (fn [db [_ response]]
-   (let [answer-keyword    (keyword (str (:id response)))
-         question-keyword  (keyword (str (:question_id response)))]
-       (.log js/console (str ">>> response answer >>>>> " response " --- answer-keyword >> " answer-keyword "--  UND question-keyword >>> " question-keyword))
+   (let [answer-keyword   (keyword (str (:id response)))]
+       (.log js/console (str ">>> response after-update-test >>>>> " response))
        (-> db
-           ;; (update :test   (conj response))
+           (update :test (conj response))
            (update :loading?  not)
            (update :testform  not))
        )))
@@ -289,14 +288,14 @@
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-test               ;; <-- the event id
   (fn                         ;; <-- the handler function
-    [cofx [_ answer]]        ;; <-- 1st argument is coeffect, from which we extract db
+    [cofx [_ updates]]        ;; <-- 1st argument is coeffect, from which we extract db
     (let [db         (:db cofx)
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
       ;; we return a map of (side) effects
       {:http-xhrio {:method          :post
                     :uri             "/admin/tests/updatetest"
                     :format          (ajax/json-request-format)
-                    :params          answer
+                    :params          updates
                     :headers         {"x-csrf-token" csrf-field}
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:process-after-update-test]
