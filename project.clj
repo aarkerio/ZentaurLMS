@@ -66,9 +66,8 @@
                            :dependencies [[binaryage/devtools "0.9.11"]              ;; CLJS DevTools
                                           [com.bhauman/figwheel-main "0.2.3"]        ;; Hot Reload cljs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
-                                          [day8.re-frame/re-frame-10x "0.4.5"]       ;; Debugging re-frame applications.
                                           [doo "0.1.11"]                             ;; Library and lein plugin to run cljs.test on different JS environments
-                                          [factory-time "0.1.2"]                     ;; Factory bot like for tests
+                                          [factory-time "0.1.2"]                     ;; Factory-bot like library for tests
                                           [nrepl "0.6.0"]                            ;; Clojure network REPL that provides a REPL server and client
                                           [org.clojure/clojurescript "1.10.597"]
                                           [prone "2019-07-08"]                       ;;  Better exception reporting middleware for Ring.

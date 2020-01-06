@@ -6,12 +6,12 @@
 
 (defn formatted-post [{:keys [title created_at tags discution published id]}]
   [:tr
-    [:td [:a {:href (str "/admin/posts/edit/" id)}  "Edit"]]
+    [:td [:a {:href (str "/admin/posts/edit/" id)}  "Bearbeiten"]]
     [:td title]
     [:td tags]
     [:td [:a {:href (str "/admin/posts/published/" id "/" published)}  published]]
     [:td created_at]
-    [:td [:a {:href (str "/admin/posts/delete/" id)}  "Delete"]]])
+    [:td [:a {:href (str "/admin/posts/delete/" id)}  "Löschen"]]])
 
 (defn index [posts]
   (let [formatted-posts (doall (for [post posts]
@@ -35,13 +35,12 @@
 
 (defn new [base user-id]
   [:div {:id "cont"}
-             (f/form-to [:post "/admin/posts"]
+             [:form {:action "/admin/posts" :method "post" :id "new-post-form"}
                 (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
-                (f/hidden-field { :value user-id} "user_id")
                 [:div (f/text-field {:maxlength 150 :size 90 :placeholder "Title"} "title")]
                 [:div (f/text-field {:maxlength 150 :size 70 :placeholder "tags"} "tags")]
                 [:div (f/text-area {:cols 90 :rows 20} "body")]
                 [:div (f/label "published" "Published") (f/check-box {:title "Publish this" :value "1"} "published")]
                 [:div (f/label "discution" "Discution") (f/check-box {:title "Active comments" :value "1"} "discution")]
-                (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Einrichen")) ] )
+                (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Einrichen")]])
 

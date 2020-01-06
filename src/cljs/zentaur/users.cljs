@@ -27,3 +27,14 @@
       (.removeChild content (.-lastChild content)))
     (.appendChild content (js/document.createTextNode "Willkommen zu meim ekelhaft blog!!"))))
 
+
+;; Users
+(defn load-users []
+  (events/listen (gdom/getElement "icon-add") EventType.CLICK
+                 (fn [e]
+                   (let [divh      (gdom/getElement "divhide")
+                         divclass  (.-className divh)
+                         toggle   (if (= divclass "hidden-div") "visible" "hidden-div")]
+                     (do
+                       (.log js/console (str ">>> VALUE >>>>>  " e))
+                       (set! (.-className divh) toggle))))))

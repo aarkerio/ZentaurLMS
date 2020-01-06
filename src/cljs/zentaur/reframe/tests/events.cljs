@@ -56,9 +56,14 @@
    (.log js/console (str ">>> Fheler aus ajax antwort : >>>>> " response "   " _))))
 
 (re-frame/reg-event-db
- :toggle-qform     ;; hidde/show forms
+ :toggle-qform     ;; versteckt / zeigt neues Frageformular
  (fn [db _]
    (update db :qform not)))
+
+(re-frame/reg-event-db
+ :toggle-testform     ;; versteckt / zeigt bearbeit testformular
+ (fn [db _]
+   (update db :testform not)))
 
 (re-frame/reg-event-db
   :process-test-response
@@ -244,15 +249,12 @@
 (re-frame/reg-event-db
  :process-after-update-answer
  []
- (fn
-   [db [_ response]]
+ (fn [db [_ response]]
    (let [answer-keyword    (keyword (str (:id response)))
          question-keyword  (keyword (str (:question_id response)))]
-      (.log js/console (str ">>> response answer >>>>> " response " --- answer-keyword >> " answer-keyword "--  UND question-keyword >>> " question-keyword))
        (-> db
           (update-in [:questions question-keyword :answers answer-keyword] conj response)
-          (update :loading?  not))
-     )))
+          (update :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-answer             ;; <-- the event id
@@ -268,4 +270,33 @@
                     :headers         {"x-csrf-token" csrf-field}
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:process-after-update-answer]
+                    :on-failure      [:bad-response]}})))
+
+;; ### UPDATE ANSWER
+(re-frame/reg-event-db
+ :process-after-update-test
+ []
+ (fn [db [_ response]]
+   (let [answer-keyword   (keyword (str (:id response)))]
+       (.log js/console (str ">>> response after-update-test >>>>> " response))
+       (-> db
+           (update :test (conj response))
+           (update :loading?  not)
+           (update :testform  not))
+       )))
+
+(re-frame/reg-event-fx       ;; <-- note the `-fx` extension
+  :update-test               ;; <-- the event id
+  (fn                         ;; <-- the handler function
+    [cofx [_ updates]]        ;; <-- 1st argument is coeffect, from which we extract db
+    (let [db         (:db cofx)
+          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+      ;; we return a map of (side) effects
+      {:http-xhrio {:method          :post
+                    :uri             "/admin/tests/updatetest"
+                    :format          (ajax/json-request-format)
+                    :params          updates
+                    :headers         {"x-csrf-token" csrf-field}
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:process-after-update-test]
                     :on-failure      [:bad-response]}})))

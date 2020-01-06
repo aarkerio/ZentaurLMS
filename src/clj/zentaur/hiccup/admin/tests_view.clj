@@ -18,11 +18,11 @@
 
 (defn- form-new [csrf-field]
   [:div.hidden-div {:id "hidden-form"}
-    (f/form-to [:post "/admin/tests"]
+    [:form {:id "submit-test-form" :action "/admin/tests" :method "post" :class "css-class-form"}
       (f/hidden-field {:value csrf-field} "__anti-forgery-token")
       [:div (f/text-field {:maxlength 150 :size 90 :placeholder "Title"} "title")]
-      [:div (f/text-field {:maxlength 150 :size 70 :placeholder "tags"} "tags")]
-      (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern"))])
+      [:div (f/text-field {:maxlength 150 :size 70 :placeholder "Tags"} "tags")]
+      (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]])
 
 (defn index [tests base]
   (let [csrf-field      (:csrf-field base)
@@ -49,11 +49,8 @@
 
 (defn edit [base test-id]
   [:div
-    [:h1 "Bearbeiten Quizz Test"]
-    [:div {:id "cont"}
-      (f/form-to [:post ""]
-        (f/hidden-field {:value (:csrf-field base)} "__anti-forgery-token")
-        (f/hidden-field {:value test-id} "test-id")
-        (f/hidden-field {:value (get-in base [:identity :id])} "user-id"))]
-    [:div {:id "test-root-app"}]])
-
+   [:h1 "Bearbeiten Quizz Test"]
+   [:div (f/form-to [:id "hidden-form"]
+                    (f/hidden-field {:value (:csrf-field base)} "__anti-forgery-token")
+                    (f/hidden-field {:value test-id} "test-id"))]
+   [:div {:id "test-root-app"}]])

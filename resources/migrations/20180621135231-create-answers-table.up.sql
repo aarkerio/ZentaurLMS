@@ -11,7 +11,7 @@ CREATE TABLE answers(
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL DEFAULT now()
  );
-
+--;;
 CREATE TRIGGER trig_answers
 BEFORE UPDATE ON "answers"
 FOR EACH ROW

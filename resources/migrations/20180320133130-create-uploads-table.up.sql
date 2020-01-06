@@ -15,7 +15,7 @@ CREATE TABLE uploads (
    created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
    updated_at timestamp(0) with time zone NOT NULL DEFAULT now()
 );
-
+--;;
 CREATE TRIGGER trig_uploads
 BEFORE UPDATE ON "uploads"
 FOR EACH ROW

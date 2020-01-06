@@ -30,7 +30,7 @@
     (response/found "/admin/tests")))
 
 (defn create-question
-  "POST /admin/tests/createquestion. JSON reponse."
+  "POST /admin/tests/createquestion. JSON response."
   [request]
   (let [params       (:params request)
         user-id      (-> request :identity :id)
@@ -39,7 +39,7 @@
     (response/ok (ches/encode response non-ascii))))
 
 (defn update-question
-  "POST /admin/tests/updatequestion. JSON reponse."
+  "POST /admin/tests/updatequestion. JSON response."
   [request]
   (let [params       (:params request)
         user-id      (-> request :identity :id)
@@ -48,16 +48,25 @@
     (response/ok (ches/encode response non-ascii))))
 
 (defn update-answer
-  "POST /admin/tests/updateanswer. JSON reponse."
+  "POST /admin/tests/updateanswer. JSON response."
   [request]
   (let [params       (:params request)
         new-params   (assoc params :active true)
         response     (model-test/update-answer! new-params)]
-    (log/info (str ">>> update-answer response >>>>> " response))
+    (response/ok (ches/encode response non-ascii))))
+
+(defn update-test
+  "POST /admin/tests/updatetest. JSON response."
+  [request]
+  (let [params       (:params request)
+        user-id      (-> request :identity :id)
+        full-params  (assoc params :user-id user-id)
+        response     (model-test/update-test! full-params)]
+    (log/info (str ">>> update-test response >>>>> " response))
     (response/ok (ches/encode response non-ascii))))
 
 (defn create-answer
-  "POST /admin/tests/createanswer. JSON reponse."
+  "POST /admin/tests/createanswer. JSON response."
   [request]
   (let [params       (:params request)
         user-id      (-> request :identity :id)
@@ -86,23 +95,10 @@
   "POST /admin/tests/load.  Build a JSON to charge one test in ClojureScript"
   [{:keys [identity params]}]
   (let [user-id  (:id identity)
+        _        (log/info (str ">>> load-json PARAM >>>>> " params  "  UND user-id  >>> " user-id))
         test-id  (Integer/parseInt (:test-id params))
         response (model-test/get-test-nodes test-id user-id)]
     (response/ok (ches/encode response non-ascii))))
-
-(defn export-test-pdf
-  "GET /admin/tests/exporttestpdf/:id. Create PDF."
-  [{:keys [params]}]
-  (let [test-id  (:id params)
-        user-id  (:user-id params)]
-    (model-test/export-pdf test-id user-id)))
-
-(defn export-test-odf
-  "GET /admin/tests/exporttestodf/:id. Create PDF."
-  [{:keys [params]}]
-  (let [test-id  (:id params)
-        user-id  (:user-id params)]
-    (model-test/export-odf test-id user-id)))
 
 (defn delete-test
   "DELETE /admin/tests/deletetest. JSON response."
@@ -118,3 +114,17 @@
   "DELETE /admin/tests/deleteanswer. JSON response."
   [{:keys [params]}]
     (response/ok {:response (model-test/remove-answer params)}))
+
+(defn export-test-pdf
+  "GET /admin/tests/exporttestpdf/:id. Create PDF."
+  [{:keys [params]}]
+  (let [test-id  (:id params)
+        user-id  (:user-id params)]
+    (model-test/export-pdf test-id user-id)))
+
+(defn export-test-odf
+  "GET /admin/tests/exporttestodf/:id. Create PDF."
+  [{:keys [params]}]
+  (let [test-id  (:id params)
+        user-id  (:user-id params)]
+    (model-test/export-odf test-id user-id)))

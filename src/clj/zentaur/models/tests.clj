@@ -89,8 +89,8 @@
     (try
       (log/info (str ">>> RRRR questions ***** >>>>> " questions))
       (assoc test :questions questions)
-      (catch Exception e (str "Caught exception: " (.getMessage e)))
-      (finally (prn "Release some resource")))))
+      (catch Exception e (str "******** >>> Caught exception: " (.getMessage e)))
+      (finally (assoc {} :error "function get-test-nodes in model error")))))
 
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn update-question! [params]
@@ -99,10 +99,17 @@
     (db/update-question! (assoc full-params :qtype qtype))))
 
 (defn update-answer!
-  "Update after editing with ClojureScript"
+  "Update answer after editing with Re-frame"
   [params]
   (let [full-params (dissoc params :active)]
     (db/update-answer! full-params)))
+
+(defn update-test!
+  "Update test after editing with Re-frame"
+  [params]
+  (let [full-params (dissoc params :active)]
+    (log/info (str ">>> **** update-test! >>>>> full-params: " full-params))
+    (db/update-test! full-params)))
 
 ;;;;;;;;;;;;    DELETES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn remove-test [params]

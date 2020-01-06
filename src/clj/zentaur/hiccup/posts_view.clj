@@ -50,14 +50,4 @@
      [:div {:id "comments"} formatted-comments]
      [:div {:id "comment-form"} comment-form]]))
 
-(defn hello []
-  [:div {:class "well"}
-   [:h1 {:class "text-info"} "Hello Hiccup"]
-   [:div {:class "row"}
-    [:div {:class "col-lg-2"}
-     (f/label "name" "Name:")]
-    [:div {:class "col-lg-4"}
-     (f/text-field {:class "form-control" :ng-model "yourName" :placeholder "Enter a name here"} "your-name")]]
-   [:hr]
-   [:h1 {:class "text-success"} "Hello {{yourName}}!"]])
 

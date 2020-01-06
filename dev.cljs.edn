@@ -1,8 +1,10 @@
-^{:watch-dirs ["env/dev/cljs" "src/cljs" "test/cljs"]}
+^{:watch-dirs ["env/dev/cljs" "src/cljs"]}
 ^{:extra-main-files {:testing {:main zentaur.core-test}}}
 {
  :source-paths ["src/cljs" "env/dev/cljs" "test/cljs"]
+ :launch-js ["chrome" "--headless" "--repl" "--disable-gpu" :open-url]
  :main zentaur.app
  :optimizations :none
+ :pretty-print true
+ :source-map true
 }
-

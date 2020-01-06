@@ -6,7 +6,7 @@ CREATE TABLE comments (    -- blogs's discussions
  "created_at" timestamp(0) with time zone DEFAULT now() NOT NULL,
  "updated_at" timestamp(0) with time zone DEFAULT now() NOT NULL
 );
-
+--;;
 CREATE TRIGGER trig_comments
 BEFORE UPDATE ON "comments"
 FOR EACH ROW
