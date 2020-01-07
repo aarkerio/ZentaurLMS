@@ -226,7 +226,7 @@
       [:div
        [test-editor-form @test title description tags]
        [:img {:src "/img/icon_add_question.png" :alt "Fragen hinzüfugen" :title "Fragen hinzüfugen"
-                        :on-click #(re-frame.core/dispatch [:toggle-qform])}]])))
+                        :on-click #(rf/dispatch [:toggle-qform])}]])))
 
 (defn create-question-form
   "Verstecken Form for a neue fragen"

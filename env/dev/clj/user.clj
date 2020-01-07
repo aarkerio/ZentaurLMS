@@ -11,10 +11,12 @@
 (alter-var-root #'s/*explain-out* (constantly expound/printer))
 
 (defn start []
-  (mount/start-without #'zentaur.core/repl-server))
+  ;; (mount/start-without #'zentaur.core/repl-server)  DEPRECATED by CIDER
+  )
 
 (defn stop []
-  (mount/stop-except #'zentaur.core/repl-server))
+  ;; (mount/stop-except #'zentaur.core/repl-server)  DEPRECATED by CIDER
+  )
 
 (defn restart []
   (stop)

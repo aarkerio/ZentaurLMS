@@ -280,7 +280,7 @@
    (let [answer-keyword   (keyword (str (:id response)))]
        (.log js/console (str ">>> response after-update-test >>>>> " response))
        (-> db
-           (update :test (conj response))
+           (update-in [:test] (conj response))
            (update :loading?  not)
            (update :testform  not))
        )))

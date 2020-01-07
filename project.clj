@@ -1,4 +1,4 @@
-(defproject zentaur "0.0.8"
+(defproject zentaur "0.0.9"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
@@ -20,14 +20,13 @@
                  [luminus-transit "0.1.2"]               ;; Transit helpers
                  [markdown-clj "1.10.0"]                 ;; MD support
                  [metosin/muuntaja "0.6.6"]              ;; library for fast http api format negotiation, encoding and decoding.
-                 [metosin/reitit "0.3.10"]                ;; A fast data-driven router for Clojure(Script).
+                 [metosin/reitit "0.3.10"]               ;; A fast data-driven router for Clojure(Script).
                  [metosin/ring-http-response "0.9.1"]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.16"]                        ;; managing Clojure and ClojureScript app state
                  [org.clojure/clojure "1.10.1"]          ;; The sweet core!!
-                 [org.clojure/tools.cli "0.4.2"]
+                 [org.clojure/tools.cli "0.4.2"]         ;; parses command line arguments and stuff like that
                  [org.clojure/tools.logging "0.4.1"]
-                 [org.postgresql/postgresql "42.2.9"]
-                 [org.webjars.npm/bulma "0.7.1"]         ;; WebJar for bulma (Bulma is a free, open source CSS framework)
+                 [org.postgresql/postgresql "42.2.9"]    ;; PostgreSQL rulez!
                  [re-frame "0.11.0-rc3"]                 ;; A Reagent Framework For Writing SPAs, in Clojurescript.
                  [reagent "0.9.0-rc3"]                   ;; Minimalistic React for ClojureScript
                  [ring-webjars "0.2.0"]                  ;; Web assets
@@ -68,19 +67,19 @@
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
                                           [doo "0.1.11"]                             ;; Library and lein plugin to run cljs.test on different JS environments
                                           [factory-time "0.1.2"]                     ;; Factory-bot like library for tests
-                                          [nrepl "0.6.0"]                            ;; Clojure network REPL that provides a REPL server and client
                                           [org.clojure/clojurescript "1.10.597"]
                                           [prone "2019-07-08"]                       ;;  Better exception reporting middleware for Ring.
                                           [ring/ring-devel "1.8.0"]                  ;;  Ring dev options
                                           [ring/ring-mock "0.4.0"]]                  ;;  Library to create mock Ring requests for unit tests
                            :source-paths ["env/dev/clj" "target" "env/dev/cljs"]
                            :resource-paths ["env/dev/resources"]
-                           :repl-options {:init-ns user}}
-            :project/test {:jvm-opts ["-Dconf=test-config.edn"]
-                           :resource-paths ["env/test/resources"]
-                           :source-paths ["env/test/clj" "test/clj"]
-                           :test-selectors {:default (complement :integration)
-                                            :integration :integration
-                                            :business-logic :business-logic}}
+                           :repl-options {:init-ns user :timeout 120000}}
+             :project/test {:jvm-opts ["-Dconf=test-config.edn"]
+                            :dependencies [[print-foo "1.0.2"]]
+                            :resource-paths ["env/test/resources"]
+                            :source-paths ["env/test/clj" "test/clj"]
+                            :test-selectors {:default (complement :integration)
+                                             :integration :integration
+                                             :business-logic :business-logic}}
              :profiles/dev {}
              :profiles/test {}})

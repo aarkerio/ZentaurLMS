@@ -114,17 +114,3 @@
   "DELETE /admin/tests/deleteanswer. JSON response."
   [{:keys [params]}]
     (response/ok {:response (model-test/remove-answer params)}))
-
-(defn export-test-pdf
-  "GET /admin/tests/exporttestpdf/:id. Create PDF."
-  [{:keys [params]}]
-  (let [test-id  (:id params)
-        user-id  (:user-id params)]
-    (model-test/export-pdf test-id user-id)))
-
-(defn export-test-odf
-  "GET /admin/tests/exporttestodf/:id. Create PDF."
-  [{:keys [params]}]
-  (let [test-id  (:id params)
-        user-id  (:user-id params)]
-    (model-test/export-odf test-id user-id)))

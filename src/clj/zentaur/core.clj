@@ -5,8 +5,7 @@
             [luminus-migrations.core :as migrations]
             [mount.core :as mount]
             [zentaur.config :refer [env]]
-            [zentaur.handler :as handler]
-            [zentaur.nrepl :as nrepl])
+            [zentaur.handler :as handler])
   (:gen-class))
 
 (def cli-options
@@ -23,15 +22,6 @@
   :stop
   (http/stop http-server))
 
-(mount/defstate ^{:on-reload :noop} repl-server
-  :start
-  (when (env :nrepl-port)
-    (nrepl/start {:bind (env :nrepl-bind)
-                  :port (env :nrepl-port)}))
-  :stop
-  (when repl-server
-    (nrepl/stop repl-server)))
-
 (defn stop-app []
   (doseq [component (:stopped (mount/stop))]
     (log/info component "stopped"))
@@ -42,7 +32,7 @@
                         (parse-opts cli-options)
                         mount/start-with-args
                         :started)]
-    (log/info component "started"))
+    (log/info component "** Luminus started Du Keine Gehirne **"))
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]

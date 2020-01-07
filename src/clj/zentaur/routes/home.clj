@@ -1,5 +1,6 @@
 (ns zentaur.routes.home
   (:require [zentaur.controllers.company-controller :as cont-company]
+            [zentaur.controllers.export-controller  :as cont-export]
             [zentaur.controllers.posts-controller   :as cont-posts]
             [zentaur.controllers.tests-controller   :as cont-tests]
             [zentaur.controllers.uploads-controller :as cont-uploads]
@@ -24,8 +25,8 @@
    ["/posts/new"               {:get  cont-posts/admin-new}]
    ["/tests"                   {:get  cont-tests/admin-index :post cont-tests/create-test}]
    ["/tests/edit/:id"          {:get  cont-tests/admin-edit}]
-   ["/tests/exporttestpdf/:id" {:get  cont-tests/export-test-pdf}]
-   ["/tests/exporttestodf/:id" {:get  cont-tests/export-test-odf}]
+   ["/tests/exporttestpdf/:id" {:get  cont-export/export-test-pdf}]
+   ["/tests/exporttestodf/:id" {:get  cont-export/export-test-odf}]
    ["/tests/load"              {:post cont-tests/load-json}]
    ["/tests/createquestion"    {:post cont-tests/create-question}]
    ["/tests/createanswer"      {:post cont-tests/create-answer}]

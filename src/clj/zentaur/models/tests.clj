@@ -125,14 +125,3 @@
   (let [result   (db/remove-answer! params)]
     (assoc params :ok (:bool result))))
 
-;;;;;;;; EXPORTS  ;;;;;;;
-
-(defn export-pdf [test-id]
-  (let [test-id (inc test-id)]
-    (db/remove-test! {:test-id test-id})))
-
-(defn export-odf
-  "Export to open document format"
-  [test-id]
-  (let [test-id (inc test-id)]
-    (db/remove-test! {:test-id test-id})))
