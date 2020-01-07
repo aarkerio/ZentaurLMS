@@ -278,9 +278,10 @@
  []
  (fn [db [_ response]]
    (let [answer-keyword   (keyword (str (:id response)))]
-       (.log js/console (str ">>> response after-update-test >>>>> " response))
+     (.log js/console (str ">>> response after-update-test >>>>> " response ))
+     (.log js/console (str ">>> response DB DB DB  >>>>> " db ))
        (-> db
-           (update-in [:test] (conj response))
+           (assoc :test response)
            (update :loading?  not)
            (update :testform  not))
        )))
