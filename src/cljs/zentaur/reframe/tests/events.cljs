@@ -277,14 +277,10 @@
  :process-after-update-test
  []
  (fn [db [_ response]]
-   (let [answer-keyword   (keyword (str (:id response)))]
-     (.log js/console (str ">>> response after-update-test >>>>> " response ))
-     (.log js/console (str ">>> response DB DB DB  >>>>> " db ))
-       (-> db
-           (assoc :test response)
-           (update :loading?  not)
-           (update :testform  not))
-       )))
+   (-> db
+       (assoc :test response)
+       (update :loading?  not)
+       (update :testform  not))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-test               ;; <-- the event id

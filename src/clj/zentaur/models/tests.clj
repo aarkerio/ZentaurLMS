@@ -87,7 +87,6 @@
   (let [test          (db/get-one-test { :id test-id :user-id user-id })
         questions     (get-questions test-id)]
     (try
-      (log/info (str ">>> RRRR questions ***** >>>>> " questions))
       (assoc test :questions questions)
       (catch Exception e (str "******** >>> Caught exception: " (.getMessage e)))
       (finally (assoc {} :error "function get-test-nodes in model error")))))

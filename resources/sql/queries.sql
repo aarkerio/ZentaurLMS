@@ -117,7 +117,7 @@ VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) RETURNING *
 -- :name update-question! :>! :1
 -- :doc updates a question record
 UPDATE questions
-SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation
+SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, fulfill = :fulfill
 WHERE id = :id RETURNING *
 
 -- :name update-answer! :>! :1
