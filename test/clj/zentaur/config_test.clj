@@ -7,9 +7,7 @@
 (declare ^:dynamic *txn*) ;; transaction
 
 (defn foo []
-  (log/info (str "from-system-props: >> " (source/from-system-props)
-                 "from-system-env: >> "(source/from-env))
-            ))
+  (log/info (str "from-system-props: >> " (:lein-profile (source/from-system-props))   " >>>>>>" (System/getenv "lein.profile")   )))
 
 ;; (conman/with-transaction [db]
 ;;   (jdbc/db-set-rollback-only! db)
@@ -44,5 +42,6 @@
 ;;     (println "teardown in test")))
 
 ;; (defn delete-test-db []
-;;   (db/delete-all-tables!))
+;;   (let [profile (:lein-profile (source/from-system-props))]
+;;   (not= profile "test" (db/delete-all-tables!))))
 

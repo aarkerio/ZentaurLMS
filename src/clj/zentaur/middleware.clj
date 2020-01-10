@@ -1,20 +1,21 @@
 (ns zentaur.middleware
   (:require
-    [zentaur.env :refer [defaults]]
-    [cheshire.generate :as cheshire]
-    [cognitect.transit :as transit]
-    [clojure.tools.logging :as log]
-    [zentaur.layout :refer [error-page]]
-    [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
-    [zentaur.middleware.formats :as formats]
-    [muuntaja.middleware :refer [wrap-format wrap-params]]
-    [zentaur.config :refer [env]]
-    [ring-ttl-session.core :refer [ttl-memory-store]]
-    [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-    [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
-            [buddy.auth.accessrules :refer [restrict]]
-            [buddy.auth :refer [authenticated?]]
-    [buddy.auth.backends.session :refer [session-backend]]))
+   [buddy.auth :refer [authenticated?]]
+   [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
+   [buddy.auth.accessrules :refer [wrap-access-rules restrict]]
+   [buddy.auth.backends.session :refer [session-backend]]
+   [cheshire.generate :as cheshire]
+   [clojure.tools.logging :as log]
+   [cognitect.transit :as transit]
+   [muuntaja.middleware :refer [wrap-format wrap-params]]
+   [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+   [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+   [ring.middleware.flash :refer [wrap-flash]]
+   [ring-ttl-session.core :refer [ttl-memory-store]]
+   [zentaur.config :refer [env]]
+   [zentaur.env :refer [defaults]]
+   [zentaur.layout :refer [error-page]]
+   [zentaur.middleware.formats :as formats]))
 
 (defn wrap-internal-error [handler]
   (fn [req]
@@ -56,9 +57,24 @@
         (wrap-authentication backend)
         (wrap-authorization backend))))
 
+;; AUTH CONFIG STARTS
+(defn admin-access [request]
+  (let [identity (:identity request)]
+    (true? (:admin identity))))
+
+(def rules [{:pattern #"^/admin.*"
+             :handler admin-access
+             :redirect "/notauthorized"}
+            {:pattern #"^/user.*"
+             :handler authenticated?}])
+;; AUTH CONFIG ENDS
+
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
       wrap-auth
+      (wrap-access-rules {:rules rules :on-error on-error})
+      (wrap-authentication (session-backend))
+       wrap-flash
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)

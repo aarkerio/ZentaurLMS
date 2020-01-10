@@ -4,8 +4,8 @@
 (def defaults
   {:init
    (fn []
-     (log/info "\n-=[zentaur started successfully]=-"))
+     (log/info "\n-=[Production zentaur started successfully]=-"))
    :stop
    (fn []
-     (log/info "\n-=[zentaur has shut down successfully]=-"))
+     (log/info "\n-=[Production zentaur has shut down successfully]=-"))
    :middleware identity})

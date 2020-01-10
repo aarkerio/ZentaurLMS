@@ -2,14 +2,45 @@
   "Integration tests with HTTP calls"
   (:require [clojure.test :refer :all]
             [clojure.tools.logging :as log]
+            [mount.core :as mount]
             [ring.mock.request :as mock]
+            [zentaur.db.core :refer [*db*] :as db]
             [zentaur.handler :as zh]
             [zentaur.config-test :as ct]))
 
+(use-fixtures
+  :once
+  (fn [f]
+    (mount/start #'zentaur.config/env
+                 #'zentaur.handler/app-routes
+                 #'zentaur.db.core/*db*)
+    (f)))
+
+;; (defn another-fixture [f]
+;;         (create-db-table)
+;;         (f)
+;;   (drop-db-table))
+
+;; (use-fixtures
+;;   :once
+;;   (fn [f]
+;;     (mount/start
+;;      #'zentaur.config/env
+;;      #'zentaur.db.core/*db*)
+;;     (migrations/migrate ["migrate"] (select-keys env [:database-url]))
+;;     (f)))
+
+(deftest ^:integration test-app
+  (testing "main route"
+    (let [response ((zh/app) (mock/request :get "/"))
+          _        (log/info (str ">>> ** RESPONSE ** >>>>> " response))]
+      (is (= 200 (:status response))))))
+
 (deftest ^:integration get-test-nodes
   (testing "JSON response for the API"
-    (let [response (zh/app (mock/request :post "/admin/tests/load" {"test-id" 1 "user-id" 1}))
-          _        (ct/foo)
+    (let [response ((zh/app) (mock/request :post "/admin/tests/load" {"test-id" 1 "user-id" 1}))
+          ;;_ (log/info (str ">>> ** RESPONSE ** >>>>> " response))
+          ;; _        (ct/foo)
           body     (:body response)]
       (is (= (:msg body) true)))))
 
