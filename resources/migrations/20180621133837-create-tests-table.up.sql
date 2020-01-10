@@ -4,6 +4,7 @@
 CREATE TABLE tests(
   id serial PRIMARY KEY,
   user_id int NOT NULL REFERENCES users(id),
+  subject_id int NOT NULL REFERENCES subjects(id),
   title VARCHAR(200) NOT NULL,
   tags VARCHAR(200),
   lang VARCHAR(2) NOT NULL DEFAULT 'en',

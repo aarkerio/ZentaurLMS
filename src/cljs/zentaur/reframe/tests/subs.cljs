@@ -91,6 +91,11 @@
    (get-in db [:questions])))
 
 (re-frame/reg-sub
+ :subjects
+ (fn [db]
+   (get-in db [:subjects])))
+
+(re-frame/reg-sub
  :qform
  (fn [db]
    (get-in db [:qform])))

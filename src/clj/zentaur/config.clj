@@ -1,9 +1,8 @@
 (ns zentaur.config
-  (:require [cprop.core :refer [load-config]]
-            [cprop.source :as source]
-            [mount.core :refer [args defstate]]))
-
-(System/setProperty "tika.config" "tika-config.xml")
+  (:require
+    [cprop.core :refer [load-config]]
+    [cprop.source :as source]
+    [mount.core :refer [args defstate]]))
 
 (defstate env
   :start

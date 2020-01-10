@@ -5,6 +5,7 @@
     [clojure.tools.logging :as log]
     [conman.core :as conman]
     [java-time :as jt]
+    [java-time.pre-java8]
     [zentaur.config :refer [env]]
     [mount.core :refer [defstate]])
   (:import org.postgresql.util.PGobject
@@ -13,13 +14,7 @@
            clojure.lang.IPersistentVector
            [java.sql
             BatchUpdateException
-            PreparedStatement]
-           [java.sql Timestamp]
-           [java.sql Date]
-           [java.time.format DateTimeFormatter]
-           [java.time LocalDate]
-           [java.time Instant]))
-
+            PreparedStatement]))
 (defstate ^:dynamic *db*
   :start (if-let [jdbc-url (env :database-url)]
            (conman/connect! {:jdbc-url jdbc-url})
@@ -31,7 +26,7 @@
 (conman/bind-connection *db* "sql/queries.sql")
 
 
-(extend-protocol jdbc/IResultSetReadColumn  ;; I'm guesing this convert times in json and jsonb types
+(extend-protocol jdbc/IResultSetReadColumn
     java.sql.Timestamp
   (result-set-read-column [v _2 _3]
     (.toLocalDateTime v))
@@ -52,36 +47,6 @@
         "jsonb" (parse-string value true)
         "citext" (str value)
         value))))
-
-;;  MY PROTOCOLS
-
-(extend-type java.time.Instant
-  jdbc/ISQLParameter
-  (set-parameter [v ^PreparedStatement stmt ^long idx]
-    (.setTimestamp stmt idx (Timestamp. (.toEpochMilli v)))))
-
-(extend-protocol cheshire.generate/JSONable
-  java.time.Instant
-  (to-json [dt gen]
-    (cheshire.generate/write-string gen (str dt))))
-
-(extend-protocol jdbc/IResultSetReadColumn
-  java.sql.Timestamp
-  (result-set-read-column [v _ _]
-    (.toInstant v))
-  java.sql.Date
-  (result-set-read-column [v _ _]
-    (.toLocalDate v)))
-
-(extend-protocol jdbc/ISQLValue
-  java.time.Instant
-  (sql-value [v]
-    (Timestamp/from v))
-  java.time.LocalDate
-  (sql-value [v]
-    (Date/valueOf v)))
-
-;; ends MY PROTOCOLS
 
 (defn to-pg-json [value]
   (doto (PGobject.)

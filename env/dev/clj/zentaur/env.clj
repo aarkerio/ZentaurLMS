@@ -1,7 +1,8 @@
 (ns zentaur.env
-  (:require [selmer.parser :as parser]
-            [clojure.tools.logging :as log]
-            [zentaur.dev-middleware :refer [wrap-dev]]))
+  (:require
+    [selmer.parser :as parser]
+    [clojure.tools.logging :as log]
+    [zentaur.dev-middleware :refer [wrap-dev]]))
 
 (def secret-salt {:salt "1f1c42342bdc1ea6"})
 

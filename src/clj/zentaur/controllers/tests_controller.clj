@@ -79,9 +79,10 @@
   [request]
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
-        tests    (model-test/get-tests user-id)]
+        tests    (model-test/get-tests user-id)
+        subjects (model-test/get-subjects)]
     (basec/parser
-     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base)})))))
+     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base subjects)})))))
 
 (defn admin-edit
   "GET /admin/tests/edit/:id. Html response."

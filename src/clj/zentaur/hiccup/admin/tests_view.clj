@@ -6,32 +6,39 @@
             [hiccup.page :refer [include-css include-js]]
             [zentaur.hiccup.helpers-view :as hv]))
 
-(defn formatted-test [{:keys [title created_at tags published id]}]
+(defn formatted-test [{:keys [title created_at tags published id subject]}]
   (let [formatted-date (hv/format-date created_at true)]
   [:tr
-   [:td [:a {:class "btn btn-outline-primary-green" :href (str "/admin/tests/edit/" id)}  "Edit"]]
+   [:td [:a {:href (str "/admin/tests/edit/" id)} [:img {:src "/img/icon_edit_test.png" :alt "Edit"  :title "Edit"}]]]
    [:td title]
    [:td tags]
+   [:td subject]
    [:td formatted-date]
-   [:td [:a {:class "btn btn-outline-primary-green" :href  (str "/admin/tests/exporttest/" id)} "Export"]]
-   [:td [:button {:class "btn btn-outline-primary-green" :onClick (str "zentaur.core.deletetest("id")")} "Löschen"]]]))
+   [:td [:a {:href (str "/admin/tests/exporttestpdf/" id)} [:img {:src "/img/icon_export_pdf.png" :alt "Export PDF" :title "Export PDF"}]]]
+   [:td [:a {:href (str "/admin/tests/exporttestodf/" id)} [:img {:src "/img/icon_export_odf.png" :alt "Export DOC" :title "Export DOC"}]]]
+   [:td [:a {:onclick (str "zentaur.core.deletetest("id")")} [:img {:src "/img/icon_delete.png" :alt "Delete test" :title "Delete test"}]]]]))
 
-(defn- form-new [csrf-field]
+(defn- test-new-form [subjects csrf-field]
   [:div.hidden-div {:id "hidden-form"}
-    [:form {:id "submit-test-form" :action "/admin/tests" :method "post" :class "css-class-form"}
-      (f/hidden-field {:value csrf-field} "__anti-forgery-token")
-      [:div (f/text-field {:maxlength 150 :size 90 :placeholder "Title"} "title")]
-      [:div (f/text-field {:maxlength 150 :size 70 :placeholder "Tags"} "tags")]
+   [:form {:id "submit-test-form" :action "/admin/tests" :method "post" :class "css-class-form"}
+    (f/hidden-field {:value csrf-field} "__anti-forgery-token")
+    [:div.div-separator (f/text-field {:maxlength 150 :size 90 :placeholder "Title"} "title")]
+    [:div.div-separator (f/text-field {:maxlength 150 :size 70 :placeholder "Tags"} "tags")]
+    [:div.div-separator
+     [:select.form-control.mr-sm-2 {:name "subject-id" :value 1}
+      (for [subject subjects]
+        [:option {:value (:id subject)} (:subject subject)])
+      ]]
       (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]])
 
-(defn index [tests base]
+(defn index [tests base subjects]
   (let [csrf-field      (:csrf-field base)
         formatted-tests (for [test tests]
                           (formatted-test test))]
     [:div {:id "cont"}
      [:h1 "Dein genialer Quiz Test"]
      [:div [:img {:src "/img/icon_add.png" :alt "Quizz test hinzüfugen" :title "Quizz test hinzüfugen" :id "button-show-div"}]]
-     (form-new csrf-field)
+     (test-new-form subjects csrf-field)
      [:div {:id "content"}
        [:table {:class "some-table-class"}
          [:thead
@@ -39,8 +46,10 @@
             [:th "Bearbeiten"]
             [:th "Titel"]
             [:th "Stichworte"]
+            [:th "Fach"]
             [:th "Erstellt"]
-            [:th "Export"]
+            [:th "Export PDF"]
+            [:th "Export ODF"]
             [:th "Löschen"]]]
           [:tbody formatted-tests]]]
       [:nav {:class "blog-pagination"}
