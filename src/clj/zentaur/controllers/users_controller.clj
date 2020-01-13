@@ -1,10 +1,10 @@
 (ns zentaur.controllers.users-controller
-  (:require [zentaur.models.users :as model-user]
+  (:require [clojure.tools.logging :as log]
+            [ring.util.http-response :as response]
             [zentaur.controllers.base-controller :as basec]
-            [clojure.tools.logging :as log]
             [zentaur.hiccup.layout-view :as layout]
             [zentaur.hiccup.admin.users-view :as users-view]
-            [ring.util.http-response :as response]))
+            [zentaur.models.users :as model-user]))
 
 (defn admin-users
   "GET /admin/users"
