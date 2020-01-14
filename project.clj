@@ -67,6 +67,7 @@
                                           [com.bhauman/figwheel-main "0.2.3"]        ;; Hot Reload cljs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
                                           [doo "0.1.11"]                             ;; Library and lein plugin to run cljs.test on different JS environments
+                                          [enlive "1.1.6"]
                                           [factory-time "0.1.2"]                     ;; Factory-bot like library for tests
                                           [prone "2019-07-08"]                       ;;  Better exception reporting middleware for Ring.
                                           [ring/ring-devel "1.8.0"]                  ;;  Ring dev options

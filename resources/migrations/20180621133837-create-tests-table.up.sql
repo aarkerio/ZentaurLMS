@@ -1,6 +1,5 @@
 -- ;; lein migratus create create-tests-table
 -- ;; lein run migrate
-
 CREATE TABLE tests(
   id serial PRIMARY KEY,
   user_id int NOT NULL REFERENCES users(id),
@@ -9,6 +8,7 @@ CREATE TABLE tests(
   tags VARCHAR(200),
   lang VARCHAR(2) NOT NULL DEFAULT 'en',
   origin VARCHAR(150) UNIQUE,
+  from_test int,
   description VARCHAR(300),
   instructions VARCHAR(300),
   level INT NOT NULL DEFAULT 1,
@@ -27,9 +27,13 @@ COMMENT on column tests.active is 'This boolean flag acts as a fake delete since
 --;;
 COMMENT on column tests.archived is 'Flag marks a test disposed bythe user';
 --;;
+COMMENT on column tests.from_test is 'Only used when the test is created from another test';
+--;;
 COMMENT on column tests.level is 'Diffcult leve, id est, how hard is the test';
 --;;
 CREATE TRIGGER trig_tests
 BEFORE UPDATE ON "tests"
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_timestamp();
+--;;
+-- INSERT INTO tests (user_id, subject_id, title, tags) VALUES (1, 4, 'Test a new test', 'math, geometry');

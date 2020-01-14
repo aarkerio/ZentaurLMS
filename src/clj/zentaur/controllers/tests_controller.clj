@@ -9,15 +9,6 @@
 
 (def non-ascii {:escape-non-ascii true}) ;; UTF-8 support for cheshire
 
-(defn get-tests
-  "GET /tests. HTML response."
-  [request]
-  (let [base     (basec/set-vars request)
-        user-id  (-> request :identity :id)
-        tests    (model-test/get-tests {:user-id user-id})]
-    (layout/application
-     (merge base {:title "List Tests" :contents (tests-view/index tests base)}))))
-
 ;;;;;  ADMIN FUNCTIONS
 
 (defn create-test
@@ -75,7 +66,7 @@
     (response/ok (ches/encode response non-ascii))))
 
 (defn admin-index
-  "GET /admin/tests. Display user's tests."
+  "GET /admin/tests. Display user's tests. Html response."
   [request]
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)

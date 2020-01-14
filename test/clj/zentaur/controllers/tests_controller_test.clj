@@ -3,6 +3,7 @@
   (:require [clojure.test :refer :all]
             [clojure.tools.logging :as log]
             [mount.core :as mount]
+            [net.cgrand.enlive-html :as html]
             [ring.mock.request :as mock]
             [zentaur.db.core :refer [*db*] :as db]
             [zentaur.handler :as zh]
@@ -30,23 +31,62 @@
 ;;     (migrations/migrate ["migrate"] (select-keys env [:database-url]))
 ;;     (f)))
 
-(deftest ^:integration test-app
-  (testing "main route"
-    (let [response ((zh/app) (mock/request :get "/"))
-          _        (log/info (str ">>> ** RESPONSE ** >>>>> " response))]
-      (is (= 200 (:status response))))))
+
+(defn get-session
+  "Given a response, grab out just the key=value of the ring session"
+  [resp]
+  (let [headers (:headers resp)
+        cookies (get headers "Set-Cookie")
+        session-cookies (first (filter #(.startsWith % "ring-session") cookies))
+        session-pair (first (clojure.string/split session-cookies #";"))]
+    session-pair))
+
+(defn get-csrf-field
+  "Given an HTML response, parse the body for an anti-forgery input field"
+  [resp]
+  (-> (html/select (html/html-snippet (:body resp)) [:input#__anti-forgery-token])
+      first
+      (get-in [:attrs :value])))
+
+(defn get-login-session!
+  "Fetch a login page and return the associated session and csrf token"
+  []
+  (let [resp ((zh/app) (mock/request :get "/login"))]
+    {:session (get-session resp)
+     :csrf (get-csrf-field resp)}))
+
+(defn login!
+  "Login a user given a username and password"
+  [username password]
+  (let [{:keys [csrf session]} (get-login-session!)
+        req (-> (mock/request :post "/login")
+                (assoc :headers {"cookie" session})
+                (assoc :params {:username username
+                                :password password})
+                (assoc :form-params {"__anti-forgery-token" csrf}))]
+    ((zh/app) req)
+    session))
+
+;; (deftest ^:integration test-app
+;;   (testing "main route"
+;;     (let [response ((zh/app) (mock/request :get "/"))]
+;;       (is (= 200 (:status response))))))
 
 (deftest ^:integration get-test-nodes
   (testing "JSON response for the API"
-    (let [response ((zh/app) (mock/request :post "/admin/tests/load" {"test-id" 1 "user-id" 1}))
-          ;;_ (log/info (str ">>> ** RESPONSE ** >>>>> " response))
-          ;; _        (ct/foo)
-          body     (:body response)]
-      (is (= (:msg body) true)))))
+    (let [session    (login! "admin@example.com" "password")
+          _          (log/info (str ">>> ** RESPONSE ** >>>>> " (prn-str session)))
+          return     (-> ((zh/app) (mock/request :get "/admin/tests"))
+                         (assoc :headers {"cookie" session}))
+          ;;body  (:body response)
+          ]
+      (log/info (str ">>> P***** RETURN >>>>> " return))
+      ;;(is (= (:msg body) true))
+      )))
 
 ;; (deftest ^:integration a-test
 ;;    (testing "Test POST request to /api/v1/check returns expected response"
-;;      (let [response (zh/app (mock/request :post "/api/v1/check" {"str1" "cedewaraaossoqqyt" "str2" "codewars"}))
+;;      (let [response ((zh/app) (mock/request :post "/api/v1/check" {"str1" "cedewaraaossoqqyt" "str2" "codewars"}))
 ;;            body     (:body response)]
 ;;        (is (= (:status response) 200))
 ;;        (is (= (:msg body) true)))))
