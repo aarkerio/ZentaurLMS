@@ -34,7 +34,8 @@
         (assoc :password password :admin admin :active true :role_id role_id)
         (db/create-user!))))
 
-(defn get-user-by-email-and-password [email password]
+(defn get-user-by-email-and-password
+  [email password]
   (let [password-derived (hashers/derive password env/secret-salt)
         trimmed_email    (clojure.string/trim email)]
     (assoc {} :user (db/get-user-login

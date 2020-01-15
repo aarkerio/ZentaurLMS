@@ -28,9 +28,13 @@ ON p.user_id = u.id
 WHERE p.published = true
 ORDER BY p.id DESC LIMIT 10
 
--- :name get-post :? :1
+-- :name get-post :? :raw
 -- :doc retrieve a post given the id.
 SELECT * FROM posts WHERE id = :id
+
+-- :name get-subjects :? :raw
+-- :doc retrieve all subjects.
+SELECT * FROM subjects ORDER BY subject ASC
 
 -- :name save-post! :! :n
 -- :doc creates a new post record
@@ -102,12 +106,12 @@ SELECT id FROM uploads WHERE hashvar = :hashvar
 
 -- :name create-test! :<!
 -- :doc creates a new test record
-INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id)
-VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id) returning id
+INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id, subject_id)
+VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id, :subject-id) RETURNING id
 
 -- :name create-minimal-test! :<! :n
 -- :doc creates a minimal test record
-INSERT INTO tests (title, tags, user_id) VALUES (:title, :tags, :user-id) RETURNING id
+INSERT INTO tests (title, tags, user_id, subject_id) VALUES (:title, :tags, :user-id, :subject-id) RETURNING id
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
@@ -117,7 +121,7 @@ VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) RETURNING *
 -- :name update-question! :>! :1
 -- :doc updates a question record
 UPDATE questions
-SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation
+SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, fulfill = :fulfill
 WHERE id = :id RETURNING *
 
 -- :name update-answer! :>! :1
@@ -129,7 +133,7 @@ WHERE id = :id RETURNING *
 -- :name update-test! :>! :1
 -- :doc updates an answer record
 UPDATE tests
-SET title = :title, tags = :tags, description = :description
+SET title = :title, tags = :tags, description = :description, subject_id = :subject-id
 WHERE id = :test-id AND user_id = :user-id RETURNING *
 
 -- :name get-question :? :1
@@ -150,11 +154,19 @@ INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question-id,
 
 -- :name get-tests :? :*
 -- :doc retrieve a test given the id.
-SELECT * FROM tests WHERE user_id = :user-id AND active = true AND archived = false ORDER BY id DESC
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, s.subject
+FROM tests t INNER JOIN subjects s
+ON t.subject_id = s.id
+WHERE t.user_id = :user-id AND t.archived = false
+ORDER BY t.id DESC
 
 -- :name get-one-test :? :1
 -- :doc retrieve a test given the id.
-SELECT * FROM tests WHERE id = :id AND user_id = :user-id
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, s.subject
+FROM tests t INNER JOIN subjects s
+ON t.subject_id = s.id
+WHERE t.user_id = :user-id AND t.archived = false AND t.id = :id
+ORDER BY t.id DESC
 
 -- :name get-questions :? :*
 -- :doc retrieve all questions tests.

@@ -9,16 +9,7 @@
 
 (def non-ascii {:escape-non-ascii true}) ;; UTF-8 support for cheshire
 
-(defn get-tests
-  "GET /tests. HTML response."
-  [request]
-  (let [base     (basec/set-vars request)
-        user-id  (-> request :identity :id)
-        tests    (model-test/get-tests {:user-id user-id})]
-    (layout/application
-     (merge base {:title "List Tests" :contents (tests-view/index tests base)}))))
-
-;;;;;  ADMIN FUNCTIONS
+;;;;;  VCLASSROOM FUNCTIONS
 
 (defn create-test
   "POST /admin/tests"
@@ -75,13 +66,14 @@
     (response/ok (ches/encode response non-ascii))))
 
 (defn admin-index
-  "GET /admin/tests. Display user's tests."
+  "GET /admin/tests. Display user's tests. Html response."
   [request]
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
-        tests    (model-test/get-tests user-id)]
+        tests    (model-test/get-tests user-id)
+        subjects (model-test/get-subjects)]
     (basec/parser
-     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base)})))))
+     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base subjects)})))))
 
 (defn admin-edit
   "GET /admin/tests/edit/:id. Html response."
@@ -95,7 +87,6 @@
   "POST /admin/tests/load.  Build a JSON to charge one test in ClojureScript"
   [{:keys [identity params]}]
   (let [user-id  (:id identity)
-        _        (log/info (str ">>> load-json PARAM >>>>> " params  "  UND user-id  >>> " user-id))
         test-id  (Integer/parseInt (:test-id params))
         response (model-test/get-test-nodes test-id user-id)]
     (response/ok (ches/encode response non-ascii))))
@@ -114,17 +105,3 @@
   "DELETE /admin/tests/deleteanswer. JSON response."
   [{:keys [params]}]
     (response/ok {:response (model-test/remove-answer params)}))
-
-(defn export-test-pdf
-  "GET /admin/tests/exporttestpdf/:id. Create PDF."
-  [{:keys [params]}]
-  (let [test-id  (:id params)
-        user-id  (:user-id params)]
-    (model-test/export-pdf test-id user-id)))
-
-(defn export-test-odf
-  "GET /admin/tests/exporttestodf/:id. Create PDF."
-  [{:keys [params]}]
-  (let [test-id  (:id params)
-        user-id  (:user-id params)]
-    (model-test/export-odf test-id user-id)))

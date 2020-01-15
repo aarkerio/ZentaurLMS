@@ -12,9 +12,14 @@
 (defn get-one-test [user-id id]
   (db/get-one-test {:user-id user-id :id id}))
 
+(defn get-subjects []
+  (db/get-subjects))
+
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
-  (let [full-params (assoc params :user-id user-id)
+  (let [pre-params  (assoc params :user-id user-id)
+        full-params (update pre-params :subject-id #(Integer/parseInt %))
+        _           (log/info (str ">>> full-paramsCREATE TEST >>>>> " full-params))
         errors      (val-test/validate-test full-params)]
     (if (nil? errors)
       (db/create-minimal-test! full-params)
@@ -85,10 +90,10 @@
   "JSON response for the API"
   [test-id user-id]
   (let [test          (db/get-one-test { :id test-id :user-id user-id })
-        questions     (get-questions test-id)]
+        questions     (get-questions test-id)
+        subjects      (db/get-subjects)]
     (try
-      (log/info (str ">>> RRRR questions ***** >>>>> " questions))
-      (assoc test :questions questions)
+      (assoc test :questions questions :subjects subjects)
       (catch Exception e (str "******** >>> Caught exception: " (.getMessage e)))
       (finally (assoc {} :error "function get-test-nodes in model error")))))
 
@@ -125,14 +130,3 @@
   (let [result   (db/remove-answer! params)]
     (assoc params :ok (:bool result))))
 
-;;;;;;;; EXPORTS  ;;;;;;;
-
-(defn export-pdf [test-id]
-  (let [test-id (inc test-id)]
-    (db/remove-test! {:test-id test-id})))
-
-(defn export-odf
-  "Export to open document format"
-  [test-id]
-  (let [test-id (inc test-id)]
-    (db/remove-test! {:test-id test-id})))

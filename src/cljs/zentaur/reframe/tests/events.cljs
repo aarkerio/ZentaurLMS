@@ -68,12 +68,14 @@
 (re-frame/reg-event-db
   :process-test-response
   (fn [db [_ data]]
-    (let [questions   (:questions data)
-          test        (dissoc data :questions)]
+    (let [questions  (:questions data)
+          subjects   (:subjects data)
+          test       (dissoc data :questions)]
       (-> db
           (assoc :loading?  false)     ;; take away that "Loading ..." UI element
           (assoc :test      (js->clj test :keywordize-keys true))
-          (assoc :questions (js->clj questions :keywordize-keys true))))))
+          (assoc :questions (js->clj questions :keywordize-keys true))
+          (assoc :subjects  (js->clj subjects :keywordize-keys true))))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :request-test              ;; <-- the event id
@@ -277,13 +279,10 @@
  :process-after-update-test
  []
  (fn [db [_ response]]
-   (let [answer-keyword   (keyword (str (:id response)))]
-       (.log js/console (str ">>> response after-update-test >>>>> " response))
-       (-> db
-           (update :test (conj response))
-           (update :loading?  not)
-           (update :testform  not))
-       )))
+   (-> db
+       (assoc :test response)
+       (update :loading?  not)
+       (update :testform  not))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-test               ;; <-- the event id

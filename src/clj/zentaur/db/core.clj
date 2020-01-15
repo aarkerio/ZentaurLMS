@@ -5,8 +5,8 @@
     [clojure.tools.logging :as log]
     [conman.core :as conman]
     [java-time :as jt]
-    [zentaur.config :refer [env]]
-    [mount.core :refer [defstate]])
+    [mount.core :refer [defstate]]
+    [zentaur.config :refer [env]])
   (:import org.postgresql.util.PGobject
            java.sql.Array
            clojure.lang.IPersistentMap

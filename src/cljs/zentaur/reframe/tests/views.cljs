@@ -42,10 +42,10 @@
        [:div [:input.btn {:type  "button"
                           :value "Save"
                           :on-click #(rf/dispatch [:update-question {:question    @aquestion
-                                                                                :hint        @ahint
-                                                                                :id          id
-                                                                                :qtype       @aqtype
-                                                                                :explanation @aexplanation}])}]]])))
+                                                                     :hint        @ahint
+                                                                     :id          id
+                                                                     :qtype       @aqtype
+                                                                     :explanation @aexplanation}])}]]])))
 
 (defn answer-editing-input [{:keys [answer correct id]}]
   (let [aanswer   (r/atom answer)
@@ -62,7 +62,7 @@
                 :title     "richtig?"
                 :checked   @acorrect
                 :on-change #(swap! acorrect not)}]
-       [:div [:input.btn {:type "button" :value "Speichern"
+       [:div [:input.btn {:type "button" :class "btn btn btn-outline-primary-green" :value "Speichern"
                           :on-click #(rf/dispatch [:update-answer {:answer @aanswer :correct @acorrect :id id}])}]]])))
 ;;;;;;;; FORMS ENDS
 
@@ -110,12 +110,26 @@
                                           nil)})]
        [:input.btn {:type "checkbox" :title "Richtig?" :aria-label "Richting?"
                     :checked @checked :on-change #(swap! checked not)}]
-       [:input.btn {:type "button" :value "Antwort hinzufügen"
+       [:input.btn {:type "button" :class "btn btn btn-outline-primary-green" :value "Antwort hinzufügen"
                     :on-click #(do (rf/dispatch [:create-answer {:question-id question-id
                                                                        :correct @checked
                                                                        :answer @inner}])
                                    (reset! checked false)
                                    (reset! inner ""))}]])))
+
+(defn fulfill-question-form
+  [question text-asterisks]
+  (let [fulfill (:fulfill question)
+        id (:id question)]
+    (fn []
+      [:div
+       [:div.div-separator fulfill]
+       [:div.div-separator
+        [:textarea {:value @text-asterisks :on-change  #(reset! text-asterisks (-> % .-target .-value))
+                    :placeholder "Text and asterisks" :title "Text and asterisks" :cols 120  :rows 10}]]
+        [:input.btn {:type "button" :class "btn btn btn-outline-primary-green" :value "Speichern"
+                     :on-click #(rf/dispatch [:update-question {:id      id
+                                                                :fulfill fulfill}])}]])))
 
 ;; Polimorphysm to the kind of question
 (defmulti display-question (fn [question] (:qtype question)))
@@ -132,11 +146,12 @@
 
 (defmethod display-question 2
   [question]
-  [:p "This is an open question"])
+  [:p "(Dies ist eine offene Frage)"])
 
 (defmethod display-question 3
   [question]
-  [:p "Question to fullfill"])
+  (let [text-asterisks (r/atom (:fulfill question))]
+    [fulfill-question-form question text-asterisks]))
 
 (defmethod display-question 4
   [question]
@@ -181,8 +196,7 @@
             ^{:key (swap! counter inc)} [question-item (second question)]
             ))])))
 
-(defn test-editor-form [test title description tags]
-      (.log js/console (str ">>> VALUE TESTS SSSSS >>>>> " test ))
+(defn test-editor-form [test ^string title ^string description ^string tags ^int subject-id]
     [:div {:id "test-whole-display"}
      [:div.edit-icon-div
       (if @(rf/subscribe [:toggle-testform])
@@ -204,29 +218,38 @@
        [:label {:class "tiny-label"} "Tags"]
        [:input {:type "text" :value @tags :on-change #(reset! tags (-> % .-target .-value))
                 :placeholder "Tags" :title "Tags" :maxLength 100 :size 100}]]
+      [:div.div-separator
+       [:select.form-control.mr-sm-2 {:name      "subject-id"
+                                      :value     @subject-id
+                                      :on-change #(reset! subject-id (-> % .-target .-value))}
+        (for [subject @(rf/subscribe [:subjects])]
+          ^{:key (:id subject)} [:option {:value (:id subject)} (:subject subject)])
+        ]]
       [:div
        [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"
                 :on-click #(rf/dispatch [:update-test {:title @title :description @description
-                                                       :tags @tags :test-id (:id test)}])}]]]
+                                                       :tags @tags :subject-id @subject-id :test-id (:id test)}])}]]]
       [:div
        [:h1 @title]
        [:div.div-simple-separator [:span {:class "bold-font"} "Tags: "] @tags [:span {:class "bold-font"} " Created:"] (:created_at test)]
-       [:div.div-simple-separator [:span {:class "bold-font"}  "Description: "] @description]]])
+       [:div.div-simple-separator [:span {:class "bold-font"}  "Description: "] @description [:span {:class "bold-font"}  "Subject: "] (:subject test)]]])
 
 (defn test-editor-view
   []
   (let [test        (rf/subscribe [:test])
         title       (r/atom nil)
+        subject-id  (r/atom nil)
         description (r/atom nil)
         tags        (r/atom nil)]
     (fn []
       (reset! title (:title @test))
+      (reset! subject-id (:subject_id @test))
       (reset! description (:description @test))
       (reset! tags (:tags @test))
       [:div
-       [test-editor-form @test title description tags]
+       [test-editor-form @test title description tags subject-id]
        [:img {:src "/img/icon_add_question.png" :alt "Fragen hinzüfugen" :title "Fragen hinzüfugen"
-                        :on-click #(re-frame.core/dispatch [:toggle-qform])}]])))
+                        :on-click #(rf/dispatch [:toggle-qform])}]])))
 
 (defn create-question-form
   "Verstecken Form for a neue fragen"
@@ -269,7 +292,8 @@
          [:option {:value "1"} "Multiple"]
          [:option {:value "2"} "Open"]
          [:option {:value "3"} "Fullfill"]
-         [:option {:value "4"} "Columns"]]]
+         ;; [:option {:value "4"} "Columns"]
+         ]]
      [:div
       [:input.btn {:class "btn btn-outline-primary-green" :type "button" :value "Neue Frage speichern"
                    :on-click #(do (rf/dispatch [:create-question {:question    @new-question

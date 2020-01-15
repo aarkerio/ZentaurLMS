@@ -1,12 +1,13 @@
 (ns zentaur.routes.home
   (:require [zentaur.controllers.company-controller :as cont-company]
+            [zentaur.controllers.export-controller  :as cont-export]
             [zentaur.controllers.posts-controller   :as cont-posts]
             [zentaur.controllers.tests-controller   :as cont-tests]
             [zentaur.controllers.uploads-controller :as cont-uploads]
             [zentaur.controllers.users-controller   :as cont-users]
             [zentaur.middleware :as middleware]))
 
-(def user-routes
+(def site-routes
   [["/"                  {:get  cont-posts/get-posts}]
    ["/posts/savecomment" {:post cont-posts/save-comment}]
    ["/posts/view/:id"    {:get  cont-posts/single-post}]
@@ -14,6 +15,11 @@
    ["/page/:page"        {:get  cont-company/load-page}]
    ["/login"             {:get  cont-users/login-page :post cont-users/post-login}]
    ["/notauthorized"     {:get  cont-posts/get-posts}]
+   ["/logout"            {:get  cont-users/clear-session!}]])
+
+(def user-routes
+  ["/vclass"
+   ["/"                  {:get  cont-posts/get-posts}]
    ["/logout"            {:get  cont-users/clear-session!}]])
 
 (def admin-routes
@@ -24,8 +30,8 @@
    ["/posts/new"               {:get  cont-posts/admin-new}]
    ["/tests"                   {:get  cont-tests/admin-index :post cont-tests/create-test}]
    ["/tests/edit/:id"          {:get  cont-tests/admin-edit}]
-   ["/tests/exporttestpdf/:id" {:get  cont-tests/export-test-pdf}]
-   ["/tests/exporttestodf/:id" {:get  cont-tests/export-test-odf}]
+   ["/tests/exporttestpdf/:id" {:get  cont-export/export-test-pdf}]
+   ["/tests/exporttestodf/:id" {:get  cont-export/export-test-odf}]
    ["/tests/load"              {:post cont-tests/load-json}]
    ["/tests/createquestion"    {:post cont-tests/create-question}]
    ["/tests/createanswer"      {:post cont-tests/create-answer}]
@@ -48,5 +54,5 @@
   [""
    {:middleware [middleware/wrap-csrf
                  middleware/wrap-formats]}
-   (merge user-routes admin-routes)])
+   (merge site-routes user-routes admin-routes)])
 
