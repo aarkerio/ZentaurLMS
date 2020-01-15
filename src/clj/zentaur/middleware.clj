@@ -13,7 +13,7 @@
    [ring.middleware.flash :refer [wrap-flash]]
    [ring-ttl-session.core :refer [ttl-memory-store]]
    [zentaur.config :refer [env]]
-   [zentaur.env :refer [defaults]]
+   [zentaur.env :refer [defaults]]     ;; from the env/ dir
    [zentaur.layout :refer [error-page]]
    [zentaur.middleware.formats :as formats]))
 
@@ -62,21 +62,26 @@
   (let [identity (:identity request)]
     (true? (:admin identity))))
 
+(defn user-access [request]
+  (let [identity (:identity request)]
+    (true? (:email identity))))
+
 (def rules [{:pattern #"^/admin.*"
              :handler admin-access
-             :redirect "/notauthorized"}
+             :redirect "/notauthorized"},
+            {:pattern #"^/vclass.*"
+             :handler user-access
+             :redirect "/notauthorized"},
             {:pattern #"^/user.*"
              :handler authenticated?}])
 ;; AUTH CONFIG ENDS
 
-(defn wrap-base [handler]
-  (-> ((:middleware defaults) handler)
+(defn wrap-base
+  "Assembling all the pieces of he middleware"
+  [handler]
+  (-> ((:middleware defaults) handler)  ;; from env/../dev_middleware.clj
       wrap-auth
       (wrap-access-rules {:rules rules :on-error on-error})
-      (wrap-authentication (session-backend))
        wrap-flash
-      (wrap-defaults
-        (-> site-defaults
-            (assoc-in [:security :anti-forgery] false)
-            (assoc-in  [:session :store] (ttl-memory-store (* 60 30)))))
+      (wrap-defaults (assoc-in site-defaults [:session :store] (ttl-memory-store (* 60 30))))
       wrap-internal-error))

@@ -13,8 +13,8 @@
   {:init
    (fn []
      (parser/cache-off!)
-     (log/info "\n-=[zentaur started successfully using the development profile]=-"))
+     (log/info "\n-=[*** erfolgreich mit dem Entwicklungsprofil gestartet *** ]=-"))
    :stop
    (fn []
-     (log/info "\n-=[zentaur has shut down successfully]=-"))
-   :middleware wrap-dev})
+     (log/info "\n-=[zentaur wurde erfolgreich heruntergefahren]=-"))
+   :middleware wrap-dev})  ;; <<--- load dev stuff like code reload

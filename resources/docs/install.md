@@ -25,4 +25,4 @@ $ lein fig:dev
 
 5) Login in the browser.
 
-admin@example.com/kunst99
+admin@example.com/password

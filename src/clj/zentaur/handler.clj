@@ -1,13 +1,13 @@
 (ns zentaur.handler
   (:require
-    [zentaur.middleware :as middleware]
-    [zentaur.layout :refer [error-page]]
-    [zentaur.routes.home :refer [home-routes]]
-    [reitit.ring :as ring]
-    [ring.middleware.content-type :refer [wrap-content-type]]
-    [ring.middleware.webjars :refer [wrap-webjars]]
-    [zentaur.env :refer [defaults]]
-    [mount.core :as mount]))
+   [mount.core :as mount]
+   [reitit.ring :as ring]
+   [ring.middleware.content-type :refer [wrap-content-type]]
+   [ring.middleware.webjars :refer [wrap-webjars]]
+   [zentaur.middleware :as middleware]
+   [zentaur.env :refer [defaults]]
+   [zentaur.layout :refer [error-page]]
+   [zentaur.routes.home :refer [home-routes]]))
 
 (mount/defstate init-app
   :start ((or (:init defaults) (fn [])))

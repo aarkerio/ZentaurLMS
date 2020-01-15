@@ -1,12 +1,12 @@
 (ns zentaur.core
   (:require
-    [zentaur.handler :as handler]
-    [luminus.http-server :as http]
-    [luminus-migrations.core :as migrations]
-    [zentaur.config :refer [env]]
     [clojure.tools.cli :refer [parse-opts]]
     [clojure.tools.logging :as log]
-    [mount.core :as mount])
+    [luminus.http-server :as http]
+    [luminus-migrations.core :as migrations]
+    [mount.core :as mount]
+    [zentaur.config :refer [env]]
+    [zentaur.handler :as handler])
   (:gen-class))
 
 ;; log uncaught exceptions in threads
@@ -41,7 +41,7 @@
                         (parse-opts cli-options)
                         mount/start-with-args
                         :started)]
-    (log/info component "started"))
+    (log/info component " >>> Sehr gut gestartet, tatsächlich"))
   (.addShutdownHook (Runtime/getRuntime) (Thread. stop-app)))
 
 (defn -main [& args]

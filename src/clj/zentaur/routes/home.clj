@@ -7,7 +7,7 @@
             [zentaur.controllers.users-controller   :as cont-users]
             [zentaur.middleware :as middleware]))
 
-(def user-routes
+(def site-routes
   [["/"                  {:get  cont-posts/get-posts}]
    ["/posts/savecomment" {:post cont-posts/save-comment}]
    ["/posts/view/:id"    {:get  cont-posts/single-post}]
@@ -15,6 +15,11 @@
    ["/page/:page"        {:get  cont-company/load-page}]
    ["/login"             {:get  cont-users/login-page :post cont-users/post-login}]
    ["/notauthorized"     {:get  cont-posts/get-posts}]
+   ["/logout"            {:get  cont-users/clear-session!}]])
+
+(def user-routes
+  ["/vclass"
+   ["/"                  {:get  cont-posts/get-posts}]
    ["/logout"            {:get  cont-users/clear-session!}]])
 
 (def admin-routes
@@ -49,5 +54,5 @@
   [""
    {:middleware [middleware/wrap-csrf
                  middleware/wrap-formats]}
-   (merge user-routes admin-routes)])
+   (merge site-routes user-routes admin-routes)])
 

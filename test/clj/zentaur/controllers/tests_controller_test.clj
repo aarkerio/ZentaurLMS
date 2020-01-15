@@ -35,10 +35,10 @@
 (defn get-session
   "Given a response, grab out just the key=value of the ring session"
   [resp]
-  (let [headers (:headers resp)
-        cookies (get headers "Set-Cookie")
+  (let [headers         (:headers resp)
+        cookies         (get headers "Set-Cookie")
         session-cookies (first (filter #(.startsWith % "ring-session") cookies))
-        session-pair (first (clojure.string/split session-cookies #";"))]
+        session-pair    (first (clojure.string/split session-cookies #";"))]
     session-pair))
 
 (defn get-csrf-field
@@ -59,29 +59,25 @@
   "Login a user given a username and password"
   [username password]
   (let [{:keys [csrf session]} (get-login-session!)
-        req (-> (mock/request :post "/login")
-                (assoc :headers {"cookie" session})
-                (assoc :params {:username username
-                                :password password})
-                (assoc :form-params {"__anti-forgery-token" csrf}))]
+        _                      (log/info (str ">>> session  >>>>> " session "  und csrf >>>>>> " csrf))
+        req                    (-> (mock/request :post "/login")
+                                   (assoc :headers {"cookie" session})
+                                   (assoc :params {:username username
+                                                   :password password})
+                                   (assoc :form-params {"__anti-forgery-token" csrf}))]
     ((zh/app) req)
     session))
-
-;; (deftest ^:integration test-app
-;;   (testing "main route"
-;;     (let [response ((zh/app) (mock/request :get "/"))]
-;;       (is (= 200 (:status response))))))
 
 (deftest ^:integration get-test-nodes
   (testing "JSON response for the API"
     (let [session    (login! "admin@example.com" "password")
           _          (log/info (str ">>> ** RESPONSE ** >>>>> " (prn-str session)))
-          return     (-> ((zh/app) (mock/request :get "/admin/tests"))
+          response   (-> ((zh/app) (mock/request :get "/admin/tests"))
                          (assoc :headers {"cookie" session}))
-          ;;body  (:body response)
+          body  (:body response)
           ]
-      (log/info (str ">>> P***** RETURN >>>>> " return))
-      ;;(is (= (:msg body) true))
+      (log/info (str ">>> ***** RETURN >>>>> "  response))
+      (is (= (:msg body) true))
       )))
 
 ;; (deftest ^:integration a-test
@@ -91,7 +87,7 @@
 ;;        (is (= (:status response) 200))
 ;;        (is (= (:msg body) true)))))
 
-(run-tests)  ;; run tests in this NS
+;; (run-tests)  ;; run tests in this NS
 
 ;; (defn create-question
 ;;   "POST /admin/tests/createquestion. JSON response."

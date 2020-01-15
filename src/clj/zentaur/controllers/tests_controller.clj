@@ -9,7 +9,7 @@
 
 (def non-ascii {:escape-non-ascii true}) ;; UTF-8 support for cheshire
 
-;;;;;  ADMIN FUNCTIONS
+;;;;;  VCLASSROOM FUNCTIONS
 
 (defn create-test
   "POST /admin/tests"
@@ -87,7 +87,6 @@
   "POST /admin/tests/load.  Build a JSON to charge one test in ClojureScript"
   [{:keys [identity params]}]
   (let [user-id  (:id identity)
-        _        (log/info (str ">>> load-json PARAM >>>>> " params  "  UND user-id  >>> " user-id))
         test-id  (Integer/parseInt (:test-id params))
         response (model-test/get-test-nodes test-id user-id)]
     (response/ok (ches/encode response non-ascii))))
