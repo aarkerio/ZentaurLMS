@@ -64,12 +64,12 @@
 
 (defn user-access [request]
   (let [identity (:identity request)]
-    (true? (:email identity))))
+    (> (count (:email identity)) 4)))
 
 (def rules [{:pattern #"^/admin.*"
              :handler admin-access
              :redirect "/notauthorized"},
-            {:pattern #"^/vclass.*"
+            {:pattern #"(^\/vclass.*)|(^\/api.*)"
              :handler user-access
              :redirect "/notauthorized"},
             {:pattern #"^/user.*"
@@ -82,6 +82,7 @@
   (-> ((:middleware defaults) handler)  ;; from env/../dev_middleware.clj
       wrap-auth
       (wrap-access-rules {:rules rules :on-error on-error})
+      (wrap-authentication (session-backend))
        wrap-flash
       (wrap-defaults (assoc-in site-defaults [:session :store] (ttl-memory-store (* 60 30))))
       wrap-internal-error))

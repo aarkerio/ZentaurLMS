@@ -66,13 +66,14 @@
                                                    :password password})
                                    (assoc :form-params {"__anti-forgery-token" csrf}))]
     ((zh/app) req)
-    session))
+    {:csrf csrf :session session}))
 
 (deftest ^:integration get-test-nodes
   (testing "JSON response for the API"
-    (let [session    (login! "admin@example.com" "password")
+    (let [{:keys [csrf session]} (login! "admin@example.com" "password")
           _          (log/info (str ">>> ** RESPONSE ** >>>>> " (prn-str session)))
-          response   (-> ((zh/app) (mock/request :get "/admin/tests"))
+          response   (-> ((zh/app) (mock/request :post "/admin/tests/load" {:test-id 1}))
+                         (assoc :form-params {"__anti-forgery-token" csrf})
                          (assoc :headers {"cookie" session}))
           body  (:body response)
           ]

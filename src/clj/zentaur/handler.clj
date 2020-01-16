@@ -4,10 +4,12 @@
    [reitit.ring :as ring]
    [ring.middleware.content-type :refer [wrap-content-type]]
    [ring.middleware.webjars :refer [wrap-webjars]]
+   [reitit.swagger-ui :as swagger-ui]
    [zentaur.middleware :as middleware]
    [zentaur.env :refer [defaults]]
    [zentaur.layout :refer [error-page]]
-   [zentaur.routes.home :refer [home-routes]]))
+   [zentaur.routes.home :refer [home-routes]]
+   [zentaur.routes.services :refer [service-routes]]))
 
 (mount/defstate init-app
   :start ((or (:init defaults) (fn [])))
@@ -17,8 +19,13 @@
   :start
   (ring/ring-handler
     (ring/router
-      [(home-routes)])
+      [(home-routes)
+       (service-routes)])
     (ring/routes
+      (swagger-ui/create-swagger-ui-handler
+        {:path   "/swagger-ui"
+         :url    "/api/swagger.json"
+         :config {:validator-url nil}})
       (ring/create-resource-handler
         {:path "/"})
       (wrap-content-type
@@ -30,6 +37,7 @@
          (constantly (error-page {:status 405, :title "405 - Not allowed"}))
          :not-acceptable
          (constantly (error-page {:status 406, :title "406 - Not acceptable"}))}))))
+
 
 (defn app []
   (middleware/wrap-base #'app-routes))

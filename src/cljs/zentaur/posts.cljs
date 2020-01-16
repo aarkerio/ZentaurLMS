@@ -5,7 +5,7 @@
 
 (defn- handler [response]
   (let [parsed       (str "t   /  read r response")
-        __            (.log js/console (str ">>> PARSED >>>>> " (type parsed) ">>>>" parsed))
+        _            (.log js/console (str ">>> PARSED >>>>> " (type parsed) ">>>>" parsed))
         comment      (get parsed "comment")
         created_at   (get parsed "created_at")
         last_name    (get parsed "last_name")
@@ -61,5 +61,5 @@
   (.log js/console (str ">>> VALUE >>>>> mount POSTS !!!")))
 
 (defn load-posts []
-  (events/listen (gdom/getElement "icon-add") EventType.CLICK
+  (.addEventListener (.getElementById js/document "icon-add") EventType.CLICK
        (fn [] (.log js/console (str ">>> VALUE >>>>>  #####   >>>>>   events/listen  in users ns")))))
