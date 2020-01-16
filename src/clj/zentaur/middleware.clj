@@ -1,17 +1,15 @@
 (ns zentaur.middleware
   (:require
    [buddy.auth :refer [authenticated?]]
-   [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
    [buddy.auth.accessrules :refer [wrap-access-rules restrict]]
    [buddy.auth.backends.session :refer [session-backend]]
+   [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
    [cheshire.generate :as cheshire]
    [clojure.tools.logging :as log]
    [cognitect.transit :as transit]
    [muuntaja.middleware :refer [wrap-format wrap-params]]
    [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
-   [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-   [ring.middleware.flash :refer [wrap-flash]]
-   [ring-ttl-session.core :refer [ttl-memory-store]]
+   [ring.middleware.defaults :refer [site-defaults]]
    [zentaur.config :refer [env]]
    [zentaur.env :refer [defaults]]     ;; from the env/ dir
    [zentaur.layout :refer [error-page]]
@@ -47,6 +45,7 @@
     {:status 403
      :title (str "Access to " (:uri request) " is not authorized")}))
 
+
 (defn wrap-restricted [handler]
   (restrict handler {:handler authenticated?
                      :on-error on-error}))
@@ -80,9 +79,4 @@
   "Assembling all the pieces of he middleware"
   [handler]
   (-> ((:middleware defaults) handler)  ;; from env/../dev_middleware.clj
-      wrap-auth
-      (wrap-access-rules {:rules rules :on-error on-error})
-      (wrap-authentication (session-backend))
-       wrap-flash
-      (wrap-defaults (assoc-in site-defaults [:session :store] (ttl-memory-store (* 60 30))))
       wrap-internal-error))

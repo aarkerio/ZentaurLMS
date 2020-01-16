@@ -3,7 +3,7 @@
    [mount.core :as mount]
    [reitit.ring :as ring]
    [ring.middleware.content-type :refer [wrap-content-type]]
-   [ring.middleware.webjars :refer [wrap-webjars]]
+   [ring.middleware.webjars :refer [wrap-webjars]]   ;; WebJars are client-side web libraries packaged into JAR (Java Archive) files.
    [reitit.swagger-ui :as swagger-ui]
    [zentaur.middleware :as middleware]
    [zentaur.env :refer [defaults]]
@@ -28,7 +28,7 @@
          :config {:validator-url nil}})
       (ring/create-resource-handler
         {:path "/"})
-      (wrap-content-type
+      (wrap-content-type                 ;; Ring middleware that adds a content-type header to the response. Defaults to 'application/octet-stream'.
         (wrap-webjars (constantly nil)))
       (ring/create-default-handler
         {:not-found
@@ -37,7 +37,6 @@
          (constantly (error-page {:status 405, :title "405 - Not allowed"}))
          :not-acceptable
          (constantly (error-page {:status 406, :title "406 - Not acceptable"}))}))))
-
 
 (defn app []
   (middleware/wrap-base #'app-routes))

@@ -1,5 +1,11 @@
 (ns zentaur.routes.home
-  (:require [zentaur.controllers.api.vclassroom     :as cont-api]
+  (:require [buddy.auth.accessrules :refer [wrap-access-rules]]
+            [buddy.auth.backends.session :refer [session-backend]]
+            [buddy.auth.middleware :refer [wrap-authentication wrap-authorization]]
+            [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
+            [ring.middleware.flash :refer [wrap-flash]]
+            [ring-ttl-session.core :refer [ttl-memory-store]]
+            [zentaur.controllers.api.vclassroom     :as cont-api]
             [zentaur.controllers.company-controller :as cont-company]
             [zentaur.controllers.export-controller  :as cont-export]
             [zentaur.controllers.posts-controller   :as cont-posts]
@@ -55,7 +61,13 @@
 
 (defn home-routes []
   [""
-   {:middleware [middleware/wrap-csrf
-                 middleware/wrap-formats]}
+   {:middleware [middleware/wrap-auth
+                 (wrap-access-rules {:rules middleware/rules :on-error middleware/on-error})
+                 ;;(wrap-authentication (session-backend))
+                 ;;(wrap-defaults (assoc-in site-defaults [:session :store] (ttl-memory-store (* 60 30))))
+                 middleware/wrap-csrf
+                 middleware/wrap-formats
+                 wrap-flash
+                 ]}
    (merge site-routes vclass-routes api-routes admin-routes)])
 
