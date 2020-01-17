@@ -2,10 +2,10 @@
   (:require [clojure.java.io :as io]
             [reitit.swagger :as swagger]
             [reitit.swagger-ui :as swagger-ui]
-            [reitit.ring.coercion :as coercion]
+            [reitit.ring.coercion :as coercion]                ;; Coercion is a process of transforming parameters (and responses) from one format into another.
             [reitit.coercion.spec :as spec-coercion]
-            [reitit.ring.middleware.muuntaja :as muuntaja]
-            [reitit.ring.middleware.multipart :as multipart]
+            [reitit.ring.middleware.muuntaja :as muuntaja]     ;; Middleware for content-negotiation, request and response formatting.
+            [reitit.ring.middleware.multipart :as multipart]   ;; for upload stuff
             [reitit.ring.middleware.parameters :as parameters]
             [ring.util.http-response :refer :all]
             [zentaur.routes.services.graphql :as graphql]
@@ -36,7 +36,7 @@
 
    ;; swagger documentation
    ["" {:no-doc true
-        :swagger {:info {:title "my-api"
+        :swagger {:info {:title "Zentaur API"
                          :description "https://cljdoc.org/d/metosin/reitit"}}}
 
     ["/swagger.json"

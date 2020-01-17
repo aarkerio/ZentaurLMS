@@ -4,6 +4,9 @@
             [reitit.coercion :as coercion]
             [reitit.ring.middleware.exception :as exception]))
 
+;; Coercion is a process of transforming parameters (and responses) from one format into another.
+;; Reitit separates routing and coercion into two separate steps.
+
 (defn coercion-error-handler [status]
   (let [printer (expound/custom-printer {:print-specs? false})]
     (fn [exception request]
