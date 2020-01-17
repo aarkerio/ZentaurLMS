@@ -28,13 +28,13 @@
                      :title "Something very bad has happened!"
                      :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
-(defn wrap-csrf [handler]
+(defn wrap-asdasdasdasdcsrf [handler]
   (wrap-anti-forgery
     handler
     {:error-response
      (error-page
        {:status 403
-        :title "Invalid anti-forgery token"})}))
+        :title "Invalid JJJJ anti-forgery token"})}))
 
 (defn wrap-formats [handler]
   (let [wrapped (-> handler wrap-params (wrap-format formats/instance))]
@@ -57,11 +57,18 @@
   (let [identity (:identity request)]
     (> (count (:email identity)) 4)))
 
+(defn open-gates [request]
+  (let [identity (:identity request)]
+    (= true true)))
+
 (def rules [{:pattern #"^/admin.*"
              :handler admin-access
              :redirect "/notauthorized"},
             {:pattern #"^\/vclass.*"
              :handler user-access
+             :redirect "/notauthorized"},
+            {:pattern #"^\/api.*"
+             :handler open-gates
              :redirect "/notauthorized"},
             {:pattern #"^/user.*"
              :handler authenticated?}])
@@ -81,5 +88,8 @@
       wrap-auth
       wrap-flash
       (wrap-session)
-      (wrap-defaults (assoc-in site-defaults [:session :store] (ttl-memory-store (* 60 30))))
+      (wrap-defaults
+      (-> site-defaults
+         (assoc-in [:security :anti-forgery] false)
+         (assoc-in  [:session :store] (ttl-memory-store (* 60 30)))))
       wrap-internal-error))

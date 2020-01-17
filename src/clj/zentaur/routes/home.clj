@@ -55,6 +55,7 @@
 
 (defn home-routes []
   [""
-   {:middleware [middleware/wrap-csrf
+   {:middleware [
+                 ;; middleware/wrap-csrf
                  middleware/wrap-formats]}
    (merge site-routes vclass-routes api-routes admin-routes)])

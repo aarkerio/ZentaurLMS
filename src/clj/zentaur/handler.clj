@@ -26,10 +26,10 @@
         {:path   "/swagger-ui"
          :url    "/api/swagger.json"
          :config {:validator-url nil}})
-      (ring/create-resource-handler
-        {:path "/"})
-      (wrap-content-type                 ;; Ring middleware that adds a content-type header to the response. Defaults to 'application/octet-stream'.
-        (wrap-webjars (constantly nil)))
+      ;; (ring/create-resource-handler {:path "/"}) ;; Serve static resources avoiding conflicting paths
+      ;;(wrap-content-type                         ;; Ring middleware that adds a content-type header to the response. Defaults to 'application/octet-stream'.
+      ;; (wrap-webjars (constantly nil)))
+      ;; (ring/redirect-trailing-slash-handler {:method :strip})
       (ring/create-default-handler
         {:not-found
          (constantly (error-page {:status 404 :title "404 - Page not found"}))
