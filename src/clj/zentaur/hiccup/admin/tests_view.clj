@@ -9,18 +9,18 @@
 (defn formatted-test [{:keys [title created_at tags published id subject]}]
   (let [formatted-date (hv/format-date created_at true)]
   [:tr
-   [:td [:a {:href (str "/admin/tests/edit/" id)} [:img {:src "/img/icon_edit_test.png" :alt "Edit"  :title "Edit"}]]]
+   [:td [:a {:href (str "/vclass/tests/edit/" id)} [:img {:src "/img/icon_edit_test.png" :alt "Bearbeiten"  :title "Bearbeiten"}]]]
    [:td title]
    [:td tags]
    [:td subject]
    [:td formatted-date]
-   [:td [:a {:href (str "/admin/tests/exporttestpdf/" id)} [:img {:src "/img/icon_export_pdf.png" :alt "Export PDF" :title "Export PDF"}]]]
-   [:td [:a {:href (str "/admin/tests/exporttestodf/" id)} [:img {:src "/img/icon_export_odf.png" :alt "Export DOC" :title "Export DOC"}]]]
+   [:td [:a {:href (str "/vclass/tests/exporttestpdf/" id)} [:img {:src "/img/icon_export_pdf.png" :alt "Export PDF" :title "Export PDF"}]]]
+   [:td [:a {:href (str "/vclass/tests/exporttestodf/" id)} [:img {:src "/img/icon_export_odf.png" :alt "Export DOC" :title "Export DOC"}]]]
    [:td [:a {:onclick (str "zentaur.core.deletetest("id")")} [:img {:src "/img/icon_delete.png" :alt "Delete test" :title "Delete test"}]]]]))
 
 (defn- test-new-form [subjects csrf-field]
   [:div.hidden-div {:id "hidden-form"}
-   [:form {:id "submit-test-form" :action "/admin/tests" :method "post" :class "css-class-form"}
+   [:form {:id "submit-test-form" :action "/vclass/tests" :method "post" :class "css-class-form"}
     (f/hidden-field {:value csrf-field} "__anti-forgery-token")
     [:div.div-separator (f/text-field {:maxlength 150 :size 90 :placeholder "Title"} "title")]
     [:div.div-separator (f/text-field {:maxlength 150 :size 70 :placeholder "Tags"} "tags")]

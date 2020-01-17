@@ -86,7 +86,7 @@
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
       ;; we return a map of (side) effects
       {:http-xhrio {:method          :post
-                    :uri             "/admin/tests/load"
+                    :uri             "/api/load-test"
                     :format          (ajax/json-request-format)
                     :params          {:test-id test-id}
                     :headers         {"x-csrf-token" csrf-field}
@@ -116,7 +116,7 @@
          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
      ;; we return a map of (side) effects
      {:http-xhrio {:method          :post
-                   :uri             "/admin/tests/createquestion"
+                   :uri             "/api/createquestion"
                    :format          (ajax/json-request-format)
                    :params          question
                    :headers         {"x-csrf-token" csrf-field}
@@ -180,7 +180,7 @@
          _           (.log js/console (str ">>> answer AT create-answer >>>>> " answer))]
      ;; we return a map of (side) effects
      {:http-xhrio {:method          :post
-                   :uri             "/admin/tests/createanswer"
+                   :uri             "/api/createanswer"
                    :format          (ajax/json-request-format)
                    :params          answer
                    :headers         {"x-csrf-token" csrf-field}

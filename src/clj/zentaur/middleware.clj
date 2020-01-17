@@ -7,6 +7,7 @@
    [cheshire.generate :as cheshire]
    [clojure.tools.logging :as log]
    [cognitect.transit :as transit]
+   [immutant.web.middleware :refer [wrap-session]]
    [muuntaja.middleware :refer [wrap-format wrap-params]]
    [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
    [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
@@ -27,13 +28,13 @@
                      :title "Something very bad has happened!"
                      :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
-(defn wrap-csrf [handler]
+(defn wrap-asdasdasdasdcsrf [handler]
   (wrap-anti-forgery
     handler
     {:error-response
      (error-page
        {:status 403
-        :title "Invalid anti-forgery token"})}))
+        :title "Invalid JJJJ anti-forgery token"})}))
 
 (defn wrap-formats [handler]
   (let [wrapped (-> handler wrap-params (wrap-format formats/instance))]
@@ -47,16 +48,6 @@
     {:status 403
      :title (str "Access to " (:uri request) " is not authorized")}))
 
-(defn wrap-restricted [handler]
-  (restrict handler {:handler authenticated?
-                     :on-error on-error}))
-
-(defn wrap-auth [handler]
-  (let [backend (session-backend)]
-    (-> handler
-        (wrap-authentication backend)
-        (wrap-authorization backend))))
-
 ;; AUTH CONFIG STARTS
 (defn admin-access [request]
   (let [identity (:identity request)]
@@ -64,24 +55,41 @@
 
 (defn user-access [request]
   (let [identity (:identity request)]
-    (true? (:email identity))))
+    (> (count (:email identity)) 4)))
+
+(defn open-gates [request]
+  (let [identity (:identity request)]
+    (= true true)))
 
 (def rules [{:pattern #"^/admin.*"
              :handler admin-access
              :redirect "/notauthorized"},
-            {:pattern #"^/vclass.*"
+            {:pattern #"^\/vclass.*"
              :handler user-access
+             :redirect "/notauthorized"},
+            {:pattern #"^\/api.*"
+             :handler open-gates
              :redirect "/notauthorized"},
             {:pattern #"^/user.*"
              :handler authenticated?}])
 ;; AUTH CONFIG ENDS
 
+(defn wrap-auth [handler]
+  (let [backend (session-backend)]
+    (-> handler
+        (wrap-authentication backend)
+        (wrap-authorization backend))))
+
 (defn wrap-base
   "Assembling all the pieces of he middleware"
   [handler]
   (-> ((:middleware defaults) handler)  ;; from env/../dev_middleware.clj
-      wrap-auth
       (wrap-access-rules {:rules rules :on-error on-error})
-       wrap-flash
-      (wrap-defaults (assoc-in site-defaults [:session :store] (ttl-memory-store (* 60 30))))
+      wrap-auth
+      wrap-flash
+      (wrap-session)
+      (wrap-defaults
+      (-> site-defaults
+         (assoc-in [:security :anti-forgery] false)
+         (assoc-in  [:session :store] (ttl-memory-store (* 60 30)))))
       wrap-internal-error))

@@ -1,5 +1,6 @@
 (ns zentaur.routes.home
-  (:require [zentaur.controllers.company-controller :as cont-company]
+  (:require [zentaur.controllers.api.vclassroom     :as cont-api]
+            [zentaur.controllers.company-controller :as cont-company]
             [zentaur.controllers.export-controller  :as cont-export]
             [zentaur.controllers.posts-controller   :as cont-posts]
             [zentaur.controllers.tests-controller   :as cont-tests]
@@ -17,10 +18,32 @@
    ["/notauthorized"     {:get  cont-posts/get-posts}]
    ["/logout"            {:get  cont-users/clear-session!}]])
 
-(def user-routes
+(def vclass-routes
   ["/vclass"
    ["/"                  {:get  cont-posts/get-posts}]
-   ["/logout"            {:get  cont-users/clear-session!}]])
+   ["/tests"                   {:get  cont-tests/admin-index}]
+   ["/tests/edit/:id"          {:get  cont-tests/admin-edit}]
+   ["/tests/exporttestpdf/:id" {:get  cont-export/export-test-pdf}]
+   ["/tests/exporttestodf/:id" {:get  cont-export/export-test-odf}]
+   ["/uploads"                 {:get  cont-uploads/admin-uploads :post cont-uploads/upload-file}]
+   ["/uploads/process/:id"     {:get  cont-uploads/process}]
+   ["/uploads/export"          {:post cont-uploads/export-test}]
+   ["/uploads/save"            {:post cont-uploads/save-body}]
+   ["/uploads/archive/:id"     {:get  cont-uploads/archive}]
+   ["/uploads/download/:id"    {:get  cont-uploads/download}]
+   ["/uploads/extract/:id"     {:get  cont-uploads/extract}]])
+
+(def api-routes
+  ["/api"
+   ["/load-test"         {:post cont-api/load-test}]
+   ["/createquestion"    {:post cont-api/create-question}]
+   ["/createanswer"      {:post cont-api/create-answer}]
+   ["/updatequestion"    {:post cont-api/update-question}]
+   ["/updateanswer"      {:post cont-api/update-answer}]
+   ["/updatetest"        {:post cont-api/update-test}]
+   ["/deletetest"        {:delete cont-api/delete-test}]
+   ["/deletequestion"    {:delete cont-api/delete-question}]
+   ["/deleteanswer"      {:delete cont-api/delete-answer}]])
 
 (def admin-routes
   ["/admin"
@@ -28,31 +51,11 @@
    ["/posts/delete/:id"        {:delete cont-posts/delete-post}]
    ["/posts/published/:id/:published" {:get cont-posts/toggle-published}]
    ["/posts/new"               {:get  cont-posts/admin-new}]
-   ["/tests"                   {:get  cont-tests/admin-index :post cont-tests/create-test}]
-   ["/tests/edit/:id"          {:get  cont-tests/admin-edit}]
-   ["/tests/exporttestpdf/:id" {:get  cont-export/export-test-pdf}]
-   ["/tests/exporttestodf/:id" {:get  cont-export/export-test-odf}]
-   ["/tests/load"              {:post cont-tests/load-json}]
-   ["/tests/createquestion"    {:post cont-tests/create-question}]
-   ["/tests/createanswer"      {:post cont-tests/create-answer}]
-   ["/tests/updatequestion"    {:post cont-tests/update-question}]
-   ["/tests/updateanswer"      {:post cont-tests/update-answer}]
-   ["/tests/updatetest"        {:post cont-tests/update-test}]
-   ["/tests/deletetest"        {:delete cont-tests/delete-test}]
-   ["/tests/deletequestion"    {:delete cont-tests/delete-question}]
-   ["/tests/deleteanswer"      {:delete cont-tests/delete-answer}]
-   ["/uploads"                 {:get  cont-uploads/admin-uploads :post cont-uploads/upload-file}]
-   ["/uploads/process/:id"     {:get  cont-uploads/process}]
-   ["/uploads/export"          {:post cont-uploads/export-test}]
-   ["/uploads/save"            {:post cont-uploads/save-body}]
-   ["/uploads/archive/:id"     {:get  cont-uploads/archive}]
-   ["/uploads/download/:id"    {:get  cont-uploads/download}]
-   ["/uploads/extract/:id"     {:get  cont-uploads/extract}]
    ["/users"                   {:get  cont-users/admin-users :post cont-users/create-user}]])
 
 (defn home-routes []
   [""
-   {:middleware [middleware/wrap-csrf
+   {:middleware [
+                 ;; middleware/wrap-csrf
                  middleware/wrap-formats]}
-   (merge site-routes user-routes admin-routes)])
-
+   (merge site-routes vclass-routes api-routes admin-routes)])

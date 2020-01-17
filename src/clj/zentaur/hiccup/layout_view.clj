@@ -22,7 +22,7 @@
   (when-let [email (-> content :identity :email)]
     (swap! vector-atom conj [:li {:class "nav-item"} [:a {:href "/admin/users" :class "nav-link"} "Benutzer"]]
                             [:li {:class "nav-item"} [:a {:href "/admin/posts" :class "nav-link"} "Beiträge"]]
-                            [:li {:class "nav-item"} [:a {:href "/admin/tests" :class "nav-link"} "Quiztest"]]
+                            [:li {:class "nav-item"} [:a {:href "/vclass/tests" :class "nav-link"} "Quiztest"]]
                             [:li {:class "nav-item"} [:a {:href "/admin/uploads" :class "nav-link"} "Dateien"]]
                             [:li {:class "nav-item"} (str "Hallo " email "!")]
                             [:li {:class "nav-item"} [:a {:href "/logout" :class "nav-link"} "Logout"]] ))

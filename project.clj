@@ -3,13 +3,14 @@
   :url "http://xalisco-labs.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
                  [cheshire "5.9.0"]                      ;; Clojure JSON and BSON encoding/decoding
-                 [cljs-ajax "0.8.0"]                     ;; simple Ajax client for ClojureScript and Clojure
+                 [cljs-ajax "0.8.0"]                     ;; Simple Ajax client for ClojureScript and Clojure
                  [clj-commons/secretary "1.2.4"]         ;; A client-side router for ClojureScript.
                  [cljs-http "0.1.46"]                    ;; cljs-http returns core.async channels
                  [clj-pdf "2.4.0"]                       ;; PDF generation library
                  [clojure.java-time "0.3.2"]             ;; Java 8 Date-Time API for Clojure
                  [com.cognitect/transit-clj "0.8.319"]   ;; Marshalling Transit data to/from Clojure
                  [com.novemberain/pantomime "2.11.0"]    ;; A tiny Clojure library that deals with MIME types
+                 [com.walmartlabs/lacinia "0.36.0-alpha-2"] ;; GraphQL
                  [conman "0.8.4"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.14"]                        ;; where all configuration properties converge
                  [day8.re-frame/http-fx "v0.2.0"]        ;; A re-frame effects handler for performing Ajax tasks
@@ -19,9 +20,9 @@
                  [luminus-transit "0.1.2"]               ;; Transit helpers
                  [markdown-clj "1.10.1"]                 ;; MD support
                  [metosin/muuntaja "0.6.6"]              ;; library for fast http api format negotiation, encoding and decoding.
-                 [metosin/reitit "0.3.10" :exclusions [joda-time]] ;; A fast data-driven router for Clojure(Script).
+                 [metosin/reitit "0.4.1" :exclusions [joda-time]] ;; A fast data-driven router for Clojure(Script).
                  [metosin/ring-http-response "0.9.1" :exclusions [joda-time]]    ;; Handling HTTP Statuses with Clojure(Script)
-                 [mount "0.1.16"]                        ;; managing Clojure and ClojureScript app state
+                 [mount "0.1.16"]                        ;; Managing Clojure and ClojureScript app state
                  [org.clojure/clojure "1.10.1"]          ;; The sweet core!!
                  [org.clojure/clojurescript "1.10.597"]
                  [org.clojure/tools.cli "0.4.2"]         ;; parses command line arguments and stuff like that
@@ -34,7 +35,7 @@
                  [ring/ring-core "1.8.0"]                ;; A very thin HTTP abstraction
                  [ring/ring-defaults "0.3.2" :exclusions [joda-time]] ;; Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
                  [ring-ttl-session "0.3.1" :exclusions [joda-time]]   ;; Ring's TTL (time to live) session
-                 [selmer "1.12.12"]                      ;; Templates
+                 [selmer "1.12.12"]                      ;; HTML Templates
                  [slugify "0.0.1"]]
   :managed-dependencies [[org.clojure/core.rrb-vector "0.0.13"]]  ;; necessary for JDK 11
   :min-lein-version "2.9.0"    ;; current CIDER needs 2.9 or +
