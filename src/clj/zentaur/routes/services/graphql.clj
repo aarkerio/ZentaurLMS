@@ -9,7 +9,9 @@
     [ring.util.http-response :refer :all]
     [mount.core :refer [defstate]]))
 
-(defn get-hero [context args value]
+(defn get-hero
+  "Simple resolver"
+  [context args value]
   (let [data  [{:id 1000
                :name "Luke"
                :home_planet "Tatooine"
@@ -35,7 +37,7 @@
      (str "query { hero(id: \"1000\") { name appears_in }}")))
 
 (defn execute-request [query]
-    (let [vars nil
+    (let [vars    nil
           context nil]
     (-> (lacinia/execute compiled-schema query vars context)
         (json/write-str))))
