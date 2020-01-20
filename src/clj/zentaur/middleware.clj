@@ -28,7 +28,7 @@
                      :title "Something very bad has happened!"
                      :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
-(defn wrap-asdasdasdasdcsrf [handler]
+(defn wrap-csrf [handler]
   (wrap-anti-forgery
     handler
     {:error-response
@@ -58,8 +58,7 @@
     (> (count (:email identity)) 4)))
 
 (defn open-gates [request]
-  (let [identity (:identity request)]
-    (= true true)))
+    true)
 
 (def rules [{:pattern #"^/admin.*"
              :handler admin-access
@@ -84,10 +83,10 @@
   "Assembling all the pieces of he middleware"
   [handler]
   (-> ((:middleware defaults) handler)  ;; from env/../dev_middleware.clj
-      (wrap-access-rules {:rules rules :on-error on-error})
-      wrap-auth
-      wrap-flash
-      (wrap-session)
+      ;; (wrap-access-rules {:rules rules :on-error on-error})
+      ;; wrap-auth
+      ;; wrap-flash
+      ;; (wrap-session)
       (wrap-defaults
       (-> site-defaults
          (assoc-in [:security :anti-forgery] false)
