@@ -29,7 +29,7 @@
       slurp
       edn/read-string
       (attach-resolvers {:get-hero get-hero
-                         :get-droid (constantly {})})
+                         :get-droid (constantly {:dasd "dsfsafds"})})
       schema/compile))
 
 (defn format-params [query]
@@ -39,5 +39,4 @@
 (defn execute-request [query]
     (let [vars    nil
           context nil]
-    (-> (lacinia/execute compiled-schema query vars context)
-        (json/write-str))))
+    (json/write-str (lacinia/execute compiled-schema query vars context))))
