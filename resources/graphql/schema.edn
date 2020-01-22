@@ -1,25 +1,83 @@
-{:enums
- {:episode
-  {:description "The episodes of the original Star Wars trilogy."
-   :values [:NEWHOPE :EMPIRE :JEDI]}}
-
- :objects
- {:droid
-  {:fields {:primary_functions {:type (list String)}
-            :id {:type Int}
-            :name {:type String}
-            :appears_in {:type (list :episode)}}}
-
-  :human
-  {:fields {:id {:type Int}
-            :name {:type String}
-            :home_planet {:type String}
-            :appears_in {:type (list :episode)}}}}
-
- :queries
- {:hero {:type (non-null :human)
-         :args {:id {:type String :default-value "2001"}}
-         :resolve :get-hero}
-  :droid {:type :droid
-          :args {:name {:type String}}
-          :resolve :get-droid}}}
+;; /**********   UNDERSCORES IN NAMES PLEASE!!!!    ********/
+{
+ :enums {
+         :episode {:description "The episodes of the original Star Wars trilogy."
+                   :values [:NEWHOPE :EMPIRE :JEDI]}
+         :question_type {:description "Question options"
+                   :values [:CLOSED :OPTIONS :OPEN :COLUMNS]}}
+ :interfaces {
+              :character {
+                          :fields {:id         {:type String}
+                                   :name       {:type String}
+                                   :appears_in {:type (list :episode)}
+                                   :friends    {:type (list :character)}}}}
+ :objects {
+           :fulltest  {
+                        :description "Full Tests schema."
+                        :fields {
+                                 :test      {:type (non-null :test)}
+                                 :questions {:type (list :question)}}}
+           :test     {
+                      :description "Tests schema."
+                      :fields {
+                               :id           {:type (non-null ID)}
+                               :title        {:type (non-null String)}
+                               :user_id      {:type Int}
+                               :description  {:type (non-null String)}
+                               :instructions {:type String}
+                               :tags         {:type String}
+                               :created_at   {:type String}
+                               :level        {:type Int}
+                               :active       {:type Boolean}
+                               :shared       {:type Boolean}}}
+           :ided_question {
+                           :description "Question with ID"
+                           :fields {
+                                    :id  {:type (non-null ID)}
+                                    :question {:type :question}}}
+           :question {
+                      :description "Question schema."
+                      :fields {
+                               :id            {:type (non-null ID)}
+                               :question      {:type (non-null String)}
+                               :qtype         {:type Int}
+                               :hint          {:type String}
+                               :explanation   {:type String}
+                               :ordnen        {:type Int}
+                               :user_id       {:type Int}
+                               :created_at    {:type String}
+                               :active        {:type Boolean}
+                               :reviewed_fact {:type Boolean}
+                               :reviewed_lang {:type Boolean}
+                               :answers       {:type (list :answer)}}}
+           :answer {
+                      :description "Answer schema."
+                      :fields {
+                               :id        {:type (non-null ID)}
+                               :answer    {:type (non-null String)}
+                               :ordnen    {:type Int}
+                               :correct   {:type Boolean}
+                               :active    {:type Boolean}
+                               }}}
+ :queries {
+           :test_by_id {:type        (non-null :test)
+                        :description "Access a test by its unique id, if it exists."
+                        :args        {:id {:type ID}}
+                        :resolve     :test-by-id}
+           :questions_by_test {:type        (non-null :fulltest)
+                               :description "Access a test's questions by its unique id, if it exists."
+                               :args        {:id {:type ID}}
+                               :resolve     :questions-by-test}}
+ :mutations {
+             :add_question {:type :question
+                            :description "Create new question."
+                            :args {:question    {:type (non-null String)}
+                                   :hint        {:type String}
+                                   :explanation {:type String}
+                                   :qtype       {:type (non-null Int)
+                                                 :description "Type of question"}
+                                   :test_id     {:type Int}
+                                   :user_id     {:type (non-null Int)}
+                                   }
+                            :resolve :add-question}}
+}

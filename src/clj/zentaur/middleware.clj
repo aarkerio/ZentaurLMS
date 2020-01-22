@@ -60,7 +60,7 @@
 (defn open-gates [request]
     true)
 
-(def rules [{:pattern #"^/admin.*"
+(def rules [{:pattern #"^\/admin.*"
              :handler admin-access
              :redirect "/notauthorized"},
             {:pattern #"^\/vclass.*"
@@ -69,7 +69,7 @@
             {:pattern #"^\/api.*"
              :handler open-gates
              :redirect "/notauthorized"},
-            {:pattern #"^/user.*"
+            {:pattern #"^\/user.*"
              :handler authenticated?}])
 ;; AUTH CONFIG ENDS
 
@@ -83,10 +83,10 @@
   "Assembling all the pieces of he middleware"
   [handler]
   (-> ((:middleware defaults) handler)  ;; from env/../dev_middleware.clj
-      ;; (wrap-access-rules {:rules rules :on-error on-error})
-      ;; wrap-auth
-      ;; wrap-flash
-      ;; (wrap-session)
+      (wrap-access-rules {:rules rules :on-error on-error})
+      wrap-auth
+      wrap-flash
+      (wrap-session)
       (wrap-defaults
       (-> site-defaults
          (assoc-in [:security :anti-forgery] false)

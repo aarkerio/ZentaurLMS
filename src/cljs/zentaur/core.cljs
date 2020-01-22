@@ -103,5 +103,5 @@
       (s/includes? current_url "uploads/process") (uploads/load-process)
       (s/includes? current_url "admin/posts")     (posts/load-posts)
       (= current_url "/admin/posts/new")          (.log js/console (str ">>> test-formtest(new-post-validation)"))
-      (= current_url "/admin/tests")              (load-tests)
+      (= current_url "/vclass/tests")              (load-tests)
       :else "F")))
