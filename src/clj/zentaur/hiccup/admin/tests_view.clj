@@ -7,7 +7,7 @@
             [zentaur.hiccup.helpers-view :as hv]))
 
 (defn formatted-test [{:keys [title created_at tags published id subject]}]
-  (let [formatted-date (hv/format-date created_at true)]
+  (let [formatted-date (hv/format-date created_at)]
   [:tr
    [:td [:a {:href (str "/vclass/tests/edit/" id)} [:img {:src "/img/icon_edit_test.png" :alt "Bearbeiten"  :title "Bearbeiten"}]]]
    [:td title]

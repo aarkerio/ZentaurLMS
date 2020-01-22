@@ -52,11 +52,28 @@
       (do (js/alert "Please, complete the form!")
           false))))
 
-(defn show-new-test-form []
+(defn show-new-test-form
+  "Called from zentaur.hiccup.admin.tests-view"
+  []
   (if (and js/document
            (.-getElementById js/document))
     (when-let [test-form (.getElementById js/document "submit-test-form")]
       (set! (.-onsubmit test-form) validate-minimal-test))))
+
+(defn validate-comment-values []
+  (let [body  (.getElementById js/document "body")]
+    (if (> (count (.-value body)) 0)
+      true
+      (do (js/alert "Ups, du musst etwas schreiben.")
+          false))))
+
+(defn validate-comment-form
+  "Called in zentaur.hiccup.posts-view"
+  []
+  (if (and js/document
+           (.-getElementById js/document))
+    (when-let [comment-form (.getElementById js/document "comment-textarea")]
+      (set! (.-onsubmit comment-form) validate-comment-values))))
 
 (defn- load-tests []
   (when-let [hform (gdom/getElement "button-show-div")]  ;; versteckte Taste. Nur im Bearbeitungsmodus
@@ -102,6 +119,7 @@
       (s/includes? current_url "admin/users")     (users/load-users)
       (s/includes? current_url "uploads/process") (uploads/load-process)
       (s/includes? current_url "admin/posts")     (posts/load-posts)
+      (s/includes? current_url "/posts/view/")    (validate-comment-form)
       (= current_url "/admin/posts/new")          (.log js/console (str ">>> test-formtest(new-post-validation)"))
-      (= current_url "/vclass/tests")              (load-tests)
+      (= current_url "/vclass/tests")             (load-tests)
       :else "F")))
