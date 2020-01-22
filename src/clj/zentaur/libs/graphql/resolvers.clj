@@ -4,8 +4,8 @@
             [clojure.tools.logging :as log]
             [com.walmartlabs.lacinia.resolve :refer [resolve-as]]
             [zentaur.db.core :as db]
-            [zentaur.libs.graphql.helpers :as helpers]
-            [zentaur.libs.graphql.validations.validations-test :as val-test]))
+            [zentaur.libs.graphql.validations.validations-test :as val-test]
+            [zentaur.libs.helpers :as h]))
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
@@ -19,9 +19,8 @@
   "Get the answers for each question"
   [question]
   (let [pre-answers       (db/get-answers {:question-id (:id question)})
-        answers           (map #(update % :id str) pre-answers)
-        question-updated  (update question :created_at #(helpers/format-time %))]
-    (assoc question-updated :answers answers)))
+        answers           (map #(update % :id str) pre-answers)]
+    (assoc question :answers answers)))
 
 (defn- ^:private attach-questions
   "Get the questions for the test"
@@ -80,7 +79,7 @@
 
 (defn resolver-map
   "Public. Match resolvers."
-  [component]
+  []
   {:test-by-id (partial resolve-test-by-id)
    :questions-by-test (partial resolver-get-questions-by-test)
    :add-question (partial create-question!)})

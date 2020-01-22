@@ -53,15 +53,15 @@
     (db/admin-get-posts {:user-id user-id}))
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
-(defn save-post! [params]
+(defn save-post! [{:keys [params identity]}]
   (if-let [errors (validate-post params)]
     {:flash errors}
     (let [slug      (slugify (:title params))
           published (contains? params :published)
           discution (contains? params :discution)
-          int_ui    (Integer/parseInt (:user_id params))]
-      (db/save-post! (assoc params :published published :discution discution :user_id int_ui :slug slug))
-      {})))
+          user_id   (:id identity)]
+      (db/save-post! (assoc params :published published :discution discution :user_id user_id :slug slug))
+      {:ok true})))
 
 (defn update-post! [params]
   {:updated_at true})

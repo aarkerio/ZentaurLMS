@@ -6,8 +6,8 @@
             [zentaur.hiccup.layout-view :as layout]
             [zentaur.hiccup.posts-view :as posts-view]
             [zentaur.hiccup.admin.posts-view :as admin-posts-view]
-            [zentaur.models.posts :as model-post]
-            [zentaur.libs.helpers :as h]))
+            [zentaur.libs.helpers :as h]
+            [zentaur.models.posts :as model-post]))
 
 (def msg-erfolg "Veränderung wurden erfolgreich gespeichert")
 (def msg-fehler "Etwas ging schief")

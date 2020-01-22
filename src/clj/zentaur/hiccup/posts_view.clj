@@ -1,17 +1,17 @@
 (ns zentaur.hiccup.posts-view
   (:require [clojure.tools.logging :as log]
-            [hiccup.form :as f]
             [hiccup.core :as c]
+            [hiccup.form :as f]
             [hiccup.element :refer [link-to]]
             [markdown.core :as md]
-            [zentaur.hiccup.helpers-view :as helper]))
+            [zentaur.hiccup.helpers-view :as hv]))
 
 (defn format-post
   ([post] (format-post post true))
   ([post view]
    (let [div-blog [:div {:class "blog-post"} [:h2 {:class "blog-post-title"} (:title post)]
-                    [:p {:class "blog-post-meta"} (helper/format-date (:created_at post)) " " [:a {:href "/user/"} (:uname post)]]
-                    [:p {} (md/md-to-html-string (:body post))]]
+                    [:p {:class "blog-post-meta"} (hv/format-date (:created_at post)) " " [:a {:href (str "/user/" (:uname post))} (:uname post)]]
+                    [:p {:class "blog-body"} (md/md-to-html-string (:body post))]]
          view-link  (cond view (conj div-blog [:p [:a {:href (str "/posts/view/" (:id post))} "View"]]))]
      (if (= view true)
        view-link
