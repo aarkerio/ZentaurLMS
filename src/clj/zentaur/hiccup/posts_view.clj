@@ -9,9 +9,10 @@
 (defn format-post
   ([post] (format-post post true))
   ([post view]
-   (let [div-blog [:div {:class "blog-post"} [:h2 {:class "blog-post-title"} (:title post)]
-                    [:p {:class "blog-post-meta"} (hv/format-date (:created_at post)) " " [:a {:href (str "/user/" (:uname post))} (:uname post)]]
-                    [:p {:class "blog-body"} (md/md-to-html-string (:body post))]]
+   (let [div-blog   [:div {:class "blog-post"} [:h2 {:class "blog-post-title"} (:title post)]
+                      [:div {:class "blog-post-meta"} (hv/format-date (:created_at post)) " " [:a {:href (str "/user/" (:uname post))} (:uname post)]]
+                      [:div {:class "blog-body"} (md/md-to-html-string (:body post))]
+                      [:div {:class "blog-tags"} (:tags post)]]
          view-link  (cond view (conj div-blog [:p [:a {:href (str "/posts/view/" (:id post))} "View"]]))]
      (if (= view true)
        view-link

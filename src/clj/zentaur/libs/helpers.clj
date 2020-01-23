@@ -1,5 +1,6 @@
 (ns zentaur.libs.helpers
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.string :as string]
+            [clojure.tools.logging :as log]
             [java-time :as time]
             [ring.util.codec :as c]))
 
@@ -10,8 +11,15 @@
   "Paginate the incoming collection/length"
   (fn [coll? _ _] (sequential? coll?)))
 
-(defn update-booleans [mymap keys-vector]
+(defn update-booleans
+  "Change true/false string for booleans"
+  [mymap keys-vector]
   (reduce #(assoc %1 %2  (if (= (%1 %2) "true") true false)) mymap keys-vector))
+
+(defn map-to-query-string
+  "Convert a map to a string"
+  [m]
+  (string/join " " (map (fn [[k v]] (str (name k) " " v)) m)))
 
 (defmethod paginate true [coll count-per-page page]
   (paginate (count coll) count-per-page page))

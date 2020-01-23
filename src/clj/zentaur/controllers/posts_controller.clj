@@ -1,6 +1,5 @@
 (ns ^{:doc "Posts controller"} zentaur.controllers.posts-controller
-  (:require [clojure.string :as str]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [ring.util.http-response :as response]
             [zentaur.controllers.base-controller :as basec]
             [zentaur.hiccup.layout-view :as layout]
@@ -51,9 +50,6 @@
 
 ;;;;;;;;;;;;;;;;     ADMIN SECTION      ;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn map-to-query-string [m]
-  (str/join " " (map (fn [[k v]] (str (name k) " " v)) m)))
-
 (defn admin-posts
   "GET /admin/posts"
   [request]
@@ -68,7 +64,7 @@
   [params]
   (let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))]
     (if (contains? errors :flash)
-      (assoc (response/found "/admin/posts/new") :flash (map-to-query-string errors))
+      (assoc (response/found "/admin/posts/new") :flash (h/map-to-query-string errors))
       (assoc (response/found "/admin/posts") :flash "Beiträge wurden erfolgreich gespeichert"))))
 
 (defn show-post
@@ -84,10 +80,9 @@
 (defn update-post
   "POST /admin/posts/update"
   [{:keys [params]}]
-  (log/info (str ">>> PARAM >>>>> " params))
   (let [errors (model-post/update-post! (dissoc params :__anti-forgery-token :button-save))]
     (if (contains? errors :flash)
-      (assoc (response/found "/admin/posts/new") :flash (map-to-query-string errors))
+      (assoc (response/found (str "/admin/posts/" (:id params))) :flash (h/map-to-query-string errors))
       (assoc (response/found "/admin/posts") :flash "Beiträge wurden erfolgreich gespeichert"))))
 
 

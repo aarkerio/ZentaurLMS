@@ -14,7 +14,7 @@
 
 /*************************** POSTS ***/
 
--- :name save-message! :<! :n
+-- :name save-message! :<! :1
 -- :doc creates a new message record
 INSERT INTO comments
 (title, body, tags, published, discution, slug)
@@ -22,7 +22,7 @@ VALUES (:title, :body, :tags, :published, :discution, :slug) RETURNING id
 
 -- :name get-posts :? :*
 -- :doc retrieve array posts given the id.
-SELECT p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
+SELECT p.id, p.title, p.body, p.tags, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
 FROM posts p INNER JOIN users u
 ON p.user_id = u.id
 WHERE p.published = true
@@ -84,7 +84,12 @@ WHERE
     p.user_id = :user-id
 ORDER BY p.id DESC
 
-/*******************  UPLOADS   ***/
+-- /*******************  IMAGES   ***/
+-- :name save-image! :<! :1
+-- :doc creates a new image record
+INSERT INTO images (file, user_id) VALUES (:file, :user-id) RETURNING id
+
+-- /*******************  UPLOADS   ***/
 
 -- :name save-upload! :<!
 -- :doc creates a new upload record

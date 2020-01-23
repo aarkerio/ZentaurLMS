@@ -1,8 +1,7 @@
 (ns zentaur.hiccup.admin.posts-view
-  (:require [hiccup.form :as f]
-            [hiccup.core :as c]
-            [clojure.tools.logging :as log]
-            [hiccup.element :only (link-to)]))
+  (:require [clojure.tools.logging :as log]
+            [hiccup.form :as f]
+            [hiccup.core :as c]))
 
 (defn formatted-post [{:keys [title created_at tags discution published id]}]
   [:tr
@@ -31,10 +30,15 @@
           [:tbody formatted-posts]]]
       [:nav {:class "blog-pagination"}
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
-        [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
+       [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
+
+(defn image-icon []
+  [:div {:style "text-align:right;padding:8px;float:right;width:30%;"}
+        [:img {:src "/img/icon_open_window.png" :alt "Images" :title "images" :id "open_images"}]])
 
 (defn new [base]
   [:div {:id "cont"}
+   (image-icon)
    [:form {:action "/admin/posts" :method "post" :id "new-post-form"}
     (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
     [:div (f/text-field {:maxlength 150 :size 90 :placeholder "Title"} "title")]
@@ -46,6 +50,7 @@
 
 (defn edit [base post]
   [:div {:id "cont"}
+   (image-icon)
    [:form {:action "/admin/posts/update" :method "post" :id "edit-post-form"}
     (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
     (f/hidden-field { :value (:id post)} "id")
