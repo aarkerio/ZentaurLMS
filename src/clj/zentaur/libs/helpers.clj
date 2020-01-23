@@ -10,6 +10,9 @@
   "Paginate the incoming collection/length"
   (fn [coll? _ _] (sequential? coll?)))
 
+(defn update-booleans [mymap keys-vector]
+  (reduce #(assoc %1 %2  (if (= (%1 %2) "true") true false)) mymap keys-vector))
+
 (defmethod paginate true [coll count-per-page page]
   (paginate (count coll) count-per-page page))
 

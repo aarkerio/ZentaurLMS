@@ -74,20 +74,18 @@
 (defn show-post
   "GET. /admin/posts/:id"
   [request]
-  (log/info (str ">>> PARAM >>>>> " request))
   (let [base     (basec/set-vars request)
         params   (:path-params request)
-        _        (log/info (str ">>> PARAMS >>>>> " params))
         post-id  (Integer/parseInt (:id params))
-        _        (log/info (str ">>> POSTS-ID >>>>> " post-id))
         post     (model-post/get-post post-id)]
     (basec/parser (layout/application
                    (merge base {:title "Edit Post" :contents (admin-posts-view/edit base post)})))))
 
 (defn update-post
   "POST /admin/posts/update"
-  [params]
-  (let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))]
+  [{:keys [params]}]
+  (log/info (str ">>> PARAM >>>>> " params))
+  (let [errors (model-post/update-post! (dissoc params :__anti-forgery-token :button-save))]
     (if (contains? errors :flash)
       (assoc (response/found "/admin/posts/new") :flash (map-to-query-string errors))
       (assoc (response/found "/admin/posts") :flash "Beiträge wurden erfolgreich gespeichert"))))

@@ -39,16 +39,16 @@ WHERE p.published = true AND p.id = :id
 -- :doc retrieve all subjects.
 SELECT * FROM subjects ORDER BY subject ASC
 
--- :name save-post! :! :n
+-- :name save-post! :! :1
 -- :doc creates a new post record
 INSERT INTO posts
 (title, body, published, discution, tags, user_id, slug)
 VALUES (:title, :body, :published, :discution, :tags, :user_id, :slug) RETURNING id
 
--- :name update-post! :! :n
+-- :name update-post! :! :1
 -- :doc update an existing post record
 UPDATE posts
-SET title = :title, body = :body, tags = :tags, active = :active, discution = :discution
+SET title = :title, body = :body, tags = :tags, published = :published, discution = :discution
 WHERE id = :id
 
 -- :name toggle-post! :! :n

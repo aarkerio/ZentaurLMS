@@ -67,7 +67,13 @@
       {:ok true})))
 
 (defn update-post! [params]
-  {:updated_at true})
+  (log/info (str ">>> PARAMS UPDATE  >>>>> " params))
+  (let [first-step   (h/update-booleans params [:published :discution])
+        second-step  (update first-step :id #(Integer/parseInt %))
+        _            (log/info (str ">>> second-step second-step >>>>> " second-step))
+        ]
+    (db/update-post! params)
+    {:updated_at true}))
 
 (defn toggle [{:keys [id published]}]
   (let [new-state (if (= published "true") false true)
