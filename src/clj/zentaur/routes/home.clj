@@ -47,11 +47,13 @@
 
 (def admin-routes
   ["/admin"
-   ["/posts"                   {:get  cont-posts/admin-posts :post cont-posts/save-post}]
+   ["/posts"                   {:get cont-posts/admin-posts :post cont-posts/save-post}]
    ["/posts/delete/:id"        {:delete cont-posts/delete-post}]
+   ["/posts/edit/:id"          {:get cont-posts/show-post}]
+   ["/posts/update"            {:post cont-posts/update-post}]
    ["/posts/published/:id/:published" {:get cont-posts/toggle-published}]
-   ["/posts/new"               {:get  cont-posts/admin-new}]
-   ["/users"                   {:get  cont-users/admin-users :post cont-users/create-user}]])
+   ["/posts/new"               {:get cont-posts/admin-new}]
+   ["/users"                   {:get cont-users/admin-users :post cont-users/create-user}]])
 
 (defn home-routes []
   [""

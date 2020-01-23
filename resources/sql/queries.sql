@@ -30,7 +30,7 @@ ORDER BY p.id DESC LIMIT 10
 
 -- :name get-post :? :1
 -- :doc retrieve a post given the id.
-SELECT p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
+SELECT p.id, p.title, p.tags, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
 FROM posts p INNER JOIN users u
 ON p.user_id = u.id
 WHERE p.published = true AND p.id = :id

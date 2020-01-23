@@ -33,14 +33,24 @@
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
         [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
 
-(defn new [base user-id]
+(defn new [base]
   [:div {:id "cont"}
-             [:form {:action "/admin/posts" :method "post" :id "new-post-form"}
-                (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
-                [:div (f/text-field {:maxlength 150 :size 90 :placeholder "Title"} "title")]
-                [:div (f/text-field {:maxlength 150 :size 70 :placeholder "tags"} "tags")]
-                [:div (f/text-area {:cols 90 :rows 20} "body")]
-                [:div (f/label "published" "Published") (f/check-box {:title "Publish this" :value "1"} "published")]
-                [:div (f/label "discution" "Discution") (f/check-box {:title "Active comments" :value "1"} "discution")]
-                (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Einrichen")]])
+   [:form {:action "/admin/posts" :method "post" :id "new-post-form"}
+    (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
+    [:div (f/text-field {:maxlength 150 :size 90 :placeholder "Title"} "title")]
+    [:div (f/text-field {:maxlength 150 :size 70 :placeholder "tags"} "tags")]
+    [:div (f/text-area {:cols 90 :rows 20} "body")]
+    [:div (f/label "published" "Published") (f/check-box {:title "Publish this" :value "1"} "published")]
+    [:div (f/label "discution" "Discution") (f/check-box {:title "Active comments" :value "1"} "discution")]
+    (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Einrichen")]])
 
+(defn edit [base post]
+  [:div {:id "cont"}
+   [:form {:action "/admin/posts/update" :method "post" :id "edit-post-form"}
+    (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
+    [:div (f/text-field {:maxlength 150 :size 90 :placeholder "Title" :value (:title post)} "title")]
+    [:div (f/text-field {:maxlength 150 :size 70 :placeholder "tags" :value (:tags post)} "tags")]
+    [:div (f/text-area {:cols 90 :rows 20} "body" (:body post))]
+    [:div (f/label "published" "Published") (f/check-box {:title "Publish this"} "published" (:published post))]
+    [:div (f/label "discution" "Discution") (f/check-box {:title "Active comments"} "discution" (:discution post))]
+    (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Einrichen")]])

@@ -44,16 +44,19 @@
   (db/get-comments {:id id}))
 
 (defn save-comment! [params]
+  "POST. /posts/savecomment"
   (if-let [errors (validate-post params)]
       (db/save-comment params)))
 
 ;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
 
-(defn admin-get-posts [user-id]
-    (db/admin-get-posts {:user-id user-id}))
+(defn admin-get-posts
+  [user-id]
+   (db/admin-get-posts {:user-id user-id}))
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
-(defn save-post! [{:keys [params identity]}]
+(defn save-post!
+  [{:keys [params identity]}]
   (if-let [errors (validate-post params)]
     {:flash errors}
     (let [slug      (slugify (:title params))
