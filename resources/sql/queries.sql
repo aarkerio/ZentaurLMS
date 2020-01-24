@@ -84,10 +84,22 @@ WHERE
     p.user_id = :user-id
 ORDER BY p.id DESC
 
--- /*******************  IMAGES   ***/
+-- /*******************  USER FILES   ***/
+
+-- :name get-files :? :n
+-- :doc retrieve files owned per user.
+SELECT * FROM files WHERE user_id = :user-id AND archive = false
+ORDER BY id DESC LIMIT 30
+
 -- :name save-image! :<! :1
--- :doc creates a new image record
-INSERT INTO images (file, user_id) VALUES (:file, :user-id) RETURNING id
+-- :doc creates a new file record
+INSERT INTO file (file, user_id, image, identifier) VALUES
+(:file, :user-id, :image, :identifier) RETURNING id
+
+-- :name toggle-file! :! :1
+-- :doc update an existing file record
+UPDATE file SET archive = :archive
+WHERE id = :id
 
 -- /*******************  UPLOADS   ***/
 

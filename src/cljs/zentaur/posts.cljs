@@ -69,7 +69,7 @@
     (when-let [open-image (.getElementById js/document "open_images")]
       (set! (.-onclick open-image) (fn []
                                      (.log js/console (str ">>> VALUE kjkjkljkl>>>>> "  ))
-                                     (.open js/window "/vclass/images", "popUpWindow",
+                                     (.open js/window "/vclass/files/img", "popUpWindow",
                                             "height=400,width=300,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=no")
                                     )))))
 

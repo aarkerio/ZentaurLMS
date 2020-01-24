@@ -7,7 +7,7 @@
             [zentaur.hiccup.admin.tests-view :as tests-view]
             [ring.util.http-response :as response]))
 
-(defn admin-index
+(defn index
   "GET /vclass/tests. Display user's tests. Html response."
   [request]
   (let [base     (basec/set-vars request)
@@ -17,7 +17,7 @@
     (basec/parser
      (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base subjects)})))))
 
-(defn admin-edit
+(defn edit
   "GET /vclass/tests/edit/:id. Html response."
   [request]
   (let [base     (basec/set-vars request)
