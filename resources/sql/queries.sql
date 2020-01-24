@@ -91,10 +91,18 @@ ORDER BY p.id DESC
 SELECT * FROM files WHERE user_id = :user-id AND archive = false
 ORDER BY id DESC LIMIT 30
 
--- :name save-image! :<! :1
+-- :name get-file :? :1
+-- :doc retrieve one file owned per user.
+SELECT * FROM files WHERE user_id = :user-id AND identifier = :identifier
+
+-- :name get-file-by-identifier :? :1
+-- :doc Check identifier doesn't exist.
+SELECT id FROM files WHERE identifier = :identifier
+
+-- :name save-file! :<! :1
 -- :doc creates a new file record
-INSERT INTO file (file, user_id, image, identifier) VALUES
-(:file, :user-id, :image, :identifier) RETURNING id
+INSERT INTO files (file, user_id, img, identifier) VALUES
+(:file, :user-id, :img, :identifier) RETURNING id
 
 -- :name toggle-file! :! :1
 -- :doc update an existing file record

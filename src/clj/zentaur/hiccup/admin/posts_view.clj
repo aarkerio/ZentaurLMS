@@ -5,18 +5,18 @@
 
 (defn formatted-post [{:keys [title created_at tags discution published id]}]
   [:tr
-    [:td [:a {:href (str "/admin/posts/edit/" id)}  "Bearbeiten"]]
+    [:td [:a {:href (str "/admin/posts/edit/" id)} [:img {:src "/img/icon_edit_test.png" :alt "Bearbeiten"  :title "Bearbeiten"}]]]
     [:td title]
     [:td tags]
     [:td [:a {:href (str "/admin/posts/published/" id "/" published)}  published]]
     [:td created_at]
-    [:td [:a {:href (str "/admin/posts/delete/" id)}  "Löschen"]]])
+    [:td [:a {:onclick (str "zentaur.posts.deletepost("id")")} [:img {:src "/img/icon_delete.png" :alt "Delete post" :title "Delete post"}]]]])
 
 (defn index [posts]
   (let [formatted-posts (doall (for [post posts]
                                  (formatted-post post)))]
     [:div {:id "cont"}
-      [:div {:id "button-neuer"} [:a {:class "btn btn-outline-primary" :href "/admin/posts/new"} "Neuer Beitrag"]]
+      [:div {:id "button-post-neuer"} [:a {:class "btn btn-outline-primary-green" :href "/admin/posts/new"} "Neuer Beitrag"]]
       [:div {:id "content"}
         [:table {:class "some-table-class"}
           [:thead
@@ -29,8 +29,8 @@
               [:th "Delete"]]]
           [:tbody formatted-posts]]]
       [:nav {:class "blog-pagination"}
-        [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
-       [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
+        [:a {:class "btn btn-outline-primary-green" :href "#"} "Older"]
+       [:a {:class "btn btn-outline-primary-green disabled" :href "#"} "Newer"]]]))
 
 (defn image-icon []
   [:div {:style "text-align:right;padding:8px;float:right;width:30%;"}

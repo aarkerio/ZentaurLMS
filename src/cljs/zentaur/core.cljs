@@ -85,7 +85,7 @@
 
 (defn delete-test [test-id]
   (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-    (DELETE "/admin/tests/deletetest"
+    (DELETE "/vclass/tests/deletetest"
         {:params  {:test-id test-id}
          :headers {"x-csrf-token" csrf-field}
          :handler (fn [] (set! js/window.location.href "/admin/tests"))

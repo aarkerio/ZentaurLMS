@@ -1,5 +1,6 @@
 (ns zentaur.libs.helpers
-  (:require [clojure.string :as string]
+  (:require [clojure.java.io :as io]
+            [clojure.string :as string]
             [clojure.tools.logging :as log]
             [java-time :as time]
             [ring.util.codec :as c]))
@@ -10,6 +11,11 @@
 (defmulti paginate
   "Paginate the incoming collection/length"
   (fn [coll? _ _] (sequential? coll?)))
+
+(defn copy-file
+  "Copy a file"
+  [source-path dest-path]
+  (io/copy (io/file source-path) (io/file dest-path)))
 
 (defn update-booleans
   "Change true/false string for booleans"

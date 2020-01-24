@@ -27,7 +27,7 @@
    ["/tests/exporttestpdf/:id" {:get  cont-export/export-test-pdf}]
    ["/tests/exporttestodf/:id" {:get  cont-export/export-test-odf}]
    ["/files/:type"             {:get  cont-files/index}]
-   ["/files/"                  {:post cont-files/upload}]
+   ["/files"                   {:post cont-files/upload}]
    ["/files/archive/:identif"  {:get  cont-files/archive}]
    ["/files/download/:identif" {:post cont-files/download}]
    ["/uploads"                 {:get  cont-uploads/index :post cont-uploads/upload-file}]

@@ -4,17 +4,11 @@
             [hiccup.form :as f]
             [zentaur.hiccup.helpers-view :as hv]))
 
-(defn format-post
-  ([post] (format-post post true))
-  ([post view]
-   (let [div-blog   [:div {:class "blog-post"} [:h2 {:class "blog-post-title"} (:title post)]
-                      [:div {:class "blog-post-meta"} (hv/format-date (:created_at post)) " " [:a {:href (str "/user/" (:uname post))} (:uname post)]]
-                      [:div {:class "blog-body"} (md/md-to-html-string (:body post))]
-                      [:div {:class "blog-tags"} (:tags post)]]
-         view-link  (cond view (conj div-blog [:p [:a {:href (str "/posts/view/" (:id post))} "View"]]))]
-     (if (= view true)
-       view-link
-       div-blog))))
+(defn format-file
+  [file]
+  (let [id (:id file)]
+    [:div {:class "blog-post"} (:file file) " " (hv/format-date (:created_at file)) " "
+     [:a {:onclick (str "zentaur.files.deletefile("id")")} [:img {:src "/img/icon_delete.png" :alt "Delete file" :title "Delete file"}]]]))
 
 (defn format-comment [comment]
     [:div {:class "user_comments"}
@@ -22,14 +16,19 @@
         [:div {:style "font-size:8pt;font-weight:bold;"} (str (:last_name comment) " wrote: ")]
         [:div {:class "font"} (:comment comment)]])
 
-(defn index [posts]
-  (let [formatted-posts (doall (for [post posts]
-                                 (format-post post)))]
+(defn index [files csrf-field]
+  (let [formatted-files (doall (for [file files]
+                                 (format-file file)))]
     [:div {:id "cont"}
-      [:div {:id "content"} formatted-posts]
+     (f/form-to {:enctype "multipart/form-data" :class "form-inline my-2 my-lg-0"}
+                [:post "/vclass/files"]
+      (f/hidden-field {:value csrf-field} "__anti-forgery-token")
+      [:div.div-separator (f/file-upload {:placeholder "Upload image"} "upload-image")]
+      (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern"))
+      [:div {:id "content"} formatted-files]
       [:nav {:class "blog-pagination"}
-        [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
-        [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
+        [:a {:class "btn btn-outline-primary-green" :href "#"} "Older"]
+        [:a {:class "btn btn-outline-primary-green disabled" :href "#"} "Newer"]]]))
 
 (defn comment-form [base id]
   (when-let [email (-> base :identity :email)]
@@ -38,15 +37,4 @@
                 (f/hidden-field {:value id} "post_id")
                 [:div (f/text-area {:cols 90 :rows 5} "comment-textarea")]
                 (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]))
-
-(defn show [post base comments]
-  (let [formatted-post (format-post post false)
-        formatted-comments (for [comment comments]
-                             (format-comment comment))
-        comment-form (comment-form base (:id post))]
-    [:div {:id "cont"}
-     [:div {:id "content"} formatted-post]
-     [:div {:id "comments"} formatted-comments]
-     [:div {:id "comment-form"} comment-form]]))
-
 
