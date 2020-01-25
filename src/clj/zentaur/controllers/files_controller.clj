@@ -3,18 +3,18 @@
             [ring.util.http-response :as response]
             [zentaur.models.files :as model-files]
             [zentaur.controllers.base-controller :as basec]
-            [zentaur.hiccup.layout-view :as layout]
+            [zentaur.hiccup.application-layout :as layout]
+            [zentaur.hiccup.basic-layout :as blay]
             [zentaur.hiccup.files-view :as files-view]))
 
 (defn index
   "GET. /vclass/files/:type"
   [request]
-  (let [base       (basec/set-vars request)
-        csrf-field (:csrf-field base)
-        user-id    (-> request :entity :id)
-        files      (model-files/get-files user-id)]
+  (let [base     (basec/set-vars request)
+        user-id  (-> base :identity :id)
+        files    (model-files/get-files user-id)]
     (basec/parser
-     (layout/application (merge base {:title "My Files" :contents (files-view/index files csrf-field) })))))
+     (blay/application (merge base {:title "My Files" :contents (files-view/index files base)})))))
 
 (defn upload
   "POST. /vclass/files/uploads"

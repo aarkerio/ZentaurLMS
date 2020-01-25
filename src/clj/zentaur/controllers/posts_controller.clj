@@ -2,9 +2,9 @@
   (:require [clojure.tools.logging :as log]
             [ring.util.http-response :as response]
             [zentaur.controllers.base-controller :as basec]
-            [zentaur.hiccup.layout-view :as layout]
-            [zentaur.hiccup.posts-view :as posts-view]
             [zentaur.hiccup.admin.posts-view :as admin-posts-view]
+            [zentaur.hiccup.application-layout :as layout]
+            [zentaur.hiccup.posts-view :as posts-view]
             [zentaur.libs.helpers :as h]
             [zentaur.models.posts :as model-post]))
 

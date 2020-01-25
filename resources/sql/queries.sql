@@ -86,7 +86,7 @@ ORDER BY p.id DESC
 
 -- /*******************  USER FILES   ***/
 
--- :name get-files :? :n
+-- :name get-files :? :*
 -- :doc retrieve files owned per user.
 SELECT * FROM files WHERE user_id = :user-id AND archive = false
 ORDER BY id DESC LIMIT 30

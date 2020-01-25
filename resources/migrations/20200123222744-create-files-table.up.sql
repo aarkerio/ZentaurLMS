@@ -7,5 +7,6 @@ CREATE TABLE files (
    img boolean NOT NULL DEFAULT false,
    archive boolean NOT NULL DEFAULT false,
    identifier varchar(250) NOT NULL,
-   user_id int REFERENCES users(id) ON DELETE CASCADE
+   user_id int REFERENCES users(id) ON DELETE CASCADE,
+   created_at timestamp(0) with time zone NOT NULL DEFAULT now()
 );

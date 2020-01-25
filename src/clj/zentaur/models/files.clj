@@ -19,8 +19,8 @@
 ;;    VALIDATIONS
 ;;;;;;;;;;;;;;;;;;;;;
 (def file-schema
-  [[:identifier st/required st/string]
-   [:user-id  st/required st/integer]
+  [[:identifier st/required st/string {:body "identifier field is obligatory"}]
+   [:user-id  st/required st/integer {:body "user-id field is obligatory"}]
    [:file
     st/required
     st/string
@@ -45,9 +45,8 @@
 
 (defn save-file! [params]
   (if-let [errors (validate-file params)]
+    {:errors errors}
     (db/save-file! params)))
-
-(defn long-str [& strings] (clojure.string/join "\n" strings))
 
 (defn upload-file [params user-id uname]
   (let [root-path    (.getCanonicalPath (io/file "."))
@@ -60,11 +59,14 @@
         unique-name  (str rand7 "-" filename)
         identifier   (str rand7 "-" (dgt/sha-256 (io/as-file tempfile)))
         final-path   (str root-path "/resources/public/files/" uname "/" unique-name)
-        _            (io/make-parents final-path)]
+        _            (io/make-parents final-path)
+        db-row       (assoc {} :file unique-name :user-id user-id :identifier identifier :img true)
+        _            (log/info (str ">>> DB-ROW >>>>> " db-row))
+        ]
     (if-not (db/get-file-by-identifier {:identifier identifier})
       (do (log/info (str ">>> tempfile >>>>> " tempfile "   und final-path >>>>>" final-path))
           (h/copy-file tempfile final-path)
-          (save-file! (assoc {} :file unique-name :user-id user-id :identifier identifier :img true)))
+          (save-file! db-row))
       false)))
 
 (defn- download-without-db

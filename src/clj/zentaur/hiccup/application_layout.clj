@@ -1,7 +1,7 @@
-(ns zentaur.hiccup.layout-view
-  (:require [zentaur.hiccup.helpers-view :as helpers]
-            [hiccup.form :as f]
-            [hiccup.page :refer [html5 include-css include-js]]))
+(ns zentaur.hiccup.application-layout
+  (:require [hiccup.form :as f]
+            [hiccup.page :refer [html5 include-css include-js]]
+            [zentaur.hiccup.helpers-view :as helpers]))
 
 (defn- ^{:private true} login-form
   "Html helper"

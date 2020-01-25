@@ -123,3 +123,11 @@
       (= current_url "/admin/posts/new")          (.log js/console (str ">>> test-formtest(new-post-validation)"))
       (= current_url "/vclass/tests")             (load-tests)
       :else "F")))
+
+(defn copytoclipboard [val]
+  (let [elm (.createElement js/document "textarea")]
+    (set! (.-value elm) val)
+    (.appendChild js/document.body elm)
+    (.select elm)
+    (.execCommand js/document "copy")
+    (.removeChild js/document.body elm)))

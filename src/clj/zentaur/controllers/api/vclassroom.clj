@@ -3,7 +3,7 @@
             [clojure.tools.logging :as log]
             [zentaur.controllers.base-controller :as basec]
             [zentaur.models.tests :as model-test]
-            [zentaur.hiccup.layout-view :as layout]
+            [zentaur.hiccup.application-layout :as layout]
             [zentaur.hiccup.admin.tests-view :as tests-view]
             [ring.util.http-response :as response]))
 

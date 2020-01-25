@@ -3,7 +3,7 @@
             [ring.util.http-response :as response]
             [zentaur.models.uploads :as model-upload]
             [zentaur.controllers.base-controller :as basec]
-            [zentaur.hiccup.layout-view :as layout]
+            [zentaur.hiccup.application-layout :as layout]
             [zentaur.hiccup.admin.uploads-view :as admin-uploads-view]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;     ADMIN FUNCTIONS    ;;;;;;;;;;;;;;;;;;;;
