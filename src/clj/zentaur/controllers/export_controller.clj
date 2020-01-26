@@ -5,15 +5,18 @@
 
 
 (defn export-test-pdf
-  "GET /admin/tests/exporttestpdf/:id. Create PDF."
-  [{:keys [params]}]
+  "GET /vclass/tests/exporttestpdf/:id. Create PDF."
+  [{:keys [params identity]}]
   (let [test-id  (:id params)
-        user-id  (:user-id params)]
-    ;; (model-export/export-pdf test-id user-id)
-    ))
+        user-id  (:id identity)
+        pdf-path (model-export/export-pdf test-id user-id)]
+        file     (slurp pdf-path)
+    (log/info (str ">>> PARAM DOC PDF >>>>> " file))
+    (response/content-type (response/ok file) "application/pdf")
+     ))
 
 (defn export-test-odf
-  "GET /admin/tests/exporttestodf/:id. Create PDF."
+  "GET /vclass/tests/exporttestodf/:id. Create ODF."
   [{:keys [params]}]
   (let [test-id  (:id params)
         user-id  (:user-id params)]
