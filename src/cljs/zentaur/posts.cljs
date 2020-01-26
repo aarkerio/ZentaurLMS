@@ -60,6 +60,26 @@
 (defn mount []
   (.log js/console (str ">>> VALUE >>>>> mount POSTS !!!")))
 
-(defn load-posts []
-  (.addEventListener (.getElementById js/document "icon-add") EventType.CLICK
-       (fn [] (.log js/console (str ">>> VALUE >>>>>  #####   >>>>>   events/listen  in users ns")))))
+(defn send-delete-post [post-id]
+  (let [csrf-field (.-value (.getElementById js/document "__anti-forgery-token"))]
+    (DELETE "/admin/posts/deletepost"
+        {:params  {:post-id post-id}
+         :headers {"x-csrf-token" csrf-field}
+         :handler (fn [] (set! js/window.location.href "/admin/posts"))
+         :error-handler error-handler})))
+
+(defn ^:export deletepost [post-id]
+  (when (js/confirm "Delete post?")
+    (send-delete-post post-id)))
+
+(defn load-posts
+  "Called in zentaur.hiccup.posts-edit"
+  []
+  (.log js/console (str ">>> VALUE  load-posts BEFORE>>>>> "  ))
+  (when-let [open-image (.getElementById js/document "open_images")]
+    (set! (.-onclick open-image) (fn []
+                                   (.log js/console (str ">>> VALUE in function magic happens >>>>> "  ))
+                                   (.open js/window "/vclass/files/img", "popUpWindow",
+                                          "height=400,width=300,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=no")
+                                   ))))
+

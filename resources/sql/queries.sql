@@ -14,7 +14,7 @@
 
 /*************************** POSTS ***/
 
--- :name save-message! :<! :n
+-- :name save-message! :<! :1
 -- :doc creates a new message record
 INSERT INTO comments
 (title, body, tags, published, discution, slug)
@@ -22,30 +22,33 @@ VALUES (:title, :body, :tags, :published, :discution, :slug) RETURNING id
 
 -- :name get-posts :? :*
 -- :doc retrieve array posts given the id.
-SELECT p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
+SELECT p.id, p.title, p.body, p.tags, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
 FROM posts p INNER JOIN users u
 ON p.user_id = u.id
 WHERE p.published = true
 ORDER BY p.id DESC LIMIT 10
 
--- :name get-post :? :raw
+-- :name get-post :? :1
 -- :doc retrieve a post given the id.
-SELECT * FROM posts WHERE id = :id
+SELECT p.id, p.title, p.tags, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
+FROM posts p INNER JOIN users u
+ON p.user_id = u.id
+WHERE p.published = true AND p.id = :id
 
 -- :name get-subjects :? :raw
 -- :doc retrieve all subjects.
 SELECT * FROM subjects ORDER BY subject ASC
 
--- :name save-post! :! :n
+-- :name save-post! :! :1
 -- :doc creates a new post record
 INSERT INTO posts
 (title, body, published, discution, tags, user_id, slug)
 VALUES (:title, :body, :published, :discution, :tags, :user_id, :slug) RETURNING id
 
--- :name update-post! :! :n
+-- :name update-post! :! :1
 -- :doc update an existing post record
 UPDATE posts
-SET title = :title, body = :body, tags = :tags, active = :active, discution = :discution
+SET title = :title, body = :body, tags = :tags, published = :published, discution = :discution
 WHERE id = :id
 
 -- :name toggle-post! :! :n
@@ -81,7 +84,32 @@ WHERE
     p.user_id = :user-id
 ORDER BY p.id DESC
 
-/*******************  UPLOADS   ***/
+-- /*******************  USER FILES   ***/
+
+-- :name get-files :? :*
+-- :doc retrieve files owned per user.
+SELECT * FROM files WHERE user_id = :user-id AND archive = false
+ORDER BY id DESC LIMIT 30
+
+-- :name get-file :? :1
+-- :doc retrieve one file owned per user.
+SELECT * FROM files WHERE user_id = :user-id AND identifier = :identifier
+
+-- :name get-file-by-identifier :? :1
+-- :doc Check identifier doesn't exist.
+SELECT id FROM files WHERE identifier = :identifier
+
+-- :name save-file! :<! :1
+-- :doc creates a new file record
+INSERT INTO files (file, user_id, img, identifier) VALUES
+(:file, :user-id, :img, :identifier) RETURNING id
+
+-- :name toggle-file! :! :1
+-- :doc update an existing file record
+UPDATE file SET archive = :archive
+WHERE id = :id
+
+-- /*******************  UPLOADS   ***/
 
 -- :name save-upload! :<!
 -- :doc creates a new upload record

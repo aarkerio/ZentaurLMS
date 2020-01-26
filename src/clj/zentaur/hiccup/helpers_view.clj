@@ -2,17 +2,14 @@
   (:require [clojure.tools.logging :as log]
             [java-time :as jt]
             [hiccup.form :as f]
-            [hiccup.element :refer [link-to]])
-  (:import [java.time ZoneId]))
-
-(defn- formatted-date [fields datetime]
-  (jt/format fields (.atZone datetime (ZoneId/systemDefault))))
+            [hiccup.element :refer [link-to]]))
 
 (defn format-date
-  ([datetime]
-   (formatted-date "dd/MM/yyyy HH:mm" datetime))
-  ([datetime date-only]
-    (formatted-date "dd/MM/yyyy" datetime)))
+  "Format a Java instant"
+  [date]
+  (let [formatter         (jt/format "dd-MM-yyyy HH:mm")
+        instant-with-zone (.atZone date (jt/zone-id))]
+    (jt/format formatter instant-with-zone)))
 
 (defn index []
   [:div {:id "content"}
@@ -28,17 +25,6 @@
   [:div {:class "alert notice alert-success" :id "flash-msg"}
     [:a.close {:data-dismiss "alert"} "x"]
     [:div#flash_notice msg]])
-
-(defn hello []
-  [:div {:class "well"}
-   [:h1 {:class "text-info"} "Hello Hiccup and AngularJS"]
-   [:div {:class "row"}
-    [:div {:class "col-lg-2"}
-     (f/label "name" "Name:")]
-    [:div {:class "col-lg-4"}
-     (f/text-field {:class "form-control" :ng-model "yourName" :placeholder "Enter a name here"} "your-name")]]
-   [:hr]
-   [:h1 {:class "text-success"} "Hello {{yourName}}!"]])
 
 (defn labeled-radio [label]
   [:label (f/radio-button {:ng-model "user.gender"} "user.gender" false f/label)

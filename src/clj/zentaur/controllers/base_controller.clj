@@ -17,5 +17,7 @@
 (defn json-parser [content]
    (response/ok content))
 
-(defn parser [content]
+(defn parser
+  "Html parsing"
+  [content]
   (response/content-type (response/ok content) "text/html; charset=utf-8"))

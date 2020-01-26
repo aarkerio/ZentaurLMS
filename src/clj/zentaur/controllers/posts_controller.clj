@@ -1,13 +1,12 @@
 (ns ^{:doc "Posts controller"} zentaur.controllers.posts-controller
-  (:require [clojure.string :as str]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [ring.util.http-response :as response]
             [zentaur.controllers.base-controller :as basec]
-            [zentaur.hiccup.layout-view :as layout]
-            [zentaur.hiccup.posts-view :as posts-view]
             [zentaur.hiccup.admin.posts-view :as admin-posts-view]
-            [zentaur.models.posts :as model-post]
-            [zentaur.libs.helpers :as h]))
+            [zentaur.hiccup.application-layout :as layout]
+            [zentaur.hiccup.posts-view :as posts-view]
+            [zentaur.libs.helpers :as h]
+            [zentaur.models.posts :as model-post]))
 
 (def msg-erfolg "Veränderung wurden erfolgreich gespeichert")
 (def msg-fehler "Etwas ging schief")
@@ -45,21 +44,11 @@
 
 (defn toggle-published
   "GET '/admin/posts/publish/:id/:published'"
-  [params]
-  (model-post/toggle params)
+  [{:keys [path-params]}]
+  (model-post/toggle path-params)
     (assoc (response/found "/admin/posts") :flash msg-erfolg))
 
-(defn delete-post
-  "DELETE /posts/:id"
-  [params]
-  (let [id (params :id)]
-    (model-post/destroy id)
-    (assoc (response/found "/admin/posts") :flash msg-erfolg)))
-
 ;;;;;;;;;;;;;;;;     ADMIN SECTION      ;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn map-to-query-string [m]
-  (str/join " " (map (fn [[k v]] (str (name k) " " v)) m)))
 
 (defn admin-posts
   "GET /admin/posts"
@@ -75,13 +64,38 @@
   [params]
   (let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))]
     (if (contains? errors :flash)
-      (assoc (response/found "/admin/posts/new") :flash (map-to-query-string errors))
+      (assoc (response/found "/admin/posts/new") :flash (h/map-to-query-string errors))
       (assoc (response/found "/admin/posts") :flash "Beiträge wurden erfolgreich gespeichert"))))
+
+(defn show-post
+  "GET. /admin/posts/:id"
+  [request]
+  (let [base     (basec/set-vars request)
+        params   (:path-params request)
+        post-id  (Integer/parseInt (:id params))
+        post     (model-post/get-post post-id)]
+    (basec/parser (layout/application
+                   (merge base {:title "Edit Post" :contents (admin-posts-view/edit base post)})))))
+
+(defn update-post
+  "POST /admin/posts/update"
+  [{:keys [params]}]
+  (let [errors (model-post/update-post! (dissoc params :__anti-forgery-token :button-save))]
+    (if (contains? errors :flash)
+      (assoc (response/found (str "/admin/posts/" (:id params))) :flash (h/map-to-query-string errors))
+      (assoc (response/found "/admin/posts") :flash "Beiträge wurden erfolgreich gespeichert"))))
+
 
 (defn admin-new
   "GET /admin/posts/new"
   [request]
-  (let [base     (basec/set-vars request)
-        user-id  (-> request :identity :id)]
+  (let [base     (basec/set-vars request)]
     (basec/parser (layout/application
-                   (merge base {:title "New Post" :contents (admin-posts-view/new base user-id)})))))
+                   (merge base {:title "New Post" :contents (admin-posts-view/new base)})))))
+
+(defn delete-post
+  "DELETE /admin/posts/:id"
+  [params]
+  (let [id (params :id)]
+    (model-post/destroy id)
+    (assoc (response/found "/admin/posts") :flash msg-erfolg)))

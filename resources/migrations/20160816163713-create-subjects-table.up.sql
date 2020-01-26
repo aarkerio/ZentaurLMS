@@ -2,7 +2,7 @@
 -- ;; lein run migrate
 -- ;; lein with-profile test run migrate
 -- ;;
-CREATE TABLE subjects (
+CREATE TABLE subjects (  -- tests are ordered this way
    id serial PRIMARY KEY,
    subject varchar(150) NOT NULL
 );

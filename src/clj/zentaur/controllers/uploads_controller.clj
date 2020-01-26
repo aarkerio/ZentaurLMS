@@ -3,12 +3,12 @@
             [ring.util.http-response :as response]
             [zentaur.models.uploads :as model-upload]
             [zentaur.controllers.base-controller :as basec]
-            [zentaur.hiccup.layout-view :as layout]
+            [zentaur.hiccup.application-layout :as layout]
             [zentaur.hiccup.admin.uploads-view :as admin-uploads-view]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;     ADMIN FUNCTIONS    ;;;;;;;;;;;;;;;;;;;;
-(defn admin-uploads
-  "GET /admin/uploads"
+(defn index
+  "GET /vclass/uploads"
   [request]
   (let [base       (basec/set-vars request)
         user-id    (-> request :identity :id)
@@ -18,7 +18,7 @@
      (layout/application (merge base {:title "Uploads" :contents (admin-uploads-view/index files csrf-field) })))))
 
 (defn upload-file
-  "POST /admin/uploads"
+  "POST /vclass/uploads"
   [request]
   (let [user-id   (-> request :identity :id)
         params    (:params request)
@@ -27,7 +27,7 @@
     (assoc (response/found "/admin/uploads") :flash (assoc params :message message))))
 
 (defn process
-  "GET /admin/uploads/process/:id"
+  "GET /vclass/uploads/process/:id"
   [request]
   (let [base       (basec/set-vars request)
         id         (-> request :params :id)

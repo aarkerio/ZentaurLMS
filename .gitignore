@@ -22,3 +22,4 @@ resources/public/uploads/
 resources/public/css
 .sass-cache/
 .shadow-cljs/
+resources/public/files/

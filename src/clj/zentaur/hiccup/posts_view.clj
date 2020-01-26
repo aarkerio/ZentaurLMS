@@ -1,17 +1,18 @@
 (ns zentaur.hiccup.posts-view
   (:require [clojure.tools.logging :as log]
-            [hiccup.form :as f]
             [hiccup.core :as c]
+            [hiccup.form :as f]
             [hiccup.element :refer [link-to]]
             [markdown.core :as md]
-            [zentaur.hiccup.helpers-view :as helper]))
+            [zentaur.hiccup.helpers-view :as hv]))
 
 (defn format-post
   ([post] (format-post post true))
   ([post view]
-   (let [div-blog [:div {:class "blog-post"} [:h2 {:class "blog-post-title"} (:title post)]
-                    [:p {:class "blog-post-meta"} (helper/format-date (:created_at post)) " " [:a {:href "/user/"} (:uname post)]]
-                    [:p {} (md/md-to-html-string (:body post))]]
+   (let [div-blog   [:div {:class "blog-post"} [:h2 {:class "blog-post-title"} (:title post)]
+                      [:div {:class "blog-post-meta"} (hv/format-date (:created_at post)) " " [:a {:href (str "/user/" (:uname post))} (:uname post)]]
+                      [:div {:class "blog-body"} (md/md-to-html-string (:body post))]
+                      [:div {:class "blog-tags"} (:tags post)]]
          view-link  (cond view (conj div-blog [:p [:a {:href (str "/posts/view/" (:id post))} "View"]]))]
      (if (= view true)
        view-link
@@ -34,11 +35,11 @@
 
 (defn comment-form [base id]
   (when-let [email (-> base :identity :email)]
-            (f/form-to [:post ""]
-                (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
-                (f/hidden-field { :value id} "post_id")
-                [:div (f/text-area {} "msgtextarea")]
-                (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Anmeldung"))))
+            [:form {:id "submit-comment-form" :action "/vclass/posts/comments" :method "post" :class "css-class-form"}
+                (f/hidden-field {:value (:csrf-field base)} "__anti-forgery-token")
+                (f/hidden-field {:value id} "post_id")
+                [:div (f/text-area {:cols 90 :rows 5} "comment-textarea")]
+                (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]))
 
 (defn show [post base comments]
   (let [formatted-post (format-post post false)

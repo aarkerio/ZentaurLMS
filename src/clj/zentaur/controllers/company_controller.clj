@@ -1,7 +1,7 @@
 (ns ^{:doc "Static pages"} zentaur.controllers.company-controller
   (:require [zentaur.controllers.base-controller :as basec]
             [clojure.tools.logging :as log]
-            [zentaur.hiccup.layout-view :as layout]
+            [zentaur.hiccup.application-layout :as layout]
             [zentaur.hiccup.page-view :as page-view]
             [ring.util.http-response :as response]))
 

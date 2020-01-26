@@ -1,7 +1,7 @@
-(ns zentaur.hiccup.layout-view
-  (:require [zentaur.hiccup.helpers-view :as helpers]
-            [hiccup.form :as f]
-            [hiccup.page :refer [html5 include-css include-js]]))
+(ns zentaur.hiccup.application-layout
+  (:require [hiccup.form :as f]
+            [hiccup.page :refer [html5 include-css include-js]]
+            [zentaur.hiccup.helpers-view :as helpers]))
 
 (defn- ^{:private true} login-form
   "Html helper"
@@ -21,7 +21,7 @@
   (def vector-atom (atom (helpers/nav-links)))
   (when-let [email (-> content :identity :email)]
     (swap! vector-atom conj [:li {:class "nav-item"} [:a {:href "/admin/users" :class "nav-link"} "Benutzer"]]
-                            [:li {:class "nav-item"} [:a {:href "/admin/posts" :class "nav-link"} "Beiträge"]]
+                            [:li {:class "nav-item"} [:a {:href "/admin/posts" :class "nav-link"} "Blogeinträge"]]
                             [:li {:class "nav-item"} [:a {:href "/vclass/tests" :class "nav-link"} "Quiztest"]]
                             [:li {:class "nav-item"} [:a {:href "/admin/uploads" :class "nav-link"} "Dateien"]]
                             [:li {:class "nav-item"} (str "Hallo " email "!")]

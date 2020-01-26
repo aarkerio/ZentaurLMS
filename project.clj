@@ -29,8 +29,8 @@
                  [org.clojure/tools.logging "0.4.1"]     ;; Logs duh!
                  [org.immutant/web "2.1.10" :exclusions [joda-time]] ;; Serve web requests using Ring handlers, Servlets, or Undertow HttpHandlers
                  [org.postgresql/postgresql "42.2.9"]    ;; PostgreSQL rulez!
-                 [re-frame "0.11.0-rc3"]                 ;; A Reagent Framework For Writing SPAs, in Clojurescript.
-                 [reagent "0.9.0-rc3"]                   ;; Minimalistic React for ClojureScript
+                 [re-frame "0.11.0"]                     ;; A Reagent Framework For Writing SPAs, in Clojurescript.
+                 [reagent "0.9.1"]                       ;; Minimalistic React for ClojureScript
                  [ring-webjars "0.2.0" :exclusions [joda-time]] ;; Web assets
                  [ring/ring-core "1.8.0"]                ;; A very thin HTTP abstraction
                  [ring/ring-defaults "0.3.2" :exclusions [joda-time]] ;; Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
