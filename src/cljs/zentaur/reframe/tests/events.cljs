@@ -86,7 +86,7 @@
           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
       ;; we return a map of (side) effects
       {:http-xhrio {:method          :post
-                    :uri             "/api/load-test"
+                    :uri             "/api/graphql/load-test"
                     :format          (ajax/json-request-format)
                     :params          {:test-id test-id}
                     :headers         {"x-csrf-token" csrf-field}
