@@ -5,14 +5,26 @@
             [zentaur.db.core :as db]
             [zentaur.libs.helpers :as h]))
 
+
+(def questions
+  [{:question "What is germany?",
+    :place "nuremberg",
+    :occupation "engineer",
+    :name "neil chetty"}
+   {:question "What is germany?",
+    :place "ulm",
+    :occupation "engineer",
+    :name "vera ellison"}])
+
 (def questions-template
   (pdf/template
     [:paragraph
      [:heading $question]
-     [:chunk {:style :bold} "questions: "] $occupation "\n"
+     [:chunk {:style :bold} "question: "] $question "\n"
      [:chunk {:style :bold} "answers: "] $place "\n"
      [:chunk {:style :bold} "country: "] $country
      [:spacer]]))
+
 
 (def answers-template
   (pdf/template
@@ -25,14 +37,15 @@
 
 (defn to-pdf [file-name test]
   (let [subject (:subject test)
-        title   (:title test)]
+        title   (:title test)
+        rows    (questions-template questions)]
     (pdf/pdf
      [{:title title }
       [:list {:roman true}
        [:chunk {:style :bold} "Subject: " ]
        "another item "  subject
        "yet another item"]
-      [:phrase "some text lo que sea PEDAZO DE PENDEJO"]
+      [:phrase "some text lo que sea PEDAZO DE ANIMAL"]
       [:phrase "some more text África {ñóñá}"]
       [:paragraph "yet more text"]]
      file-name)))
