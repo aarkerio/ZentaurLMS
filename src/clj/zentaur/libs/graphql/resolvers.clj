@@ -7,7 +7,6 @@
             [zentaur.libs.graphql.validations.validations-test :as val-test]
             [zentaur.libs.helpers :as h]))
 
-;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
   (let [full-params (assoc params :user-id user-id)
         errors      (-> full-params (val-test/validate-test))]
