@@ -7,13 +7,15 @@
 
 
 (def questions
-  [{:question "What is germany?",
-    :place "nuremberg",
-    :occupation "engineer",
+  [{:question "What is germany?"
+    :points 1
+    :place "nuremberg"
+    :occupation "engineer"
     :name "neil chetty"}
-   {:question "What is germany?",
-    :place "ulm",
-    :occupation "engineer",
+   {:question "What is germany?"
+    :place "ulm"
+    :points 1
+    :occupation "engineer"
     :name "vera ellison"}])
 
 (def questions-template
@@ -45,6 +47,7 @@
        [:chunk {:style :bold} "Subject: " ]
        "another item "  subject
        "yet another item"]
+      rows
       [:phrase "some text lo que sea PEDAZO DE ANIMAL"]
       [:phrase "some more text África {ñóñá}"]
       [:paragraph "yet more text"]]
