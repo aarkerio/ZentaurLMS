@@ -1,7 +1,5 @@
 ;; /**********   UNDERSCORES IN NAMES PLEASE!!!!    ********/
 {:enums {
-         :episode {:description "The episodes of the original Star Wars trilogy."
-                   :values [:NEWHOPE :EMPIRE :JEDI]}
          :question_type {:description "Question options"
                    :values [:CLOSED :OPTIONS :OPEN :COLUMNS]}}
  :interfaces {

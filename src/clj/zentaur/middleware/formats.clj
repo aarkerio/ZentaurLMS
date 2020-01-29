@@ -2,7 +2,7 @@
   (:require
     [cognitect.transit :as transit]
     [luminus-transit.time :as time]
-    [muuntaja.core :as m]))
+    [muuntaja.core :as m]))   ;; Clojure library for fast http api format negotiation, encoding and decoding.
 
 (def instance
   (m/create

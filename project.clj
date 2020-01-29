@@ -31,6 +31,7 @@
                  [org.postgresql/postgresql "42.2.9"]    ;; PostgreSQL rulez!
                  [re-frame "0.11.0"]                     ;; A Reagent Framework For Writing SPAs, in Clojurescript.
                  [reagent "0.9.1"]                       ;; Minimalistic React for ClojureScript
+                 [re-graph "0.1.11"]                     ;; 
                  [ring-webjars "0.2.0" :exclusions [joda-time]] ;; Web assets
                  [ring/ring-core "1.8.0"]                ;; A very thin HTTP abstraction
                  [ring/ring-defaults "0.3.2" :exclusions [joda-time]] ;; Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.

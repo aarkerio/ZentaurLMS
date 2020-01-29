@@ -5,6 +5,7 @@
             [goog.dom :as gdom]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
+            [re-graph.core :as re-graph]
             [zentaur.reframe.tests.db :as zdb]
             [zentaur.reframe.tests.libs :as libs]))
 
@@ -77,22 +78,40 @@
           (assoc :questions (js->clj questions :keywordize-keys true))
           (assoc :subjects  (js->clj subjects :keywordize-keys true))))))
 
-(re-frame/reg-event-fx       ;; <-- note the `-fx` extension
-  :request-test              ;; <-- the event id
-  (fn                         ;; <-- the handler function
-    [cofx [_ answer]]        ;; <-- 1st argument is coeffect, from which we extract db
-    (let [db         (:db cofx)
-          test-id    (.-value (gdom/getElement "test-id"))
-          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-      ;; we return a map of (side) effects
-      {:http-xhrio {:method          :post
-                    :uri             "/api/graphql/load-test"
-                    :format          (ajax/json-request-format)
-                    :params          {:test-id test-id}
-                    :headers         {"x-csrf-token" csrf-field}
-                    :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:process-test-response]
-                    :on-failure      [:bad-response]}})))
+;; (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
+;;   :request-test              ;; <-- the event id
+;;   (fn                         ;; <-- the handler function
+;;     [cofx [_ answer]]        ;; <-- 1st argument is coeffect, from which we extract db
+;;     (let [db         (:db cofx)
+;;           test-id    (.-value (gdom/getElement "test-id"))
+;;           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+;;       ;; we return a map of (side) effects
+;;       {:http-xhrio {:method          :post
+;;                     :uri             "/api/graphql/load-test"
+;;                     :format          (ajax/json-request-format)
+;;                     :params          {:test-id test-id}
+;;                     :headers         {"x-csrf-token" csrf-field}
+;;                     :response-format (ajax/json-response-format {:keywords? true})
+;;                     :on-success      [:process-test-response]
+;;                     :on-failure      [:bad-response]}})))   {questions_by_test(id: 3) {test {id title description }}}
+
+(re-frame/reg-event-fx
+  :request-test
+  (fn                      ;; <-- the handler function
+    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
+    (let [db            (:db cfx)
+          pre-test-id   (.-value (gdom/getElement "test-id"))
+          test-id       (js/parseInt pre-test-id)
+          query         (gstring/format "{questions_by_test(id: %i) { test {id title description tags created_at}
+                                          questions { id question qtype explanation hint ordnen
+                                          answers { id answer correct } }}}"
+                                        test-id)]
+          ;; perform a query, with the response sent to the callback event provided
+          (re-frame/dispatch [::re-graph/query
+                              query                              ;; graphql query
+                              {:some "Pumas prros!! variable"}   ;; arguments map
+                              [:process-test-response]])         ;; callback event when response is recieved
+          )))
 
 ;; AJAX handlers
 (re-frame/reg-event-db
@@ -108,21 +127,46 @@
 
 ;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
 
-(re-frame/reg-event-fx      ;; <-- note the `-fx` extension
- :create-question           ;; <-- the event id
- (fn                         ;; <-- our handler function
-   [cofx [dispatch-name question]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (let [test-id    (.-value (gdom/getElement "test-id"))
-         csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-     ;; we return a map of (side) effects
-     {:http-xhrio {:method          :post
-                   :uri             "/api/createquestion"
-                   :format          (ajax/json-request-format)
-                   :params          question
-                   :headers         {"x-csrf-token" csrf-field}
-                   :response-format (ajax/json-response-format {:keywords? true})
-                   :on-success      [:process-new-question]
-                   :on-failure      [:bad-response]}})))
+;; (re-frame/reg-event-fx      ;; <-- note the `-fx` extension
+;;  :create-question           ;; <-- the event id
+;;  (fn                         ;; <-- our handler function
+;;    [cofx [dispatch-name question]]      ;; <-- 1st argument is coeffect, from which we extract db
+;;    (let [test-id    (.-value (gdom/getElement "test-id"))
+;;          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+;;      ;; we return a map of (side) effects
+;;      {:http-xhrio {:method          :post
+;;                    :uri             "/api/createquestion"
+;;                    :format          (ajax/json-request-format)
+;;                    :params          question
+;;                    :headers         {"x-csrf-token" csrf-field}
+;;                    :response-format (ajax/json-response-format {:keywords? true})
+;;                    :on-success      [:process-new-question]
+;;                    :on-failure      [:bad-response]}})))
+
+;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
+(re-frame/reg-event-fx
+  :create-question
+  (fn                      ;; <-- the handler function
+    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
+    (.log js/console (str ">>>  und ebenfalls _ " (second _)))
+    ;; question hint explanation qtype test-id user-id active
+    (let [values        (second _)
+          question      (:question values)
+          hint          (:hint values)
+          explanation   (:explanation values)
+          qtype         (:qtype values)
+          user-id       (:user-id values)
+          pre-test-id   (:test-id values)
+          test-id       (js/parseInt pre-test-id)
+          mutation      (gstring/format "mutation { add_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
+                                         qtype: %i, test_id: %i, user_id: %i) { id question qtype hint explanation}}"
+                                        question hint explanation qtype test-id user-id)]
+      ;; perform a query, with the response sent to the callback event provided
+      (re-frame/dispatch [::re-graph/mutate
+                          mutation                           ;; graphql query
+                          {:some "Pumas prros!! variable"}   ;; arguments map
+                          [:process-question-response]]))))
+
 
 (re-frame/reg-event-db
  :process-after-delete-question

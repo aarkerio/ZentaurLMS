@@ -82,7 +82,7 @@
                                 :size (:size file)}})}}]
 
     ["/download"
-     {:get {:summary "downloads a file"
+     {:get {:summary "Downloads a file"
             :swagger {:produces ["image/png"]}
             :handler (fn [_]
                        {:status 200

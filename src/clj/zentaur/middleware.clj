@@ -90,5 +90,5 @@
       (wrap-defaults
       (-> site-defaults
          (assoc-in [:security :anti-forgery] false)
-         (assoc-in  [:session :store] (ttl-memory-store (* 500 30)))))
+         (assoc-in  [:session :store] (ttl-memory-store (* 5000 300)))))
       wrap-internal-error))
