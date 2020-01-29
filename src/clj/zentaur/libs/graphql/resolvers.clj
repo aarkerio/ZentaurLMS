@@ -9,8 +9,8 @@
 
 (defn create-test! [params user-id]
   (let [full-params (assoc params :user-id user-id)
-        errors      (-> full-params (val-test/validate-test))]
-    (if (= errors nil)
+        errors      (val-test/validate-test full-params)]
+    (if (nil? errors)
       (db/create-minimal-test! full-params)
       {:flash errors})))
 
@@ -43,8 +43,9 @@
 (defn- ^:private resolve-test-by-id
   [context args value]
   (let [pre-test-id  (:id args)
-        test-id      (Integer/parseInt pre-test-id)]
-    (db/get-one-test { :test-id test-id })))
+        test-id      (Integer/parseInt pre-test-id)
+        user-id      (:user-id args)]
+    (db/get-one-test { :id id :user-id user-id})))
 
 (defn- ^:private get-last-ordnen
   [table id]

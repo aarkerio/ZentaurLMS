@@ -1,5 +1,7 @@
 ;; /**********   UNDERSCORES IN NAMES PLEASE!!!!    ********/
 {:enums {
+         :episode {:description "The episodes of the original Star Wars trilogy."
+                   :values [:NEWHOPE :EMPIRE :JEDI]}
          :question_type {:description "Question options"
                    :values [:CLOSED :OPTIONS :OPEN :COLUMNS]}}
  :interfaces {
@@ -63,7 +65,8 @@
                         :resolve     :test-by-id}
            :questions_by_test {:type        (non-null :fulltest)
                                :description "Access a test's questions by its unique id, if it exists."
-                               :args        {:id {:type ID}}
+                               :args        {:id {:type ID}
+                                             :user-id {:type Int} }
                                :resolve     :questions-by-test}}
  :mutations {
              :add_question {:type :question
