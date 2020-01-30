@@ -80,4 +80,3 @@
 (defn destroy [id]
   (let [int-id (Integer/parseInt id)]
     (db/delete-post! {:id int-id})))
-

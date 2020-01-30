@@ -63,21 +63,21 @@
                         :description "Access a test by its unique id, if it exists."
                         :args        {:id {:type ID}}
                         :resolve     :test-by-id}
-           :questions_by_test {:type        (non-null :fulltest)
-                               :description "Access a test's questions by its unique id, if it exists."
-                               :args        {:id {:type ID}
-                                             :user_id {:type (non-null Int)} }
-                               :resolve     :questions-by-test}}
+           :get_all_tests {:type        (non-null :fulltest)
+                           :description "Access a test's questions by its unique id, if it exists."
+                           :args        {:id {:type ID}
+                                         :user_id {:type (non-null Int)} }
+                           :resolve     :get-all-tests}}
  :mutations {
-             :add_question {:type :question
-                            :description "Create new question."
-                            :args {:question    {:type (non-null String)}
-                                   :hint        {:type String}
-                                   :explanation {:type String}
-                                   :qtype       {:type (non-null Int)
-                                                 :description "Type of question"}
-                                   :test_id     {:type Int}
-                                   :user_id     {:type (non-null Int)}
-                                   }
-                            :resolve :add-question}}
+             :create_question {:type :question
+                               :description "Create new question."
+                               :args {:question    {:type (non-null String)}
+                                      :hint        {:type String}
+                                      :explanation {:type String}
+                                      :qtype       {:type (non-null Int)
+                                                    :description "Type of question"}
+                                      :test_id     {:type Int}
+                                      :user_id     {:type (non-null Int)}
+                                      }
+                               :resolve :create-question}}
 }
