@@ -69,6 +69,7 @@
 (re-frame/reg-event-db
   :process-test-response
   (fn [db [_ data]]
+    (.log js/console (str ">>> process-test-response DATA  >>>>> " data ))
     (let [questions  (:questions data)
           subjects   (:subjects data)
           test       (dissoc data :questions)]
@@ -78,22 +79,9 @@
           (assoc :questions (js->clj questions :keywordize-keys true))
           (assoc :subjects  (js->clj subjects :keywordize-keys true))))))
 
-;; (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
-;;   :request-test              ;; <-- the event id
-;;   (fn                         ;; <-- the handler function
-;;     [cofx [_ answer]]        ;; <-- 1st argument is coeffect, from which we extract db
-;;     (let [db         (:db cofx)
-;;           test-id    (.-value (gdom/getElement "test-id"))
-;;           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-;;       ;; we return a map of (side) effects
-;;       {:http-xhrio {:method          :post
-;;                     :uri             "/api/graphql/load-test"
-;;                     :format          (ajax/json-request-format)
-;;                     :params          {:test-id test-id}
-;;                     :headers         {"x-csrf-token" csrf-field}
-;;                     :response-format (ajax/json-response-format {:keywords? true})
-;;                     :on-success      [:process-test-response]
-;;                     :on-failure      [:bad-response]}})))   {questions_by_test(id: 3) {test {id title description }}}
+          ;; query         (gstring/format "{questions_by_test(id: %i) { test {id title description tags created_at}
+          ;;                                 questions { id question qtype explanation hint ordnen
+          ;;                                 answers { id answer correct } }}}"
 
 (re-frame/reg-event-fx
   :request-test
@@ -102,9 +90,7 @@
     (let [db            (:db cfx)
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "{questions_by_test(id: %i) { test {id title description tags created_at}
-                                          questions { id question qtype explanation hint ordnen
-                                          answers { id answer correct } }}}"
+          query         (gstring/format "{ test_by_id( id: %i, archived: false) { title questions {question} }}"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query

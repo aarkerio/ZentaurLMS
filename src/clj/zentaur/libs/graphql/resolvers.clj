@@ -18,15 +18,16 @@
 (defn- ^:private resolve-test-by-id
   "Resolver to get and convert to map keyed"
   [context args value]
-  (let [_              (log/info :msg (str ">>> args >>>>> " args))
-        test-id        (Integer/parseInt (:id args))
-        full-test  (mt/build-test-structure test-id (:user_id args))]
+  (let [_          (log/info :msg (str ">>> args >>>>> " args))
+        test-id    (Integer/parseInt (:id args))
+        archived   (:archived args)
+        full-test  (mt/build-test-structure test-id archived)]
     (update full-test :id str))) ;; Graphql needs string IDs
 
 (defn resolve-all-tests
   [context args value]
-  (let [all-tests  (mt/get-tests {:user-id (:user_id args)} )]
-    all-tests)
+  (let [all-tests  (mt/get-tests {:test-id (:test_id args)} )]
+    all-tests))
 
 (defn- ^:private create-question
   [context args value]
@@ -40,3 +41,4 @@
   {:test-by-id (partial resolve-test-by-id)
    :get-all-tests (partial resolve-all-tests)
    :create-question (partial create-question)})
+  

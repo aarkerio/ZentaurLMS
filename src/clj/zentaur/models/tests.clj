@@ -10,8 +10,9 @@
 (defn get-tests [user-id]
   (db/get-tests {:user-id user-id}))
 
-(defn get-one-test [user-id id]
-  (db/get-one-test {:user-id user-id :id id}))
+(defn get-one-test
+  ([id] (get-one-test id false))
+  ([id archived] (db/get-one-test {:id id :archived archived})))
 
 (defn get-subjects []
   (db/get-subjects))
@@ -86,8 +87,8 @@
 (defn build-test-structure
   "Build the map with the test, the questions and the answers.
    Function used by the Web and the Phone App."
-  [test-id user-id]
-  (let [test          (db/get-one-test { :id test-id :user-id user-id })
+  [test-id archived]
+  (let [test          (db/get-one-test {:id test-id :archived archived})
         questions     (get-questions test-id)
         subjects      (db/get-subjects)]
     (try

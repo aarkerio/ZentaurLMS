@@ -14,8 +14,7 @@
            :fulltest  {
                         :description "Full Tests schema."
                         :fields {
-                                 :test      {:type (non-null :test)}
-                                 :questions {:type (list :question)}}}
+                                 :test  {:type (non-null :test)}}}
            :test     {
                       :description "Tests schema."
                       :fields {
@@ -28,7 +27,9 @@
                                :created_at   {:type String}
                                :level        {:type Int}
                                :active       {:type Boolean}
-                               :shared       {:type Boolean}}}
+                               :shared       {:type Boolean}
+                               :questions    {:type (list :question)}
+                               :subjects     {:type (list :subject)}}}
            :ided_question {
                            :description "Question with ID"
                            :fields {
@@ -49,8 +50,14 @@
                                :reviewed_fact {:type Boolean}
                                :reviewed_lang {:type Boolean}
                                :answers       {:type (list :answer)}}}
+
+           :subject {
+                      :description "Subject type."
+                      :fields {
+                               :id            {:type (non-null ID)}
+                               :subject       {:type (non-null String)}}}
            :answer {
-                      :description "Answer schema."
+                      :description "Answer type."
                       :fields {
                                :id        {:type (non-null ID)}
                                :answer    {:type (non-null String)}
@@ -61,12 +68,12 @@
  :queries {
            :test_by_id {:type        (non-null :test)
                         :description "Access a test by its unique id, if it exists."
-                        :args        {:id {:type ID}}
+                        :args        {:id       {:type ID}
+                                      :archived {:type Boolean}}
                         :resolve     :test-by-id}
            :get_all_tests {:type        (non-null :fulltest)
                            :description "Access a test's questions by its unique id, if it exists."
-                           :args        {:id {:type ID}
-                                         :user_id {:type (non-null Int)} }
+                           :args        {:user_id {:type (non-null Int)} }
                            :resolve     :get-all-tests}}
  :mutations {
              :create_question {:type :question
