@@ -5,6 +5,7 @@
             [com.walmartlabs.lacinia.resolve :refer [resolve-as]]
             [zentaur.db.core :as db]
             [zentaur.libs.graphql.validations.validations-test :as val-test]
+            [zentaur.libs.models.shared :as sh]
             [zentaur.libs.helpers :as h]))
 
 (defn create-test! [params user-id]

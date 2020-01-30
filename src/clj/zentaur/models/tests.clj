@@ -68,35 +68,6 @@
       (create-new-answer full-params)
       {:flash errors :ok false})))
 
-(defn- ^:private get-answers [{:keys [id] :as question}]
-  (let [answers          (db/get-answers {:question-id id})
-        index-seq        (map #(keyword (str (% :id))) answers)
-        mapped-answers   (zipmap index-seq answers)]
-    (assoc question :answers mapped-answers)))
-
-(defn- ^:private get-questions
-  "Get and convert to map keyed"
-  [test-id]
-  (let [questions        (db/get-questions { :test-id test-id })
-        questions-index  (map-indexed
-                            (fn [idx question]
-                              (assoc question :index (inc idx))) questions)
-        index-seq        (map #(keyword (str (% :id))) questions-index)]
-    (->> questions-index
-         (map get-answers)
-         (zipmap index-seq))))
-
-(defn get-test-nodes
-  "JSON response for the API"
-  [test-id user-id]
-  (let [test          (db/get-one-test { :id test-id :user-id user-id })
-        questions     (get-questions test-id)
-        subjects      (db/get-subjects)]
-    (try
-      (assoc test :questions questions :subjects subjects)
-      (catch Exception e (str "******** >>> Caught exception: " (.getMessage e)))
-      (finally (assoc {} :error "function get-test-nodes in model error")))))
-
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn update-question! [params]
   (let [qtype        (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
