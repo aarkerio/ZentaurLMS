@@ -90,7 +90,7 @@
     (let [db            (:db cfx)
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "{ test_by_id( id: %i, archived: false) { title questions {question} }}"
+          query         (gstring/format "{ test_by_id( id: %i, archived: false) { title questions { question } subjects { subject }}}"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query
