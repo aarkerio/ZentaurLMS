@@ -46,7 +46,7 @@
   (let [pre-test-id  (:id args)
         test-id      (Integer/parseInt pre-test-id)
         user-id      (:user-id args)]
-    (db/get-one-test { :id id :user-id user-id})))
+    (db/get-one-test { :id test-id :user-id user-id})))
 
 (defn- ^:private get-last-ordnen
   [table id]

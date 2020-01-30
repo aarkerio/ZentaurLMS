@@ -66,7 +66,7 @@
            :questions_by_test {:type        (non-null :fulltest)
                                :description "Access a test's questions by its unique id, if it exists."
                                :args        {:id {:type ID}
-                                             :user-id {:type Int} }
+                                             :user_id {:type (non-null Int)} }
                                :resolve     :questions-by-test}}
  :mutations {
              :add_question {:type :question
