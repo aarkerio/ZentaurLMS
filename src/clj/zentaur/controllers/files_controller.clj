@@ -1,11 +1,11 @@
 (ns zentaur.controllers.files-controller
   (:require [clojure.tools.logging :as log]
             [ring.util.http-response :as response]
-            [zentaur.models.files :as model-files]
             [zentaur.controllers.base-controller :as basec]
-            [zentaur.hiccup.application-layout :as layout]
-            [zentaur.hiccup.basic-layout :as blay]
-            [zentaur.hiccup.files-view :as files-view]))
+            [zentaur.hiccup.layouts.application-layout :as layout]
+            [zentaur.hiccup.layouts.basic-layout :as blay]
+            [zentaur.hiccup.files-view :as files-view]
+            [zentaur.models.files :as model-files]))
 
 (defn index
   "GET. /vclass/files/:type"

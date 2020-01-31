@@ -15,7 +15,7 @@
    [ring-ttl-session.core :refer [ttl-memory-store]]
    [zentaur.config :refer [env]]
    [zentaur.env :refer [defaults]]     ;; from the env/ dir
-   [zentaur.layout :refer [error-page]]
+   [zentaur.hiccup.layouts.error-layout :as el]
    [zentaur.middleware.formats :as formats]))
 
 (defn wrap-internal-error [handler]
@@ -24,7 +24,7 @@
       (handler req)
       (catch Throwable t
         (log/error t (.getMessage t))
-        (error-page {:status 500
+        (el/application {:status 500
                      :title "Something very bad has happened!"
                      :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
@@ -32,7 +32,7 @@
   (wrap-anti-forgery
     handler
     {:error-response
-     (error-page
+     (el/application
        {:status 403
         :title "Invalid JJJJ anti-forgery token"})}))
 
@@ -44,7 +44,7 @@
       ((if (:websocket? request) handler wrapped) request))))
 
 (defn on-error [request response]
-  (error-page
+  (el/application
     {:status 403
      :title (str "Access to " (:uri request) " is not authorized")}))
 

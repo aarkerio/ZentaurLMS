@@ -4,7 +4,7 @@
             [zentaur.controllers.base-controller :as basec]
             [zentaur.models.tests :as model-test]
             [zentaur.hiccup.admin.tests-view :as tests-view]
-            [zentaur.hiccup.application-layout :as layout]
+            [zentaur.hiccup.layouts.application-layout :as layout]
             [ring.util.http-response :as response]))
 
 (defn index

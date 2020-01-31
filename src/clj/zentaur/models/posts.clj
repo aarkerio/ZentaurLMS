@@ -1,9 +1,9 @@
 (ns zentaur.models.posts
   (:require [clojure.tools.logging :as log]
-            [slugify.core :refer [slugify]]
             [struct.core :as st]
             [zentaur.db.core :as db]
-            [zentaur.libs.helpers :as h]))
+            [zentaur.libs.helpers :as h]
+            [zentaur.libs.models.shared :as sh]))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;    VALIDATIONS
@@ -43,10 +43,11 @@
 (defn get-comments [id]
   (db/get-comments {:id id}))
 
-(defn save-comment! [params]
+(defn save-comment!
   "POST. /posts/savecomment"
+  [params]
   (if-let [errors (validate-post params)]
-      (db/save-comment params)))
+    (db/save-comment params)))
 
 ;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
 
@@ -59,7 +60,7 @@
   [{:keys [params identity]}]
   (if-let [errors (validate-post params)]
     {:flash errors}
-    (let [slug      (slugify (:title params))
+    (let [slug      (sh/slugify (:title params))
           published (contains? params :published)
           discution (contains? params :discution)
           user_id   (:id identity)]

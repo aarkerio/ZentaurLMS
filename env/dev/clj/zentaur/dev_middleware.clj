@@ -1,8 +1,7 @@
 (ns zentaur.dev-middleware
-  (:require
-    [ring.middleware.reload :refer [wrap-reload]]
-    [selmer.middleware :refer [wrap-error-page]]
-    [prone.middleware :refer [wrap-exceptions]]))
+  (:require [prone.middleware :refer [wrap-exceptions]]    ;; the Rails like screen
+            [ring.middleware.reload :refer [wrap-reload]]
+            [zentaur.middleware.error-page :refer [wrap-error-page]]))
 
 (defn wrap-dev [handler]
   (-> handler

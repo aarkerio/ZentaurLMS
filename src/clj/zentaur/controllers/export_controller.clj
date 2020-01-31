@@ -1,8 +1,8 @@
 (ns zentaur.controllers.export-controller
   (:require [clojure.java.io :as io]
             [clojure.tools.logging :as log]
-            [zentaur.models.exports :as model-export]
-            [ring.util.http-response :as response]))
+            [ring.util.http-response :as response]
+            [zentaur.models.exports :as model-export]))
 
 (defn export-test-pdf
   "GET /vclass/tests/exporttestpdf/:id. Create PDF."

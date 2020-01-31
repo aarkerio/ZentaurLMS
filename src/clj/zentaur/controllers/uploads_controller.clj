@@ -1,10 +1,10 @@
 (ns zentaur.controllers.uploads-controller
   (:require [clojure.tools.logging :as log]
             [ring.util.http-response :as response]
-            [zentaur.models.uploads :as model-upload]
             [zentaur.controllers.base-controller :as basec]
-            [zentaur.hiccup.application-layout :as layout]
-            [zentaur.hiccup.admin.uploads-view :as admin-uploads-view]))
+            [zentaur.hiccup.admin.uploads-view :as admin-uploads-view]
+            [zentaur.hiccup.layouts.application-layout :as layout]
+            [zentaur.models.uploads :as model-upload]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;     ADMIN FUNCTIONS    ;;;;;;;;;;;;;;;;;;;;
 (defn index

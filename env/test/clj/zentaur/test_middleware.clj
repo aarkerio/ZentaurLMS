@@ -1,11 +1,5 @@
-(ns zentaur.dev-middleware
-  (:require
-    [ring.middleware.reload :refer [wrap-reload]]
-    [selmer.middleware :refer [wrap-error-page]]
-    [prone.middleware :refer [wrap-exceptions]]))
+(ns zentaur.test-middleware
+  (:require [zentaur.middleware.error-page :refer [wrap-error-page]]))
 
-(defn wrap-dev [handler]
-  (-> handler
-      wrap-reload
-      wrap-error-page
-      (wrap-exceptions {:app-namespaces ['zentaur]})))
+(defn wrap-test [handler]
+  (wrap-error-page handler))

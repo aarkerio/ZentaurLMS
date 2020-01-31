@@ -3,7 +3,7 @@
             [ring.util.http-response :as response]
             [zentaur.controllers.base-controller :as basec]
             [zentaur.hiccup.admin.users-view :as users-view]
-            [zentaur.hiccup.application-layout :as layout]
+            [zentaur.hiccup.layouts.application-layout :as layout]
             [zentaur.models.users :as model-user]))
 
 (defn admin-users
