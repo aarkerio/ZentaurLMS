@@ -3,7 +3,6 @@
             [zentaur.libs.helpers :as h]
             [zentaur.models.posts :as modposts]))
 
-
 (defn set-vars [request]
   (let [csrf-field (:anti-forgery-token request)
         flash      (:flash request)
