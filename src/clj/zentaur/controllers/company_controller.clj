@@ -33,14 +33,8 @@
      (layout/application
       (merge base contents)))))
 
-(defn error-view [data]
-  [:div
-   [:div "dsfdsf"]
-   [:div "dasdasdasd"]])
-
 (defn display-error
-  "Generic error message"
+  "Display generic error message."
   [data]
-  (let [formatted-view (error-view data)]
-    (basec/parser
-     (el/application {:title "::Error Page::" :contents formatted-view}))))
+  (basec/parser
+   (el/application {:title "::Error Page::" :data data})))

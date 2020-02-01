@@ -27,15 +27,14 @@
          :url    "/api/swagger.json"
          :config {:validator-url nil}})
       (ring/create-resource-handler {:path "/"}) ;; Serve static resources avoiding conflicting paths
-      (wrap-content-type                         ;; Ring middleware that adds a content-type header to the response. Defaults to 'application/octet-stream'.
-       (ring/redirect-trailing-slash-handler {:method :strip})
+      (ring/redirect-trailing-slash-handler {:method :strip})
       (ring/create-default-handler
-        {:not-found
-         (constantly (ccon/display-error {:status 404 :title "404 - Page not found"}))
-         :method-not-allowed
-         (constantly (ccon/display-error {:status 405 :title "405 - Not allowed"}))
-         :not-acceptable
-         (constantly (ccon/display-error{:status 406 :title "406 - Not acceptable"}))})))))
+       {:not-found
+        (constantly (ccon/display-error {:status 404 :title "404 - Page not found"}))
+        :method-not-allowed
+        (constantly (ccon/display-error {:status 405 :title "405 - Not allowed"}))
+        :not-acceptable
+        (constantly (ccon/display-error{:status 406 :title "406 - Not acceptable"}))}))))
 
 (defn app []
   (middleware/wrap-base #'app-routes))
