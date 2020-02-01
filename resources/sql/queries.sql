@@ -193,7 +193,7 @@ ORDER BY t.id DESC
 SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, s.subject
 FROM tests t INNER JOIN subjects s
 ON t.subject_id = s.id
-WHERE t.user_id = :user-id AND t.archived = false AND t.id = :id
+WHERE t.archived = :archived AND t.id = :id
 ORDER BY t.id DESC
 
 -- :name get-questions :? :*

@@ -4,13 +4,15 @@
             [zentaur.db.core :as db]
             [zentaur.libs.helpers :as h]
             [zentaur.hiccup.helpers-view :as hv]
+            [zentaur.libs.models.shared :as sh]
             [zentaur.models.validations.validations-test :as val-test]))
 
 (defn get-tests [user-id]
   (db/get-tests {:user-id user-id}))
 
-(defn get-one-test [user-id id]
-  (db/get-one-test {:user-id user-id :id id}))
+(defn get-one-test
+  ([id] (get-one-test id false))
+  ([id archived] (db/get-one-test {:id id :archived archived})))
 
 (defn get-subjects []
   (db/get-subjects))
@@ -25,15 +27,9 @@
       (db/create-minimal-test! full-params)
       {:flash errors})))
 
-(defn- ^:private get-last-ordnen
-  [table id]
-  (case table
-    "answers"   (db/get-last-ordnen-answer {:question-id id})
-    "questions" (db/get-last-ordnen-questions {:test-id id})))
-
 (defn- ^:private link-test-question!
   [question-id test-id]
-  (let [next-ordnen (or (:ordnen (get-last-ordnen "questions" test-id)) 0)]
+  (let [next-ordnen (or (:ordnen (sh/get-last-ordnen "questions" test-id)) 0)]
     (db/create-question-test! {:question-id question-id :test-id test-id :ordnen (inc next-ordnen)})))
 
 (defn- ^:private get-last-question
@@ -61,12 +57,14 @@
 
 (defn create-answer! [params]
   (let [question-id  (:question-id params)
-        next-ordnen  (or (:ordnen (get-last-ordnen "answers" question-id)) 0)
+        next-ordnen  (or (:ordnen (sh/get-last-ordnen "answers" question-id)) 0)
         full-params  (assoc params :ordnen (inc next-ordnen))
         errors       (val-test/validate-answer full-params)]
     (if (nil? errors)
       (create-new-answer full-params)
       {:flash errors :ok false})))
+
+;;;;; TEST BUILD SECTION STARTS
 
 (defn- ^:private get-answers [{:keys [id] :as question}]
   (let [answers          (db/get-answers {:question-id id})
@@ -86,16 +84,19 @@
          (map get-answers)
          (zipmap index-seq))))
 
-(defn get-test-nodes
-  "JSON response for the API"
-  [test-id user-id]
-  (let [test          (db/get-one-test { :id test-id :user-id user-id })
+(defn build-test-structure
+  "Build the map with the test, the questions and the answers.
+   Function used by the Web and the Phone App."
+  [test-id archived]
+  (let [test          (db/get-one-test {:id test-id :archived archived})
         questions     (get-questions test-id)
         subjects      (db/get-subjects)]
     (try
       (assoc test :questions questions :subjects subjects)
       (catch Exception e (str "******** >>> Caught exception: " (.getMessage e)))
       (finally (assoc {} :error "function get-test-nodes in model error")))))
+
+;;;;; TEST BUILD SECTION ENDS
 
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn update-question! [params]

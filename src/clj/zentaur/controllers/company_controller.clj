@@ -1,16 +1,13 @@
-(ns ^{:doc "Static pages"} zentaur.controllers.company-controller
-  (:require [zentaur.controllers.base-controller :as basec]
-            [clojure.tools.logging :as log]
-            [zentaur.hiccup.application-layout :as layout]
-            [zentaur.hiccup.page-view :as page-view]
-            [ring.util.http-response :as response]))
-
-(defn get-admin [request]
-  (let [base     (basec/set-vars request)]
-    (layout/application "admin/index.html")))
+(ns ^{:doc "Static and ltd pages"} zentaur.controllers.company-controller
+  (:require [clojure.tools.logging :as log]
+            [ring.util.http-response :as response]
+            [zentaur.controllers.base-controller :as basec]
+            [zentaur.hiccup.layouts.application-layout :as layout]
+            [zentaur.hiccup.layouts.error-layout :as el]
+            [zentaur.hiccup.page-view :as page-view]))
 
 ;; Polimorphysm for static pages
-(defmulti page-behavior (fn [page] (:page page)))
+(defmulti page-behavior :page)
 
 (defmethod page-behavior "about"
   [page]
@@ -36,3 +33,8 @@
      (layout/application
       (merge base contents)))))
 
+(defn display-error
+  "Display generic error message."
+  [data]
+  (basec/parser
+   (el/application {:title "::Error Page::" :data data})))

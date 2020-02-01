@@ -14,8 +14,8 @@
    [ring.middleware.flash :refer [wrap-flash]]
    [ring-ttl-session.core :refer [ttl-memory-store]]
    [zentaur.config :refer [env]]
+   [zentaur.controllers.company-controller :as ccon]
    [zentaur.env :refer [defaults]]     ;; from the env/ dir
-   [zentaur.layout :refer [error-page]]
    [zentaur.middleware.formats :as formats]))
 
 (defn wrap-internal-error [handler]
@@ -24,17 +24,16 @@
       (handler req)
       (catch Throwable t
         (log/error t (.getMessage t))
-        (error-page {:status 500
-                     :title "Something very bad has happened!"
-                     :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
+        (ccon/display-error {:status 500
+                             :title "Something very bad has happened!"
+                             :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
 (defn wrap-csrf [handler]
   (wrap-anti-forgery
     handler
     {:error-response
-     (error-page
-       {:status 403
-        :title "Invalid JJJJ anti-forgery token"})}))
+     (ccon/display-error {:status 403
+                          :title "Invalid anti-forgery token"})}))
 
 (defn wrap-formats [handler]
   (let [wrapped (-> handler wrap-params (wrap-format formats/instance))]
@@ -44,9 +43,8 @@
       ((if (:websocket? request) handler wrapped) request))))
 
 (defn on-error [request response]
-  (error-page
-    {:status 403
-     :title (str "Access to " (:uri request) " is not authorized")}))
+  (ccon/display-error {:status 403
+                       :title (str "Access to " (:uri request) " is not authorized")}))
 
 ;; AUTH CONFIG STARTS
 (defn admin-access [request]
@@ -90,5 +88,5 @@
       (wrap-defaults
       (-> site-defaults
          (assoc-in [:security :anti-forgery] false)
-         (assoc-in  [:session :store] (ttl-memory-store (* 500 30)))))
+         (assoc-in  [:session :store] (ttl-memory-store (* 5000 300)))))
       wrap-internal-error))

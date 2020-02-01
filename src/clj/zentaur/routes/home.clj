@@ -1,6 +1,5 @@
 (ns zentaur.routes.home
-  (:require [zentaur.controllers.api.vclassroom     :as cont-api]
-            [zentaur.controllers.company-controller :as cont-company]
+  (:require [zentaur.controllers.company-controller :as cont-company]
             [zentaur.controllers.export-controller  :as cont-export]
             [zentaur.controllers.files-controller   :as cont-files]
             [zentaur.controllers.posts-controller   :as cont-posts]
@@ -38,18 +37,6 @@
    ["/uploads/download/:id"    {:get  cont-uploads/download}]
    ["/uploads/extract/:id"     {:get  cont-uploads/extract}]])
 
-(def api-routes
-  ["/api"
-   ["/load-test"         {:post cont-api/load-test}]
-   ["/createquestion"    {:post cont-api/create-question}]
-   ["/createanswer"      {:post cont-api/create-answer}]
-   ["/updatequestion"    {:post cont-api/update-question}]
-   ["/updateanswer"      {:post cont-api/update-answer}]
-   ["/updatetest"        {:post cont-api/update-test}]
-   ["/deletetest"        {:delete cont-api/delete-test}]
-   ["/deletequestion"    {:delete cont-api/delete-question}]
-   ["/deleteanswer"      {:delete cont-api/delete-answer}]])
-
 (def admin-routes
   ["/admin"
    ["/posts"                   {:get cont-posts/admin-posts :post cont-posts/save-post}]
@@ -64,4 +51,4 @@
   [""
    {:middleware [middleware/wrap-csrf
                  middleware/wrap-formats]}
-   (merge site-routes vclass-routes api-routes admin-routes)])
+   (merge site-routes vclass-routes admin-routes)])

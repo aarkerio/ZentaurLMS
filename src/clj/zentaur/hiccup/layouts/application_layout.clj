@@ -1,4 +1,4 @@
-(ns zentaur.hiccup.application-layout
+(ns zentaur.hiccup.layouts.application-layout
   (:require [hiccup.form :as f]
             [hiccup.page :refer [html5 include-css include-js]]
             [zentaur.hiccup.helpers-view :as helpers]))

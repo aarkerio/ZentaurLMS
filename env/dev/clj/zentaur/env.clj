@@ -1,8 +1,6 @@
 (ns zentaur.env
-  (:require
-    [selmer.parser :as parser]
-    [clojure.tools.logging :as log]
-    [zentaur.dev-middleware :refer [wrap-dev]]))
+  (:require [clojure.tools.logging :as log]
+            [zentaur.dev-middleware :refer [wrap-dev]]))
 
 (System/setProperty "tika.config" "tika-config.xml")
 (System/setProperty "lein.profile" "dev")
@@ -12,7 +10,6 @@
 (def defaults
   {:init
    (fn []
-     (parser/cache-off!)
      (log/info "\n-=[*** erfolgreich mit dem Entwicklungsprofil gestartet *** ]=-"))
    :stop
    (fn []

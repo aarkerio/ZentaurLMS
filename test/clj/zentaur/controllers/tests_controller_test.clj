@@ -72,9 +72,9 @@
   (testing "JSON response for the API"
     (let [{:keys [csrf session]} (login! "admin@example.com" "password")
           _          (log/info (str ">>> ** RESPONSE ** >>>>> " (prn-str session)))
-          response   (-> ((zh/app) (mock/request :post "/admin/tests/load" {:test-id 1}))
+          response   (-> ((zh/app) (mock/request :post "/api/graphql" "{ test_by_id(id: 1, archived: false) { title subjects {subject} }}" ))
                          (assoc :form-params {"__anti-forgery-token" csrf})
-                         (assoc :headers {"cookie" session}))
+                         (assoc :headers {"cookie" session :content-type "application/graphql"}))
           body  (:body response)
           ]
       (log/info (str ">>> ***** RETURN >>>>> "  response))

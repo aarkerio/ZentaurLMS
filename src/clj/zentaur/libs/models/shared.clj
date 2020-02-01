@@ -1,25 +1,30 @@
 (ns zentaur.libs.models.shared
-  (:require [clojure.tools.logging :as log]
-            [zentaur.db.core :as db]))
+  (:require [clojure.string :as s]
+            [clojure.tools.logging :as log]
+            [zentaur.db.core :as db])
+   (:import (java.text Normalizer)))
 
-(defn get-last-id [table]
+(defn get-last-id
+  "Get the last id for any table"
+  [table]
   (db/clj-generic-last-id {:table-name table}))
 
+(defn get-last-ordnen
+  "Get last ordnen for a table with that column"
+  [table id]
+  (case table
+    "answers"   (db/get-last-ordnen-answer {:question-id id})
+    "questions" (db/get-last-ordnen-questions {:test-id id})))
 
-(defmacro with-resources [[var expr & other :as resources]
-                          body cleanup-block
-                          [error-name error-block :as error-handler]]
-  (if (empty? resources)
-    `(try ~body
-          (catch Throwable e#
-            (let [~error-name e#] ~error-block))
-          (finally ~cleanup-block))
-    `(try
-       (let ~[var expr]
-         (with-resources ~other ~body ~cleanup-block ~error-handler))
-       (catch Throwable e#
-         (let ~(vec (interleave (take-nth 2 resources)
-                                (repeat nil)))
-           ~cleanup-block
-           (let [~error-name e#] ~error-block))))))
+(defn- ^:private normalize
+  "Normalize string"
+  [^CharSequence string]
+  (let [normalized (Normalizer/normalize string java.text.Normalizer$Form/NFD)]
+    (s/replace normalized #"\p{InCombiningDiacriticalMarks}+" "")))
 
+(defn slugify
+  "Returns a slugified string."
+  [^CharSequence string]
+  (let [normalized (normalize string)
+        under_norm (s/replace normalized " " "_")]
+    (s/lower-case under_norm)))

@@ -1,12 +1,7 @@
 (ns zentaur.controllers.base-controller
-  (:require [selmer.parser :as parser]
-            [ring.util.http-response :as response]
-            [zentaur.models.posts :as modposts]
-            [zentaur.libs.helpers :as h]))
-
-(defn json-response [file map]
-  (let [json-file (str "json/" file ".json")]
-    (parser/render-file json-file map)))
+  (:require [ring.util.http-response :as response]
+            [zentaur.libs.helpers :as h]
+            [zentaur.models.posts :as modposts]))
 
 (defn set-vars [request]
   (let [csrf-field (:anti-forgery-token request)

@@ -10,7 +10,7 @@
                  [clojure.java-time "0.3.2"]             ;; Java 8 Date-Time API for Clojure
                  [com.cognitect/transit-clj "0.8.319"]   ;; Marshalling Transit data to/from Clojure
                  [com.novemberain/pantomime "2.11.0"]    ;; A tiny Clojure library that deals with MIME types
-                 [com.walmartlabs/lacinia "0.36.0-alpha-2"] ;; GraphQL
+                 [com.walmartlabs/lacinia "0.36.0-alpha-3"] ;; GraphQL
                  [conman "0.8.4"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.14"]                        ;; where all configuration properties converge
                  [day8.re-frame/http-fx "v0.2.0"]        ;; A re-frame effects handler for performing Ajax tasks
@@ -31,12 +31,11 @@
                  [org.postgresql/postgresql "42.2.9"]    ;; PostgreSQL rulez!
                  [re-frame "0.11.0"]                     ;; A Reagent Framework For Writing SPAs, in Clojurescript.
                  [reagent "0.9.1"]                       ;; Minimalistic React for ClojureScript
+                 [re-graph "0.1.11"]                     ;; A graphql client for clojurescript and clojure
                  [ring-webjars "0.2.0" :exclusions [joda-time]] ;; Web assets
                  [ring/ring-core "1.8.0"]                ;; A very thin HTTP abstraction
                  [ring/ring-defaults "0.3.2" :exclusions [joda-time]] ;; Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
-                 [ring-ttl-session "0.3.1" :exclusions [joda-time]]   ;; Ring's TTL (time to live) session
-                 [selmer "1.12.12"]                      ;; HTML Templates
-                 [slugify "0.0.1"]]
+                 [ring-ttl-session "0.3.1" :exclusions [joda-time]]]   ;; Ring's TTL (time to live) session
   :managed-dependencies [[org.clojure/core.rrb-vector "0.0.13"]]  ;; necessary for JDK 11
   :min-lein-version "2.9.0"    ;; current CIDER needs 2.9 or +
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
