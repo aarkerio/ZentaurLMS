@@ -10,7 +10,7 @@
                  [clojure.java-time "0.3.2"]             ;; Java 8 Date-Time API for Clojure
                  [com.cognitect/transit-clj "0.8.319"]   ;; Marshalling Transit data to/from Clojure
                  [com.novemberain/pantomime "2.11.0"]    ;; A tiny Clojure library that deals with MIME types
-                 [com.walmartlabs/lacinia "0.36.0-alpha-3"] ;; GraphQL
+                 [com.walmartlabs/lacinia "0.36.0-alpha-4"] ;; GraphQL implementation in pure Clojure
                  [conman "0.8.4"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.14"]                        ;; where all configuration properties converge
                  [day8.re-frame/http-fx "v0.2.0"]        ;; A re-frame effects handler for performing Ajax tasks

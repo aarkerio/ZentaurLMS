@@ -104,7 +104,6 @@
 
 ;;##########################################333
 
-
 ;; AJAX handlers
 (re-frame/reg-event-db
  :process-new-question

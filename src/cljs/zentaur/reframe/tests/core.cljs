@@ -21,7 +21,7 @@
      :http-url                "http://localhost:3000/api/graphql" ;; override the http url (defaults to /graphql)
      :http-parameters         {:with-credentials? false       ;; any parameters to be merged with the request, see cljs-http for options
                                :oauth-token "ah4rdSecr3t"
-                               :headers {"Content-Type" "application/graphql"}
+                               ;; :headers {"Content-Type" "application/graphql"}
                                }
      :ws-reconnect-timeout    nil                             ;; attempt reconnect n milliseconds after disconnect (default 5000, nil to disable)
      :resume-subscriptions?   false                           ;; start existing subscriptions again when websocket is reconnected after a disconnect
