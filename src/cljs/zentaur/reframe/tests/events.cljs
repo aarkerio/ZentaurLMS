@@ -98,7 +98,7 @@
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query
                               query                              ;; graphql query
-                              {:some "Pumas prros!! variable"}   ;; arguments map
+                              nil   ;; arguments map
                               [:process-test-response]])         ;; callback event when response is recieved
           )))
 

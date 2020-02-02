@@ -14,7 +14,7 @@
            :fulltest  {
                         :description "List of Tests schema."
                         :fields {
-                                 :tests {:type (list :test)}}
+                                 :tests {:type (list :test)}}}
            :test     {
                       :description "Tests schema."
                       :fields {
