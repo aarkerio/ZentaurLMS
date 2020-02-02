@@ -17,7 +17,7 @@
     (throw (ex-info (str "Die Spezifikationsprüfung ist fehlgeschlagen: " (s/explain-str a-spec db)) {}))))
 
 ;; now we create an interceptor using `after`
-(def check-spec-interceptor (re-frame/after (partial check-and-throw :zentaur.reframe.tests.db/db)))  ;; PARTIAL: (def hundred-times (partial * 100))
+(def check-spec-interceptor (re-frame/after (partial check-and-throw :zentaur.reframe.tests.db/db)))  ;; PARTIAL: a way to currying
 
 ;; We now create the interceptor chain shared by all event handlers which manipulate todos.
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
@@ -66,23 +66,26 @@
  (fn [db _]
    (update db :testform not)))
 
+;;; ###########################################7
+
 (re-frame/reg-event-db
   :process-test-response
-  (fn [db [_ data]]
-    (.log js/console (str ">>> process-test-response DATA  >>>>> " data ))
-    (let [questions  (:questions data)
-          subjects   (:subjects data)
-          test       (dissoc data :questions)]
-      (-> db
-          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
-          (assoc :test      (js->clj test :keywordize-keys true))
-          (assoc :questions (js->clj questions :keywordize-keys true))
-          (assoc :subjects  (js->clj subjects :keywordize-keys true))))))
+  (fn [db [_ {:keys [data errors] :as payload}]]
+    (.log js/console (str ">>> DATA DATA  >>>>> " payload ))
+    (let [full-data   (:questions_by_test data)
+          questions   (:questions full-data)
+          _           (.log js/console (str ">>> questions >>>>> " questions ))
+          test        (:test full-data)]
+     (-> db
+         (assoc :loading?  false)     ;; take away that "Loading ..." UI element
+         (assoc :test      (js->clj test :keywordize-keys true))
+         (assoc :questions (js->clj questions :keywordize-keys true))))))
 
-          ;; query         (gstring/format "{questions_by_test(id: %i) { test {id title description tags created_at}
-          ;;                                 questions { id question qtype explanation hint ordnen
-          ;;                                 answers { id answer correct } }}}"
-
+;; "{ questions_by_test(id: %i) { test {id title description tags created_at}
+;;                                            questions { id question qtype explanation hint ordnen
+;;                                            answers { id answer correct } }}}"
+;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
+;; reg-event-fx == event handler's coeffects, fx == effect
 (re-frame/reg-event-fx
   :request-test
   (fn                      ;; <-- the handler function
@@ -90,7 +93,7 @@
     (let [db            (:db cfx)
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "{ test_by_id( id: %i, archived: false) { title questions { question } subjects { subject }}}"
+          query         (gstring/format "{ test_by_id(id: %i, archived: false) { title } }"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query
@@ -98,6 +101,9 @@
                               {:some "Pumas prros!! variable"}   ;; arguments map
                               [:process-test-response]])         ;; callback event when response is recieved
           )))
+
+;;##########################################333
+
 
 ;; AJAX handlers
 (re-frame/reg-event-db

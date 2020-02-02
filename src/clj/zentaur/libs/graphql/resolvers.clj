@@ -24,7 +24,7 @@
         full-test  (mt/build-test-structure test-id archived)]
     (update full-test :id str))) ;; Graphql needs string IDs
 
-(defn resolve-all-tests
+(defn- ^:private resolve-all-tests
   [context args value]
   (let [all-tests  (mt/get-tests {:test-id (:test_id args)} )]
     all-tests))
@@ -41,4 +41,4 @@
   {:test-by-id (partial resolve-test-by-id)
    :get-all-tests (partial resolve-all-tests)
    :create-question (partial create-question)})
-  
+

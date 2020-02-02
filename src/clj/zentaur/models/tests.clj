@@ -90,9 +90,10 @@
   [test-id archived]
   (let [test          (db/get-one-test {:id test-id :archived archived})
         questions     (get-questions test-id)
-        subjects      (db/get-subjects)]
+        subjects      (db/get-subjects)
+        subj-strs     (map #(update % :id str) subjects)]
     (try
-      (assoc test :questions questions :subjects subjects)
+      (assoc test :questions questions :subjects subj-strs)
       (catch Exception e (str "******** >>> Caught exception: " (.getMessage e)))
       (finally (assoc {} :error "function get-test-nodes in model error")))))
 
