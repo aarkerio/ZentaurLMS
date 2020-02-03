@@ -1,5 +1,7 @@
 (ns zentaur.routes.services
-  (:require [clojure.java.io :as io]
+  (:require [clojure.data.json :as json]
+            [clojure.java.io :as io]
+            [clojure.tools.logging :as log]
             [reitit.swagger :as swagger]
             [reitit.swagger-ui :as swagger-ui]
             [reitit.ring.coercion :as coercion]                ;; Coercion is a process of transforming parameters (and responses) from one format into another.
@@ -12,15 +14,21 @@
             [zentaur.middleware.formats :as formats]
             [zentaur.middleware.exception :as exception]))
 
+(defn graphql-call [req]
+  (let [body       (-> req :body slurp)
+        full-query (json/read-str body :key-fn keyword)]
+    (ok (graphql/execute-request full-query))))
+
 (defn service-routes []
   ["/api"
-   {:coercion spec-coercion/coercion
+   {
+    :coercion spec-coercion/coercion
     :muuntaja formats/instance
     :swagger {:id ::api}
     :middleware [;; query-params & form-params
                  parameters/parameters-middleware
                  ;; content-negotiation
-                 ;; muuntaja/format-negotiate-middleware
+                 muuntaja/format-negotiate-middleware
                  ;; encoding response body
                  muuntaja/format-response-middleware
                  ;; exception handling
@@ -34,6 +42,8 @@
                  ;; multipart
                  multipart/multipart-middleware
                  ]}
+
+   ["/graphql" {:post graphql-call}]
 
    ;; swagger documentation
    ["" {:no-doc true
@@ -51,24 +61,6 @@
    ["/ping"
     {:get (constantly (ok {:message "pong"}))}]
 
-   ["/graphql" {:post (fn [req] (ok (graphql/execute-request (-> req :body slurp))))}]
-
-   ["/math"
-    {:swagger {:tags ["math"]}}
-
-    ["/plus"
-     {:get {:summary "plus with spec query parameters"
-            :parameters {:query {:x int?, :y int?}}
-            :responses {200 {:body {:total pos-int?}}}
-            :handler (fn [{{{:keys [x y]} :query} :parameters}]
-                       {:status 200
-                        :body {:total (+ x y)}})}
-      :post {:summary "plus with spec body parameters"
-             :parameters {:body {:x int?, :y int?}}
-             :responses {200 {:body {:total pos-int?}}}
-             :handler (fn [{{{:keys [x y]} :body} :parameters}]
-                        {:status 200
-                         :body {:total (+ x y)}})}}]]
 
    ["/files"
     {:swagger {:tags ["files"]}}
@@ -80,14 +72,4 @@
              :handler (fn [{{{:keys [file]} :multipart} :parameters}]
                         {:status 200
                          :body {:name (:filename file)
-                                :size (:size file)}})}}]
-
-    ["/download"
-     {:get {:summary "Downloads a file"
-            :swagger {:produces ["image/png"]}
-            :handler (fn [_]
-                       {:status 200
-                        :headers {"Content-Type" "image/png"}
-                        :body (-> "public/img/warning_clojure.png"
-                                  (io/resource)
-                                  (io/input-stream))})}}]]])
+                                :size (:size file)}})}}]]])

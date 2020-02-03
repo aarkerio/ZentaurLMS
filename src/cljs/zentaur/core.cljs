@@ -117,7 +117,7 @@
         _           (.log js/console (str ">>> **** tatsächliche: current. Jedoch However**** >>>>> " current_url))]
     (cond
       (s/includes? current_url "admin/users")     (users/load-users)
-      (s/includes? current_url "uploads/process") (uploads/load-process)
+      (s/includes? current_url "uploads/process") (uploads/mount)
       (s/includes? current_url "admin/posts")     (posts/load-posts)
       (s/includes? current_url "/posts/view/")    (validate-comment-form)
       (= current_url "/admin/posts/new")          (.log js/console (str ">>> test-formtest(new-post-validation)"))

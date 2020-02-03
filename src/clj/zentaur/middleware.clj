@@ -16,8 +16,7 @@
    [zentaur.config :refer [env]]
    [zentaur.controllers.company-controller :as ccon]
    [zentaur.env :refer [defaults]]     ;; from the env/ dir
-   [zentaur.middleware.formats :as formats]
-   [zentaur.middleware.lacinia :refer [wrap-lacinia]]))
+   [zentaur.middleware.formats :as formats]))
 
 (defn wrap-internal-error [handler]
   (fn [req]
@@ -29,17 +28,20 @@
                              :title "Something very bad has happened!"
                              :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
-(defn wrap-csrf [handler]
+(defn wrap-csrf
+  "Cross-Site Request Forgery"
+  [handler]
   (wrap-anti-forgery
     handler
     {:error-response
      (ccon/display-error {:status 403
                           :title "Invalid anti-forgery token"})}))
 
-(defn wrap-formats [handler]
+(defn wrap-formats
+  "Disable wrap-formats for websockets"
+  [handler]
   (let [wrapped (-> handler wrap-params (wrap-format formats/instance))]
     (fn [request]
-      ;; disable wrap-formats for websockets
       ;; since they're not compatible with this middleware
       ((if (:websocket? request) handler wrapped) request))))
 
@@ -83,7 +85,6 @@
   [handler]
   (-> ((:middleware defaults) handler)  ;; from env/../dev_middleware.clj
       (wrap-access-rules {:rules rules :on-error on-error})
-      wrap-lacinia
       wrap-auth
       wrap-flash
       wrap-session
