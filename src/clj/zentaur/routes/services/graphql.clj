@@ -21,4 +21,7 @@
 (defn execute-request [query]
     (let [vars    nil
           context nil]
-    (json/write-str (lacinia/execute compiled-schema query vars context))))
+      ;; (json/write-str
+       (lacinia/execute compiled-schema query vars context)
+       ;; )
+      ))

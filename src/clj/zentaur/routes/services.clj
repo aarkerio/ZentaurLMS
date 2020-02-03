@@ -20,7 +20,7 @@
     :middleware [;; query-params & form-params
                  parameters/parameters-middleware
                  ;; content-negotiation
-                 muuntaja/format-negotiate-middleware
+                 ;; muuntaja/format-negotiate-middleware
                  ;; encoding response body
                  muuntaja/format-response-middleware
                  ;; exception handling
@@ -32,7 +32,8 @@
                  ;; coercing request parameters
                  coercion/coerce-request-middleware
                  ;; multipart
-                 multipart/multipart-middleware]}
+                 multipart/multipart-middleware
+                 ]}
 
    ;; swagger documentation
    ["" {:no-doc true

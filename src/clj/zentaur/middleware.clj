@@ -16,7 +16,8 @@
    [zentaur.config :refer [env]]
    [zentaur.controllers.company-controller :as ccon]
    [zentaur.env :refer [defaults]]     ;; from the env/ dir
-   [zentaur.middleware.formats :as formats]))
+   [zentaur.middleware.formats :as formats]
+   [zentaur.middleware.lacinia :refer [wrap-lacinia]]))
 
 (defn wrap-internal-error [handler]
   (fn [req]
@@ -82,11 +83,12 @@
   [handler]
   (-> ((:middleware defaults) handler)  ;; from env/../dev_middleware.clj
       (wrap-access-rules {:rules rules :on-error on-error})
+      wrap-lacinia
       wrap-auth
       wrap-flash
-      (wrap-session)
+      wrap-session
       (wrap-defaults
-      (-> site-defaults
-         (assoc-in [:security :anti-forgery] false)
-         (assoc-in  [:session :store] (ttl-memory-store (* 5000 300)))))
+       (-> site-defaults
+           (assoc-in [:security :anti-forgery] false)
+           (assoc-in  [:session :store] (ttl-memory-store (* 5000 300)))))
       wrap-internal-error))
