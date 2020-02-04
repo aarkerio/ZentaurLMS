@@ -72,7 +72,8 @@
   :process-test-response
   (fn [db [_ {:keys [data errors] :as payload}]]
     (.log js/console (str ">>> DATA DATA  >>>>> " payload ))
-    (let [full-data   (:questions_by_test data)
+    (let [full-data (-> data :)
+          full-data (:questions_by_test data)
           questions   (:questions full-data)
           _           (.log js/console (str ">>> questions >>>>> " questions ))
           test        (:test full-data)]
@@ -102,7 +103,7 @@
                               [:process-test-response]])         ;; callback event when response is recieved
           )))
 
-;;##########################################333
+;;##########################################
 
 ;; AJAX handlers
 (re-frame/reg-event-db
