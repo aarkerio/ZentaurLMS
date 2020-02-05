@@ -67,13 +67,15 @@
    (update db :testform not)))
 
 ;;; ###########################################7
+(defn update-ids [data]
+  (map #(update % :id (fn [k] (Integer/parseInt k))) data))
 
 (re-frame/reg-event-db
   :process-test-response
   (fn [db [_ {:keys [data errors] :as payload}]]
     (let [test        (:test_by_id  data)
           questions   (:questions test)
-          subjects    (:subjects test)
+          subjects    (update-ids (:subjects test))
           only-test   (dissoc test :subjects :questions)
           _           (.log js/console (str ">>> subjects >>>>> " subjects))
           _           (.log js/console (str ">>> questions >>>>> " questions))

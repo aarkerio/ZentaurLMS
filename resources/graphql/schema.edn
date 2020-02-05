@@ -24,6 +24,7 @@
                                :description  {:type (non-null String)}
                                :instructions {:type String}
                                :subject      {:type String}
+                               :subject_id   {:type Int}
                                :tags         {:type String}
                                :created_at   {:type String}
                                :level        {:type Int}
