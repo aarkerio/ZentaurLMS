@@ -71,20 +71,20 @@
 (re-frame/reg-event-db
   :process-test-response
   (fn [db [_ {:keys [data errors] :as payload}]]
-    (.log js/console (str ">>> DATA DATA  >>>>> " payload ))
-    (let [full-data (-> data :)
-          full-data (:questions_by_test data)
-          questions   (:questions full-data)
-          _           (.log js/console (str ">>> questions >>>>> " questions ))
-          test        (:test full-data)]
+    (let [test        (:test_by_id  data)
+          questions   (:questions test)
+          subjects    (:subjects test)
+          only-test   (dissoc test :subjects :questions)
+          _           (.log js/console (str ">>> subjects >>>>> " subjects))
+          _           (.log js/console (str ">>> questions >>>>> " questions))
+          _           (.log js/console (str ">>> TEST >>>>> " only-test))
+          ]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
-         (assoc :test      (js->clj test :keywordize-keys true))
-         (assoc :questions (js->clj questions :keywordize-keys true))))))
+         (assoc :test      test)
+         (assoc :subjects   subjects)
+         (assoc :questions questions)))))
 
-;; "{ questions_by_test(id: %i) { test {id title description tags created_at}
-;;                                            questions { id question qtype explanation hint ordnen
-;;                                            answers { id answer correct } }}}"
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
 (re-frame/reg-event-fx
@@ -94,7 +94,7 @@
     (let [db            (:db cfx)
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "{ test_by_id(id: %i, archived: false) { title description subjects {id subject} } }"
+          query         (gstring/format "{ test_by_id(id: %i, archived: false) { title description tags subject created_at subjects {id subject} questions {id question} } }"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query
@@ -117,25 +117,6 @@
          (update :qform not)           ;; hide new question form
          (update-in [:questions] conj response)))))
 
-;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
-
-;; (re-frame/reg-event-fx      ;; <-- note the `-fx` extension
-;;  :create-question           ;; <-- the event id
-;;  (fn                         ;; <-- our handler function
-;;    [cofx [dispatch-name question]]      ;; <-- 1st argument is coeffect, from which we extract db
-;;    (let [test-id    (.-value (gdom/getElement "test-id"))
-;;          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-;;      ;; we return a map of (side) effects
-;;      {:http-xhrio {:method          :post
-;;                    :uri             "/api/createquestion"
-;;                    :format          (ajax/json-request-format)
-;;                    :params          question
-;;                    :headers         {"x-csrf-token" csrf-field}
-;;                    :response-format (ajax/json-response-format {:keywords? true})
-;;                    :on-success      [:process-new-question]
-;;                    :on-failure      [:bad-response]}})))
-
-;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
 (re-frame/reg-event-fx
   :create-question
   (fn                      ;; <-- the handler function
@@ -157,8 +138,7 @@
       (re-frame/dispatch [::re-graph/mutate
                           mutation                           ;; graphql query
                           {:some "Pumas prros!! variable"}   ;; arguments map
-                          [:process-question-response]]))))
-
+                          [:process-new-question]]))))
 
 (re-frame/reg-event-db
  :process-after-delete-question

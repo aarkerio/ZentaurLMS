@@ -23,6 +23,7 @@
                                :user_id      {:type Int}
                                :description  {:type (non-null String)}
                                :instructions {:type String}
+                               :subject      {:type String}
                                :tags         {:type String}
                                :created_at   {:type String}
                                :level        {:type Int}

@@ -197,6 +197,7 @@
             ))])))
 
 (defn test-editor-form [test ^string title ^string description ^string tags ^int subject-id]
+  (.log js/console (str ">>> VALUE >>>>> " subject-id ))
     [:div {:id "test-whole-display"}
      [:div.edit-icon-div
       (if @(rf/subscribe [:toggle-testform])
