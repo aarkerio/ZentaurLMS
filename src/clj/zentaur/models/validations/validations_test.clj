@@ -1,6 +1,18 @@
 (ns zentaur.models.validations.validations-test
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.spec.alpha :as s]
+            [clojure.tools.logging :as log]
             [struct.core :as st]))
+
+(s/def :test/title string?)
+(s/def :test/tags string?)
+(s/def :test/subject-id (s/and int? pos?))
+(s/def :test/user-id (s/and int? pos?))
+
+(s/def :test/new-test (s/keys :req [:test/title :test/subject-id :test/user-id]
+                              :opt [:test/tags]))
+
+(defn spec-minimal-test [params]
+  (s/valid? :test/new-test params))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;    VALIDATIONS    NIL == all is fine!!

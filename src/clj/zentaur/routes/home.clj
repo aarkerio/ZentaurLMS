@@ -21,7 +21,7 @@
 (def vclass-routes
   ["/vclass"
    ["/"                        {:get  cont-posts/get-posts}]
-   ["/tests"                   {:get  cont-tests/index}]
+   ["/tests"                   {:get  cont-tests/index :post cont-tests/create-test}]
    ["/tests/edit/:id"          {:get  cont-tests/edit}]
    ["/tests/exporttestpdf/:id" {:get  cont-export/export-test-pdf}]
    ["/tests/exporttestodf/:id" {:get  cont-export/export-test-odf}]

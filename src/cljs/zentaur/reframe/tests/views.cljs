@@ -221,10 +221,10 @@
                 :placeholder "Tags" :title "Tags" :maxLength 100 :size 100}]]
       [:div.div-separator
        [:select.form-control.mr-sm-2 {:name      "subject-id"
-                                      :value     @subject-id
+                                      :value     (:subject_id @test)
                                       :on-change #(reset! subject-id (-> % .-target .-value))}
-        (for [subject @(rf/subscribe [:subjects])]
-          ^{:key (:id subject)} [:option {:value (:id subject)} (:subject subject)])
+        (for [row-subject @(rf/subscribe [:subjects])]
+          ^{:key (:id row-subject)} [:option {:value (:id row-subject)} (:subject row-subject)])
         ]]
       [:div
        [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"

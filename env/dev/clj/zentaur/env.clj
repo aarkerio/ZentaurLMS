@@ -10,7 +10,7 @@
 (def defaults
   {:init
    (fn []
-     (log/info "\n-=[*** erfolgreich mit dem Entwicklungsprofil gestartet *** ]=-"))
+     (log/info "\n-=[*** Erfolgreich mit dem Entwicklungsprofil gestartet *** ]=-"))
    :stop
    (fn []
      (log/info "\n-=[zentaur wurde erfolgreich heruntergefahren]=-"))

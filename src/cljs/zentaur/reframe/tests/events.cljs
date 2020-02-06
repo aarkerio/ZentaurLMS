@@ -66,9 +66,9 @@
  (fn [db _]
    (update db :testform not)))
 
-;;; ###########################################7
+;;; ###########################################
 (defn update-ids [data]
-  (map #(update % :id (fn [k] (Integer/parseInt k))) data))
+  (map #(update % :id (fn [k] (js/parseInt k))) data))
 
 (re-frame/reg-event-db
   :process-test-response
@@ -96,7 +96,8 @@
     (let [db            (:db cfx)
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "{ test_by_id(id: %i, archived: false) { title description tags subject created_at subjects {id subject} questions {id question} } }"
+          query         (gstring/format "{ test_by_id(id: %i, archived: false) { title description tags subject subject_id created_at
+                                           subjects {id subject} questions {id question} } }"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query

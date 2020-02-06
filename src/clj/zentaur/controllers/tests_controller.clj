@@ -25,3 +25,11 @@
     (basec/parser
      (layout/application (merge base {:title "New Quiz Tests" :contents (tests-view/edit base test-id) })))))
 
+(defn create-test
+  "POST /vclass/tests"
+  [request]
+  (let [params       (:params request)
+        user-id      (-> request :identity :id)
+        clean-params (dissoc params :__anti-forgery-token :submit :button-save)]
+    (model-test/create-test! clean-params user-id)
+    (response/found "/vclass/tests")))

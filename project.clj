@@ -20,7 +20,7 @@
                  [luminus-transit "0.1.2"]               ;; Transit helpers
                  [markdown-clj "1.10.1"]                 ;; MD support
                  [metosin/muuntaja "0.6.6"]              ;; library for fast http api format negotiation, encoding and decoding.
-                 [metosin/reitit "0.4.1" :exclusions [joda-time]] ;; A fast data-driven router for Clojure(Script).
+                 [metosin/reitit "0.4.1" :exclusions [joda-time clj-time]] ;; A fast data-driven router for Clojure(Script).
                  [metosin/ring-http-response "0.9.1" :exclusions [joda-time]]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.16"]                        ;; Managing Clojure and ClojureScript app state
                  [org.clojure/clojure "1.10.1"]          ;; The sweet core!!
@@ -32,10 +32,10 @@
                  [re-frame "0.11.0"]                     ;; A Reagent Framework For Writing SPAs, in Clojurescript.
                  [reagent "0.9.1"]                       ;; Minimalistic React for ClojureScript
                  [re-graph "0.1.11"]                     ;; A graphql client for clojurescript and clojure
-                 [ring-webjars "0.2.0" :exclusions [joda-time]] ;; Web assets
+                 [ring-webjars "0.2.0" :exclusions [joda-time clj-time]] ;; Web assets
                  [ring/ring-core "1.8.0"]                ;; A very thin HTTP abstraction
-                 [ring/ring-defaults "0.3.2" :exclusions [joda-time]] ;; Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
-                 [ring-ttl-session "0.3.1" :exclusions [joda-time]]]   ;; Ring's TTL (time to live) session
+                 [ring/ring-defaults "0.3.2" :exclusions [joda-time clj-time]] ;; Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
+                 [ring-ttl-session "0.3.1" :exclusions [joda-time clj-time]]]   ;; Ring's TTL (time to live) session
   :managed-dependencies [[org.clojure/core.rrb-vector "0.0.13"]]  ;; necessary for JDK 11
   :min-lein-version "2.9.0"    ;; current CIDER needs 2.9 or +
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
@@ -64,7 +64,7 @@
 
             :project/dev  {:jvm-opts ["-Dconf=dev-config.edn" "--illegal-access=warn"]
                            :dependencies [[binaryage/devtools "0.9.11"]              ;; CLJS DevTools
-                                          [com.bhauman/figwheel-main "0.2.3" :exclusions [joda-time]]        ;; Hot Reload cljs
+                                          [com.bhauman/figwheel-main "0.2.3" :exclusions [joda-time clj-time]]        ;; Hot Reload cljs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
                                           [doo "0.1.11"]                             ;; Library and lein plugin to run cljs.test on different JS environments
                                           [enlive "1.1.6"]
