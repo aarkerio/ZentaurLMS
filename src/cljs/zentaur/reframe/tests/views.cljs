@@ -196,8 +196,8 @@
             ^{:key (swap! counter inc)} [question-item (second question)]
             ))])))
 
-(defn test-editor-form [test ^string title ^string description ^string tags ^int subject-id]
-  (.log js/console (str ">>> VALUE >>>>> " subject-id ))
+(defn test-editor-form [test title description tags subject-id]
+  (.log js/console (str ">>> VALUE >>>>> subject_id: " (:subject_id test) ">>> test >>>"  test))
     [:div {:id "test-whole-display"}
      [:div.edit-icon-div
       (if @(rf/subscribe [:toggle-testform])
@@ -221,7 +221,7 @@
                 :placeholder "Tags" :title "Tags" :maxLength 100 :size 100}]]
       [:div.div-separator
        [:select.form-control.mr-sm-2 {:name      "subject-id"
-                                      :value     (:subject_id @test)
+                                      :value     (str (:subject_id test))
                                       :on-change #(reset! subject-id (-> % .-target .-value))}
         (for [row-subject @(rf/subscribe [:subjects])]
           ^{:key (:id row-subject)} [:option {:value (:id row-subject)} (:subject row-subject)])

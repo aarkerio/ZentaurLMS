@@ -83,8 +83,8 @@
           ]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
-         (assoc :test      test)
-         (assoc :subjects   subjects)
+         (assoc :test      only-test)
+         (assoc :subjects  subjects)
          (assoc :questions questions)))))
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;

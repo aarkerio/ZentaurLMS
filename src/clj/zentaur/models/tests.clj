@@ -23,10 +23,10 @@
   (let [pre-params  (assoc params :user-id user-id)
         full-params (update pre-params :subject-id #(Integer/parseInt %))
         _           (log/info (str ">>> full-paramsCREATE TEST >>>>> " full-params))
-        errors      (val-test/spec-minimal-test full-params)]
+        errors      (val-test/validate-test full-params)]
     (if (nil? errors)
       (db/create-minimal-test! full-params)
-      {:flash errors})))
+      false)))
 
 (defn- ^:private link-test-question!
   [question-id test-id]

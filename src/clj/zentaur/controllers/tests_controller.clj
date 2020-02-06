@@ -30,6 +30,7 @@
   [request]
   (let [params       (:params request)
         user-id      (-> request :identity :id)
-        clean-params (dissoc params :__anti-forgery-token :submit :button-save)]
-    (model-test/create-test! clean-params user-id)
-    (response/found "/vclass/tests")))
+        clean-params (dissoc params :__anti-forgery-token :submit :button-save)
+        result       (model-test/create-test! clean-params user-id)
+        msg          (if (false? result) "Etwas ging schief ;-(" "Test hinzufügen!! ;-)")]
+    (assoc (response/found "/vclass/tests") :flash msg)))

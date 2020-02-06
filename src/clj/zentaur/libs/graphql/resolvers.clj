@@ -18,8 +18,7 @@
 (defn- ^:private resolve-test-by-id
   "Resolver to get and convert to map keyed"
   [context args value]
-  (let [_          (log/info :msg (str ">>> args >>>>> " args))
-        test-id    (Integer/parseInt (:id args))
+  (let [test-id    (Integer/parseInt (:id args))
         archived   (:archived args)
         full-test  (mt/build-test-structure test-id archived)]
     (update full-test :id str))) ;; Graphql needs string IDs
@@ -31,9 +30,11 @@
 
 (defn- ^:private create-question
   [context args value]
-  (let [full-args (assoc args :active true)]
-  "ddsfdsfdsf"
-  (resolve-as nil {:message "Question not saved." :status 404 :ok false})))
+  (log/info (str ">>> ARGS >>>>> " args))
+  (let [full-args    (assoc args :active true)
+        new-question (mt/create-question! full-args)]
+    (log/info (str ">>> new-question >>>>> " new-question))
+    new-question))
 
 (defn resolver-map
   "Public. Match resolvers."

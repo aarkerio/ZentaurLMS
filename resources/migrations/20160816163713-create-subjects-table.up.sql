@@ -7,7 +7,7 @@ CREATE TABLE subjects (  -- tests are ordered this way
    subject varchar(150) NOT NULL
 );
 --;;
-INSERT INTO subjects (subject) VALUES ('Maths');
+INSERT INTO subjects (subject) VALUES ('Math');
 --;;
 INSERT INTO subjects (subject) VALUES ('English');
 --;;
@@ -36,4 +36,6 @@ INSERT INTO subjects (subject) VALUES ('Politics');
 INSERT INTO subjects (subject) VALUES ('Philosophy');
 --;;
 INSERT INTO subjects (subject) VALUES ('Physical Education');
+--;;
+INSERT INTO subjects (subject) VALUES ('Literature');
 
