@@ -3,7 +3,6 @@
    [mount.core :as mount]
    [reitit.ring :as ring]
    [ring.middleware.content-type :refer [wrap-content-type]]
-   [ring.middleware.webjars :refer [wrap-webjars]]   ;; WebJars are client-side web libraries packaged into JAR (Java Archive) files.
    [reitit.swagger-ui :as swagger-ui]
    [zentaur.env :refer [defaults]]
    [zentaur.controllers.company-controller :as ccon]

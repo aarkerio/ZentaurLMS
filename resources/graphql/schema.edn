@@ -12,9 +12,9 @@
                                    :friends    {:type (list :character)}}}}
  :objects {
            :fulltest  {
-                        :description "Full Tests schema."
+                        :description "List of Tests schema."
                         :fields {
-                                 :test  {:type (non-null :test)}}}
+                                 :tests {:type (list :test)}}}
            :test     {
                       :description "Tests schema."
                       :fields {
@@ -23,6 +23,8 @@
                                :user_id      {:type Int}
                                :description  {:type (non-null String)}
                                :instructions {:type String}
+                               :subject      {:type String}
+                               :subject_id   {:type Int}
                                :tags         {:type String}
                                :created_at   {:type String}
                                :level        {:type Int}
@@ -33,7 +35,7 @@
            :ided_question {
                            :description "Question with ID"
                            :fields {
-                                    :id  {:type (non-null ID)}
+                                    :id       {:type (non-null ID)}
                                     :question {:type :question}}}
            :question {
                       :description "Question schema."
@@ -50,7 +52,6 @@
                                :reviewed_fact {:type Boolean}
                                :reviewed_lang {:type Boolean}
                                :answers       {:type (list :answer)}}}
-
            :subject {
                       :description "Subject type."
                       :fields {

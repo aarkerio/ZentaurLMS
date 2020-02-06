@@ -1,6 +1,7 @@
 (ns ^:test-model zentaur.models.tests
   "Business logic for the tests section"
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.spec.alpha :as s]
+            [clojure.tools.logging :as log]
             [zentaur.db.core :as db]
             [zentaur.libs.helpers :as h]
             [zentaur.hiccup.helpers-view :as hv]
@@ -22,7 +23,7 @@
   (let [pre-params  (assoc params :user-id user-id)
         full-params (update pre-params :subject-id #(Integer/parseInt %))
         _           (log/info (str ">>> full-paramsCREATE TEST >>>>> " full-params))
-        errors      (val-test/validate-test full-params)]
+        errors      (val-test/spec-minimal-test full-params)]
     (if (nil? errors)
       (db/create-minimal-test! full-params)
       {:flash errors})))
@@ -90,9 +91,10 @@
   [test-id archived]
   (let [test          (db/get-one-test {:id test-id :archived archived})
         questions     (get-questions test-id)
-        subjects      (db/get-subjects)]
+        subjects      (db/get-subjects)
+        subj-strs     (map #(update % :id str) subjects)]
     (try
-      (assoc test :questions questions :subjects subjects)
+      (assoc test :questions questions :subjects subj-strs)
       (catch Exception e (str "******** >>> Caught exception: " (.getMessage e)))
       (finally (assoc {} :error "function get-test-nodes in model error")))))
 

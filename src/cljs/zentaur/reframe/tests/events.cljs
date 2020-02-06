@@ -17,7 +17,7 @@
     (throw (ex-info (str "Die Spezifikationsprüfung ist fehlgeschlagen: " (s/explain-str a-spec db)) {}))))
 
 ;; now we create an interceptor using `after`
-(def check-spec-interceptor (re-frame/after (partial check-and-throw :zentaur.reframe.tests.db/db)))  ;; PARTIAL: (def hundred-times (partial * 100))
+(def check-spec-interceptor (re-frame/after (partial check-and-throw :zentaur.reframe.tests.db/db)))  ;; PARTIAL: a way to currying
 
 ;; We now create the interceptor chain shared by all event handlers which manipulate todos.
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
@@ -66,23 +66,29 @@
  (fn [db _]
    (update db :testform not)))
 
+;;; ###########################################
+(defn update-ids [data]
+  (map #(update % :id (fn [k] (js/parseInt k))) data))
+
 (re-frame/reg-event-db
   :process-test-response
-  (fn [db [_ data]]
-    (.log js/console (str ">>> process-test-response DATA  >>>>> " data ))
-    (let [questions  (:questions data)
-          subjects   (:subjects data)
-          test       (dissoc data :questions)]
-      (-> db
-          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
-          (assoc :test      (js->clj test :keywordize-keys true))
-          (assoc :questions (js->clj questions :keywordize-keys true))
-          (assoc :subjects  (js->clj subjects :keywordize-keys true))))))
+  (fn [db [_ {:keys [data errors] :as payload}]]
+    (let [test        (:test_by_id  data)
+          questions   (:questions test)
+          subjects    (update-ids (:subjects test))
+          only-test   (dissoc test :subjects :questions)
+          _           (.log js/console (str ">>> subjects >>>>> " subjects))
+          _           (.log js/console (str ">>> questions >>>>> " questions))
+          _           (.log js/console (str ">>> TEST >>>>> " only-test))
+          ]
+     (-> db
+         (assoc :loading?  false)     ;; take away that "Loading ..." UI element
+         (assoc :test      test)
+         (assoc :subjects   subjects)
+         (assoc :questions questions)))))
 
-          ;; query         (gstring/format "{questions_by_test(id: %i) { test {id title description tags created_at}
-          ;;                                 questions { id question qtype explanation hint ordnen
-          ;;                                 answers { id answer correct } }}}"
-
+;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
+;; reg-event-fx == event handler's coeffects, fx == effect
 (re-frame/reg-event-fx
   :request-test
   (fn                      ;; <-- the handler function
@@ -90,14 +96,17 @@
     (let [db            (:db cfx)
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "{ test_by_id( id: %i, archived: false) { title questions { question } subjects { subject }}}"
+          query         (gstring/format "{ test_by_id(id: %i, archived: false) { title description tags subject subject_id created_at
+                                           subjects {id subject} questions {id question} } }"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query
                               query                              ;; graphql query
-                              {:some "Pumas prros!! variable"}   ;; arguments map
+                              {:team "Pumas prros!!!"}           ;; arguments map
                               [:process-test-response]])         ;; callback event when response is recieved
           )))
+
+;;##########################################
 
 ;; AJAX handlers
 (re-frame/reg-event-db
@@ -111,25 +120,6 @@
          (update :qform not)           ;; hide new question form
          (update-in [:questions] conj response)))))
 
-;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
-
-;; (re-frame/reg-event-fx      ;; <-- note the `-fx` extension
-;;  :create-question           ;; <-- the event id
-;;  (fn                         ;; <-- our handler function
-;;    [cofx [dispatch-name question]]      ;; <-- 1st argument is coeffect, from which we extract db
-;;    (let [test-id    (.-value (gdom/getElement "test-id"))
-;;          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-;;      ;; we return a map of (side) effects
-;;      {:http-xhrio {:method          :post
-;;                    :uri             "/api/createquestion"
-;;                    :format          (ajax/json-request-format)
-;;                    :params          question
-;;                    :headers         {"x-csrf-token" csrf-field}
-;;                    :response-format (ajax/json-response-format {:keywords? true})
-;;                    :on-success      [:process-new-question]
-;;                    :on-failure      [:bad-response]}})))
-
-;; -- qtype 1: multiple option, 2: open, 3: fullfill, 4: composite questions (columns)
 (re-frame/reg-event-fx
   :create-question
   (fn                      ;; <-- the handler function
@@ -151,8 +141,7 @@
       (re-frame/dispatch [::re-graph/mutate
                           mutation                           ;; graphql query
                           {:some "Pumas prros!! variable"}   ;; arguments map
-                          [:process-question-response]]))))
-
+                          [:process-new-question]]))))
 
 (re-frame/reg-event-db
  :process-after-delete-question

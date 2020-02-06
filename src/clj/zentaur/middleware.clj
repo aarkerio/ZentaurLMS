@@ -28,17 +28,20 @@
                              :title "Something very bad has happened!"
                              :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
-(defn wrap-csrf [handler]
+(defn wrap-csrf
+  "Cross-Site Request Forgery"
+  [handler]
   (wrap-anti-forgery
     handler
     {:error-response
      (ccon/display-error {:status 403
                           :title "Invalid anti-forgery token"})}))
 
-(defn wrap-formats [handler]
+(defn wrap-formats
+  "Disable wrap-formats for websockets"
+  [handler]
   (let [wrapped (-> handler wrap-params (wrap-format formats/instance))]
     (fn [request]
-      ;; disable wrap-formats for websockets
       ;; since they're not compatible with this middleware
       ((if (:websocket? request) handler wrapped) request))))
 
@@ -86,7 +89,7 @@
       wrap-flash
       (wrap-session)
       (wrap-defaults
-      (-> site-defaults
-         (assoc-in [:security :anti-forgery] false)
-         (assoc-in  [:session :store] (ttl-memory-store (* 5000 300)))))
+       (-> site-defaults
+           (assoc-in [:security :anti-forgery] false)
+           (assoc-in  [:session :store] (ttl-memory-store (* 5000 3000)))))
       wrap-internal-error))
