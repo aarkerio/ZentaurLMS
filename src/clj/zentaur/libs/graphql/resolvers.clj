@@ -34,7 +34,7 @@
   (let [full-args    (assoc args :active true)
         new-question (mt/create-question! full-args)]
     (log/info (str ">>> new-question >>>>> " new-question))
-    new-question))
+    (update new-question :id str)))  ;; graphql wants strings on :ids
 
 (defn resolver-map
   "Public. Match resolvers."

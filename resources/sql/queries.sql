@@ -143,8 +143,8 @@ INSERT INTO tests (title, tags, user_id, subject_id) VALUES (:title, :tags, :use
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
-INSERT INTO questions (question, qtype, hint, explanation, active, user_id)
-VALUES (:question, :qtype, :hint, :explanation, :active, :user-id) RETURNING *
+INSERT INTO questions (question, qtype, hint, explanation, active, user_id, points)
+VALUES (:question, :qtype, :hint, :explanation, :active, :user_id, :points) RETURNING *
 
 -- :name update-question! :>! :1
 -- :doc updates a question record
@@ -161,8 +161,8 @@ WHERE id = :id RETURNING *
 -- :name update-test! :>! :1
 -- :doc updates an answer record
 UPDATE tests
-SET title = :title, tags = :tags, description = :description, subject_id = :subject-id
-WHERE id = :test-id AND user_id = :user-id RETURNING *
+SET title = :title, tags = :tags, description = :description, subject_id = :subject_id
+WHERE id = :test_id AND user_id = :user-id RETURNING *
 
 -- :name get-question :? :1
 -- :doc retrieve a question given the id.
@@ -172,13 +172,13 @@ SELECT * FROM questions WHERE id = :id
 -- :doc retrieve an answer given the id.
 SELECT * FROM answers WHERE id = :id
 
--- :name create-question-test! :! :n
+-- :name create-question-test! :<! :n
 -- :doc creates a new question test record
-INSERT INTO question_tests (question_id, test_id, ordnen) VALUES (:question-id, :test-id, :ordnen)
+INSERT INTO question_tests (question_id, test_id, ordnen) VALUES (:question_id, :test_id, :ordnen) RETURNING true
 
 -- :name create-answer! :<! :1
 -- :doc creates a new answer record
-INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question-id, :answer, :correct, :ordnen) RETURNING *
+INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question_id, :answer, :correct, :ordnen) RETURNING *
 
 -- :name get-tests :? :*
 -- :doc retrieve a test given the id.

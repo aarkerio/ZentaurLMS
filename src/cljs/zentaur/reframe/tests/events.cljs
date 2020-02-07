@@ -114,29 +114,28 @@
  []
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
-   (let [submap        (get-in db [:questions])]
+   (.log js/console (str ">>> respoNSE AFTER NEW question >>>>> " response ))
+    (let [pre-question  (-> response :data :create_question)
+         question       (libs/str-to-int pre-question :id)
+         final-question (assoc {} (:id question) question)]
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
          (update :qform not)           ;; hide new question form
-         (update-in [:questions] conj response)))))
+         (update-in [:questions] conj final-question)))))
 
 (re-frame/reg-event-fx
   :create-question
-  (fn                      ;; <-- the handler function
+  (fn                    ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (.log js/console (str ">>>  und ebenfalls _ " (second _)))
     ;; question hint explanation qtype test-id user-id active
-    (let [values        (second _)
-          question      (:question values)
-          hint          (:hint values)
-          explanation   (:explanation values)
-          qtype         (:qtype values)
-          user-id       (:user-id values)
-          pre-test-id   (:test-id values)
-          test-id       (js/parseInt pre-test-id)
-          mutation      (gstring/format "mutation { add_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, test_id: %i, user_id: %i) { id question qtype hint explanation}}"
-                                        question hint explanation qtype test-id user-id)]
+    (let [values        (libs/str-to-int (second _) :qtype :test-id :user-id)
+          _             (.log js/console (str ">>> VALUES AFTER  >>>>> " values ))
+          {:keys [question hint explanation qtype points test-id user-id]} values
+          mutation      (gstring/format "mutation { create_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
+                                         qtype: %i, points: %i, test_id: %i, user_id: %i) { id question qtype hint explanation points answers {id} }}"
+                                        question hint explanation qtype points test-id user-id)]
+           (.log js/console (str ">>> MUTATTION  >>>>> " mutation ))
       ;; perform a query, with the response sent to the callback event provided
       (re-frame/dispatch [::re-graph/mutate
                           mutation                           ;; graphql query

@@ -259,7 +259,8 @@
         new-question (r/atom "")
         hint         (r/atom "")
         explanation  (r/atom "")
-        qtype        (r/atom "1")]
+        qtype        (r/atom "1")
+        points       (r/atom "1")]
     (fn []
       [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
        [:h3.class "Hinzifugen neue fragen"]
@@ -287,6 +288,13 @@
                  :maxLength    180
                  :size         100}]]
        [:div.div-separator
+        [:select.form-control.mr-sm-2 {:name      "points"
+                                       :value     @points
+                                       :on-change #(reset! points (-> % .-target .-value))}
+         (for [pvalue (range 1 6)]
+           ^{:key pvalue} [:option {:value pvalue} pvalue])
+         ]]
+       [:div.div-separator
         [:select.form-control.mr-sm-2 {:name      "qtype"
                                        :value     @qtype
                                        :on-change #(reset! qtype (-> % .-target .-value))}
@@ -300,8 +308,10 @@
                    :on-click #(do (rf/dispatch [:create-question {:question    @new-question
                                                                   :hint        @hint
                                                                   :qtype       @qtype
+                                                                  :points      @points
+                                                                  :explanation @explanation
                                                                   :test-id     (.-value (gdom/getElement "test-id"))
-                                                                  :explanation @explanation}])
+                                                                  :user-id     (.-value (gdom/getElement "user-id"))}])
                                   (reset! new-question "")
                                   (reset! hint "")
                                   (reset! explanation ""))}]]])))

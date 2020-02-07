@@ -57,9 +57,12 @@
         [:a {:class "btn btn-outline-primary-green disabled" :href "#"} "Newer"]]]))
 
 (defn edit [base test-id]
-  [:div
-   [:h1 "Bearbeiten Quizz Test"]
-   [:div (f/form-to [:id "hidden-form"]
-                    (f/hidden-field {:value (:csrf-field base)} "__anti-forgery-token")
-                    (f/hidden-field {:value test-id} "test-id"))]
-   [:div {:id "test-root-app"}]])
+  (let [csrf-field (:csrf-field base)
+        user-id    (-> base :identity :id)]
+    [:div
+     [:h1 "Bearbeiten Quizz Test"]
+     [:div (f/form-to [:id "hidden-form"]
+                      (f/hidden-field {:value csrf-field} "__anti-forgery-token")
+                      (f/hidden-field {:value test-id} "test-id")
+                      (f/hidden-field {:value user-id} "user-id"))]
+     [:div {:id "test-root-app"}]]))

@@ -124,7 +124,9 @@
       (= current_url "/vclass/tests")             (load-tests)
       :else "F")))
 
-(defn copytoclipboard [val]
+(defn copytoclipboard
+  "Copy val to browser clipboard"
+  [val]
   (let [elm (.createElement js/document "textarea")]
     (set! (.-value elm) val)
     (.appendChild js/document.body elm)

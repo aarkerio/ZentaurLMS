@@ -31,24 +31,20 @@
 (defn- ^:private link-test-question!
   [question-id test-id]
   (let [next-ordnen (or (:ordnen (sh/get-last-ordnen "questions" test-id)) 0)]
-    (db/create-question-test! {:question-id question-id :test-id test-id :ordnen (inc next-ordnen)})))
+    (db/create-question-test! {:question_id question-id :test_id test-id :ordnen (inc next-ordnen)})))
 
 (defn- ^:private get-last-question
   [params]
-  (let [test-id         (:test-id params)
-        create-question (db/create-question! params)
-        question-id     (:id create-question)
-        _               (link-test-question! question-id test-id)
-        full-question   (assoc create-question :answers {})]
-    (assoc {} question-id full-question)))
+  (let [test-id          (:test_id params)
+        created-question (db/create-question! (dissoc params :test_id))
+        question-id      (:id created-question)
+        _                (link-test-question! question-id test-id)]
+    (assoc created-question :answers [])))
 
 (defn create-question! [params]
-  (let [full-params (-> params
-                        (update :qtype   #(Integer/parseInt %))
-                        (update :test-id #(Integer/parseInt %)))
-        errors      (val-test/validate-question full-params)]
+  (let [errors (val-test/validate-question params)]
     (if (nil? errors)
-      (get-last-question full-params)
+      (get-last-question params)
       {:flash errors :ok false})))
 
 (defn- ^:private create-new-answer
