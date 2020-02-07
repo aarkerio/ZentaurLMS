@@ -39,7 +39,7 @@
         created-question (db/create-question! (dissoc params :test_id))
         question-id      (:id created-question)
         _                (link-test-question! question-id test-id)]
-    (assoc created-question :answers [])))
+    created-question))
 
 (defn create-question! [params]
   (let [errors (val-test/validate-question params)]

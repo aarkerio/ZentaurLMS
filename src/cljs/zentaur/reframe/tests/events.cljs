@@ -117,7 +117,8 @@
    (.log js/console (str ">>> respoNSE AFTER NEW question >>>>> " response ))
     (let [pre-question  (-> response :data :create_question)
          question       (libs/str-to-int pre-question :id)
-         final-question (assoc {} (:id question) question)]
+          final-question (assoc {} (:id question) question)
+          _ (.log js/console (str ">>> final-question >>>>> " final-question ))]
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
          (update :qform not)           ;; hide new question form

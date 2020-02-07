@@ -141,8 +141,9 @@
     (fn [{:keys [question explanation hint qtype id ordnen] :as q}]
     [:div
      [input-new-answer {:question-id id :on-stop #(js/console.log "stop") :props {:placeholder "Neue antwort"}}]
-     (for [answer (:answers q)]
-       [display-answer (assoc (second answer) :key (swap! counter inc))])])))
+     (when-not (nil? (:answers q))
+       (for [answer (:answers q)]
+         [display-answer (assoc (second answer) :key (swap! counter inc))]))])))
 
 (defmethod display-question 2
   [question]
