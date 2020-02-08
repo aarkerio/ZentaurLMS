@@ -19,3 +19,10 @@
 (defn str-to-int [coll & int-keys]
   (let [listed (set int-keys)]
     (reduce-kv #(assoc %1 %2 (if (contains? listed %2 ) (js/parseInt %3) %3)) {} coll)))
+
+(defn index-questions [questions]
+(let  [questions-index  (map-indexed
+                            (fn [idx question]
+                              (assoc question :index (inc idx))) questions)]
+  questions-index
+       ))

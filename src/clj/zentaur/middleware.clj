@@ -87,10 +87,8 @@
       (wrap-access-rules {:rules rules :on-error on-error})
       wrap-auth
       wrap-flash
-      (wrap-session)
+      (wrap-session {:store (ttl-memory-store (* 60 300000))})
       (wrap-defaults
        (-> site-defaults
-           (assoc-in [:security :anti-forgery] false)
-           (assoc-in  [:session :store] (ttl-memory-store (* 60 3000))))
-      ;; wrap-internal-error
-      )))
+           (assoc-in [:security :anti-forgery] false)))
+      wrap-internal-error))

@@ -36,7 +36,7 @@
 (defn ^:export main
   []
   (when-let [hform (gdom/getElement "test-root-app")]
-    (re-frame/dispatch-sync [:request-test])  ;; <--- boot process is started. Synchronously initialised *before*
+    (re-frame/dispatch-sync [:test-load])  ;; <--- boot process is started. Synchronously initialised *before*
     (r/render [zviews/todo-app]               ;; Load views
               (.getElementById js/document "test-root-app"))))
 

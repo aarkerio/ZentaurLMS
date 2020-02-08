@@ -198,7 +198,9 @@ ORDER BY t.id DESC
 
 -- :name get-questions :? :*
 -- :doc retrieve all questions tests.
-SELECT q.*, qt.ordnen FROM question_tests AS qt, questions AS q WHERE qt.test_id = :test-id AND qt.question_id=q.id ORDER BY qt.ordnen ASC
+SELECT q.*, qt.ordnen FROM question_tests qt INNER JOIN questions q
+ON q.id = qt.question_id
+WHERE qt.test_id = :test-id AND qt.question_id = q.id ORDER BY qt.ordnen ASC
 
 -- :name get-last-question :? :1
 -- :doc retrieve all questions tests.

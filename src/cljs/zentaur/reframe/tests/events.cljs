@@ -70,11 +70,29 @@
 (defn update-ids [data]
   (map #(update % :id (fn [k] (js/parseInt k))) data))
 
+(def trim-event
+  (re-frame.core/->interceptor
+    :id      :trim-event
+    :before  (fn [context]
+               (.log js/console (str ">>> CTX >>>>> " context ))
+               (let [trim-fn (fn [event] (-> event rest vec))]
+                 (update-in context [:coeffects :event] trim-fn)))))
+
+(defn index-questions [questions]
+(let  [questions-index  (map-indexed
+                            (fn [idx question]
+                              (assoc question :index (inc idx))) questions)]
+  questions-index
+       ))
+
 (re-frame/reg-event-db
-  :process-test-response
-  (fn [db [_ {:keys [data errors] :as payload}]]
+ :process-test-response
+  [trim-event]
+  (fn [db [ {:keys [data errors] :as payload}]]
+    (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
     (let [test        (:test_by_id  data)
           questions   (:questions test)
+          questions-idx (index-questions questions)
           subjects    (update-ids (:subjects test))
           only-test   (dissoc test :subjects :questions)
           _           (.log js/console (str ">>> subjects >>>>> " subjects))
@@ -90,14 +108,14 @@
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
 (re-frame/reg-event-fx
-  :request-test
+  :test-load
   (fn                      ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (let [db            (:db cfx)
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
           query         (gstring/format "{ test_by_id(id: %i, archived: false) { title description tags subject subject_id created_at
-                                           subjects {id subject} questions {id question} } }"
+                                           subjects {id subject} questions { id question qtype hint points } } }"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query
@@ -110,7 +128,7 @@
 
 ;; AJAX handlers
 (re-frame/reg-event-db
- :process-new-question
+ :process-create-question
  []
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
@@ -141,7 +159,7 @@
       (re-frame/dispatch [::re-graph/mutate
                           mutation                           ;; graphql query
                           {:some "Pumas prros!! variable"}   ;; arguments map
-                          [:process-new-question]]))))
+                          [:process-create-question]]))))
 
 (re-frame/reg-event-db
  :process-after-delete-question

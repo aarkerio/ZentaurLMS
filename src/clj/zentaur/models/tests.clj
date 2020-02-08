@@ -65,21 +65,16 @@
 
 (defn- ^:private get-answers [{:keys [id] :as question}]
   (let [answers          (db/get-answers {:question-id id})
-        index-seq        (map #(keyword (str (% :id))) answers)
-        mapped-answers   (zipmap index-seq answers)]
-    (assoc question :answers mapped-answers)))
+        answers-graphql  (map #(update % :id str) answers)
+        question-graphql (update question :id str)]
+    (assoc question-graphql :answers answers-graphql)))
 
 (defn- ^:private get-questions
-  "Get and convert to map keyed"
+  "Get questions and convert to map keyed"
   [test-id]
-  (let [questions        (db/get-questions { :test-id test-id })
-        questions-index  (map-indexed
-                            (fn [idx question]
-                              (assoc question :index (inc idx))) questions)
-        index-seq        (map #(keyword (str (% :id))) questions-index)]
-    (->> questions-index
-         (map get-answers)
-         (zipmap index-seq))))
+  (let [questions        (db/get-questions {:test-id test-id})
+        _                (log/info (str ">>> 111 questions >>>>> " (doall (map println questions))))]
+     (map get-answers questions)))
 
 (defn build-test-structure
   "Build the map with the test, the questions and the answers.
@@ -87,6 +82,8 @@
   [test-id archived]
   (let [test          (db/get-one-test {:id test-id :archived archived})
         questions     (get-questions test-id)
+        _      (log/info (str ">>> QQUESTIONS QQQQQQQQQQQQQQQ  >>>>> " (println-str questions)))
+
         subjects      (db/get-subjects)
         subj-strs     (map #(update % :id str) subjects)]
     (try
