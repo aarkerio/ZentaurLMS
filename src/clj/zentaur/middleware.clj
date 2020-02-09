@@ -81,13 +81,13 @@
         (wrap-authorization backend))))
 
 (defn wrap-base
-  "Assembling all the pieces of he middleware"
+  "Assembling all the pieces of the middleware"
   [handler]
   (-> ((:middleware defaults) handler)  ;; from env/../dev_middleware.clj
       (wrap-access-rules {:rules rules :on-error on-error})
       wrap-auth
       wrap-flash
-      (wrap-session {:store (ttl-memory-store (* 60 300000))})
+;;       (wrap-session {:store (ttl-memory-store (* 60 300000))})
       (wrap-defaults
        (-> site-defaults
            (assoc-in [:security :anti-forgery] false)))

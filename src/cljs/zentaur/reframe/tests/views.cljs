@@ -160,7 +160,7 @@
 
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen index] :as q}]
+  [{:keys [question explanation hint qtype id ordnen index points] :as q}]
   (let [editing-question (r/atom false)]
     (fn []
       [:div.div-question-row
@@ -175,9 +175,10 @@
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing-question not)}])]  ;; editing ends
      [:div.question-elements
-       [:div [:span.bold-font (str index ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
-       [:div [:span.bold-font "Hint: "] hint]
-       [:div [:span.bold-font "Erläuterung: "] explanation]]
+      [:div [:span.bold-font (str index ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+      [:div [:span.bold-font "Hint: "] hint]
+      [:div [:span.bold-font "Points: "] points]
+      [:div [:span.bold-font "Erläuterung: "] explanation]]
      (when @editing-question
         [edit-question q])
        [display-question q] ;; Polimorphysm for the kind of question

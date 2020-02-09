@@ -78,12 +78,10 @@
                (let [trim-fn (fn [event] (-> event rest vec))]
                  (update-in context [:coeffects :event] trim-fn)))))
 
-(defn index-questions [questions]
-(let  [questions-index  (map-indexed
-                            (fn [idx question]
-                              (assoc question :index (inc idx))) questions)]
-  questions-index
-       ))
+(defn index-vector
+  "Convert vector od maps to an indexed map"
+  [rows]
+  (into {} (map-indexed (fn [idx row]  { (js/parseInt (:id row)) row}) rows)))
 
 (re-frame/reg-event-db
  :process-test-response
@@ -92,18 +90,18 @@
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
     (let [test        (:test_by_id  data)
           questions   (:questions test)
-          questions-idx (index-questions questions)
+          questions-idx (index-vector questions)
           subjects    (update-ids (:subjects test))
           only-test   (dissoc test :subjects :questions)
           _           (.log js/console (str ">>> subjects >>>>> " subjects))
-          _           (.log js/console (str ">>> questions >>>>> " questions))
+          _           (.log js/console (str ">>> questions >>>>> " questions-idx))
           _           (.log js/console (str ">>> TEST >>>>> " only-test))
           ]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
          (assoc :test      only-test)
          (assoc :subjects  subjects)
-         (assoc :questions questions)))))
+         (assoc :questions questions-idx)))))
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
