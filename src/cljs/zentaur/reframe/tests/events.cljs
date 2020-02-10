@@ -67,7 +67,9 @@
    (update db :testform not)))
 
 ;;; ###########################################
-(defn update-ids [data]
+(defn update-ids
+  "Convert ids to integers"
+  [data]
   (map #(update % :id (fn [k] (js/parseInt k))) data))
 
 (def trim-event
@@ -78,24 +80,24 @@
                (let [trim-fn (fn [event] (-> event rest vec))]
                  (update-in context [:coeffects :event] trim-fn)))))
 
-(defn index-vector
+(defn vector-to-idxmap
   "Convert vector od maps to an indexed map"
   [rows]
-  (into {} (map-indexed (fn [idx row]  { (js/parseInt (:id row)) row}) rows)))
+  (into {} (map-indexed (fn [idx row] {(js/parseInt (:id row)) row}) rows)))
 
 (re-frame/reg-event-db
  :process-test-response
   [trim-event]
   (fn [db [ {:keys [data errors] :as payload}]]
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
-    (let [test        (:test_by_id  data)
-          questions   (:questions test)
-          questions-idx (index-vector questions)
-          subjects    (update-ids (:subjects test))
-          only-test   (dissoc test :subjects :questions)
-          _           (.log js/console (str ">>> subjects >>>>> " subjects))
-          _           (.log js/console (str ">>> questions >>>>> " questions-idx))
-          _           (.log js/console (str ">>> TEST >>>>> " only-test))
+    (let [test          (:test_by_id  data)
+          questions     (:questions test)
+          questions-idx (vector-to-idxmap questions)
+          subjects      (update-ids (:subjects test))
+          only-test     (dissoc test :subjects :questions)
+          _             (.log js/console (str ">>> subjects >>>>> " subjects))
+          _             (.log js/console (str ">>> questions >>>>> " questions-idx))
+          _             (.log js/console (str ">>> TEST >>>>> " only-test))
           ]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
