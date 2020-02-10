@@ -30,16 +30,31 @@
 
 (defn- ^:private create-question
   [context args value]
-  (log/info (str ">>> ARGS >>>>> " args))
   (let [full-args    (assoc args :active true)
         new-question (mt/create-question! full-args)]
-    (log/info (str ">>> new-question >>>>> " new-question))
     (update new-question :id str)))  ;; graphql wants strings on :ids
 
+(defn- ^:private create-answer
+  [context args value]
+  (log/info (str ">>> ANSWER ARGS >>>>> " args))
+  (let [full-args  (assoc args :active true)
+        new-answer (mt/create-answer! full-args)]
+    (log/info (str ">>> new-answer >>>>> " new-answer))
+    (update new-answer :id str)))  ;; graphql wants strings on :ids
+
+(defn- ^:private delete-question
+  [context args value]
+  (log/info (str ">>> PARAM  delete-question ARGS >>>>> " args))
+  (let [deleted-question (mt/delete-question! args)]
+    (log/info (str ">>> deleted-question >>>>> " deleted-question))
+    (update deleted-question :id str)))  ;; graphql wants strings on :ids
+
 (defn resolver-map
-  "Public. Match resolvers."
+  "Public. Matches resolvers in schema.edn file."
   []
   {:test-by-id (partial resolve-test-by-id)
    :get-all-tests (partial resolve-all-tests)
-   :create-question (partial create-question)})
+   :create-question (partial create-question)
+   :delete-question (partial delete-question)
+   :create-answer (partial create-answer)})
 

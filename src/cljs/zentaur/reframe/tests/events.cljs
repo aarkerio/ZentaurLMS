@@ -83,7 +83,7 @@
 (defn vector-to-idxmap
   "Convert vector od maps to an indexed map"
   [rows]
-  (into {} (map-indexed (fn [idx row] {(js/parseInt (:id row)) row}) rows)))
+  (into {} (map-indexed (fn [idx row] {(keyword (:id row)) row}) rows)))
 
 (re-frame/reg-event-db
  :process-test-response
@@ -92,7 +92,8 @@
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
     (let [test          (:test_by_id  data)
           questions     (:questions test)
-          questions-idx (vector-to-idxmap questions)
+          ques-answers  (map #(update % :answers vector-to-idxmap) questions)
+          questions-idx (vector-to-idxmap ques-answers)
           subjects      (update-ids (:subjects test))
           only-test     (dissoc test :subjects :questions)
           _             (.log js/console (str ">>> subjects >>>>> " subjects))
@@ -115,7 +116,7 @@
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
           query         (gstring/format "{ test_by_id(id: %i, archived: false) { title description tags subject subject_id created_at
-                                           subjects {id subject} questions { id question qtype hint points } } }"
+                                           subjects {id subject} questions { id question qtype hint points answers {id answer ordnen correct} } } }"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query
@@ -162,10 +163,44 @@
                           [:process-create-question]]))))
 
 (re-frame/reg-event-db
- :process-after-delete-question
+ :process-create-answer
+ (fn
+   [db [_ response]]            ;; destructure the response from the event vector
+   (.log js/console (str ">>> New answer response from Luminus >>>>> " response))
+   (.log js/console (str ">>> Full DB >>>>> " db))
+   (let [pre-answer  (second (first response))
+         _           (.log js/console (str ">>> PREEE  ANSWER >>>>> " pre-answer))
+         answer      (:create_answer pre-answer)
+         _           (.log js/console (str ">>> ANSWER QQ >>>>> " answer))
+         qid         (:question_id answer)
+         question-id (keyword (str qid))
+         post-resp   (assoc {} (keyword (:id answer)) answer)
+         _           (.log js/console (str ">>> VALUE KEYWORD question-id >>>>> " question-id ))
+         _           (.log js/console (str ">>> QUESTION ID >>>>>  qid: " qid "   question-id: " question-id))]
+     (-> db
+         (assoc :loading?  false)     ;; take away that "Loading ..." UI
+         (update-in [:questions question-id :answers] conj post-resp)))))
+
+(re-frame/reg-event-fx
+  :create-answer
+  (fn                    ;; <-- the handler function
+    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
+    (.log js/console (str ">>>  und ebenfalls _ " (second _)))
+    (let [{:keys [question-id correct answer]} (second _)
+          mutation (gstring/format "mutation { create_answer( question_id: %i,
+                                    correct: %s, answer:\"%s\") { id question_id answer correct ordnen }}"
+                                    question-id correct answer )]
+      (re-frame/dispatch [::re-graph/mutate
+                          mutation                           ;; graphql query
+                          {:some "Pumas prros!! variable"}   ;; arguments map
+                          [:process-create-answer]]))))
+
+(re-frame/reg-event-db
+ :process-delete-question
  []
  (fn
    [db [_ question-id]]
+   (.log js/console (str ">>> question-id VVV >>>>> " question-id ))
    (let [submap  (get-in db [:questions])]
      (-> db
          (update-in [:questions] dissoc (keyword (str question-id)))
@@ -176,54 +211,17 @@
  (fn                          ;; <-- the handler function
    [cofx [dispatch-id question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
    (.log js/console (str ">>> dispatch-id   OOO>>>>> " dispatch-id "  >>>> " question-id))
-   (when (js/confirm "Delete question?")
-     (let [db               (:db cofx)
-           question-id-int  (js/parseInt question-id)
-           test-id          (.-value (gdom/getElement "test-id"))
+   (when (js/confirm "Frage löschen?")
+     (let [test-id          (.-value (gdom/getElement "test-id"))
+           _   (.log js/console (str ">>> VALUE test-id >>>>> " test-id ))
            test-id-int      (js/parseInt test-id)
-           csrf-field       (.-value (gdom/getElement "__anti-forgery-token"))]
-       ;; we return a map of (side) effects
-       {:http-xhrio {:method          :delete
-                     :uri             "/admin/tests/deletequestion"
-                     :format          (ajax/json-request-format)
-                     :params          {:question-id question-id-int :test-id test-id-int}
-                     :headers         {"x-csrf-token" csrf-field}
-                     :response-format (ajax/json-response-format {:keywords? true})
-                     :on-success      [:process-after-delete-question question-id]
-                     :on-failure      [:bad-response]}}))))
-
-(re-frame/reg-event-db
- :process-new-answer
- (fn
-   [db [_ response]]            ;; destructure the response from the event vector
-   (.log js/console (str ">>> New answer response from Luminus >>>>> " response))
-   (.log js/console (str ">>> Full DB >>>>> " db))
-   (let [answer      (second (first response))
-         _           (.log js/console (str ">>> WWQQQQQQQ  ANSWER >>>>> " answer))
-         qid         (:question_id answer)
-         _           (.log js/console (str ">>> QID >>>>> " qid))
-         question-id (keyword (str qid))
-         _           (.log js/console (str ">>> VALUE KEYWORD question-id >>>>> " question-id ))
-         _           (.log js/console (str ">>> QUESTION ID >>>>>  qid: " qid "   question-id: " question-id))]
-     (-> db
-         (assoc :loading?  false)     ;; take away that "Loading ..." UI
-         (update-in [:questions question-id :answers] conj response)))))
-
-(re-frame/reg-event-fx
- :create-answer
- (fn
-   [cfx [_ answer]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (let [csrf-field  (.-value (gdom/getElement "__anti-forgery-token"))
-         _           (.log js/console (str ">>> answer AT create-answer >>>>> " answer))]
-     ;; we return a map of (side) effects
-     {:http-xhrio {:method          :post
-                   :uri             "/api/createanswer"
-                   :format          (ajax/json-request-format)
-                   :params          answer
-                   :headers         {"x-csrf-token" csrf-field}
-                   :response-format (ajax/json-response-format {:keywords? true})
-                   :on-success      [:process-new-answer]
-                   :on-failure      [:bad-response]}})))
+           mutation         (gstring/format "mutation { delete_question( question_id: %i, test_id: %i ) { id }}"
+                                            question-id test-id)]
+       (.log js/console (str ">>> MUTATION DELETE QUESTION >>>>> " mutation ))
+       (re-frame/dispatch [::re-graph/mutate
+                           mutation                           ;; graphql query
+                            {:some "Pumas prros!! variable"}   ;; arguments map
+                           [:process-delete-question]])))))
 
 (re-frame/reg-event-db
  :process-after-delete-answer

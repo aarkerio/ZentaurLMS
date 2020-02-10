@@ -112,8 +112,8 @@
                     :checked @checked :on-change #(swap! checked not)}]
        [:input.btn {:type "button" :class "btn btn btn-outline-primary-green" :value "Antwort hinzufügen"
                     :on-click #(do (rf/dispatch [:create-answer {:question-id question-id
-                                                                       :correct @checked
-                                                                       :answer @inner}])
+                                                                 :correct @checked
+                                                                 :answer @inner}])
                                    (reset! checked false)
                                    (reset! inner ""))}]])))
 

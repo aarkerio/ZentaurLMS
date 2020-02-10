@@ -61,11 +61,11 @@
            :answer {
                       :description "Answer type."
                       :fields {
-                               :id        {:type (non-null ID)}
-                               :answer    {:type (non-null String)}
-                               :ordnen    {:type Int}
-                               :correct   {:type Boolean}
-                               :active    {:type Boolean}
+                               :id          {:type (non-null ID)}
+                               :answer      {:type (non-null String)}
+                               :question_id {:type (non-null Int)}
+                               :ordnen      {:type Int}
+                               :correct     {:type Boolean}
                                }}}
  :queries {
            :test_by_id {:type        (non-null :test)
@@ -87,7 +87,19 @@
                                                     :description "Type of question"}
                                       :points      {:type (non-null Int)}
                                       :test_id     {:type (non-null Int)}
-                                      :user_id     {:type (non-null Int)}
-                                      }
-                               :resolve :create-question}}
-}
+                                      :user_id     {:type (non-null Int)}}
+                               :resolve :create-question}
+               :delete_question {:type :question
+                                 :description "Create new question."
+                                 :args {:question_id {:type (non-null Int)}
+                                        :test_id     {:type (non-null Int)}}
+                                 :resolve :delete-question}
+             :create_answer {:type :answer
+                             :description "Create new answer."
+                             :args {:answer       {:type (non-null String)}
+                                    :correct      {:type (non-null Boolean)}
+                                    :question_id  {:type (non-null Int)}
+                                    :ordnen       {:type Int}}
+                             :resolve :create-answer}
+             }
+ }

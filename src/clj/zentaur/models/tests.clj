@@ -47,18 +47,13 @@
       (get-last-question params)
       {:flash errors :ok false})))
 
-(defn- ^:private create-new-answer
-  [params]
-  (let [last-answer  (db/create-answer! params)]
-    (assoc {} (:id last-answer) last-answer)))
-
 (defn create-answer! [params]
   (let [question-id  (:question-id params)
         next-ordnen  (or (:ordnen (sh/get-last-ordnen "answers" question-id)) 0)
         full-params  (assoc params :ordnen (inc next-ordnen))
         errors       (val-test/validate-answer full-params)]
     (if (nil? errors)
-      (create-new-answer full-params)
+      (db/create-answer! full-params)
       {:flash errors :ok false})))
 
 ;;;;; TEST BUILD SECTION STARTS
@@ -117,10 +112,10 @@
   (let [test-id (:test-id params)]
     (db/remove-test! {:test-id test-id})))
 
-(defn remove-question [params]
-  (let [test-id     (:test-id params)
-        question-id (:question-id params)]
-    (db/remove-question! {:test-id test-id :question-id question-id})))
+(defn delete-question!
+  "Not a real delete, just from the test"
+  [params]
+    (db/remove-question! params))
 
 (defn remove-answer [params]
   (let [result   (db/remove-answer! params)]

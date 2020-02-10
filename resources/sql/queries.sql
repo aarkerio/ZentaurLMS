@@ -228,7 +228,7 @@ UPDATE tests SET active = false WHERE id = :test-id RETURNING TRUE
 
 -- :name remove-question! :<! :raw
 -- :doc remove a question given the test-id
-DELETE FROM question_tests WHERE test_id = :test-id AND question_id = :question-id  RETURNING TRUE
+DELETE FROM question_tests WHERE test_id = :test_id AND question_id = :question-id RETURNING TRUE
 
 -- :name remove-answer! :<! :1
 -- :doc remove an answer given the question-id
