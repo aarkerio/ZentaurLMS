@@ -1,6 +1,6 @@
 (ns zentaur.reframe.tests.db
   (:require [cljs.spec.alpha :as s]
-            [re-frame.core :as re-frame]))
+            [re-frame.core :as rf]))
 
 ;; ####### CONTEXT
 ;;  {:coeffects {:event [:some-id :some-param]
@@ -51,7 +51,7 @@
 ;;   2.  `events.cljs` for the registration of :initialise-db handler
 ;;
 
-(def default-db             ;; what gets put into app-db by default.
+(def default-db             ;; what gets put into app-db in the initial load.
   {:test             (sorted-map)
    :questions        (sorted-map)
    :loading?         false
@@ -70,7 +70,7 @@
 ;;
 ;; We must supply a `sorted-map` but in LocalStore it is stored as a `map`.
 ;;
-(re-frame/reg-cofx
+(rf/reg-cofx
   :reorder-questions
   (fn [cofx _]
     (let [questions (-> cofx :db :questions)]

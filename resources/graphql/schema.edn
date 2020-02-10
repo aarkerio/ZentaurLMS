@@ -46,6 +46,7 @@
                                :hint          {:type String}
                                :explanation   {:type String}
                                :ordnen        {:type Int}
+                               :points        {:type Int}
                                :user_id       {:type Int}
                                :created_at    {:type String}
                                :active        {:type Boolean}
@@ -84,7 +85,8 @@
                                       :explanation {:type String}
                                       :qtype       {:type (non-null Int)
                                                     :description "Type of question"}
-                                      :test_id     {:type Int}
+                                      :points      {:type (non-null Int)}
+                                      :test_id     {:type (non-null Int)}
                                       :user_id     {:type (non-null Int)}
                                       }
                                :resolve :create-question}}

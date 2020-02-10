@@ -67,37 +67,55 @@
    (update db :testform not)))
 
 ;;; ###########################################
-(defn update-ids [data]
+(defn update-ids
+  "Convert ids to integers"
+  [data]
   (map #(update % :id (fn [k] (js/parseInt k))) data))
 
+(def trim-event
+  (re-frame.core/->interceptor
+    :id      :trim-event
+    :before  (fn [context]
+               (.log js/console (str ">>> CTX >>>>> " context ))
+               (let [trim-fn (fn [event] (-> event rest vec))]
+                 (update-in context [:coeffects :event] trim-fn)))))
+
+(defn vector-to-idxmap
+  "Convert vector od maps to an indexed map"
+  [rows]
+  (into {} (map-indexed (fn [idx row] {(js/parseInt (:id row)) row}) rows)))
+
 (re-frame/reg-event-db
-  :process-test-response
-  (fn [db [_ {:keys [data errors] :as payload}]]
-    (let [test        (:test_by_id  data)
-          questions   (:questions test)
-          subjects    (update-ids (:subjects test))
-          only-test   (dissoc test :subjects :questions)
-          _           (.log js/console (str ">>> subjects >>>>> " subjects))
-          _           (.log js/console (str ">>> questions >>>>> " questions))
-          _           (.log js/console (str ">>> TEST >>>>> " only-test))
+ :process-test-response
+  [trim-event]
+  (fn [db [ {:keys [data errors] :as payload}]]
+    (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
+    (let [test          (:test_by_id  data)
+          questions     (:questions test)
+          questions-idx (vector-to-idxmap questions)
+          subjects      (update-ids (:subjects test))
+          only-test     (dissoc test :subjects :questions)
+          _             (.log js/console (str ">>> subjects >>>>> " subjects))
+          _             (.log js/console (str ">>> questions >>>>> " questions-idx))
+          _             (.log js/console (str ">>> TEST >>>>> " only-test))
           ]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
-         (assoc :test      test)
-         (assoc :subjects   subjects)
-         (assoc :questions questions)))))
+         (assoc :test      only-test)
+         (assoc :subjects  subjects)
+         (assoc :questions questions-idx)))))
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
 (re-frame/reg-event-fx
-  :request-test
+  :test-load
   (fn                      ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (let [db            (:db cfx)
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
           query         (gstring/format "{ test_by_id(id: %i, archived: false) { title description tags subject subject_id created_at
-                                           subjects {id subject} questions {id question} } }"
+                                           subjects {id subject} questions { id question qtype hint points } } }"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query
@@ -110,38 +128,38 @@
 
 ;; AJAX handlers
 (re-frame/reg-event-db
- :process-new-question
+ :process-create-question
  []
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
-   (let [submap        (get-in db [:questions])]
+   (.log js/console (str ">>> respoNSE AFTER NEW question >>>>> " response ))
+    (let [pre-question  (-> response :data :create_question)
+         question       (libs/str-to-int pre-question :id)
+          final-question (assoc {} (:id question) question)
+          _ (.log js/console (str ">>> final-question >>>>> " final-question ))]
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
          (update :qform not)           ;; hide new question form
-         (update-in [:questions] conj response)))))
+         (update-in [:questions] conj final-question)))))
 
 (re-frame/reg-event-fx
   :create-question
-  (fn                      ;; <-- the handler function
+  (fn                    ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (.log js/console (str ">>>  und ebenfalls _ " (second _)))
     ;; question hint explanation qtype test-id user-id active
-    (let [values        (second _)
-          question      (:question values)
-          hint          (:hint values)
-          explanation   (:explanation values)
-          qtype         (:qtype values)
-          user-id       (:user-id values)
-          pre-test-id   (:test-id values)
-          test-id       (js/parseInt pre-test-id)
-          mutation      (gstring/format "mutation { add_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, test_id: %i, user_id: %i) { id question qtype hint explanation}}"
-                                        question hint explanation qtype test-id user-id)]
+    (let [values        (libs/str-to-int (second _) :qtype :test-id :user-id)
+          _             (.log js/console (str ">>> VALUES AFTER  >>>>> " values ))
+          {:keys [question hint explanation qtype points test-id user-id]} values
+          mutation      (gstring/format "mutation { create_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
+                                         qtype: %i, points: %i, test_id: %i, user_id: %i) { id question qtype hint explanation points answers {id} }}"
+                                        question hint explanation qtype points test-id user-id)]
+           (.log js/console (str ">>> MUTATTION  >>>>> " mutation ))
       ;; perform a query, with the response sent to the callback event provided
       (re-frame/dispatch [::re-graph/mutate
                           mutation                           ;; graphql query
                           {:some "Pumas prros!! variable"}   ;; arguments map
-                          [:process-new-question]]))))
+                          [:process-create-question]]))))
 
 (re-frame/reg-event-db
  :process-after-delete-question

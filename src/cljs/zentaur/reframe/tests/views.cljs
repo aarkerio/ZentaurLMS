@@ -141,8 +141,9 @@
     (fn [{:keys [question explanation hint qtype id ordnen] :as q}]
     [:div
      [input-new-answer {:question-id id :on-stop #(js/console.log "stop") :props {:placeholder "Neue antwort"}}]
-     (for [answer (:answers q)]
-       [display-answer (assoc (second answer) :key (swap! counter inc))])])))
+     (when-not (nil? (:answers q))
+       (for [answer (:answers q)]
+         [display-answer (assoc (second answer) :key (swap! counter inc))]))])))
 
 (defmethod display-question 2
   [question]
@@ -159,7 +160,7 @@
 
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen index] :as q}]
+  [{:keys [question explanation hint qtype id ordnen index points] :as q}]
   (let [editing-question (r/atom false)]
     (fn []
       [:div.div-question-row
@@ -174,9 +175,10 @@
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing-question not)}])]  ;; editing ends
      [:div.question-elements
-       [:div [:span.bold-font (str index ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
-       [:div [:span.bold-font "Hint: "] hint]
-       [:div [:span.bold-font "Erläuterung: "] explanation]]
+      [:div [:span.bold-font (str index ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+      [:div [:span.bold-font "Hint: "] hint]
+      [:div [:span.bold-font "Points: "] points]
+      [:div [:span.bold-font "Erläuterung: "] explanation]]
      (when @editing-question
         [edit-question q])
        [display-question q] ;; Polimorphysm for the kind of question
@@ -196,8 +198,8 @@
             ^{:key (swap! counter inc)} [question-item (second question)]
             ))])))
 
-(defn test-editor-form [test ^string title ^string description ^string tags ^int subject-id]
-  (.log js/console (str ">>> VALUE >>>>> " subject-id ))
+(defn test-editor-form [test title description tags subject-id]
+  (.log js/console (str ">>> VALUE >>>>> subject_id: " (:subject_id test) ">>> test >>>"  test))
     [:div {:id "test-whole-display"}
      [:div.edit-icon-div
       (if @(rf/subscribe [:toggle-testform])
@@ -221,7 +223,7 @@
                 :placeholder "Tags" :title "Tags" :maxLength 100 :size 100}]]
       [:div.div-separator
        [:select.form-control.mr-sm-2 {:name      "subject-id"
-                                      :value     (:subject_id @test)
+                                      :value     (str (:subject_id test))
                                       :on-change #(reset! subject-id (-> % .-target .-value))}
         (for [row-subject @(rf/subscribe [:subjects])]
           ^{:key (:id row-subject)} [:option {:value (:id row-subject)} (:subject row-subject)])
@@ -259,7 +261,8 @@
         new-question (r/atom "")
         hint         (r/atom "")
         explanation  (r/atom "")
-        qtype        (r/atom "1")]
+        qtype        (r/atom "1")
+        points       (r/atom "1")]
     (fn []
       [:div {:id "hidden-form" :class (if @qform "visible-div" "hidden-div")}
        [:h3.class "Hinzifugen neue fragen"]
@@ -287,6 +290,13 @@
                  :maxLength    180
                  :size         100}]]
        [:div.div-separator
+        [:select.form-control.mr-sm-2 {:name      "points"
+                                       :value     @points
+                                       :on-change #(reset! points (-> % .-target .-value))}
+         (for [pvalue (range 1 6)]
+           ^{:key pvalue} [:option {:value pvalue} pvalue])
+         ]]
+       [:div.div-separator
         [:select.form-control.mr-sm-2 {:name      "qtype"
                                        :value     @qtype
                                        :on-change #(reset! qtype (-> % .-target .-value))}
@@ -300,8 +310,10 @@
                    :on-click #(do (rf/dispatch [:create-question {:question    @new-question
                                                                   :hint        @hint
                                                                   :qtype       @qtype
+                                                                  :points      @points
+                                                                  :explanation @explanation
                                                                   :test-id     (.-value (gdom/getElement "test-id"))
-                                                                  :explanation @explanation}])
+                                                                  :user-id     (.-value (gdom/getElement "user-id"))}])
                                   (reset! new-question "")
                                   (reset! hint "")
                                   (reset! explanation ""))}]]])))
