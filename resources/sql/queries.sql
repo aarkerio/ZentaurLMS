@@ -162,7 +162,7 @@ WHERE id = :id RETURNING *
 -- :doc updates an answer record
 UPDATE tests
 SET title = :title, tags = :tags, description = :description, subject_id = :subject_id
-WHERE id = :test_id AND user_id = :user-id RETURNING *
+WHERE id = :test_id RETURNING *
 
 -- :name get-question :? :1
 -- :doc retrieve a question given the id.

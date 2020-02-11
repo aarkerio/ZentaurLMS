@@ -103,9 +103,7 @@
 (defn update-test!
   "Update test after editing with Re-frame"
   [params]
-  (let [full-params (dissoc params :active)]
-    (log/info (str ">>> **** update-test! >>>>> full-params: " full-params))
-    (db/update-test! full-params)))
+    (db/update-test! params))
 
 ;;;;;;;;;;;;    DELETES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn remove-test [params]

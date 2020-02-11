@@ -23,6 +23,12 @@
         full-test  (mt/build-test-structure test-id archived)]
     (update full-test :id str))) ;; Graphql needs string IDs
 
+(defn- ^:private update-test
+  [context args value]
+  (let [updated-test (mt/update-test! args)
+        reload-test  (mt/get-one-test (:id updated-test))]
+    (update reload-test :id str)))
+
 (defn- ^:private resolve-all-tests
   [context args value]
   (let [all-tests  (mt/get-tests {:test-id (:test_id args)} )]
@@ -36,24 +42,35 @@
 
 (defn- ^:private create-answer
   [context args value]
-  (log/info (str ">>> ANSWER ARGS >>>>> " args))
   (let [full-args  (assoc args :active true)
         new-answer (mt/create-answer! full-args)]
-    (log/info (str ">>> new-answer >>>>> " new-answer))
     (update new-answer :id str)))  ;; graphql wants strings on :ids
 
 (defn- ^:private delete-question
   [context args value]
-  (log/info (str ">>> PARAM  delete-question ARGS >>>>> " args))
   (let [deleted-question (mt/remove-question args)]
     {:id (str (:question_id args))}))
+
+(defn- ^:private delete-answer
+  [context args value]
+  (let [deleted-answer (mt/remove-answer args)]
+    {:id (str (:answer_id args))}))
+
+(defn- ^:private update-answer
+  [context args value]
+  (log/info (str ">>> update-answer ARGS >>>>> " args))
+  (let [updated-answer (mt/update-answer! args)]
+    (update updated-answer :id str)))
 
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."
   []
   {:test-by-id (partial resolve-test-by-id)
+   :update-test (partial update-test)
    :get-all-tests (partial resolve-all-tests)
    :create-question (partial create-question)
    :delete-question (partial delete-question)
-   :create-answer (partial create-answer)})
+   :create-answer (partial create-answer)
+   :update-answer (partial update-answer)
+   })
 

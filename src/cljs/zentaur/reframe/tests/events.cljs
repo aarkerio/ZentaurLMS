@@ -106,7 +106,7 @@
          (assoc :subjects  subjects)
          (assoc :questions questions-idx)))))
 
-;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
+;;;;;;;;    CO-EFFECT HANDLERS (with GraphQL!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
 (re-frame/reg-event-fx
   :test-load
@@ -115,7 +115,7 @@
     (let [db            (:db cfx)
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "{ test_by_id(id: %i, archived: false) { title description tags subject subject_id created_at
+          query         (gstring/format "{ test_by_id(id: %i, archived: false) { id title description tags subject subject_id created_at
                                            subjects {id subject} questions { id question qtype hint points answers {id answer ordnen correct} } } }"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
@@ -125,9 +125,6 @@
                               [:process-test-response]])         ;; callback event when response is recieved
           )))
 
-;;##########################################
-
-;; AJAX handlers
 (re-frame/reg-event-db
  :process-create-question
  []
@@ -166,17 +163,11 @@
  :process-create-answer
  (fn
    [db [_ response]]            ;; destructure the response from the event vector
-   (.log js/console (str ">>> New answer response from Luminus >>>>> " response))
-   (.log js/console (str ">>> Full DB >>>>> " db))
-   (let [pre-answer  (second (first response))
-         _           (.log js/console (str ">>> PREEE  ANSWER >>>>> " pre-answer))
-         answer      (:create_answer pre-answer)
+   (let [answer      (:create_answer (second (first response)))
          _           (.log js/console (str ">>> ANSWER QQ >>>>> " answer))
-         qid         (:question_id answer)
-         question-id (keyword (str qid))
+         question-id (keyword (str (:question_id answer)))
          post-resp   (assoc {} (keyword (:id answer)) answer)
-         _           (.log js/console (str ">>> VALUE KEYWORD question-id >>>>> " question-id ))
-         _           (.log js/console (str ">>> QUESTION ID >>>>>  qid: " qid "   question-id: " question-id))]
+         _           (.log js/console (str ">>> QUESTION ID >>>>>  post-resp: " post-resp "  >>>> question-id: " question-id))]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI
          (update-in [:questions question-id :answers] conj post-resp)))))
@@ -288,50 +279,51 @@
  :process-after-update-answer
  []
  (fn [db [_ response]]
-   (let [answer-keyword    (keyword (str (:id response)))
+   (.log js/console (str ">>> process-after-update-answer >>>>> " response))
+   (let [answer    (-> response :date :update_answer)
+         answer-keyword    (keyword (str (:id response)))
          question-keyword  (keyword (str (:question_id response)))]
        (-> db
           (update-in [:questions question-keyword :answers answer-keyword] conj response)
-          (update :loading?  not)))))
+          (update :loading? not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-answer             ;; <-- the event id
   (fn                         ;; <-- the handler function
-    [cofx [_ answer]]        ;; <-- 1st argument is coeffect, from which we extract db
-    (let [db         (:db cofx)
-          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-      ;; we return a map of (side) effects
-      {:http-xhrio {:method          :post
-                    :uri             "/admin/tests/updateanswer"
-                    :format          (ajax/json-request-format)
-                    :params          answer
-                    :headers         {"x-csrf-token" csrf-field}
-                    :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:process-after-update-answer]
-                    :on-failure      [:bad-response]}})))
+    [cofx [_ updates]]        ;; <-- 1st argument is coeffect, from which we extract db
+    (let [{:keys [answer correct question_id answer_id]} updates
+          mutation  (gstring/format "mutation { update_answer( answer: \"%s\", correct: \"%s\", answer_id: %i, question_id: %i)
+                                    { id answer correct question_id }}"
+                                  answer correct answer_id question_id)]
+       (.log js/console (str ">>> MUTATION UPDATE ANSWER >>>>> " mutation ))
+       (re-frame/dispatch [::re-graph/mutate
+                           mutation                                  ;; graphql query
+                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
+                           [:process-after-update-answer]]))))
 
 ;; ### UPDATE ANSWER
 (re-frame/reg-event-db
  :process-after-update-test
  []
  (fn [db [_ response]]
+   (.log js/console (str ">>> VALUE process-after-update-test >>>>> " response ))
+   (let [test (-> response :data :update_test)]
    (-> db
-       (assoc :test response)
+       (assoc :test test)
        (update :loading?  not)
-       (update :testform  not))))
+       (update :testform  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-test               ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ updates]]        ;; <-- 1st argument is coeffect, from which we extract db
-    (let [db         (:db cofx)
-          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-      ;; we return a map of (side) effects
-      {:http-xhrio {:method          :post
-                    :uri             "/admin/tests/updatetest"
-                    :format          (ajax/json-request-format)
-                    :params          updates
-                    :headers         {"x-csrf-token" csrf-field}
-                    :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:process-after-update-test]
-                    :on-failure      [:bad-response]}})))
+    (let [_  (.log js/console (str ">>> VALUES UPDATES >>>>> " updates ))
+          {:keys [title description tags subject_id test_id]} updates
+          mutation  (gstring/format "mutation { update_test( title: \"%s\", description: \"%s\", tags: \"%s\", subject_id: %i, test_id: %i)
+                                    { id title description subject_id  subject tags created_at }}"
+                                  title description tags subject_id test_id)]
+       (.log js/console (str ">>> MUTATION UPDATE TEST >>>>> " mutation ))
+       (re-frame/dispatch [::re-graph/mutate
+                           mutation                           ;; graphql query
+                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
+                           [:process-after-update-test]]))))

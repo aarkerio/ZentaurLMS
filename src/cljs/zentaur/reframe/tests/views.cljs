@@ -158,9 +158,11 @@
   [question]
   [:p "Question columns"])
 
+(def question-counter (r/atom 0))
+
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen index points] :as q}]
+  [{:keys [question explanation hint qtype id ordnen points] :as q}]
   (let [editing-question (r/atom false)]
     (fn []
       [:div.div-question-row
@@ -175,7 +177,7 @@
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing-question not)}])]  ;; editing ends
      [:div.question-elements
-      [:div [:span.bold-font (str index ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+      [:div [:span.bold-font (str (swap! question-counter inc) ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
       [:div [:span.bold-font "Hint: "] hint]
       [:div [:span.bold-font "Points: "] points]
       [:div [:span.bold-font "Erläuterung: "] explanation]]
@@ -190,16 +192,14 @@
 
 (defn questions-list
   []
-  (let [counter (atom 0)]
+  (let [counter (r/atom 1)]
     (fn []
+      (reset! question-counter 0)
       [:section
-       (for [question @(rf/subscribe [:questions])]
-         (do
-            ^{:key (swap! counter inc)} [question-item (second question)]
-            ))])))
+       (doall (for [question @(rf/subscribe [:questions])]
+                ^{:key (swap! counter inc)} [question-item (second question)]))])))
 
 (defn test-editor-form [test title description tags subject-id]
-  (.log js/console (str ">>> VALUE >>>>> subject_id: " (:subject_id test) ">>> test >>>"  test))
     [:div {:id "test-whole-display"}
      [:div.edit-icon-div
       (if @(rf/subscribe [:toggle-testform])
@@ -223,15 +223,18 @@
                 :placeholder "Tags" :title "Tags" :maxLength 100 :size 100}]]
       [:div.div-separator
        [:select.form-control.mr-sm-2 {:name      "subject-id"
-                                      :value     (str (:subject_id test))
+                                      :value     @subject-id
                                       :on-change #(reset! subject-id (-> % .-target .-value))}
         (for [row-subject @(rf/subscribe [:subjects])]
           ^{:key (:id row-subject)} [:option {:value (:id row-subject)} (:subject row-subject)])
         ]]
       [:div
        [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"
-                :on-click #(rf/dispatch [:update-test {:title @title :description @description
-                                                       :tags @tags :subject-id @subject-id :test-id (:id test)}])}]]]
+                :on-click #(rf/dispatch [:update-test {:title @title
+                                                       :description @description
+                                                       :tags @tags
+                                                       :subject_id @subject-id
+                                                       :test_id (:id test)}])}]]]
       [:div
        [:h1 @title]
        [:div.div-simple-separator [:span {:class "bold-font"} "Tags: "] @tags [:span {:class "bold-font"} " Created:"] (:created_at test)]
