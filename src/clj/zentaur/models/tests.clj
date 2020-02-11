@@ -20,13 +20,13 @@
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
-  (let [pre-params  (assoc params :user-id user-id)
-        full-params (update pre-params :subject-id #(Integer/parseInt %))
+  (let [pre-params  (assoc params :user_id user-id)
+        full-params (update pre-params :subject_id #(Integer/parseInt %))
         _           (log/info (str ">>> full-paramsCREATE TEST >>>>> " full-params))
         errors      (val-test/validate-test full-params)]
     (if (nil? errors)
       (db/create-minimal-test! full-params)
-      false)))
+      {:error errors :ok false})))
 
 (defn- ^:private link-test-question!
   [question-id test-id]

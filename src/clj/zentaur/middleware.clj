@@ -24,9 +24,12 @@
       (handler req)
       (catch Throwable t
         (log/error t (.getMessage t))
-        (ccon/display-error {:status 500
+        ;; (ccon/display-error
+         {:status 500
                              :title "Something very bad has happened!"
-                             :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
+                             :message "We've dispatched a team of highly trained gnomes to take care of the problem."}
+      ;;   )
+      ))))
 
 (defn wrap-csrf
   "Cross-Site Request Forgery"
@@ -46,8 +49,10 @@
       ((if (:websocket? request) handler wrapped) request))))
 
 (defn on-error [request response]
-  (ccon/display-error {:status 403
-                       :title (str "Access to " (:uri request) " is not authorized")}))
+  ;; (ccon/display-error
+               {:status 403 :title (str "Access to " (:uri request) " is not authorized")}
+  ;;                    )
+  )
 
 ;; AUTH CONFIG STARTS
 (defn admin-access [request]
@@ -89,4 +94,5 @@
       wrap-flash
       (wrap-defaults
        (assoc-in site-defaults [:security :anti-forgery] false))
-      wrap-internal-error))
+      wrap-internal-error
+      ))

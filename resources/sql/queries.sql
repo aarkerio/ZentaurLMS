@@ -139,7 +139,7 @@ VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :use
 
 -- :name create-minimal-test! :<! :n
 -- :doc creates a minimal test record
-INSERT INTO tests (title, tags, user_id, subject_id) VALUES (:title, :tags, :user-id, :subject-id) RETURNING id
+INSERT INTO tests (title, tags, user_id, subject_id) VALUES (:title, :tags, :user_id, :subject_id) RETURNING id
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
@@ -228,7 +228,7 @@ UPDATE tests SET active = false WHERE id = :test-id RETURNING TRUE
 
 -- :name remove-question! :<! :raw
 -- :doc remove a question given the test-id
-DELETE FROM question_tests WHERE test_id = :test_id AND question_id = :question-id RETURNING TRUE
+DELETE FROM question_tests WHERE test_id = :test_id AND question_id = :question_id RETURNING TRUE
 
 -- :name remove-answer! :<! :1
 -- :doc remove an answer given the question-id

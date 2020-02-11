@@ -6,5 +6,5 @@
 (defn wrap-dev [handler]
   (-> handler
       wrap-reload
-      wrap-exception
+      ;; wrap-exception
       wrap-exceptions))

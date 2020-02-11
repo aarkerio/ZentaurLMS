@@ -25,7 +25,7 @@
     [:div.div-separator (f/text-field {:maxlength 150 :size 90 :placeholder "Title"} "title")]
     [:div.div-separator (f/text-field {:maxlength 150 :size 70 :placeholder "Tags"} "tags")]
     [:div.div-separator
-     [:select.form-control.mr-sm-2 {:name "subject-id" :value 1}
+     [:select.form-control.mr-sm-2 {:name "subject_id" :value 1}
       (for [subject subjects]
         [:option {:value (:id subject)} (:subject subject)])
       ]]
