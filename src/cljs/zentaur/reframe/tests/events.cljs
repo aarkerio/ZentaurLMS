@@ -280,21 +280,23 @@
  []
  (fn [db [_ response]]
    (.log js/console (str ">>> process-after-update-answer >>>>> " response))
-   (let [answer    (-> response :date :update_answer)
-         answer-keyword    (keyword (str (:id response)))
-         question-keyword  (keyword (str (:question_id response)))]
+   (let [answer           (-> response :data :update_answer)
+         answer-keyword   (keyword (:id answer))
+         idx-answer       (assoc {} answer-keyword answer)
+         question-keyword (keyword (str (:question_id answer)))]
+       (.log js/console (str "question-keyword >>> " question-keyword " >>> answer-keyword >>>>> " answer-keyword " >> idx-answer >> " idx-answer))
        (-> db
-          (update-in [:questions question-keyword :answers answer-keyword] conj response)
+          (update-in [:questions question-keyword :answers answer-keyword] conj idx-answer)
           (update :loading? not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-answer             ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ updates]]        ;; <-- 1st argument is coeffect, from which we extract db
-    (let [{:keys [answer correct question_id answer_id]} updates
-          mutation  (gstring/format "mutation { update_answer( answer: \"%s\", correct: \"%s\", answer_id: %i, question_id: %i)
+    (let [{:keys [answer correct answer_id]} updates
+          mutation  (gstring/format "mutation { update_answer( answer: \"%s\", correct: %s, id: %i)
                                     { id answer correct question_id }}"
-                                  answer correct answer_id question_id)]
+                                  answer correct answer_id)]
        (.log js/console (str ">>> MUTATION UPDATE ANSWER >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
                            mutation                                  ;; graphql query

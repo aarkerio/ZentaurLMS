@@ -100,8 +100,7 @@
                              :description "Update an answer."
                              :args {:answer       {:type (non-null String)}
                                     :correct      {:type (non-null Boolean)}
-                                    :answer_id    {:type (non-null Int)}
-                                    :question_id  {:type (non-null Int)}}
+                                    :id           {:type (non-null Int)}}
                              :resolve :update-answer}
 
              :update_test {:type :test

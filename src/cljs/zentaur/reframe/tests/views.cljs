@@ -63,7 +63,9 @@
                 :checked   @acorrect
                 :on-change #(swap! acorrect not)}]
        [:div [:input.btn {:type "button" :class "btn btn btn-outline-primary-green" :value "Speichern"
-                          :on-click #(rf/dispatch [:update-answer {:answer @aanswer :correct @acorrect :id id}])}]]])))
+                          :on-click #(rf/dispatch [:update-answer {:answer @aanswer
+                                                                   :correct @acorrect
+                                                                   :answer_id id}])}]]])))
 ;;;;;;;; FORMS ENDS
 
 
