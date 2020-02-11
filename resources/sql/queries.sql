@@ -226,8 +226,8 @@ SELECT id, question_id, answer, correct FROM answers WHERE question_id = :questi
 -- :doc delete a test given the id
 UPDATE tests SET active = false WHERE id = :test-id RETURNING TRUE
 
--- :name remove-question! :<! :raw
--- :doc remove a question given the test-id
+-- :name unlink-question! :<! :1
+-- :doc unlink a question from the test
 DELETE FROM question_tests WHERE test_id = :test_id AND question_id = :question_id RETURNING TRUE
 
 -- :name remove-answer! :<! :1

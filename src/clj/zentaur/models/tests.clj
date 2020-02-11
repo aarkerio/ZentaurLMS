@@ -112,10 +112,10 @@
   (let [test-id (:test-id params)]
     (db/remove-test! {:test-id test-id})))
 
-(defn delete-question!
-  "Not a real delete, just from the test"
+(defn remove-question
+  "Not a real delete, just unlink the question from test"
   [params]
-    (db/remove-question! params))
+    (db/unlink-question! params))
 
 (defn remove-answer [params]
   (let [result   (db/remove-answer! params)]

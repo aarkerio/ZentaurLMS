@@ -94,5 +94,5 @@
       wrap-flash
       (wrap-defaults
        (assoc-in site-defaults [:security :anti-forgery] false))
-      wrap-internal-error
+   ;;   wrap-internal-error
       ))

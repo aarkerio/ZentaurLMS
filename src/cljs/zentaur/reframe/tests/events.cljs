@@ -199,11 +199,12 @@
  :process-delete-question
  []
  (fn
-   [db [_ question-id]]
-   (.log js/console (str ">>> question-id VVV >>>>> " question-id ))
-   (let [submap  (get-in db [:questions])]
+   [db [_ data]]
+   (.log js/console (str ">>> Data  VVV >>>>> " data ))
+   (let [question-id (-> data :data :delete_question :id)] ;; Datein Komm zurück
+     (.log js/console (str ">>> QUESTION >>>>> " question-id ))
      (-> db
-         (update-in [:questions] dissoc (keyword (str question-id)))
+         (update-in [:questions] dissoc (keyword question-id))
          (update  :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
@@ -220,7 +221,7 @@
        (.log js/console (str ">>> MUTATION DELETE QUESTION >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
                            mutation                           ;; graphql query
-                            {:some "Pumas prros!! variable"}   ;; arguments map
+                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
                            [:process-delete-question]])))))
 
 (re-frame/reg-event-db

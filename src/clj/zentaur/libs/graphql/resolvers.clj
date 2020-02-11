@@ -45,9 +45,8 @@
 (defn- ^:private delete-question
   [context args value]
   (log/info (str ">>> PARAM  delete-question ARGS >>>>> " args))
-  (let [deleted-question (mt/delete-question! args)]
-    (log/info (str ">>> deleted-question >>>>> " deleted-question))
-    (update deleted-question :id str)))  ;; graphql wants strings on :ids
+  (let [deleted-question (mt/remove-question args)]
+    {:id (str (:question_id args))}))
 
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."
