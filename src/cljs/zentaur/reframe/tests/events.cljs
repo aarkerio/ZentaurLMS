@@ -253,7 +253,9 @@
  []
  (fn
    [db [_ response]]
-   (let [qkeyword  (keyword (str (:id response)))]
+   (let [question  (-> response :data :update_question)
+         _   (.log js/console (str ">>> VALUE update_question >>>>> " question ))
+         qkeyword  (keyword (str (:id response)))]
      (-> db
          (update-in [:questions qkeyword] conj response)
          (update :loading?  not)))))
@@ -261,18 +263,17 @@
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-question           ;; <-- the event id
   (fn                         ;; <-- the handler function
-    [cofx [_ question]]      ;; <-- 1st argument is coeffect, from which we extract db
-    (let [db         (:db cofx)
-          csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-      ;; we return a map of (side) effects
-      {:http-xhrio {:method          :post
-                    :uri             "/admin/tests/updatequestion"
-                    :format          (ajax/json-request-format)
-                    :params          question
-                    :headers         {"x-csrf-token" csrf-field}
-                    :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:process-after-update-question]
-                    :on-failure      [:bad-response]}})))
+    [cofx [_ updates]]      ;; <-- 1st argument is coeffect, from which we extract db
+    (let [{:keys [id question hint explanation qtype points]} updates
+          mutation  (gstring/format "mutation { update_question( id: %i, question: \"%s\",
+                                      hint: \"%s\", explanation: \"%s\", qtype: %i, points: %i)
+                                     { id question qtype hint explanation ordnen points }}"
+                                    id question hint explanation qtype points)]
+       (.log js/console (str ">>> MUTATION UPDATE QUESTION >>>>> " mutation ))
+       (re-frame/dispatch [::re-graph/mutate
+                           mutation                                  ;; graphql query
+                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
+                           [:process-after-update-question]]))))
 
 ;; ### UPDATE ANSWER
 (re-frame/reg-event-db

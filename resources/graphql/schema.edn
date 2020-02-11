@@ -96,13 +96,23 @@
                                     :question_id  {:type (non-null Int)}
                                     :ordnen       {:type Int}}
                              :resolve :create-answer}
+             :update_question {:type :answer
+                               :description "Update a question."
+                               :args {
+                                      :id          {:type (non-null Int)}
+                                      :question    {:type (non-null String)}
+                                      :hint        {:type String}
+                                      :explanation {:type String}
+                                      :qtype       {:type (non-null Int)}
+                                      :points      {:type (non-null Int)}}
+                             :resolve :update-question}
+
              :update_answer {:type :answer
                              :description "Update an answer."
                              :args {:answer       {:type (non-null String)}
                                     :correct      {:type (non-null Boolean)}
                                     :id           {:type (non-null Int)}}
                              :resolve :update-answer}
-
              :update_test {:type :test
                            :description "Update test."
                            :args {
