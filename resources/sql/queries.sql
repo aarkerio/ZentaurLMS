@@ -229,7 +229,7 @@ DELETE FROM question_tests WHERE test_id = :test_id AND question_id = :question_
 
 -- :name remove-answer! :<! :1
 -- :doc remove an answer given the question-id
-DELETE FROM answers WHERE question_id = :question-id AND id = :answer-id RETURNING TRUE
+DELETE FROM answers WHERE question_id = :question_id AND id = :answer_id RETURNING TRUE
 
 /**** ROLES   ****/
 

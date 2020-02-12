@@ -66,7 +66,7 @@
 (defn- ^:private delete-answer
   [context args value]
   (let [deleted-answer (mt/remove-answer args)]
-    {:id (str (:answer_id args))}))
+    {:id (str (:answer_id args)) :question_id (:question_id args) }))
 
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."

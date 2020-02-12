@@ -112,18 +112,13 @@
   :test-load
   (fn                      ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [db            (:db cfx)
-          pre-test-id   (.-value (gdom/getElement "test-id"))
+    (let [pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
           query         (gstring/format "{test_by_id(id: %i, archived: false) { id title description tags subject subject_id created_at
-                                          subjects {id subject} questions { id question qtype hint points explanation answers {id answer ordnen correct} } } }"
+                                          subjects {id subject} questions { id question qtype hint points explanation answers {id answer ordnen correct question_id } } } }"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
-          (re-frame/dispatch [::re-graph/query
-                              query                              ;; graphql query
-                              {:team "Pumas prros!!!"}           ;; arguments map
-                              [:process-test-response]])         ;; callback event when response is recieved
-          )))
+          (re-frame/dispatch [::re-graph/query query {} [:process-test-response]]))))
 
 (re-frame/reg-event-db
  :process-create-question
@@ -183,10 +178,7 @@
                                       { id question_id answer correct ordnen }}"
                                       question-id-int correct answer)]
       (.log js/console (str ">>> CREATE ANSWER MUTATION >>>>> " mutation ))
-      (re-frame/dispatch [::re-graph/mutate
-                          mutation                           ;; graphql query
-                          {:some "Pumas prros!! variable"}   ;; arguments map
-                          [:process-create-answer]]))))
+      (re-frame/dispatch [::re-graph/mutate mutation {} [:process-create-answer]]))))
 
 (re-frame/reg-event-db
  :process-delete-question
@@ -223,9 +215,9 @@
  (fn
    [db [_ response]]
    (let [_           (.log js/console (str ">>> RESPONSE AFTER DELETE ANSWER  >>>>> " response ))
-         answer      (:response response)
+         answer      (-> response :data :delete_answer)
          question-id (keyword (str (:question-id answer)))
-         answer-id   (keyword (str (:answer-id answer)))]
+         answer-id   (keyword (:answer-id answer))]
      (-> db
          (update-in [:questions question-id :answers] dissoc answer-id)
          (update :loading? not)))))
@@ -234,21 +226,17 @@
  :delete-answer               ;; <-- the event id
  (fn                           ;; <-- the handler function
    [cofx [_ data]]            ;; <-- 1st argument is coeffect, from which we extract db
-   (.log js/console (str ">>> Delete  answer data >>>>> " data))
    (when (js/confirm "Delete answer?")
-     (let [db           (:db cofx)
-           answer-id    (:answer-id data)
-           question-id  (:question-id data)
-           csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-       ;; we return a map of  v(side) effects
-       {:http-xhrio {:method          :delete
-                     :uri             "/admin/tests/deleteanswer"
-                     :format          (ajax/json-request-format)
-                     :params          {:answer-id answer-id :question-id question-id}
-                     :headers         {"x-csrf-token" csrf-field}
-                     :response-format (ajax/json-response-format {:keywords? true})
-                     :on-success      [:process-after-delete-answer]
-                     :on-failure      [:bad-response]}}))))
+      (.log js/console (str ">>> Delete  answer data >>>>> " data))
+     (let [{:keys [answer-id question-id]} data
+           answer-id-int  (js/parseInt answer-id)
+           mutation     (gstring/format "mutation { delete_answer( answer_id: %i, question_id: %i ) { id question_id }}"
+                                         answer-id-int question-id)]
+       (.log js/console (str ">>> MUTATION DELETE ANSWER >>>>> " mutation ))
+       (re-frame/dispatch [::re-graph/mutate
+                           mutation                           ;; graphql query
+                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
+                           [:process-after-delete-answer]])))))
 
 (re-frame/reg-event-db
  :process-after-update-question

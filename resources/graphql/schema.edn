@@ -126,8 +126,8 @@
                                :resolve :delete-question}
              :delete_answer {:type :answer
                              :description "Remove answer."
-                             :args {:id           {:type (non-null Int)}
+                             :args {:answer_id    {:type (non-null Int)}
                                     :question_id  {:type (non-null Int)}}
-                             :resolve :delete-question}
+                             :resolve :delete-answer}
              }
  }
