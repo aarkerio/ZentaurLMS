@@ -96,6 +96,15 @@
                                     :question_id  {:type (non-null Int)}
                                     :ordnen       {:type Int}}
                              :resolve :create-answer}
+             :update_test {:type :test
+                           :description "Update test."
+                           :args {
+                                  :title       {:type (non-null String)}
+                                  :description {:type String}
+                                  :tags        {:type String}
+                                  :subject_id  {:type (non-null Int)}
+                                  :test_id     {:type (non-null Int)}}
+                             :resolve :update-test}
              :update_question {:type :answer
                                :description "Update a question."
                                :args {
@@ -106,26 +115,21 @@
                                       :qtype       {:type (non-null Int)}
                                       :points      {:type (non-null Int)}}
                              :resolve :update-question}
-
              :update_answer {:type :answer
                              :description "Update an answer."
                              :args {:answer       {:type (non-null String)}
                                     :correct      {:type (non-null Boolean)}
                                     :id           {:type (non-null Int)}}
                              :resolve :update-answer}
-             :update_test {:type :test
-                           :description "Update test."
-                           :args {
-                                  :title       {:type (non-null String)}
-                                  :description {:type String}
-                                  :tags        {:type String}
-                                  :subject_id  {:type (non-null Int)}
-                                  :test_id     {:type (non-null Int)}}
-                             :resolve :update-test}
              :delete_question {:type :question
-                                 :description "Create new question."
-                                 :args {:question_id {:type (non-null Int)}
-                                        :test_id     {:type (non-null Int)}}
-                                 :resolve :delete-question}
+                               :description "Unlink question."
+                               :args {:question_id {:type (non-null Int)}
+                                      :test_id     {:type (non-null Int)}}
+                               :resolve :delete-question}
+             :delete_answer {:type :answer
+                             :description "Remove answer."
+                             :args {:id           {:type (non-null Int)}
+                                    :question_id  {:type (non-null Int)}}
+                             :resolve :delete-question}
              }
  }
