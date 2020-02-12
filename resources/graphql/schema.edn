@@ -65,8 +65,7 @@
                                :answer      {:type (non-null String)}
                                :question_id {:type (non-null Int)}
                                :ordnen      {:type Int}
-                               :correct     {:type Boolean}
-                               }}}
+                               :correct     {:type Boolean}}}}
  :queries {
            :test_by_id {:type        (non-null :test)
                         :description "Access a test by its unique id, if it exists."
@@ -90,11 +89,10 @@
                                       :user_id     {:type (non-null Int)}}
                                :resolve :create-question}
              :create_answer {:type :answer
-                             :description "Create new answer."
+                             :description "Create a new answer."
                              :args {:answer       {:type (non-null String)}
                                     :correct      {:type (non-null Boolean)}
-                                    :question_id  {:type (non-null Int)}
-                                    :ordnen       {:type Int}}
+                                    :question_id  {:type (non-null Int)}}
                              :resolve :create-answer}
              :update_test {:type :test
                            :description "Update test."
@@ -105,7 +103,7 @@
                                   :subject_id  {:type (non-null Int)}
                                   :test_id     {:type (non-null Int)}}
                              :resolve :update-test}
-             :update_question {:type :answer
+             :update_question {:type :question
                                :description "Update a question."
                                :args {
                                       :id          {:type (non-null Int)}

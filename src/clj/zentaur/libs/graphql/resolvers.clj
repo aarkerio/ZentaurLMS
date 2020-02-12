@@ -36,8 +36,7 @@
 
 (defn- ^:private create-answer
   [context args value]
-  (let [full-args  (assoc args :active true)
-        new-answer (mt/create-answer! full-args)]
+  (let [new-answer (mt/create-answer! args)]
     (update new-answer :id str)))  ;; graphql wants strings on :ids
 
 (defn- ^:private update-test
@@ -48,14 +47,15 @@
 
 (defn- ^:private update-question
   [context args value]
-  (log/info (str ">>> update-question ARGS >>>>> " args))
+  (log/info (str ">>> ***** update-question ARGS >>>>> " args))
   (let [updated-question (mt/update-question! args)]
     (update updated-question :id str)))
 
 (defn- ^:private update-answer
   [context args value]
-  (log/info (str ">>> update-answer ARGS >>>>> " args))
+  (log/info (str ">>> update-answer data ARGS >>>>> " args))
   (let [updated-answer (mt/update-answer! args)]
+    (log/info (str ">>> updated-answer AFTER update>>>>> " updated-answer))
     (update updated-answer :id str)))
 
 (defn- ^:private delete-question

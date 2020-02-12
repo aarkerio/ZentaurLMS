@@ -5,11 +5,12 @@
             [re-frame.core :as rf]
             [zentaur.reframe.tests.forms.blocks :as blk]))
 
-(defn edit-question [{:keys [question id hint explanation qtype]}]
+(defn edit-question [{:keys [question id hint explanation qtype points]}]
   (let [aquestion    (r/atom question)
         ahint        (r/atom hint)
         aexplanation (r/atom explanation)
-        aqtype       (r/atom qtype)]
+        aqtype       (r/atom qtype)
+        apoints      (r/atom points)]
     (fn []
       [:div.edit_question
        [:div "Question: " [:br]
@@ -31,19 +32,26 @@
                  :size      100
                  :on-change #(reset! aexplanation (-> % .-target .-value))}]]
        [:div.div-separator
+        [:select.form-control.mr-sm-2 {:name      "points"
+                                       :value     @apoints
+                                       :title     "Points"
+                                       :on-change #(reset! apoints (-> % .-target .-value))}
+         (for [pvalue (range 1 6)]
+           ^{:key pvalue} [:option {:value pvalue} pvalue])]]
+       [:div.div-separator
         [:select.form-control.mr-sm-2 {:name      "qtype"
                                        :value     @aqtype
-                                       :on-change #(reset! aqtype (-> % .-target .-value))
-                                       :id        (str "edit-qtype-select-" id)}
+                                       :title     "Type of question"
+                                       :on-change #(reset! aqtype (-> % .-target .-value))}
          [:option {:value "1"} "Multiple"]
          [:option {:value "2"} "Open"]
          [:option {:value "3"} "Fullfill"]
          [:option {:value "4"} "Columns"]]]
-       [:div [:input.btn {:type  "button"
-                          :value "Save"
-                          :on-click #(rf/dispatch [:update-question {:question    @aquestion
+       [:div [:input.btn {:type  "button" :class "btn btn btn-outline-primary-green" :value "Speichern"
+                          :on-click #(rf/dispatch [:update-question {:id          id
+                                                                     :question    @aquestion
                                                                      :hint        @ahint
-                                                                     :id          id
+                                                                     :points      @apoints
                                                                      :qtype       @aqtype
                                                                      :explanation @aexplanation}])}]]])))
 
@@ -66,8 +74,6 @@
                           :on-click #(rf/dispatch [:update-answer {:answer @aanswer
                                                                    :correct @acorrect
                                                                    :answer_id id}])}]]])))
-;;;;;;;; FORMS ENDS
-
 
 (defn display-answer [{:keys [id answer correct question_id key] :as answer-record}]
   (let [answer-class    (if-not correct "all-width-red" "all-width-green")
@@ -299,8 +305,7 @@
                                        :value     @points
                                        :on-change #(reset! points (-> % .-target .-value))}
          (for [pvalue (range 1 6)]
-           ^{:key pvalue} [:option {:value pvalue} pvalue])
-         ]]
+           ^{:key pvalue} [:option {:value pvalue} pvalue])]]
        [:div.div-separator
         [:select.form-control.mr-sm-2 {:name      "qtype"
                                        :value     @qtype

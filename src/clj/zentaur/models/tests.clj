@@ -52,6 +52,7 @@
         next-ordnen  (or (:ordnen (sh/get-last-ordnen "answers" question-id)) 0)
         full-params  (assoc params :ordnen (inc next-ordnen))
         errors       (val-test/validate-answer full-params)]
+    (log/info (str "> PARAM create-answer! >>>>> " full-params " ERRORS >> " errors))
     (if (nil? errors)
       (db/create-answer! full-params)
       {:flash errors :ok false})))
@@ -91,8 +92,9 @@
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn update-question! [params]
   (let [qtype        (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
-        full-params  (dissoc params :active)]
-    (db/update-question! (assoc full-params :qtype qtype))))
+        full-params  (dissoc params :active)
+        qid          (db/update-question! (assoc full-params :qtype qtype))]
+    (db/get-one-question qid)))
 
 (defn update-answer!
   "Update answer after editing with Re-frame"

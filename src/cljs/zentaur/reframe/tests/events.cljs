@@ -115,8 +115,8 @@
     (let [db            (:db cfx)
           pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "{ test_by_id(id: %i, archived: false) { id title description tags subject subject_id created_at
-                                           subjects {id subject} questions { id question qtype hint points answers {id answer ordnen correct} } } }"
+          query         (gstring/format "{test_by_id(id: %i, archived: false) { id title description tags subject subject_id created_at
+                                          subjects {id subject} questions { id question qtype hint points explanation answers {id answer ordnen correct} } } }"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query
@@ -178,9 +178,11 @@
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (.log js/console (str ">>>  und ebenfalls _ " (second _)))
     (let [{:keys [question-id correct answer]} (second _)
-          mutation (gstring/format "mutation { create_answer( question_id: %i,
-                                    correct: %s, answer:\"%s\") { id question_id answer correct ordnen }}"
-                                    question-id correct answer )]
+          question-id-int (js/parseInt question-id)
+          mutation    (gstring/format "mutation { create_answer( question_id: %i, correct: %s, answer:\"%s\")
+                                      { id question_id answer correct ordnen }}"
+                                      question-id-int correct answer)]
+      (.log js/console (str ">>> CREATE ANSWER MUTATION >>>>> " mutation ))
       (re-frame/dispatch [::re-graph/mutate
                           mutation                           ;; graphql query
                           {:some "Pumas prros!! variable"}   ;; arguments map
@@ -231,7 +233,7 @@
 (re-frame/reg-event-fx        ;; <-- note the `-fx` extension
  :delete-answer               ;; <-- the event id
  (fn                           ;; <-- the handler function
-   [cofx [_ data]]       ;; <-- 1st argument is coeffect, from which we extract db
+   [cofx [_ data]]            ;; <-- 1st argument is coeffect, from which we extract db
    (.log js/console (str ">>> Delete  answer data >>>>> " data))
    (when (js/confirm "Delete answer?")
      (let [db           (:db cofx)
@@ -253,23 +255,22 @@
  []
  (fn
    [db [_ response]]
-   (let [question  (-> response :data :update_question)
-         _   (.log js/console (str ">>> VALUE update_question >>>>> " question ))
-         qkeyword  (keyword (str (:id response)))]
+   (let [question     (-> response :data :update_question)
+         qkeyword     (keyword (:id question))
+         idx-question (assoc {} qkeyword question)]
      (-> db
-         (update-in [:questions qkeyword] conj response)
+         (update-in [:questions qkeyword] conj question)
          (update :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-question           ;; <-- the event id
   (fn                         ;; <-- the handler function
-    [cofx [_ updates]]      ;; <-- 1st argument is coeffect, from which we extract db
+    [cofx [_ updates]]       ;; <-- 1st argument is coeffect, from which we extract db
     (let [{:keys [id question hint explanation qtype points]} updates
           mutation  (gstring/format "mutation { update_question( id: %i, question: \"%s\",
                                       hint: \"%s\", explanation: \"%s\", qtype: %i, points: %i)
                                      { id question qtype hint explanation ordnen points }}"
                                     id question hint explanation qtype points)]
-       (.log js/console (str ">>> MUTATION UPDATE QUESTION >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
                            mutation                                  ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map

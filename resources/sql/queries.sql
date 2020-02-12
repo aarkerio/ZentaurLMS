@@ -61,11 +61,10 @@ WHERE id = :id
 DELETE FROM posts
 WHERE id = :id
 
--- :name save-comment :! :n
+-- :name save-comment :! :1
 -- :doc creates a new message record
-INSERT INTO comments
-(comment, post_id, user_id, created_at)
-VALUES (:comment, :post_id, :user_id, :created_at)
+INSERT INTO comments (comment, post_id, user_id, created_at)
+VALUES (:comment, :post_id, :user_id, :created_at) RETURNING *
 
 -- :name get-comments :? :*
 -- :doc retrieve comments from a post given the post id.
@@ -149,24 +148,18 @@ VALUES (:question, :qtype, :hint, :explanation, :active, :user_id, :points) RETU
 -- :name update-question! :>! :1
 -- :doc updates a question record
 UPDATE questions
-SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, fulfill = :fulfill
-WHERE id = :id RETURNING *
+SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, points = :points
+WHERE id = :id RETURNING id
 
 -- :name update-answer! :>! :1
 -- :doc updates an answer record
-UPDATE answers
-SET answer = :answer, correct = :correct
+UPDATE answers SET answer = :answer, correct = :correct
 WHERE id = :id RETURNING *
 
 -- :name update-test! :>! :1
 -- :doc updates an answer record
-UPDATE tests
-SET title = :title, tags = :tags, description = :description, subject_id = :subject_id
+UPDATE tests SET title = :title, tags = :tags, description = :description, subject_id = :subject_id
 WHERE id = :test_id RETURNING *
-
--- :name get-question :? :1
--- :doc retrieve a question given the id.
-SELECT * FROM questions WHERE id = :id
 
 -- :name get-answer :? :1
 -- :doc retrieve an answer given the id.
@@ -198,13 +191,17 @@ ORDER BY t.id DESC
 
 -- :name get-questions :? :*
 -- :doc retrieve all questions tests.
-SELECT q.*, qt.ordnen FROM question_tests qt INNER JOIN questions q
+SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.active, q.reviewed_lang, q.reviewed_fact, q.reviewed_cr,
+q.created_at, qt.ordnen FROM question_tests qt INNER JOIN questions q
 ON q.id = qt.question_id
 WHERE qt.test_id = :test-id AND qt.question_id = q.id ORDER BY qt.ordnen ASC
 
--- :name get-last-question :? :1
--- :doc retrieve all questions tests.
-SELECT q.*, qt.ordnen FROM question_tests AS qt, questions AS q WHERE qt.test_id = :test-id AND qt.question_id=q.id ORDER BY qt.ordnen DESC LIMIT 1
+-- :name get-one-question :? :1
+-- :doc retrieve a question given the id.
+SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.active, q.reviewed_lang, q.reviewed_fact, q.reviewed_cr,
+q.created_at, qt.ordnen FROM question_tests qt INNER JOIN questions q
+ON q.id = qt.question_id
+WHERE qt.question_id = q.id AND qt.id = :id LIMIT 1
 
 -- :name get-last-answer :? :1
 -- :doc retrieve all questions tests.
@@ -273,8 +270,7 @@ WHERE id = :id
 
 -- :name get-user :? :1
 -- :doc retrieve a user given the id.
-SELECT * FROM users
-WHERE id = :id
+SELECT * FROM users WHERE id = :id
 
 -- :name get-users :? :*
 -- :doc retrieve all users given the active column.
@@ -294,3 +290,9 @@ DELETE FROM users WHERE id = :id  RETURNING TRUE
 -- :doc delete all contest ONLY in TEST env
 DROP RULE test_del_protect ON tests;
 TRUNCATE pages, composite_answers, roles, users, posts, question_tests, tests, uploads, questions, answers, comments
+
+/******* QUOTES ****/
+
+-- :name get-one-quote :? :1
+-- :doc retrieve a random quote.
+SELECT * FROM	quotes OFFSET floor(random() * (SELECT COUNT(*)	FROM quotes)) LIMIT 1
