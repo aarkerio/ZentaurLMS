@@ -66,6 +66,7 @@
                            :dependencies [[binaryage/devtools "0.9.11"]              ;; CLJS DevTools
                                           [com.bhauman/figwheel-main "0.2.3" :exclusions [joda-time clj-time]]        ;; Hot Reload cljs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
+                                          [day8.re-frame/re-frame-10x "0.5.1"]       ;; Debugging re-frame applications.
                                           [doo "0.1.11"]                             ;; Library and lein plugin to run cljs.test on different JS environments
                                           [enlive "1.1.6"]
                                           [factory-time "0.1.2"]                     ;; Factory-bot like library for tests

@@ -138,7 +138,6 @@
         [:input.btn {:type "button" :class "btn btn btn-outline-primary-green" :value "Speichern"
                      :on-click #(rf/dispatch [:update-question {:id      id
                                                                 :fulfill fulfill}])}]])))
-
 ;; Polimorphysm to the kind of question
 (defmulti display-question (fn [question] (:qtype question)))
 

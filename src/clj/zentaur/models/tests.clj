@@ -78,8 +78,6 @@
   [test-id archived]
   (let [test          (db/get-one-test {:id test-id :archived archived})
         questions     (get-questions test-id)
-        _      (log/info (str ">>> QQUESTIONS QQQQQQQQQQQQQQQ  >>>>> " (println-str questions)))
-
         subjects      (db/get-subjects)
         subj-strs     (map #(update % :id str) subjects)]
     (try

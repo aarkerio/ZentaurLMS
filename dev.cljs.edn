@@ -1,9 +1,13 @@
 ^{:watch-dirs ["env/dev/cljs" "src/cljs"]}
 ^{:extra-main-files {:testing {:main zentaur.core-test}}}
 {
- :source-paths ["src/cljs" "env/dev/cljs" "test/cljs"]
+ :source-paths ["src/cljs" "env/dev/cljs"]
  :main zentaur.app
  :optimizations :none
  :pretty-print true
+ :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}
+ :preloads [devtools.preload day8.re-frame-10x.preload]
  :source-map true
+ :reload-clj-files false
+ :open-url false
 }

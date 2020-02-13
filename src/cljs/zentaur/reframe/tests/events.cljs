@@ -126,10 +126,11 @@
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
    (.log js/console (str ">>> respoNSE AFTER NEW question >>>>> " response ))
-    (let [pre-question  (-> response :data :create_question)
-         question       (libs/str-to-int pre-question :id)
-          final-question (assoc {} (:id question) question)
-          _ (.log js/console (str ">>> final-question >>>>> " final-question ))]
+   (let [question       (-> response :data :create_question)
+         qkeyword       (keyword (:id question))
+         ques-answers   (assoc question :answers {})
+         final-question (assoc {} qkeyword ques-answers)
+         _              (.log js/console (str ">>> final-question >>>>> " final-question ))]
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
          (update :qform not)           ;; hide new question form
@@ -145,7 +146,7 @@
           _             (.log js/console (str ">>> VALUES AFTER  >>>>> " values ))
           {:keys [question hint explanation qtype points test-id user-id]} values
           mutation      (gstring/format "mutation { create_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, points: %i, test_id: %i, user_id: %i) { id question qtype hint explanation points answers {id} }}"
+                                         qtype: %i, points: %i, test_id: %i, user_id: %i) { id question qtype hint explanation points }}"
                                         question hint explanation qtype points test-id user-id)]
            (.log js/console (str ">>> MUTATTION  >>>>> " mutation ))
       ;; perform a query, with the response sent to the callback event provided
