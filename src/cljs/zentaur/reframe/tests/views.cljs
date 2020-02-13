@@ -187,11 +187,11 @@
         [:img.img-float-right {:title    "Frage nachbestellen"
                                :alt      "Frage nachbestellen"
                                :src      "/img/icon_up_green.png"
-                               :on-click #(rf/dispatch [:reorder-answer {:question-id question :send "up"}])}]
+                               :on-click #(rf/dispatch [:reorder-question {:question-id id :send "up"}])}]
        [:img.img-float-right {:title    "Senden Sie nach unten"
                               :alt      "Senden Sie nach unten"
                               :src      "/img/icon_down_green.png"
-                              :on-click #(rf/dispatch [:reorder-answer {:question-id question :send "down"}])}]
+                              :on-click #(rf/dispatch [:reorder-question {:question-id id :send "down"}])}]
 
         (if @editing-question
           [:img.img-float-right {:title    "Frage abbrechen"
