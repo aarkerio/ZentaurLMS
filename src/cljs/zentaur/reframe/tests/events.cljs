@@ -272,7 +272,6 @@
    (let [answer           (-> response :data :update_answer)
          answer-keyword   (keyword (:id answer))
          question-keyword (keyword (str (:question_id answer)))]
-       (.log js/console (str "question-keyword >>> " question-keyword " >>> answer-keyword >>>>> " answer-keyword " >> answer >> " answer))
        (-> db
           (update-in [:questions question-keyword :answers answer-keyword] conj answer)
           (update :loading? not)))))

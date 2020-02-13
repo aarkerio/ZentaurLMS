@@ -80,25 +80,35 @@
         answer-text     (if-not correct "answer-text-red" "answer-text-green")
         editing-answer  (r/atom false)]
     (fn []
-      [:div
-       [:div {:class answer-class}
-        [:div.edit-icon-div
-         (if @editing-answer
+      [:div {:class answer-class}
+       [:div
+        [:img.img-float-right {:title    "Frage nachbestellen"
+                              :alt      "Frage nachbestellen"
+                              :src      "/img/icon_blue_up.png"
+                              :on-click #(rf/dispatch [:reorder-answer {:answer-id id :question-id question_id}])}]
+       [:img.img-float-right {:title    "Senden Sie nach unten"
+                              :alt      "Senden Sie nach unten"
+                              :src      "/img/icon_blue_down.png"
+                              :on-click #(rf/dispatch [:reorder-answer {:answer-id id :question-id question_id}])}]
+
+        (if @editing-answer
+          [:div
+           [answer-editing-input answer-record]
            [:img.img-float-right {:title    "Antwort abbrechen"
                                   :alt      "Antwort abbrechen"
                                   :src      "/img/icon_cancel.png"
-                                  :on-click #(swap! editing-answer not)}]
+                                  :on-click #(swap! editing-answer not)}]]
+          [:div
+           [:div [:span {:class answer-text} (str key ".-  ("correct")")] " " answer ]
            [:img.img-float-right {:title    "Antwort bearbeiten"
                                   :alt      "Antwort bearbeiten"
                                   :src      "/img/icon_edit.png"
-                                  :on-click #(swap! editing-answer not)}])]
-        (when @editing-answer
-          [answer-editing-input answer-record])
-        [:span {:class answer-text} (str key ".-  ("correct")")] "   " answer
-        [:img.img-float-right {:title    "Antwort löschen"
-                               :alt      "Antwort löschen"
-                               :src      "/img/icon_delete.png"
-                               :on-click #(rf/dispatch [:delete-answer {:answer-id id :question-id question_id}])}]]])))
+                                  :on-click #(swap! editing-answer not)}]])]
+
+       [:img.img-float-right {:title    "Antwort löschen"
+                              :alt      "Antwort löschen"
+                              :src      "/img/icon_delete.png"
+                              :on-click #(rf/dispatch [:delete-answer {:answer-id id :question-id question_id}])}]])))
 
 (defn input-new-answer
   "Note: this is one-way bound to the global atom, it doesn't subscribe to it"
@@ -174,6 +184,15 @@
     (fn []
       [:div.div-question-row
        [:div.edit-icon-div
+        [:img.img-float-right {:title    "Frage nachbestellen"
+                               :alt      "Frage nachbestellen"
+                               :src      "/img/icon_up_green.png"
+                               :on-click #(rf/dispatch [:reorder-answer {:question-id question :send "up"}])}]
+       [:img.img-float-right {:title    "Senden Sie nach unten"
+                              :alt      "Senden Sie nach unten"
+                              :src      "/img/icon_down_green.png"
+                              :on-click #(rf/dispatch [:reorder-answer {:question-id question :send "down"}])}]
+
         (if @editing-question
           [:img.img-float-right {:title    "Frage abbrechen"
                                  :alt      "Frage abbrechen"
