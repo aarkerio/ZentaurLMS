@@ -61,6 +61,7 @@
 
 (defn- ^:private delete-question
   [context args value]
+  (log/info (str ">>> delete-question data ARGS >>>>> " args))
   (let [deleted-question (mt/remove-question args)]
     {:id (str (:question_id args))}))
 

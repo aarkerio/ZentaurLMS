@@ -217,8 +217,9 @@
    [db [_ response]]
    (let [_           (.log js/console (str ">>> RESPONSE AFTER DELETE ANSWER  >>>>> " response ))
          answer      (-> response :data :delete_answer)
-         question-id (keyword (str (:question-id answer)))
-         answer-id   (keyword (:answer-id answer))]
+         question-id (keyword (str (:question_id answer)))
+         answer-id   (keyword (:id answer))]
+     (.log js/console (str ">>> answer-id >>>>> " answer-id " >>>> question-id  >>>" question-id))
      (-> db
          (update-in [:questions question-id :answers] dissoc answer-id)
          (update :loading? not)))))
@@ -228,12 +229,10 @@
  (fn                           ;; <-- the handler function
    [cofx [_ data]]            ;; <-- 1st argument is coeffect, from which we extract db
    (when (js/confirm "Delete answer?")
-      (.log js/console (str ">>> Delete  answer data >>>>> " data))
      (let [{:keys [answer-id question-id]} data
            answer-id-int  (js/parseInt answer-id)
            mutation     (gstring/format "mutation { delete_answer( answer_id: %i, question_id: %i ) { id question_id }}"
                                          answer-id-int question-id)]
-       (.log js/console (str ">>> MUTATION DELETE ANSWER >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
                            mutation                           ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
@@ -270,14 +269,12 @@
  :process-after-update-answer
  []
  (fn [db [_ response]]
-   (.log js/console (str ">>> process-after-update-answer >>>>> " response))
    (let [answer           (-> response :data :update_answer)
          answer-keyword   (keyword (:id answer))
-         idx-answer       (assoc {} answer-keyword answer)
          question-keyword (keyword (str (:question_id answer)))]
-       (.log js/console (str "question-keyword >>> " question-keyword " >>> answer-keyword >>>>> " answer-keyword " >> idx-answer >> " idx-answer))
+       (.log js/console (str "question-keyword >>> " question-keyword " >>> answer-keyword >>>>> " answer-keyword " >> answer >> " answer))
        (-> db
-          (update-in [:questions question-keyword :answers answer-keyword] conj idx-answer)
+          (update-in [:questions question-keyword :answers answer-keyword] conj answer)
           (update :loading? not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
