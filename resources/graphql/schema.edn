@@ -45,6 +45,7 @@
                                :qtype         {:type Int}
                                :hint          {:type String}
                                :explanation   {:type String}
+                               :fulfill       {:type String}
                                :ordnen        {:type Int}
                                :points        {:type Int}
                                :user_id       {:type Int}
@@ -82,6 +83,7 @@
                                :args {:question    {:type (non-null String)}
                                       :hint        {:type String}
                                       :explanation {:type String}
+                                      :fulfill     {:type String}
                                       :qtype       {:type (non-null Int)
                                                     :description "Type of question"}
                                       :points      {:type (non-null Int)}

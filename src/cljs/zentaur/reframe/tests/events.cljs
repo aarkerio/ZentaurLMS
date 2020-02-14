@@ -115,7 +115,7 @@
     (let [pre-test-id   (.-value (gdom/getElement "test-id"))
           test-id       (js/parseInt pre-test-id)
           query         (gstring/format "{test_by_id(id: %i, archived: false) { id title description tags subject subject_id created_at
-                                          subjects {id subject} questions { id question qtype hint points explanation answers {id answer ordnen correct question_id } } } }"
+                                          subjects {id subject} questions { id question qtype hint points explanation fulfill answers {id answer ordnen correct question_id } } } }"
                                         test-id)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query query {} [:process-test-response]]))))

@@ -142,13 +142,13 @@ INSERT INTO tests (title, tags, user_id, subject_id) VALUES (:title, :tags, :use
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
-INSERT INTO questions (question, qtype, hint, explanation, active, user_id, points)
-VALUES (:question, :qtype, :hint, :explanation, :active, :user_id, :points) RETURNING *
+INSERT INTO questions (question, qtype, hint, explanation, active, user_id, points, fulfill)
+VALUES (:question, :qtype, :hint, :explanation, :active, :user_id, :points, :fulfill) RETURNING *
 
 -- :name update-question! :>! :1
 -- :doc updates a question record
 UPDATE questions
-SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, points = :points
+SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, points = :points, fulfill = :fulfill
 WHERE id = :id RETURNING id
 
 -- :name update-answer! :>! :1

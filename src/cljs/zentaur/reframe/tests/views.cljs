@@ -46,7 +46,8 @@
          [:option {:value "1"} "Multiple"]
          [:option {:value "2"} "Open"]
          [:option {:value "3"} "Fullfill"]
-         [:option {:value "4"} "Columns"]]]
+         ;; [:option {:value "4"} "Columns"]
+         ]]
        [:div [:input.btn {:type  "button" :class "btn btn btn-outline-primary-green" :value "Speichern"
                           :on-click #(rf/dispatch [:update-question {:id          id
                                                                      :question    @aquestion
