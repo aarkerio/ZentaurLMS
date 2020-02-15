@@ -114,7 +114,14 @@
                                       :explanation {:type String}
                                       :qtype       {:type (non-null Int)}
                                       :points      {:type (non-null Int)}}
-                             :resolve :update-question}
+                               :resolve :update-question}
+             :update_fulfill {:type :question
+                               :description "Update the fulfill field."
+                               :args {
+                                      :id          {:type (non-null Int)}
+                                      :fulfill     {:type (non-null String)}}
+                             :resolve :update-fulfill}
+
              :update_answer {:type :answer
                              :description "Update an answer."
                              :args {:answer       {:type (non-null String)}

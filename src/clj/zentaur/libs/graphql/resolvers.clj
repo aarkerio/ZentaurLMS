@@ -52,6 +52,12 @@
   (let [updated-question (mt/update-question! args)]
     (update updated-question :id str)))
 
+(defn- ^:private update-fulfill
+  [context args value]
+  (log/info (str ">>> ***** FUL FILL ARGS update- FUL FILL ARGS >>>>> " args))
+  (let [updated-question (mt/update-fulfill! args)]
+    (update updated-question :id str)))
+
 (defn- ^:private update-answer
   [context args value]
   (log/info (str ">>> update-answer data ARGS >>>>> " args))
@@ -79,6 +85,7 @@
    :create-answer (partial create-answer)
    :update-test (partial update-test)
    :update-question (partial update-question)
+   :update-fulfill (partial update-fulfill)
    :update-answer (partial update-answer)
    :delete-question (partial delete-question)
    :delete-answer (partial delete-answer)

@@ -94,6 +94,9 @@
         qid          (db/update-question! (assoc full-params :qtype qtype))]
     (db/get-one-question qid)))
 
+(defn update-fulfill! [params]
+  (db/update-question-fulfill! params))
+
 (defn update-answer!
   "Update answer after editing with Re-frame"
   [params]

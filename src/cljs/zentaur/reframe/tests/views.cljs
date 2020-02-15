@@ -137,18 +137,18 @@
                                    (reset! inner ""))}]])))
 
 (defn fulfill-question-form
-  [question text-asterisks]
-  (let [fulfill (:fulfill question)
-        id (:id question)]
+  [question]
+  (let [afulfill  (r/atom (:fulfill question))
+        id        (:id question)]
     (fn []
       [:div
-       [:div.div-separator fulfill]
+       [:div.div-separator @afulfill]
        [:div.div-separator
-        [:textarea {:value @text-asterisks :on-change  #(reset! text-asterisks (-> % .-target .-value))
+        [:textarea {:value @afulfill :on-change  #(reset! afulfill (-> % .-target .-value))
                     :placeholder "Text and asterisks" :title "Text and asterisks" :cols 120  :rows 10}]]
         [:input.btn {:type "button" :class "btn btn btn-outline-primary-green" :value "Speichern"
-                     :on-click #(rf/dispatch [:update-question {:id      id
-                                                                :fulfill fulfill}])}]])))
+                     :on-click #(rf/dispatch [:update-fulfill {:id      id
+                                                               :fulfill @afulfill}])}]])))
 ;; Polimorphysm to the kind of question
 (defmulti display-question (fn [question] (:qtype question)))
 
@@ -169,8 +169,7 @@
 
 (defmethod display-question 3
   [question]
-  (let [text-asterisks (r/atom (:fulfill question))]
-    [fulfill-question-form question text-asterisks]))
+    [fulfill-question-form question])
 
 (defmethod display-question 4
   [question]

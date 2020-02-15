@@ -11,7 +11,6 @@
     :1 = one row
     :raw = passthrough an untouched result (default)
 ***/
-
 /*************************** POSTS ***/
 
 -- :name save-message! :<! :1
@@ -142,14 +141,18 @@ INSERT INTO tests (title, tags, user_id, subject_id) VALUES (:title, :tags, :use
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
-INSERT INTO questions (question, qtype, hint, explanation, active, user_id, points, fulfill)
-VALUES (:question, :qtype, :hint, :explanation, :active, :user_id, :points, :fulfill) RETURNING *
+INSERT INTO questions (question, qtype, hint, explanation, active, user_id, points)
+VALUES (:question, :qtype, :hint, :explanation, :active, :user_id, :points) RETURNING *
 
 -- :name update-question! :>! :1
 -- :doc updates a question record
 UPDATE questions
-SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, points = :points, fulfill = :fulfill
+SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, points = :points
 WHERE id = :id RETURNING id
+
+-- :name update-question-fulfill! :>! :1
+-- :doc updates the fulfill field in the question
+UPDATE questions SET fulfill = :fulfill WHERE id = :id RETURNING *
 
 -- :name update-answer! :>! :1
 -- :doc updates an answer record
@@ -191,14 +194,14 @@ ORDER BY t.id DESC
 
 -- :name get-questions :? :*
 -- :doc retrieve all questions tests.
-SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.active, q.reviewed_lang, q.reviewed_fact, q.reviewed_cr,
-q.created_at, qt.ordnen FROM question_tests qt INNER JOIN questions q
+SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.fulfill, q.active, q.reviewed_lang, q.reviewed_fact,
+q.reviewed_cr, q.created_at, qt.ordnen FROM question_tests qt INNER JOIN questions q
 ON q.id = qt.question_id
 WHERE qt.test_id = :test-id AND qt.question_id = q.id ORDER BY qt.ordnen ASC
 
 -- :name get-one-question :? :1
 -- :doc retrieve a question given the id.
-SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.active, q.reviewed_lang, q.reviewed_fact, q.reviewed_cr,
+SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.fulfill, q.active, q.reviewed_lang, q.reviewed_fact, q.reviewed_cr,
 q.created_at, qt.ordnen FROM question_tests qt INNER JOIN questions q
 ON q.id = qt.question_id
 WHERE qt.question_id = q.id AND qt.id = :id LIMIT 1

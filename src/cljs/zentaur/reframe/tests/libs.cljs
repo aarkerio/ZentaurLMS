@@ -33,3 +33,6 @@
   "Convert vector od maps to an indexed map"
   [rows]
   (into {} (map-indexed (fn [idx row]  { (js/parseInt (:id row)) row}) rows)))
+
+(defn display-fulfill [text]
+  (clojure.string/replace "Almost Pig Latin" #"\b(\w)(\w+)\b" "$2$1ay"))

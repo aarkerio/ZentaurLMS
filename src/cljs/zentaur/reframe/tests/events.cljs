@@ -146,7 +146,7 @@
           _             (.log js/console (str ">>> VALUES AFTER  >>>>> " values ))
           {:keys [question hint explanation qtype points test-id user-id]} values
           mutation      (gstring/format "mutation { create_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, points: %i, test_id: %i, user_id: %i) { id question qtype hint explanation points }}"
+                                         qtype: %i, points: %i, test_id: %i, user_id: %i) { id question qtype hint explanation points}}"
                                         question hint explanation qtype points test-id user-id)]
            (.log js/console (str ">>> MUTATTION  >>>>> " mutation ))
       ;; perform a query, with the response sent to the callback event provided
@@ -257,14 +257,38 @@
     (let [{:keys [id question hint explanation qtype points]} updates
           mutation  (gstring/format "mutation { update_question( id: %i, question: \"%s\",
                                       hint: \"%s\", explanation: \"%s\", qtype: %i, points: %i)
-                                     { id question qtype hint explanation ordnen points }}"
+                                     { id question hint explanation qtype points ordnen fulfill}}"
                                     id question hint explanation qtype points)]
        (re-frame/dispatch [::re-graph/mutate
                            mutation                                  ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
                            [:process-after-update-question]]))))
+(re-frame/reg-event-db
+ :process-after-update-fulfill
+ []
+ (fn
+   [db [_ response]]
+   (let [question  (-> response :data :update_fulfill)
+         _         (.log js/console (str ">>> VALUE QQUESTION FULFILL >>>>> " question ))
+         qkeyword  (keyword (:id question))
+         fulfill   (:fulfill question)]
+     (-> db
+         (update-in [:questions qkeyword :fulfill] conj fulfill)
+         (update :loading?  not)))))
 
-;; ### UPDATE ANSWER
+(re-frame/reg-event-fx       ;; <-- note the `-fx` extension
+  :update-fulfill           ;; <-- the event id
+  (fn                         ;; <-- the handler function
+    [cofx [_ updates]]       ;; <-- 1st argument is coeffect, from which we extract db
+    (let [{:keys [id fulfill]} updates
+          mutation  (gstring/format "mutation { update_fulfill( id: %i, fulfill: \"%s\")
+                                     { id fulfill }}"
+                                    id fulfill)]
+       (re-frame/dispatch [::re-graph/mutate
+                           mutation                                  ;; graphql query
+                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
+                           [:process-after-update-fulfill]]))))
+
 (re-frame/reg-event-db
  :process-after-update-answer
  []
