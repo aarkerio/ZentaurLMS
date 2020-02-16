@@ -3,7 +3,8 @@
             [goog.dom :as gdom]
             [reagent.core  :as r]
             [re-frame.core :as rf]
-            [zentaur.reframe.tests.forms.blocks :as blk]))
+            [zentaur.reframe.tests.forms.blocks :as blk]
+            [zentaur.reframe.tests.libs :as zlib]))
 
 (defn edit-question [{:keys [question id hint explanation qtype points]}]
   (let [aquestion    (r/atom question)
@@ -142,7 +143,7 @@
         id        (:id question)]
     (fn []
       [:div
-       [:div.div-separator @afulfill]
+       [:div.div-separator (zlib/asterisks-to-spaces @afulfill)]
        [:div.div-separator
         [:textarea {:value @afulfill :on-change  #(reset! afulfill (-> % .-target .-value))
                     :placeholder "Text and asterisks" :title "Text and asterisks" :cols 120  :rows 10}]]

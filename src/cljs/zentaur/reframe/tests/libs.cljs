@@ -23,16 +23,19 @@
     (reduce-kv #(assoc %1 %2 (if (contains? listed %2 ) (js/parseInt %3) %3)) {} coll)))
 
 (defn index-questions [questions]
-(let  [questions-index  (map-indexed
-                            (fn [idx question]
-                              (assoc question :index (inc idx))) questions)]
-  questions-index
-       ))
+  (let  [questions-index  (map-indexed
+                           (fn [idx question]
+                             (assoc question :index (inc idx))) questions)]
+    questions-index))
 
 (defn index-vector
   "Convert vector od maps to an indexed map"
   [rows]
   (into {} (map-indexed (fn [idx row]  { (js/parseInt (:id row)) row}) rows)))
 
-(defn display-fulfill [text]
-  (clojure.string/replace "Almost Pig Latin" #"\b(\w)(\w+)\b" "$2$1ay"))
+(defn asterisks-to-spaces
+  "Replace sub-strings surrounded by asterisks for spaces"
+  [text]
+  (clojure.string/replace text #"\*(.*?)\*" #(clojure.string/join (take (count (% 1)) (repeat "_")))))
+
+
