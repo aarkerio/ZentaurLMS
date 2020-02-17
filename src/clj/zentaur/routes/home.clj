@@ -6,6 +6,7 @@
             [zentaur.controllers.tests-controller   :as cont-tests]
             [zentaur.controllers.uploads-controller :as cont-uploads]
             [zentaur.controllers.users-controller   :as cont-users]
+            [zentaur.controllers.vclass-controller  :as cont-vclass]
             [zentaur.middleware :as middleware]))
 
 (def site-routes
@@ -21,6 +22,8 @@
 (def vclass-routes
   ["/vclass"
    ["/"                        {:get  cont-posts/get-posts}]
+   ["/index"                   {:get  cont-vclass/index :post cont-vclass/create-vclass}]
+   ["/show/:id"                {:get  cont-vclass/show}]
    ["/tests"                   {:get  cont-tests/index :post cont-tests/create-test}]
    ["/tests/edit/:id"          {:get  cont-tests/edit}]
    ["/tests/exporttestpdf/:id" {:get  cont-export/export-test-pdf}]
