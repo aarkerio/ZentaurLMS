@@ -299,3 +299,68 @@ TRUNCATE pages, composite_answers, roles, users, posts, question_tests, tests, u
 -- :name get-one-quote :? :1
 -- :doc retrieve a random quote.
 SELECT * FROM	quotes OFFSET floor(random() * (SELECT COUNT(*)	FROM quotes)) LIMIT 1
+
+/********  VCLASSROOMS ***/
+
+-- :name save-vclass :<! :1
+-- :doc creates a new message record
+INSERT INTO vclassrooms
+(name, user_id, draft,  historical,  secret,  public,  welcome_message )
+  VALUES (:name, :user-id,  :draft, :historical,  :secret,  public  welcome_message) RETURNING *
+
+-- :name get-vclassrooms :? :*
+-- :doc retrieve array posts given the id.
+SELECT 
+FROM posts p INNER JOIN users u
+ON p.user_id = u.id
+WHERE p.historical = false AND 
+ORDER BY p.id DESC LIMIT 10
+
+-- :name get-vclasssrom :? :1
+-- :doc retrieve a vclassroom given the id.
+SELECT p.id, p.title, p.tags, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
+FROM vclassrooms
+WHERE p.historical = :historical AND p.id = :id
+
+-- :name save-post :! :1
+-- :doc creates a new post record
+INSERT INTO posts
+(title, body, published, discution, tags, user_id, slug)
+VALUES (:title, :body, :published, :discution, :tags, :user_id, :slug) RETURNING id
+
+-- :name update-post :! :1
+-- :doc update an existing post record
+UPDATE vclassrooms
+SET title = :title, body = :body, tags = :tags, published = :published, discution = :discution
+WHERE id = :id
+
+-- :name toggle-vclassroom :! :n
+-- :doc update an existing vclassroom record
+UPDATE posts SET historical = :historical WHERE id = :id
+
+-- :name delete-vclassroom :! :n
+-- :doc delete a post given the id
+DELETE FROM posts
+WHERE id = :id
+
+-- :name save-comment :! :1
+-- :doc creates a new message record
+INSERT INTO comments (comment, post_id, user_id, created_at)
+VALUES (:comment, :post_id, :user_id, :created_at) RETURNING *
+
+-- :name get-comments :? :*
+-- :doc retrieve comments from a post given the post id.
+SELECT u.id AS user_id, u.fname, u.lname, c.id, c.comment, c.created_at
+FROM users AS u, comments AS c
+WHERE c.post_id = :id AND u.id=c.user_id ORDER BY c.id
+
+-- :name admin-get-posts :? :*
+-- :doc retrieve array posts given the user id.
+SELECT
+    p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
+FROM
+    posts p INNER JOIN users u
+    ON p.user_id = u.id
+WHERE
+    p.user_id = :user-id
+ORDER BY p.id DESC

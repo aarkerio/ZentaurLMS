@@ -14,4 +14,9 @@
   [vclassroom-id]
   (db/get-vclass {:vclass-id vclass-id}))
 
+(defn create-vclass
+  "Create a vclassroom"
+  [params]
+  (db/create-vclass! params))
+
 

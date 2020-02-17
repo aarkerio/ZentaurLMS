@@ -22,5 +22,12 @@ COMMENT ON COLUMN vclassrooms.historical IS 'Vclassroom is now a historical reco
 COMMENT ON COLUMN vclassrooms.secret IS 'Secret code to allow students register by themselves';
 --;;
 COMMENT ON COLUMN vclassrooms.public IS 'Public VC, in other words, without secret code';
-
-
+--;;
+CREATE TABLE student_vclassrooms (
+  "id" serial PRIMARY KEY,
+  "student_id" int NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  "vclassroom_id" int NOT NULL REFERENCES vclassrooms(id) ON DELETE CASCADE,
+  "created_at" timestamp(0) with time zone DEFAULT now() NOT NULL,
+  "updated_at" timestamp(0) with time zone DEFAULT now() NOT NULL,
+  UNIQUE ("student_id", "vclassroom_id")
+);
