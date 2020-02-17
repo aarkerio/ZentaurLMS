@@ -26,10 +26,10 @@
                                :subject      {:type String}
                                :subject_id   {:type Int}
                                :tags         {:type String}
-                               :created_at   {:type String}
                                :level        {:type Int}
                                :active       {:type Boolean}
                                :shared       {:type Boolean}
+                               :created_at   {:type String}
                                :questions    {:type (list :question)}
                                :subjects     {:type (list :subject)}}}
            :ided_question {
@@ -45,13 +45,14 @@
                                :qtype         {:type Int}
                                :hint          {:type String}
                                :explanation   {:type String}
+                               :fulfill       {:type String}
                                :ordnen        {:type Int}
                                :points        {:type Int}
                                :user_id       {:type Int}
-                               :created_at    {:type String}
                                :active        {:type Boolean}
                                :reviewed_fact {:type Boolean}
                                :reviewed_lang {:type Boolean}
+                               :created_at    {:type String}
                                :answers       {:type (list :answer)}}}
            :subject {
                       :description "Subject type."
@@ -61,12 +62,11 @@
            :answer {
                       :description "Answer type."
                       :fields {
-                               :id        {:type (non-null ID)}
-                               :answer    {:type (non-null String)}
-                               :ordnen    {:type Int}
-                               :correct   {:type Boolean}
-                               :active    {:type Boolean}
-                               }}}
+                               :id          {:type (non-null ID)}
+                               :answer      {:type (non-null String)}
+                               :question_id {:type (non-null Int)}
+                               :ordnen      {:type Int}
+                               :correct     {:type Boolean}}}}
  :queries {
            :test_by_id {:type        (non-null :test)
                         :description "Access a test by its unique id, if it exists."
@@ -83,11 +83,60 @@
                                :args {:question    {:type (non-null String)}
                                       :hint        {:type String}
                                       :explanation {:type String}
+                                      :fulfill     {:type String}
                                       :qtype       {:type (non-null Int)
                                                     :description "Type of question"}
                                       :points      {:type (non-null Int)}
                                       :test_id     {:type (non-null Int)}
-                                      :user_id     {:type (non-null Int)}
-                                      }
-                               :resolve :create-question}}
-}
+                                      :user_id     {:type (non-null Int)}}
+                               :resolve :create-question}
+             :create_answer {:type :answer
+                             :description "Create a new answer."
+                             :args {:answer       {:type (non-null String)}
+                                    :correct      {:type (non-null Boolean)}
+                                    :question_id  {:type (non-null Int)}}
+                             :resolve :create-answer}
+             :update_test {:type :test
+                           :description "Update test."
+                           :args {
+                                  :title       {:type (non-null String)}
+                                  :description {:type String}
+                                  :tags        {:type String}
+                                  :subject_id  {:type (non-null Int)}
+                                  :test_id     {:type (non-null Int)}}
+                             :resolve :update-test}
+             :update_question {:type :question
+                               :description "Update a question."
+                               :args {
+                                      :id          {:type (non-null Int)}
+                                      :question    {:type (non-null String)}
+                                      :hint        {:type String}
+                                      :explanation {:type String}
+                                      :qtype       {:type (non-null Int)}
+                                      :points      {:type (non-null Int)}}
+                               :resolve :update-question}
+             :update_fulfill {:type :question
+                               :description "Update the fulfill field."
+                               :args {
+                                      :id          {:type (non-null Int)}
+                                      :fulfill     {:type (non-null String)}}
+                             :resolve :update-fulfill}
+
+             :update_answer {:type :answer
+                             :description "Update an answer."
+                             :args {:answer       {:type (non-null String)}
+                                    :correct      {:type (non-null Boolean)}
+                                    :id           {:type (non-null Int)}}
+                             :resolve :update-answer}
+             :delete_question {:type :question
+                               :description "Unlink question."
+                               :args {:question_id {:type (non-null Int)}
+                                      :test_id     {:type (non-null Int)}}
+                               :resolve :delete-question}
+             :delete_answer {:type :answer
+                             :description "Remove answer."
+                             :args {:answer_id    {:type (non-null Int)}
+                                    :question_id  {:type (non-null Int)}}
+                             :resolve :delete-answer}
+             }
+ }

@@ -3,13 +3,15 @@
             [goog.dom :as gdom]
             [reagent.core  :as r]
             [re-frame.core :as rf]
-            [zentaur.reframe.tests.forms.blocks :as blk]))
+            [zentaur.reframe.tests.forms.blocks :as blk]
+            [zentaur.reframe.tests.libs :as zlib]))
 
-(defn edit-question [{:keys [question id hint explanation qtype]}]
+(defn edit-question [{:keys [question id hint explanation qtype points]}]
   (let [aquestion    (r/atom question)
         ahint        (r/atom hint)
         aexplanation (r/atom explanation)
-        aqtype       (r/atom qtype)]
+        aqtype       (r/atom qtype)
+        apoints      (r/atom points)]
     (fn []
       [:div.edit_question
        [:div "Question: " [:br]
@@ -31,19 +33,27 @@
                  :size      100
                  :on-change #(reset! aexplanation (-> % .-target .-value))}]]
        [:div.div-separator
+        [:select.form-control.mr-sm-2 {:name      "points"
+                                       :value     @apoints
+                                       :title     "Points"
+                                       :on-change #(reset! apoints (-> % .-target .-value))}
+         (for [pvalue (range 1 6)]
+           ^{:key pvalue} [:option {:value pvalue} pvalue])]]
+       [:div.div-separator
         [:select.form-control.mr-sm-2 {:name      "qtype"
                                        :value     @aqtype
-                                       :on-change #(reset! aqtype (-> % .-target .-value))
-                                       :id        (str "edit-qtype-select-" id)}
+                                       :title     "Type of question"
+                                       :on-change #(reset! aqtype (-> % .-target .-value))}
          [:option {:value "1"} "Multiple"]
          [:option {:value "2"} "Open"]
          [:option {:value "3"} "Fullfill"]
-         [:option {:value "4"} "Columns"]]]
-       [:div [:input.btn {:type  "button"
-                          :value "Save"
-                          :on-click #(rf/dispatch [:update-question {:question    @aquestion
+         ;; [:option {:value "4"} "Columns"]
+         ]]
+       [:div [:input.btn {:type  "button" :class "btn btn btn-outline-primary-green" :value "Speichern"
+                          :on-click #(rf/dispatch [:update-question {:id          id
+                                                                     :question    @aquestion
                                                                      :hint        @ahint
-                                                                     :id          id
+                                                                     :points      @apoints
                                                                      :qtype       @aqtype
                                                                      :explanation @aexplanation}])}]]])))
 
@@ -63,34 +73,44 @@
                 :checked   @acorrect
                 :on-change #(swap! acorrect not)}]
        [:div [:input.btn {:type "button" :class "btn btn btn-outline-primary-green" :value "Speichern"
-                          :on-click #(rf/dispatch [:update-answer {:answer @aanswer :correct @acorrect :id id}])}]]])))
-;;;;;;;; FORMS ENDS
-
+                          :on-click #(rf/dispatch [:update-answer {:answer @aanswer
+                                                                   :correct @acorrect
+                                                                   :answer_id id}])}]]])))
 
 (defn display-answer [{:keys [id answer correct question_id key] :as answer-record}]
   (let [answer-class    (if-not correct "all-width-red" "all-width-green")
         answer-text     (if-not correct "answer-text-red" "answer-text-green")
         editing-answer  (r/atom false)]
     (fn []
-      [:div
-       [:div {:class answer-class}
-        [:div.edit-icon-div
-         (if @editing-answer
+      [:div {:class answer-class}
+       [:div
+        [:img.img-float-right {:title    "Frage nachbestellen"
+                              :alt      "Frage nachbestellen"
+                              :src      "/img/icon_blue_up.png"
+                              :on-click #(rf/dispatch [:reorder-answer {:answer-id id :question-id question_id}])}]
+       [:img.img-float-right {:title    "Senden Sie nach unten"
+                              :alt      "Senden Sie nach unten"
+                              :src      "/img/icon_blue_down.png"
+                              :on-click #(rf/dispatch [:reorder-answer {:answer-id id :question-id question_id}])}]
+
+        (if @editing-answer
+          [:div
+           [answer-editing-input answer-record]
            [:img.img-float-right {:title    "Antwort abbrechen"
                                   :alt      "Antwort abbrechen"
                                   :src      "/img/icon_cancel.png"
-                                  :on-click #(swap! editing-answer not)}]
+                                  :on-click #(swap! editing-answer not)}]]
+          [:div
+           [:div [:span {:class answer-text} (str key ".-  ("correct")")] " " answer ]
            [:img.img-float-right {:title    "Antwort bearbeiten"
                                   :alt      "Antwort bearbeiten"
                                   :src      "/img/icon_edit.png"
-                                  :on-click #(swap! editing-answer not)}])]
-        (when @editing-answer
-          [answer-editing-input answer-record])
-        [:span {:class answer-text} (str key ".-  ("correct")")] "   " answer
-        [:img.img-float-right {:title    "Antwort löschen"
-                               :alt      "Antwort löschen"
-                               :src      "/img/icon_delete.png"
-                               :on-click #(rf/dispatch [:delete-answer {:answer-id id :question-id question_id}])}]]])))
+                                  :on-click #(swap! editing-answer not)}]])]
+
+       [:img.img-float-right {:title    "Antwort löschen"
+                              :alt      "Antwort löschen"
+                              :src      "/img/icon_delete.png"
+                              :on-click #(rf/dispatch [:delete-answer {:answer-id id :question-id question_id}])}]])))
 
 (defn input-new-answer
   "Note: this is one-way bound to the global atom, it doesn't subscribe to it"
@@ -112,25 +132,24 @@
                     :checked @checked :on-change #(swap! checked not)}]
        [:input.btn {:type "button" :class "btn btn btn-outline-primary-green" :value "Antwort hinzufügen"
                     :on-click #(do (rf/dispatch [:create-answer {:question-id question-id
-                                                                       :correct @checked
-                                                                       :answer @inner}])
+                                                                 :correct @checked
+                                                                 :answer @inner}])
                                    (reset! checked false)
                                    (reset! inner ""))}]])))
 
 (defn fulfill-question-form
-  [question text-asterisks]
-  (let [fulfill (:fulfill question)
-        id (:id question)]
+  [question]
+  (let [afulfill  (r/atom (:fulfill question))
+        id        (:id question)]
     (fn []
       [:div
-       [:div.div-separator fulfill]
+       [:div.div-separator (zlib/asterisks-to-spaces @afulfill)]
        [:div.div-separator
-        [:textarea {:value @text-asterisks :on-change  #(reset! text-asterisks (-> % .-target .-value))
+        [:textarea {:value @afulfill :on-change  #(reset! afulfill (-> % .-target .-value))
                     :placeholder "Text and asterisks" :title "Text and asterisks" :cols 120  :rows 10}]]
         [:input.btn {:type "button" :class "btn btn btn-outline-primary-green" :value "Speichern"
-                     :on-click #(rf/dispatch [:update-question {:id      id
-                                                                :fulfill fulfill}])}]])))
-
+                     :on-click #(rf/dispatch [:update-fulfill {:id      id
+                                                               :fulfill @afulfill}])}]])))
 ;; Polimorphysm to the kind of question
 (defmulti display-question (fn [question] (:qtype question)))
 
@@ -151,20 +170,30 @@
 
 (defmethod display-question 3
   [question]
-  (let [text-asterisks (r/atom (:fulfill question))]
-    [fulfill-question-form question text-asterisks]))
+    [fulfill-question-form question])
 
 (defmethod display-question 4
   [question]
   [:p "Question columns"])
 
+(def question-counter (r/atom 0))
+
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen index points] :as q}]
+  [{:keys [question explanation hint qtype id ordnen points] :as q}]
   (let [editing-question (r/atom false)]
     (fn []
-      [:div.div-question-row
-       [:div.edit-icon-div
+      [:div.question-container-div
+       [:div.question-items-divs
+        [:img.img-float-right {:title    "Frage nachbestellen"
+                               :alt      "Frage nachbestellen"
+                               :src      "/img/icon_up_green.png"
+                               :on-click #(rf/dispatch [:reorder-question {:question-id id :send "up"}])}]
+       [:img.img-float-right {:title    "Senden Sie nach unten"
+                              :alt      "Senden Sie nach unten"
+                              :src      "/img/icon_down_green.png"
+                              :on-click #(rf/dispatch [:reorder-question {:question-id id :send "down"}])}]
+
         (if @editing-question
           [:img.img-float-right {:title    "Frage abbrechen"
                                  :alt      "Frage abbrechen"
@@ -174,15 +203,15 @@
                                  :alt      "Frage bearbeiten"
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing-question not)}])]  ;; editing ends
-     [:div.question-elements
-      [:div [:span.bold-font (str index ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+     [:div.question-items-divs
+      [:div [:span.bold-font (str (swap! question-counter inc) ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
       [:div [:span.bold-font "Hint: "] hint]
       [:div [:span.bold-font "Points: "] points]
       [:div [:span.bold-font "Erläuterung: "] explanation]]
      (when @editing-question
         [edit-question q])
        [display-question q] ;; Polimorphysm for the kind of question
-     [:div.img-delete-right
+     [:div.question-items-divs
        [:img {:src    "/img/icon_delete.png"
               :title  "Frage löschen"
               :alt    "Frage löschen"
@@ -190,16 +219,14 @@
 
 (defn questions-list
   []
-  (let [counter (atom 0)]
+  (let [counter (r/atom 1)]
     (fn []
+      (reset! question-counter 0)
       [:section
-       (for [question @(rf/subscribe [:questions])]
-         (do
-            ^{:key (swap! counter inc)} [question-item (second question)]
-            ))])))
+       (doall (for [question @(rf/subscribe [:questions])]
+                ^{:key (swap! counter inc)} [question-item (second question)]))])))
 
 (defn test-editor-form [test title description tags subject-id]
-  (.log js/console (str ">>> VALUE >>>>> subject_id: " (:subject_id test) ">>> test >>>"  test))
     [:div {:id "test-whole-display"}
      [:div.edit-icon-div
       (if @(rf/subscribe [:toggle-testform])
@@ -223,15 +250,18 @@
                 :placeholder "Tags" :title "Tags" :maxLength 100 :size 100}]]
       [:div.div-separator
        [:select.form-control.mr-sm-2 {:name      "subject-id"
-                                      :value     (str (:subject_id test))
+                                      :value     @subject-id
                                       :on-change #(reset! subject-id (-> % .-target .-value))}
         (for [row-subject @(rf/subscribe [:subjects])]
           ^{:key (:id row-subject)} [:option {:value (:id row-subject)} (:subject row-subject)])
         ]]
       [:div
        [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"
-                :on-click #(rf/dispatch [:update-test {:title @title :description @description
-                                                       :tags @tags :subject-id @subject-id :test-id (:id test)}])}]]]
+                :on-click #(rf/dispatch [:update-test {:title @title
+                                                       :description @description
+                                                       :tags @tags
+                                                       :subject_id @subject-id
+                                                       :test_id (:id test)}])}]]]
       [:div
        [:h1 @title]
        [:div.div-simple-separator [:span {:class "bold-font"} "Tags: "] @tags [:span {:class "bold-font"} " Created:"] (:created_at test)]
@@ -294,8 +324,7 @@
                                        :value     @points
                                        :on-change #(reset! points (-> % .-target .-value))}
          (for [pvalue (range 1 6)]
-           ^{:key pvalue} [:option {:value pvalue} pvalue])
-         ]]
+           ^{:key pvalue} [:option {:value pvalue} pvalue])]]
        [:div.div-separator
         [:select.form-control.mr-sm-2 {:name      "qtype"
                                        :value     @qtype

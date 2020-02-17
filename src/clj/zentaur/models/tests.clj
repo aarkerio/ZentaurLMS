@@ -20,13 +20,13 @@
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
-  (let [pre-params  (assoc params :user-id user-id)
-        full-params (update pre-params :subject-id #(Integer/parseInt %))
+  (let [pre-params  (assoc params :user_id user-id)
+        full-params (update pre-params :subject_id #(Integer/parseInt %))
         _           (log/info (str ">>> full-paramsCREATE TEST >>>>> " full-params))
         errors      (val-test/validate-test full-params)]
     (if (nil? errors)
       (db/create-minimal-test! full-params)
-      false)))
+      {:error errors :ok false})))
 
 (defn- ^:private link-test-question!
   [question-id test-id]
@@ -47,18 +47,14 @@
       (get-last-question params)
       {:flash errors :ok false})))
 
-(defn- ^:private create-new-answer
-  [params]
-  (let [last-answer  (db/create-answer! params)]
-    (assoc {} (:id last-answer) last-answer)))
-
 (defn create-answer! [params]
   (let [question-id  (:question-id params)
         next-ordnen  (or (:ordnen (sh/get-last-ordnen "answers" question-id)) 0)
         full-params  (assoc params :ordnen (inc next-ordnen))
         errors       (val-test/validate-answer full-params)]
+    (log/info (str "> PARAM create-answer! >>>>> " full-params " ERRORS >> " errors))
     (if (nil? errors)
-      (create-new-answer full-params)
+      (db/create-answer! full-params)
       {:flash errors :ok false})))
 
 ;;;;; TEST BUILD SECTION STARTS
@@ -82,8 +78,6 @@
   [test-id archived]
   (let [test          (db/get-one-test {:id test-id :archived archived})
         questions     (get-questions test-id)
-        _      (log/info (str ">>> QQUESTIONS QQQQQQQQQQQQQQQ  >>>>> " (println-str questions)))
-
         subjects      (db/get-subjects)
         subj-strs     (map #(update % :id str) subjects)]
     (try
@@ -96,8 +90,12 @@
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn update-question! [params]
   (let [qtype        (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
-        full-params  (dissoc params :active)]
-    (db/update-question! (assoc full-params :qtype qtype))))
+        full-params  (dissoc params :active)
+        qid          (db/update-question! (assoc full-params :qtype qtype))]
+    (db/get-one-question qid)))
+
+(defn update-fulfill! [params]
+  (db/update-question-fulfill! params))
 
 (defn update-answer!
   "Update answer after editing with Re-frame"
@@ -108,19 +106,17 @@
 (defn update-test!
   "Update test after editing with Re-frame"
   [params]
-  (let [full-params (dissoc params :active)]
-    (log/info (str ">>> **** update-test! >>>>> full-params: " full-params))
-    (db/update-test! full-params)))
+    (db/update-test! params))
 
 ;;;;;;;;;;;;    DELETES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn remove-test [params]
   (let [test-id (:test-id params)]
     (db/remove-test! {:test-id test-id})))
 
-(defn remove-question [params]
-  (let [test-id     (:test-id params)
-        question-id (:question-id params)]
-    (db/remove-question! {:test-id test-id :question-id question-id})))
+(defn remove-question
+  "Not a real delete, just unlink the question from test"
+  [params]
+    (db/unlink-question! params))
 
 (defn remove-answer [params]
   (let [result   (db/remove-answer! params)]

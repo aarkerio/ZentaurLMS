@@ -6,4 +6,7 @@
   (fn [request]
     (try (handler request)
          (catch Exception ex
-           (constantly (ccon/display-error {:status 500 :title "500 - Exception caught"}))))))
+           ;; (ccon/display-error
+            {:status 500 :title "500 - Exception caught"}
+           ;; )
+           ))))

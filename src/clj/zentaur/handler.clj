@@ -29,11 +29,11 @@
       (ring/redirect-trailing-slash-handler {:method :strip})
       (ring/create-default-handler
        {:not-found
-        (constantly (ccon/display-error {:status 404 :title "404 - Page not found"}))
+        (constantly {:status 404 :title "404 - Page not found"})
         :method-not-allowed
-        (constantly (ccon/display-error {:status 405 :title "405 - Not allowed"}))
+        (constantly {:status 405 :title "405 - Not allowed"})
         :not-acceptable
-        (constantly (ccon/display-error{:status 406 :title "406 - Not acceptable"}))}))))
+        (constantly  {:status 406 :title "406 - Not acceptable"})}))))
 
 (defn app []
   (middleware/wrap-base #'app-routes))

@@ -50,7 +50,7 @@
     (st/validate params question-schema)))
 
 (def answer-schema
-  [[:question-id st/required st/integer]
+  [[:question_id st/required st/integer]
    [:ordnen      st/required st/integer]
    [:answer      st/required st/string
     {:title "Answer field must contain at least 2 characters"
