@@ -183,8 +183,8 @@
   [{:keys [question explanation hint qtype id ordnen points] :as q}]
   (let [editing-question (r/atom false)]
     (fn []
-      [:div.div-question-row
-       [:div.edit-icon-div
+      [:div.question-container-div
+       [:div.question-items-divs
         [:img.img-float-right {:title    "Frage nachbestellen"
                                :alt      "Frage nachbestellen"
                                :src      "/img/icon_up_green.png"
@@ -203,7 +203,7 @@
                                  :alt      "Frage bearbeiten"
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing-question not)}])]  ;; editing ends
-     [:div.question-elements
+     [:div.question-items-divs
       [:div [:span.bold-font (str (swap! question-counter inc) ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
       [:div [:span.bold-font "Hint: "] hint]
       [:div [:span.bold-font "Points: "] points]
@@ -211,7 +211,7 @@
      (when @editing-question
         [edit-question q])
        [display-question q] ;; Polimorphysm for the kind of question
-     [:div.img-delete-right
+     [:div.question-items-divs
        [:img {:src    "/img/icon_delete.png"
               :title  "Frage löschen"
               :alt    "Frage löschen"

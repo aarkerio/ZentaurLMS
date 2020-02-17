@@ -1054,3 +1054,25 @@ table.some-table-class {
   text-align: center;
   font-size: .8rem;
 }
+
+.question-container-div {
+    padding: 5px;
+    margin: 5px;
+    border: 1px dotted gray;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    &:hover {
+        opacity:1;
+        transition: 1s ease;
+        background-color: #eaeaea;
+   }
+}
+
+.question-container-div > .question-items-divs {
+    padding: 5px;
+    margin: 5px;
+    border: 1px dotted gray;
+    flex: auto;
+}
