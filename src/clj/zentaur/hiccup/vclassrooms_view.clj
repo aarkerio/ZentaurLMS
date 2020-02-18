@@ -9,10 +9,10 @@
 (defn format-row
   [{:keys [name draft historical secret public description uurlid created_at]}]
   (let [formatted-date (hv/format-date created_at)
-        draft (if draft "icon_draft.png" "icon_published.png")
-        alt   (if draft "Draft" "Published")]
+        icon           (if draft "icon_draft.png" "icon_published.png")
+        alt            (if draft "Draft" "Published")]
     [:tr
-     [:td  [:a {:href (str "/vclass/toggle/" uurlid)} [:img {:src (str "/img/" draft) :alt alt :title alt}]]]
+     [:td  [:a {:href (str "/vclass/toggle/" uurlid "/" draft)} [:img {:src (str "/img/" icon) :alt alt :title alt}]]]
      [:td  [:a {:href (str "/vclass/show/" uurlid)} name]]
      [:td  description]
      [:td  formatted-date]

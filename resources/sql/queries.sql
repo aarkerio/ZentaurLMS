@@ -306,7 +306,7 @@ FROM vclassrooms WHERE historical = :historical AND user_id = :user-id ORDER BY 
 
 -- :name get-vclass :? :1
 -- :doc retrieve a vclassroom given the uurlid.
-SELECT id, name, draft, historical, secret, public, description, created_at
+SELECT id, name, draft, historical, secret, public, uurlid, description, created_at
 FROM vclassrooms WHERE user_id = :user-id AND uurlid = :uurlid
 
 -- :name create-vclass! :<! :1
