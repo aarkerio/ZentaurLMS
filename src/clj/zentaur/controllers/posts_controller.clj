@@ -8,16 +8,13 @@
             [zentaur.libs.helpers :as h]
             [zentaur.models.posts :as model-post]))
 
-(def msg-erfolg "Veränderung wurden erfolgreich gespeichert")
-(def msg-fehler "Etwas ging schief")
-
 (defn get-posts
   "GET  /  (index site)"
   [request]
   (let [base     (basec/set-vars request)
         posts    (model-post/get-posts)]
     (basec/parser
-     (layout/application (merge base {:title "Posts" :contents (posts-view/index posts)})))))
+     (layout/application (merge base {:title "List of Posts" :contents (posts-view/index posts)})))))
 
 (defn save-comment
   "POST /post/savecomment"
@@ -46,7 +43,7 @@
   "GET '/admin/posts/publish/:id/:published'"
   [{:keys [path-params]}]
   (model-post/toggle path-params)
-    (assoc (response/found "/admin/posts") :flash msg-erfolg))
+    (assoc (response/found "/admin/posts") :flash h/msg-erfolg))
 
 ;;;;;;;;;;;;;;;;     ADMIN SECTION      ;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -65,7 +62,7 @@
   (let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))]
     (if (contains? errors :flash)
       (assoc (response/found "/admin/posts/new") :flash (h/map-to-query-string errors))
-      (assoc (response/found "/admin/posts") :flash "Beiträge wurden erfolgreich gespeichert"))))
+      (assoc (response/found "/admin/posts") :flash h/msg-erfolg))))
 
 (defn show-post
   "GET. /admin/posts/:id"
@@ -83,7 +80,7 @@
   (let [errors (model-post/update-post! (dissoc params :__anti-forgery-token :button-save))]
     (if (contains? errors :flash)
       (assoc (response/found (str "/admin/posts/" (:id params))) :flash (h/map-to-query-string errors))
-      (assoc (response/found "/admin/posts") :flash "Beiträge wurden erfolgreich gespeichert"))))
+      (assoc (response/found "/admin/posts") :flash h/msg-erfolg))))
 
 
 (defn admin-new
@@ -98,4 +95,4 @@
   [params]
   (let [id (params :id)]
     (model-post/destroy id)
-    (assoc (response/found "/admin/posts") :flash msg-erfolg)))
+    (assoc (response/found "/admin/posts") :flash h/msg-erfolg)))

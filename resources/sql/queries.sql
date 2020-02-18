@@ -40,8 +40,7 @@ SELECT * FROM subjects ORDER BY subject ASC
 
 -- :name save-post! :! :1
 -- :doc creates a new post record
-INSERT INTO posts
-(title, body, published, discution, tags, user_id, slug)
+INSERT INTO posts (title, body, published, discution, tags, user_id, slug)
 VALUES (:title, :body, :published, :discution, :tags, :user_id, :slug) RETURNING id
 
 -- :name update-post! :! :1
@@ -52,13 +51,11 @@ WHERE id = :id
 
 -- :name toggle-post! :! :n
 -- :doc update an existing post record
-UPDATE posts SET published = :published
-WHERE id = :id
+UPDATE posts SET published = :published WHERE id = :id
 
 -- :name delete-post! :! :n
 -- :doc delete a post given the id
-DELETE FROM posts
-WHERE id = :id
+DELETE FROM posts WHERE id = :id
 
 -- :name save-comment :! :1
 -- :doc creates a new message record
@@ -304,30 +301,28 @@ SELECT * FROM	quotes OFFSET floor(random() * (SELECT COUNT(*)	FROM quotes)) LIMI
 
 -- :name get-vclassrooms :? :*
 -- :doc retrieve array posts given the id.
-SELECT id, name, user_id, draft, historical, secret, public, welcome_message, created_at
+SELECT id, name, user_id, draft, historical, secret, public, description, created_at
 FROM vclassrooms WHERE historical = :historical AND user_id = :user-id ORDER BY id DESC LIMIT 10
 
 -- :name get-vclass :? :1
--- :doc retrieve a vclassroom given the id.
-SELECT id, name, user_id, draft, historical, secret, public, welcome_message, created_at
-FROM vclassrooms WHERE user_id = :user-id AND id = :id
+-- :doc retrieve a vclassroom given the uurlid.
+SELECT id, name, user_id, draft, historical, secret, public, description, created_at
+FROM vclassrooms WHERE user_id = :user-id AND uurlid = :uurlid
 
 -- :name create-vclass! :<! :1
 -- :doc creates a new message record
-INSERT INTO vclassrooms (name, user_id, draft, historical, secret, public, welcome_message, uurlid)
- VALUES (:name, :user-id, :draft, :historical, :secret, :public, :welcome_message, :uurlid) RETURNING *
+INSERT INTO vclassrooms (name, user_id, draft, historical, secret, public, description, uurlid)
+ VALUES (:name, :user-id, :draft, :historical, :secret, :public, :description, :uurlid) RETURNING *
 
 -- :name update-vclass :! :1
 -- :doc update an existing post record
-UPDATE vclassrooms
-SET name = :name, secret = :secret, welcome_message = :welcome_message
-WHERE id = :id
+UPDATE vclassrooms SET name = :name, secret = :secret, description = :description,
+:draft = draft, :historical = historical, :public = public WHERE uurlid = :uurlid AND user_id = :user-id
 
 -- :name toggle-vclassroom :! :n
 -- :doc update an existing vclassroom record
-UPDATE vclassrooms SET historical = :historical WHERE id = :id
+UPDATE vclassrooms SET published = :published WHERE uuid = :uuid
 
 -- :name delete-vclassroom :! :n
 -- :doc delete a post given the id
-DELETE FROM vclassrooms
-WHERE id = :id
+DELETE FROM vclassrooms WHERE uuid = :uuid

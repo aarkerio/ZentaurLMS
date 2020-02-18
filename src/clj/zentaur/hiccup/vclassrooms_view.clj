@@ -9,10 +9,11 @@
 (defn format-row
   [vclassroom]
   [:div
-   [:div {:class "blog-post"} [:a {:class "btn btn-outline-primary" :href (str "/vclass/show/" (:id vclassroom))} (:name vclassroom)] ]
-   [:div {:class "blog-post-meta"} (hv/format-date (:created_at vclassroom))]
-   [:div {:class "blog-tags"} (:tags vclassroom)]])
-
+   [:div  [:a {:class "btn btn-outline-primary" :href (str "/vclass/show/" (:uurlid vclassroom))} "Edit"]]
+   [:div  (:name vclassroom)]
+   [:div  (hv/format-date (:created_at vclassroom))]
+   [:div  (:description vclassroom)]
+   [:div  [:a {:class "btn btn-outline-primary" :href (str "/vclass/delete/" (:uurlid vclassroom))} "Delete"]]])
 
 (defn- vc-new-form [csrf-field]
   [:div.hidden-div {:id "hidden-form"}
@@ -21,7 +22,7 @@
     [:div.div-separator (f/label "name" "Name") [:br] (f/text-field {:maxlength 90 :size 90 :placeholder "Name"} "name")]
     [:div.div-separator (f/label "description" "Description") [:br] (f/text-area {:cols 50 :rows 6 :placeholder "Description"} "description")]
     [:div.div-separator {:id "secret-div"} (f/label "secret" "secret") [:br] (f/text-field {:maxlength 10 :size 10 :placeholder "Secret"} "secret")]
-    [:div.div-separator (f/label "open" "Open") [:br] (f/check-box {:title "Open" :value "1" :id "open-vc"} "open")]
+    [:div.div-separator (f/label "open" "Open") [:br] (f/check-box {:title "Open" :value "1" :id "open-vc"} "public")]
     [:div.div-separator (f/label "published" "Published") [:br] (f/check-box {:title "Publish this" :value "1"} "draft")]
     [:div.div-separator (f/label "discution" "Historical") [:br] (f/check-box {:title "Archive this classroom" :value "1"} "historical")]
       (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]])

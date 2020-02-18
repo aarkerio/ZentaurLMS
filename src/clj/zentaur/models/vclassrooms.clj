@@ -12,16 +12,26 @@
 
 (defn get-vclass
   "Get a single vclassroom"
-  [vclass-id]
-  (db/get-vclass {:id vclass-id}))
+  [uurlid]
+  (db/get-vclass {:uurlid uurlid}))
 
 (defn create-vclass
   "Create a vclassroom"
   [params user-id]
   (let [uurlid      (sh/gen-uuid)
         pre-params  (dissoc params :__anti-forgery-token)
-        full-params (assoc pre-params :user-id user-id :uurlid uurlid)]
-    (log/info (str ">>> PARAMs full-params *** >>>>> " full-params))
+        draft       (contains? params :draft)
+        public      (contains? params :public)
+        historical  (contains? params :historical)
+        full-params (assoc pre-params :user-id user-id :uurlid uurlid :draft draft :public public :historical historical)]
     (db/create-vclass! full-params)))
 
+(defn toggle [{:keys [uuid draft]}]
+  (let [new-state (if (= draft "true") false true)
+        int-uuid  (Integer/parseInt uuid)]
+    (db/toggle-vclassroom {:uuid int-uuid :published new-state})))
+
+(defn destroy [uuid]
+  (let [int-uuid (Integer/parseInt uuid)]
+    (db/delete-vclassroom {:uuid int-uuid})))
 

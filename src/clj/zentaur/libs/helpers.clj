@@ -5,6 +5,9 @@
             [java-time :as time]
             [ring.util.codec :as c]))
 
+(def msg-erfolg "Veränderung wurden erfolgreich gespeichert")
+(def msg-fehler "Etwas ging schief")
+
 (defn sanitize [string]
   (c/url-encode string))
 

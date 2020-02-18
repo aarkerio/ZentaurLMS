@@ -36,6 +36,7 @@
     (reduce-kv #(assoc %1 %2 (if (contains? listed %2) (Integer/parseInt %3) %3)) {} coll)))
 
 (defn gen-uuid []
+  "Generate a unique id for a record"
   (let [uuid          (str (java.util.UUID/randomUUID))
         uuid-splitted (clojure.string/split uuid #"-")
         first-sec     (first uuid-splitted)

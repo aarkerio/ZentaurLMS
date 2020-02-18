@@ -23,7 +23,8 @@
   ["/vclass"
    ["/"                        {:get  cont-posts/get-posts}]
    ["/index"                   {:get  cont-vclass/index :post cont-vclass/create-vclass}]
-   ["/show/:id"                {:get  cont-vclass/show}]
+   ["/show/:uurlid"            {:get  cont-vclass/show}]
+   ["/delete/:uurlid"          {:delete cont-vclass/delete-vclass}]
    ["/tests"                   {:get  cont-tests/index :post cont-tests/create-test}]
    ["/tests/edit/:id"          {:get  cont-tests/edit}]
    ["/tests/exporttestpdf/:id" {:get  cont-export/export-test-pdf}]

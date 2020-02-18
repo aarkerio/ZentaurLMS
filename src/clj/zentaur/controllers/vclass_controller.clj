@@ -2,9 +2,10 @@
   (:require [clojure.tools.logging :as log]
             [ring.util.http-response :as response]
             [zentaur.controllers.base-controller :as basec]
-            [zentaur.hiccup.vclassrooms-view :as vclass-view]
-            [zentaur.models.vclassrooms :as model-vclass]
             [zentaur.hiccup.layouts.application-layout :as layout]
+            [zentaur.hiccup.vclassrooms-view :as vclass-view]
+            [zentaur.libs.helpers :as h]
+            [zentaur.models.vclassrooms :as model-vclass]
             [ring.util.http-response :as response]))
 
 (defn index
@@ -15,7 +16,7 @@
         csrf-field    (:csrf-field base)
         vclassrooms   (model-vclass/get-vclassrooms user-id)]
     (basec/parser
-     (layout/application (merge base {:title "vClassrooms" :contents (vclass-view/index vclassrooms csrf-field) })))))
+     (layout/application (merge base {:title "vClassrooms" :contents (vclass-view/index vclassrooms csrf-field)})))))
 
 (defn create-vclass
   "POST /vclass/index"
@@ -24,7 +25,7 @@
         params    (:params request)
         result    (model-vclass/create-vclass params user-id)
         message   (if (= result false) "wrong" "success")]
-    (assoc (response/found "/vclass/index") :flash (assoc params :message message))))
+    (assoc (response/found "/vclass/index") :flash  message)))
 
 (defn show
   "GET /vclass/show/:id"
@@ -36,4 +37,16 @@
     (basec/parser
      (layout/application (merge base {:title "Process" :contents (vclass-view/show upload csrf-field) })))))
 
+(defn toggle-published
+  "GET '/vclass/posts/publish/:id/:published'"
+  [{:keys [path-params]}]
+  (model-vclass/toggle path-params)
+    (assoc (response/found "/admin/posts") :flash h/msg-erfolg))
 
+
+(defn delete-vclass
+  "DELETE /vclass/delete/:uurlid"
+  [params]
+  (let [uurlid (params :uurlid)]
+    (model-vclass/destroy {:uurlid uurlid})
+    (assoc (response/found "/vclass/index") :flash h/msg-erfolg)))
