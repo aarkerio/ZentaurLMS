@@ -27,6 +27,7 @@
     (db/create-vclass! full-params)))
 
 (defn toggle [{:keys [uuid draft]}]
+  (log/info (str ">>> UUID >>>>> " uuid "   >>>>> DRAFT >>>> " draft))
   (let [new-state (if (= draft "true") false true)
         int-uuid  (Integer/parseInt uuid)]
     (db/toggle-vclassroom {:uuid int-uuid :published new-state})))

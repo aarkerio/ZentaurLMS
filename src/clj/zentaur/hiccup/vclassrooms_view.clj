@@ -7,13 +7,16 @@
             [zentaur.hiccup.helpers-view :as hv]))
 
 (defn format-row
-  [vclassroom]
-  [:div
-   [:div  [:a {:class "btn btn-outline-primary" :href (str "/vclass/show/" (:uurlid vclassroom))} "Edit"]]
-   [:div  (:name vclassroom)]
-   [:div  (hv/format-date (:created_at vclassroom))]
-   [:div  (:description vclassroom)]
-   [:div  [:a {:class "btn btn-outline-primary" :href (str "/vclass/delete/" (:uurlid vclassroom))} "Delete"]]])
+  [{:keys [name draft historical secret public description uurlid created_at]}]
+  (let [formatted-date (hv/format-date created_at)
+        draft (if draft "icon_draft.png" "icon_published.png")
+        alt   (if draft "Draft" "Published")]
+    [:tr
+     [:td  [:a {:href (str "/vclass/toggle/" uurlid)} [:img {:src (str "/img/" draft) :alt alt :title alt}]]]
+     [:td  [:a {:href (str "/vclass/show/" uurlid)} name]]
+     [:td  description]
+     [:td  formatted-date]
+     [:td  [:a {:onclick (str "zentaur.core.deletevc(" uurlid ")")} [:img {:src "/img/icon_delete.png" :alt "Delete Classroom" :title "Delete Classroom"}]]]]))
 
 (defn- vc-new-form [csrf-field]
   [:div.hidden-div {:id "hidden-form"}
@@ -35,7 +38,17 @@
      [:h1 "Classrooms"]
      [:div [:img {:src "/img/icon_add.png" :alt "Quizz test hinzüfugen" :title "Quizz test hinzüfugen" :id "button-show-div"}]]
      [:div form]
-      [:div {:id "content"} formatted-vclassrooms]
+     [:div {:id "content"}
+
+     [:table {:class "some-table-class"}
+         [:thead
+           [:tr
+            [:th "Published/Draft"]
+            [:th "Name"]
+            [:th "Description"]
+            [:th "Created"]
+            [:th "Löschen"]]]
+          [:tbody formatted-vclassrooms]]]
       [:nav {:class "blog-pagination"}
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
         [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))

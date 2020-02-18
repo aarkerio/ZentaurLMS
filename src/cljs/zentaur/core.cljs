@@ -91,17 +91,23 @@
                            toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
                        (set! (.-className divh) toggle))))))
 
-(defn delete-test [test-id]
-  (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-    (DELETE "/vclass/tests/deletetest"
-        {:params  {:test-id test-id}
-         :headers {"x-csrf-token" csrf-field}
-         :handler (fn [] (set! js/window.location.href "/admin/tests"))
-         :error-handler error-handler})))
-
 (defn ^:export deletetest [test-id]
-  (when (js/confirm "Delete test?")
-    (delete-test test-id)))
+  (when (js/confirm "Delete test?  (this cannot undo)")
+      (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+        (DELETE "/vclass/tests/deletetest"
+            {:params  {:test-id test-id}
+             :headers {"x-csrf-token" csrf-field}
+             :handler (fn [] (set! js/window.location.href "/admin/tests"))
+             :error-handler error-handler}))))
+
+(defn ^:export deletevc [uurlid]
+  (when (js/confirm "Delete Classroom? (this cannot undo)")
+    (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+      (DELETE "/vclass/delete"
+          {:params  {:uurlid uurlid}
+           :headers {"x-csrf-token" csrf-field}
+           :handler (fn [] (set! js/window.location.href "/vclass/index"))
+           :error-handler error-handler}))))
 
 (defn ask-csrf [csrf-field]
   (when-let [csrf-value  (.-value csrf-field)]

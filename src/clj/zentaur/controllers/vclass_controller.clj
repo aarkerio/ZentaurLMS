@@ -38,10 +38,10 @@
      (layout/application (merge base {:title "Process" :contents (vclass-view/show upload csrf-field) })))))
 
 (defn toggle-published
-  "GET '/vclass/posts/publish/:id/:published'"
+  "GET /vclass/toggle/:uurlid/:draft"
   [{:keys [path-params]}]
   (model-vclass/toggle path-params)
-    (assoc (response/found "/admin/posts") :flash h/msg-erfolg))
+    (assoc (response/found "/vclass/index") :flash h/msg-erfolg))
 
 
 (defn delete-vclass
