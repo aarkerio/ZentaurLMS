@@ -6,17 +6,12 @@
             [markdown.core :as md]
             [zentaur.hiccup.helpers-view :as hv]))
 
-(defn format-post
-  ([post] (format-post post true))
-  ([post view]
-   (let [div-blog   [:div {:class "blog-post"} [:h2 {:class "blog-post-title"} (:title post)]
-                      [:div {:class "blog-post-meta"} (hv/format-date (:created_at post)) " " [:a {:href (str "/user/" (:uname post))} (:uname post)]]
-                      [:div {:class "blog-body"} (md/md-to-html-string (:body post))]
-                      [:div {:class "blog-tags"} (:tags post)]]
-         view-link  (cond view (conj div-blog [:p [:a {:href (str "/posts/view/" (:id post))} "View"]]))]
-     (if (= view true)
-       view-link
-       div-blog))))
+(defn format-row
+  [vclassroom]
+  [:div {:class "blog-post"} [:a {:class "btn btn-outline-primary" :href (str "/vclass/show/" (:id vclassroom))} (:name vclassroom)] ]
+  [:div {:class "blog-post-meta"} (hv/format-date (:created_at vclassroom)) " "
+   [:div {:class "blog-body"} (md/md-to-html-string (:body post))]
+   [:div {:class "blog-tags"} (:tags post)]]])
 
 (defn format-comment [comment]
     [:div {:class "user_comments"}
@@ -24,11 +19,11 @@
         [:div {:style "font-size:8pt;font-weight:bold;"} (str (:last_name comment) " wrote: ")]
         [:div {:class "font"} (:comment comment)]])
 
-(defn index [posts]
-  (let [formatted-posts (doall (for [post posts]
-                                 (format-post post)))]
+(defn index [vclassrooms]
+  (let [formatted-vclassrooms (doall (for [vc vclassrooms]
+                                 (format-row vc)))]
     [:div {:id "cont"}
-      [:div {:id "content"} formatted-posts]
+      [:div {:id "content"} formatted-vclassrooms]
       [:nav {:class "blog-pagination"}
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
         [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))

@@ -4,6 +4,7 @@
 CREATE TABLE vclassrooms (
   "id" serial PRIMARY KEY,
   "name" varchar(150) NOT NULL,
+  "uurlid" varchar(60) NOT NULL UNIQUE,
   "user_id" int REFERENCES users(id) ON DELETE CASCADE,
   "draft" boolean NOT NULL DEFAULT true,
   "historical" boolean NOT NULL DEFAULT false,
@@ -18,6 +19,8 @@ CREATE TABLE vclassrooms (
 COMMENT ON COLUMN vclassrooms.draft IS 'Define published or draft';
 --;;
 COMMENT ON COLUMN vclassrooms.historical IS 'Vclassroom is now a historical record';
+--;;
+COMMENT ON COLUMN vclassrooms.uurlid IS 'Unique identifier for the vClass';
 --;;
 COMMENT ON COLUMN vclassrooms.secret IS 'Secret code to allow students register by themselves';
 --;;

@@ -34,3 +34,10 @@
   [coll & int-keys]
   (let [listed (set int-keys)]
     (reduce-kv #(assoc %1 %2 (if (contains? listed %2) (Integer/parseInt %3) %3)) {} coll)))
+
+(defn gen-uuid []
+  (let [uuid          (.toString (java.util.UUID/randomUUID))
+        uuid-splitted (clojure.string/split uuid "-")]
+    first-sec (first uuid-splitted)
+    last-sec (first uuid-splitted))
+   (conj [] first-sec last-sec))

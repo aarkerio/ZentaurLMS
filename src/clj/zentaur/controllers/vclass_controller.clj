@@ -3,17 +3,19 @@
             [ring.util.http-response :as response]
             [zentaur.controllers.base-controller :as basec]
             [zentaur.hiccup.vclassrooms-view :as vclass-view]
-            [zentaur.models.vclassrooms :as model-vclass]))
+            [zentaur.models.vclassrooms :as model-vclass]
+            [zentaur.hiccup.layouts.application-layout :as layout]
+            [ring.util.http-response :as response]))
 
 (defn index
   "GET /vclass/index"
   [request]
-  (let [base       (basec/set-vars request)
-        user-id    (-> request :identity :id)
-        csrf-field (:csrf-field base)
-        files      (model-vclass/get-vclassrooms user-id)]
+  (let [base          (basec/set-vars request)
+        user-id       (-> request :identity :id)
+        csrf-field    (:csrf-field base)
+        vclassrooms   (model-vclass/get-vclassrooms user-id)]
     (basec/parser
-     (layout/application (merge base {:title "Uploads" :contents (vclass-view/index files csrf-field) })))))
+     (layout/application (merge base {:title "vClassrooms" :contents (vclass-view/index vclassrooms csrf-field) })))))
 
 (defn create-vclass
   "POST /vclass/index"

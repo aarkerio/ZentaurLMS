@@ -11,8 +11,8 @@
 
 (defn get-vclass
   "Get a single vclassroom"
-  [vclassroom-id]
-  (db/get-vclass {:vclass-id vclass-id}))
+  [vclass-id]
+  (db/get-vclass {:id vclass-id}))
 
 (defn create-vclass
   "Create a vclassroom"
