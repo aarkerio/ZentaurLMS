@@ -8,42 +8,38 @@
 
 (defn format-row
   [vclassroom]
-  [:div {:class "blog-post"} [:a {:class "btn btn-outline-primary" :href (str "/vclass/show/" (:id vclassroom))} (:name vclassroom)] ]
-  [:div {:class "blog-post-meta"} (hv/format-date (:created_at vclassroom)) " "
-   [:div {:class "blog-body"} (md/md-to-html-string (:body post))]
-   [:div {:class "blog-tags"} (:tags post)]]])
+  [:div
+   [:div {:class "blog-post"} [:a {:class "btn btn-outline-primary" :href (str "/vclass/show/" (:id vclassroom))} (:name vclassroom)] ]
+   [:div {:class "blog-post-meta"} (hv/format-date (:created_at vclassroom))]
+   [:div {:class "blog-tags"} (:tags vclassroom)]])
 
-(defn format-comment [comment]
-    [:div {:class "user_comments"}
-        [:div {:style "font-size:8pt;"} (:created_at comment)]
-        [:div {:style "font-size:8pt;font-weight:bold;"} (str (:last_name comment) " wrote: ")]
-        [:div {:class "font"} (:comment comment)]])
 
-(defn index [vclassrooms]
-  (let [formatted-vclassrooms (doall (for [vc vclassrooms]
+(defn- vc-new-form [csrf-field]
+  [:div.hidden-div {:id "hidden-form"}
+   [:form {:id "submit-vc-form" :action "/vclass/index" :method "post" :class "css-class-form"}
+    (f/hidden-field {:value csrf-field} "__anti-forgery-token")
+    [:div.div-separator (f/label "name" "Name") [:br] (f/text-field {:maxlength 90 :size 90 :placeholder "Name"} "name")]
+    [:div.div-separator (f/label "description" "Description") [:br] (f/text-area {:cols 50 :rows 6 :placeholder "Description"} "description")]
+    [:div.div-separator {:id "secret-div"} (f/label "secret" "secret") [:br] (f/text-field {:maxlength 10 :size 10 :placeholder "Secret"} "secret")]
+    [:div.div-separator (f/label "open" "Open") [:br] (f/check-box {:title "Open" :value "1" :id "open-vc"} "open")]
+    [:div.div-separator (f/label "published" "Published") [:br] (f/check-box {:title "Publish this" :value "1"} "draft")]
+    [:div.div-separator (f/label "discution" "Historical") [:br] (f/check-box {:title "Archive this classroom" :value "1"} "historical")]
+      (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]])
+
+(defn index [vclassrooms csrf-field]
+  (let [form                  (vc-new-form csrf-field)
+        formatted-vclassrooms (doall (for [vc vclassrooms]
                                  (format-row vc)))]
     [:div {:id "cont"}
+     [:h1 "Classrooms"]
+     [:div [:img {:src "/img/icon_add.png" :alt "Quizz test hinzüfugen" :title "Quizz test hinzüfugen" :id "button-show-div"}]]
+     [:div form]
       [:div {:id "content"} formatted-vclassrooms]
       [:nav {:class "blog-pagination"}
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
         [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
 
-(defn comment-form [base id]
-  (when-let [email (-> base :identity :email)]
-            [:form {:id "submit-comment-form" :action "/vclass/posts/comments" :method "post" :class "css-class-form"}
-                (f/hidden-field {:value (:csrf-field base)} "__anti-forgery-token")
-                (f/hidden-field {:value id} "post_id")
-                [:div (f/text-area {:cols 90 :rows 5} "comment-textarea")]
-                (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]))
-
-(defn show [post base comments]
-  (let [formatted-post (format-post post false)
-        formatted-comments (for [comment comments]
-                             (format-comment comment))
-        comment-form (comment-form base (:id post))]
+(defn show [vclassroom base]
+  (let [formatted-vc (format-row vclassroom)]
     [:div {:id "cont"}
-     [:div {:id "content"} formatted-post]
-     [:div {:id "comments"} formatted-comments]
-     [:div {:id "comment-form"} comment-form]]))
-
-
+     [:div {:id "content"} formatted-vc]]))

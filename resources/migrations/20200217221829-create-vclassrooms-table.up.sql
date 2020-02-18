@@ -4,13 +4,13 @@
 CREATE TABLE vclassrooms (
   "id" serial PRIMARY KEY,
   "name" varchar(150) NOT NULL,
+  "description" text,
   "uurlid" varchar(60) NOT NULL UNIQUE,
   "user_id" int REFERENCES users(id) ON DELETE CASCADE,
   "draft" boolean NOT NULL DEFAULT true,
   "historical" boolean NOT NULL DEFAULT false,
   "secret" varchar(10),
   "public" boolean NOT NULL DEFAULT false,
-  "welcome_message" text,
   "gcalendar_id" varchar(70),  --google calendar ID
   "created_at" timestamp(0) with time zone DEFAULT now() NOT NULL,
   "updated_at" timestamp(0) with time zone DEFAULT now() NOT NULL

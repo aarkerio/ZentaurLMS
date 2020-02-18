@@ -75,11 +75,19 @@
     (when-let [comment-form (.getElementById js/document "comment-textarea")]
       (set! (.-onsubmit comment-form) validate-comment-values))))
 
-(defn- load-tests []
+(defn toggle-form []
   (when-let [hform (gdom/getElement "button-show-div")]  ;; versteckte Taste. Nur im Bearbeitungsmodus
     (events/listen hform EventType.CLICK
                    (fn [e]
                      (let [divh    (gdom/getElement "hidden-form")
+                           toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
+                       (set! (.-className divh) toggle))))))
+
+(defn hide-secret-field []
+  (when-let [hform (gdom/getElement "open-vc")]  ;; versteckte Taste. Nur im Bearbeitungsmodus
+    (events/listen hform EventType.CLICK
+                   (fn [e]
+                     (let [divh    (gdom/getElement "secret-div")
                            toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
                        (set! (.-className divh) toggle))))))
 
@@ -113,6 +121,8 @@
   (refresh-csrf)
   (new-post-validation)
   (show-new-test-form)
+  (toggle-form)
+  (hide-secret-field)
   (let [current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> **** tatsächliche: current. Jedoch However**** >>>>> " current_url))]
     (cond
@@ -121,7 +131,7 @@
       (s/includes? current_url "admin/posts")     (posts/load-posts)
       (s/includes? current_url "/posts/view/")    (validate-comment-form)
       (= current_url "/admin/posts/new")          (.log js/console (str ">>> test-formtest(new-post-validation)"))
-      (= current_url "/vclass/tests")             (load-tests)
+      (= current_url "/vclass/tests")             (.log js/console (str ">>> I am in /vclass/tests URL"))
       :else "F")))
 
 (defn copytoclipboard

@@ -314,8 +314,8 @@ FROM vclassrooms WHERE user_id = :user-id AND id = :id
 
 -- :name create-vclass! :<! :1
 -- :doc creates a new message record
-INSERT INTO vclassrooms (name, user_id, draft, historical, secret, public, welcome_message)
- VALUES (:name, :user-id, :draft, :historical, :secret,  :public,  :welcome_message) RETURNING *
+INSERT INTO vclassrooms (name, user_id, draft, historical, secret, public, welcome_message, uurlid)
+ VALUES (:name, :user-id, :draft, :historical, :secret, :public, :welcome_message, :uurlid) RETURNING *
 
 -- :name update-vclass :! :1
 -- :doc update an existing post record
