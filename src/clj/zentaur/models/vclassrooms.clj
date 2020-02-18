@@ -26,11 +26,9 @@
         full-params (assoc pre-params :user-id user-id :uurlid uurlid :draft draft :public public :historical historical)]
     (db/create-vclass! full-params)))
 
-(defn toggle [{:keys [uuid draft]}]
-  (log/info (str ">>> UUID >>>>> " uuid "   >>>>> DRAFT >>>> " draft))
-  (let [new-state (if (= draft "true") false true)
-        int-uuid  (Integer/parseInt uuid)]
-    (db/toggle-vclassroom {:uuid int-uuid :published new-state})))
+(defn toggle [{:keys [uurlid draft]}]
+  (let [new-draft (if (= draft "true") false true)]
+    (db/toggle-vclassroom {:uurlid uurlid :draft new-draft})))
 
 (defn destroy [uuid]
   (let [int-uuid (Integer/parseInt uuid)]

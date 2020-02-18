@@ -301,7 +301,7 @@ SELECT * FROM	quotes OFFSET floor(random() * (SELECT COUNT(*)	FROM quotes)) LIMI
 
 -- :name get-vclassrooms :? :*
 -- :doc retrieve array posts given the id.
-SELECT id, name, user_id, draft, historical, secret, public, description, created_at
+SELECT id, name, user_id, draft, historical, secret, public, uurlid, description, created_at
 FROM vclassrooms WHERE historical = :historical AND user_id = :user-id ORDER BY id DESC LIMIT 10
 
 -- :name get-vclass :? :1
@@ -321,8 +321,8 @@ UPDATE vclassrooms SET name = :name, secret = :secret, description = :descriptio
 
 -- :name toggle-vclassroom :! :n
 -- :doc update an existing vclassroom record
-UPDATE vclassrooms SET published = :published WHERE uuid = :uuid
+UPDATE vclassrooms SET draft = :draft WHERE uurlid = :uurlid
 
 -- :name delete-vclassroom :! :n
 -- :doc delete a post given the id
-DELETE FROM vclassrooms WHERE uuid = :uuid
+DELETE FROM vclassrooms WHERE uurlid = :uurlid

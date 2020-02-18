@@ -43,7 +43,6 @@
   (model-vclass/toggle path-params)
     (assoc (response/found "/vclass/index") :flash h/msg-erfolg))
 
-
 (defn delete-vclass
   "DELETE /vclass/delete/:uurlid"
   [params]
