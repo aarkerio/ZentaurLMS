@@ -35,10 +35,17 @@
   (let [listed (set int-keys)]
     (reduce-kv #(assoc %1 %2 (if (contains? listed %2) (Integer/parseInt %3) %3)) {} coll)))
 
-(defn gen-uuid []
+(defn gen-uuid
   "Generate a unique id for a record"
+  []
   (let [uuid          (str (java.util.UUID/randomUUID))
         uuid-splitted (clojure.string/split uuid #"-")
         first-sec     (first uuid-splitted)
         last-sec      (last uuid-splitted)]
     (str first-sec last-sec)))
+
+(defn checkboxboolean
+  "Convert or add checboxes values to booleans"
+  [params & args]
+  (into {} (map #(assoc params % (contains? params %)) args)))
+

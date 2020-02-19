@@ -43,25 +43,8 @@
   (if-let [flash-msg (gdom/getElement "flash-msg")]
     (js/setTimeout (remove-flash) 90000)))
 
-(defn validate-minimal-test []
-  (let [title  (.getElementById js/document "title")
-        tags   (.getElementById js/document "tags")]
-    (if (and (> (count (.-value title)) 0)
-             (> (count (.-value tags)) 0))
-      true
-      (do (js/alert "Please, complete the form!")
-          false))))
-
-(defn show-new-test-form
-  "Called from zentaur.hiccup.admin.tests-view"
-  []
-  (if (and js/document
-           (.-getElementById js/document))
-    (when-let [test-form (.getElementById js/document "submit-test-form")]
-      (set! (.-onsubmit test-form) validate-minimal-test))))
-
 (defn validate-comment-values []
-  (let [body  (.getElementById js/document "body")]
+  (let [body (.getElementById js/document "body")]
     (if (> (count (.-value body)) 0)
       true
       (do (js/alert "Ups, du musst etwas schreiben.")
@@ -83,6 +66,27 @@
                            toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
                        (set! (.-className divh) toggle))))))
 
+(defn validate-minimal-test []
+  (let [title  (.getElementById js/document "title")
+        tags   (.getElementById js/document "tags")]
+    (if (and (> (count (.-value title)) 0)
+             (> (count (.-value tags)) 0))
+      true
+      (do (js/alert "Please, complete the form!")
+          false))))
+
+(defn show-new-test-form
+  "Called from zentaur.hiccup.admin.tests-view"
+  []
+  (if (and js/document
+           (.-getElementById js/document))
+    (when-let [test-form (.getElementById js/document "submit-test-form")]
+      (set! (.-onsubmit test-form) validate-minimal-test))))
+
+(defn load-test []
+  (toggle-form)
+  (show-new-test-form))
+
 (defn hide-secret-field []
   (when-let [hform (gdom/getElement "open-vc")]  ;; versteckte Taste. Nur im Bearbeitungsmodus
     (events/listen hform EventType.CLICK
@@ -90,6 +94,10 @@
                      (let [divh    (gdom/getElement "secret-div")
                            toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
                        (set! (.-className divh) toggle))))))
+
+(defn load-vclassroom []
+  (toggle-form)
+  (hide-secret-field))
 
 (defn ^:export deletetest [test-id]
   (when (js/confirm "Delete test?  (this cannot undo)")
@@ -125,10 +133,6 @@
 (defn ^:export init []
   (flash-timeout)
   (refresh-csrf)
-  (new-post-validation)
-  (show-new-test-form)
-  (toggle-form)
-  (hide-secret-field)
   (let [current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> **** tatsächliche: current. Jedoch However**** >>>>> " current_url))]
     (cond
@@ -136,8 +140,10 @@
       (s/includes? current_url "uploads/process") (uploads/mount)
       (s/includes? current_url "admin/posts")     (posts/load-posts)
       (s/includes? current_url "/posts/view/")    (validate-comment-form)
-      (= current_url "/admin/posts/new")          (.log js/console (str ">>> test-formtest(new-post-validation)"))
-      (= current_url "/vclass/tests")             (.log js/console (str ">>> I am in /vclass/tests URL"))
+      (= current_url "/admin/posts/new")          (new-post-validation)
+      (= current_url "/vclass/tests")             (load-test)
+      (= current_url "/vclass/index")             (load-vclassroom)
+      (s/includes? current_url "/vclass/show/")   (load-vclassroom)
       :else "F")))
 
 (defn copytoclipboard

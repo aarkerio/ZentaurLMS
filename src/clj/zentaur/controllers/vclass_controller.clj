@@ -27,15 +27,26 @@
         message   (if (= result false) "wrong" "success")]
     (assoc (response/found "/vclass/index") :flash  message)))
 
+(defn update-vc
+  "POST /vclass/show"
+  [request]
+  (let [user-id   (-> request :identity :id)
+        params    (:params request)
+        uurlid    (:uurlid params)
+        result    (model-vclass/update-vclass params user-id)
+        message   (if (= result false) h/msg-fehler h/msg-erfolg)]
+    (assoc (response/found (str "/vclass/show/" uurlid)) :flash  message)))
+
 (defn show
-  "GET /vclass/show/:id"
+  "GET /vclass/show/:uurlid"
   [request]
   (let [base       (basec/set-vars request)
-        id         (-> request :params :id)
+        uurlid     (-> request :path-params :uurlid)
         csrf-field (:csrf-field base)
-        upload     (model-vclass/get-vclass id)]
+        user-id    (-> base :identity :id)
+        vclass     (model-vclass/get-vclass uurlid user-id)]
     (basec/parser
-     (layout/application (merge base {:title "Process" :contents (vclass-view/show upload csrf-field) })))))
+     (layout/application (merge base {:title (:name vclass) :contents (vclass-view/show vclass csrf-field) })))))
 
 (defn toggle-published
   "GET /vclass/toggle/:uurlid/:draft"

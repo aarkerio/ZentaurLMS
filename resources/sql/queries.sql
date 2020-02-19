@@ -314,10 +314,10 @@ FROM vclassrooms WHERE user_id = :user-id AND uurlid = :uurlid
 INSERT INTO vclassrooms (name, user_id, draft, historical, secret, public, description, uurlid)
  VALUES (:name, :user-id, :draft, :historical, :secret, :public, :description, :uurlid) RETURNING *
 
--- :name update-vclass :! :1
--- :doc update an existing post record
+-- :name update-vclass :<! :1
+-- :doc update an existing vclassroom record
 UPDATE vclassrooms SET name = :name, secret = :secret, description = :description,
-:draft = draft, :historical = historical, :public = public WHERE uurlid = :uurlid AND user_id = :user-id
+:draft = draft, :historical = historical, :public = public WHERE uurlid = :uurlid AND user_id = :user-id RETURNING *
 
 -- :name toggle-vclassroom :! :n
 -- :doc update an existing vclassroom record
