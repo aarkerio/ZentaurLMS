@@ -32,7 +32,8 @@
      [:div.hidden-div {:id "hidden-form"}
       [:form {:id "submit-vc-form" :action action :method "post" :class "css-class-form"}
        (f/hidden-field {:value csrf-field} "__anti-forgery-token")
-       (f/hidden-field {:value uurlid} "uurlid")
+       (when (> (count uurlid) 2)
+           (f/hidden-field {:value uurlid} "uurlid"))
        [:div.div-separator (f/label "name" "Name") [:br] (f/text-field {:maxlength 90 :size 90 :placeholder "Name" :value name} "name")]
        [:div.div-separator (f/label "description" "Description") [:br] (f/text-area {:cols 50 :rows 6 :placeholder "Description"} "description" description)]
        [:div.div-separator {:id "secret-div"} (f/label "secret" "secret") [:br] (f/text-field {:maxlength 10 :size 10 :placeholder "Secret" :value secret} "secret")]
@@ -46,7 +47,7 @@
         formatted-vclassrooms (doall (for [vc vclassrooms]
                                  (format-row vc)))]
     [:div {:id "cont"}
-     [:h1 "Classrooms"]
+     [:h1 "My Classrooms"]
      [:div [:img {:src "/img/icon_add.png" :alt "New Classroom" :title "New Classroom" :id "button-show-div"}]]
      [:div form]
      [:div {:id "content"}
@@ -67,7 +68,8 @@
 (defn show [vclassroom csrf-field]
   (let [form (vc-new-form csrf-field vclassroom)
         {:keys [id name draft historical secret public uurlid description created_at]} vclassroom
-        status (if draft "Non published" "Published")]
+        status (if draft "Non published" "Published")
+        fdate  (hv/format-date created_at)]
     [:div {:id "cont"}
      [:div {:id "content"}
       [:div [:h1 name]]
@@ -76,6 +78,6 @@
       [:div  (str "<b>Public:</b> " public)]
       [:div  (str "<b>Secret:</b> " secret)]
       [:div form]
-      [:div (hv/format-date created_at)]
-      [:div  description]
+      [:div  (str "<b>Created: </b> " fdate)]
+      [:div  (str "<b>Description:</b> " description)]
       [:div  "Students:"]]]))
