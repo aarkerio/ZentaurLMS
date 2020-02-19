@@ -22,7 +22,7 @@
   "POST /vclass/index"
   [request]
   (let [user-id   (-> request :identity :id)
-        params    (:params request)
+        params    (dissoc (:params request) :__anti-forgery-token)
         result    (model-vclass/create-vclass params user-id)
         message   (if (= result false) "wrong" "success")]
     (assoc (response/found "/vclass/index") :flash  message)))
@@ -31,7 +31,7 @@
   "POST /vclass/show"
   [request]
   (let [user-id   (-> request :identity :id)
-        params    (:params request)
+        params    (dissoc (:params request) :__anti-forgery-token)
         uurlid    (:uurlid params)
         result    (model-vclass/update-vclass params user-id)
         message   (if (= result false) h/msg-fehler h/msg-erfolg)]

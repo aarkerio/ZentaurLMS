@@ -26,18 +26,20 @@
 (defn- vc-new-form
   ([csrf-field] (vc-new-form csrf-field {}))
   ([csrf-field vclassroom]
-   (let [ctx (if (empty? vclassroom) (assoc vclassroom :message "Save"   :action "/vclass/index" :name "" :description "" :secret "" :public false :draft false :historical false)
-                                     (assoc vclassroom :message "Update" :action "/vclass/show"))]
+   (let [ctx (if (empty? vclassroom) (assoc vclassroom :message "Save"   :action "/vclass/index" :uurlid "" :name "" :description "" :secret "" :public false :draft false :historical false)
+                 (assoc vclassroom :message "Update" :action "/vclass/show"))
+         {:keys [message action uurlid name description secret public draft historical]} ctx]
      [:div.hidden-div {:id "hidden-form"}
-      [:form {:id "submit-vc-form" :action (:action ctx) :method "post" :class "css-class-form"}
+      [:form {:id "submit-vc-form" :action action :method "post" :class "css-class-form"}
        (f/hidden-field {:value csrf-field} "__anti-forgery-token")
-       [:div.div-separator (f/label "name" "Name") [:br] (f/text-field {:maxlength 90 :size 90 :placeholder "Name" :value (:name ctx)} "name")]
-       [:div.div-separator (f/label "description" "Description") [:br] (f/text-area {:cols 50 :rows 6 :placeholder "Description"} "description" (:description ctx))]
-       [:div.div-separator {:id "secret-div"} (f/label "secret" "secret") [:br] (f/text-field {:maxlength 10 :size 10 :placeholder "Secret" :value (:secret ctx)} "secret")]
-       [:div.div-separator (f/label "open" "Open") [:br] (f/check-box {:title "Open" :id "open-vc" :checked (:public ctx) } "public")]
-       [:div.div-separator (f/label "draft" "Draft") [:br] (f/check-box {:title "Publish this" :checked (:draft ctx) } "draft")]
-       [:div.div-separator (f/label "historical" "Historical") [:br] (f/check-box {:title "Archive this classroom" :checked (:historical ctx) } "historical")]
-       (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} (:message ctx))]])))
+       (f/hidden-field {:value uurlid} "uurlid")
+       [:div.div-separator (f/label "name" "Name") [:br] (f/text-field {:maxlength 90 :size 90 :placeholder "Name" :value name} "name")]
+       [:div.div-separator (f/label "description" "Description") [:br] (f/text-area {:cols 50 :rows 6 :placeholder "Description"} "description" description)]
+       [:div.div-separator {:id "secret-div"} (f/label "secret" "secret") [:br] (f/text-field {:maxlength 10 :size 10 :placeholder "Secret" :value secret} "secret")]
+       [:div.div-separator (f/label "public" "Public") [:br] (f/check-box {:title "Open" :id "open-vc" :value true :checked public } "public")]
+       [:div.div-separator (f/label "draft" "Draft") [:br] (f/check-box {:title "Publish this" :value true :checked draft } "draft")]
+       [:div.div-separator (f/label "historical" "Historical") [:br] (f/check-box {:title "Archive this classroom" :value true :checked historical } "historical")]
+       (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} message)]])))
 
 (defn index [vclassrooms csrf-field]
   (let [form                  (vc-new-form csrf-field)

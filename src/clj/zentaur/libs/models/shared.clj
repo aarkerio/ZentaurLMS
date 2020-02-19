@@ -47,5 +47,7 @@
 (defn checkboxboolean
   "Convert or add checboxes values to booleans"
   [params & args]
-  (into {} (map #(assoc params % (contains? params %)) args)))
+  (let [new-values (reduce #(assoc %1 %2 (contains? params %2)) {} args)]
+    (merge params new-values)))
+
 

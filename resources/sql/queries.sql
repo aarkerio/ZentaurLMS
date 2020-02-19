@@ -317,7 +317,7 @@ INSERT INTO vclassrooms (name, user_id, draft, historical, secret, public, descr
 -- :name update-vclass :<! :1
 -- :doc update an existing vclassroom record
 UPDATE vclassrooms SET name = :name, secret = :secret, description = :description,
-:draft = draft, :historical = historical, :public = public WHERE uurlid = :uurlid AND user_id = :user-id RETURNING *
+draft = :draft, historical = :historical, public = :public WHERE uurlid = :uurlid AND user_id = :user-id RETURNING *
 
 -- :name toggle-vclassroom :! :n
 -- :doc update an existing vclassroom record
