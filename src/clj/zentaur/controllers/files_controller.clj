@@ -18,8 +18,7 @@
 (defn index
   "GET. /vclass/files"
   [request]
-  (log/info (str ">>> PARAM REQUEST  >>>>> " request))
-  (let [type     (:path-params request)
+  (let [type     (-> request :path-params :types)
         base     (basec/set-vars request)
         user-id  (-> base :identity :id)
         files    (model-files/get-files user-id)
@@ -33,7 +32,7 @@
   (let [user-id   (:id identity)
         uname     (:uname identity)
         result    (model-files/upload-file params user-id uname)
-        message   (if (= result false) "wrong" "success")]
+        message   (if (= result false) h/msg-fehler h/msg-erfolg)]
     (assoc (response/found "/vclass/files/img") :flash  message)))
 
 (defn download
