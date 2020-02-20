@@ -99,11 +99,11 @@
   (toggle-form)
   (hide-secret-field))
 
-(defn ^:export deletetest [test-id]
+(defn ^:export deletetest [uurlid]
   (when (js/confirm "Delete test?  (this cannot undo)")
       (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
         (DELETE "/vclass/tests/deletetest"
-            {:params  {:test-id test-id}
+            {:params  {:uurlid uurlid}
              :headers {"x-csrf-token" csrf-field}
              :handler (fn [] (set! js/window.location.href "/admin/tests"))
              :error-handler error-handler}))))

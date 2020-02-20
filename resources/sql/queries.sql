@@ -129,12 +129,12 @@ SELECT id FROM uploads WHERE hashvar = :hashvar
 
 -- :name create-test! :<!
 -- :doc creates a new test record
-INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id, subject_id)
-VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id, :subject-id) RETURNING id
+INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id, subject_id, uurlid)
+VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id, :subject-id, :uurlid) RETURNING id
 
--- :name create-minimal-test! :<! :n
+-- :name create-minimal-test :<! :n
 -- :doc creates a minimal test record
-INSERT INTO tests (title, tags, user_id, subject_id) VALUES (:title, :tags, :user_id, :subject_id) RETURNING id
+INSERT INTO tests (title, tags, user_id, subject_id, uurlid) VALUES (:title, :tags, :user_id, :subject_id, :uurlid) RETURNING id
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
@@ -153,8 +153,7 @@ UPDATE questions SET fulfill = :fulfill WHERE id = :id RETURNING *
 
 -- :name update-answer! :>! :1
 -- :doc updates an answer record
-UPDATE answers SET answer = :answer, correct = :correct
-WHERE id = :id RETURNING *
+UPDATE answers SET answer = :answer, correct = :correct WHERE id = :id RETURNING *
 
 -- :name update-test! :>! :1
 -- :doc updates an answer record
@@ -175,18 +174,18 @@ INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question_id,
 
 -- :name get-tests :? :*
 -- :doc retrieve a test given the id.
-SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, s.subject
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t. uurlid, s.subject
 FROM tests t INNER JOIN subjects s
 ON t.subject_id = s.id
 WHERE t.user_id = :user-id AND t.archived = false
 ORDER BY t.id DESC
 
 -- :name get-one-test :? :1
--- :doc retrieve a test given the id.
-SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, s.subject
+-- :doc retrieve a test given the uurlid.
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, t.uurlid, s.subject
 FROM tests t INNER JOIN subjects s
 ON t.subject_id = s.id
-WHERE t.archived = :archived AND t.id = :id
+WHERE t.archived = :archived AND t.uurlid = :uurlid
 ORDER BY t.id DESC
 
 -- :name get-questions :? :*
@@ -200,8 +199,7 @@ WHERE qt.test_id = :test-id AND qt.question_id = q.id ORDER BY qt.ordnen ASC
 -- :doc retrieve a question given the id.
 SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.fulfill, q.active, q.reviewed_lang, q.reviewed_fact, q.reviewed_cr,
 q.created_at, qt.ordnen FROM question_tests qt INNER JOIN questions q
-ON q.id = qt.question_id
-WHERE qt.question_id = q.id AND qt.id = :id LIMIT 1
+ON q.id = qt.question_id WHERE qt.question_id = q.id AND qt.id = :id LIMIT 1
 
 -- :name get-last-answer :? :1
 -- :doc retrieve all questions tests.

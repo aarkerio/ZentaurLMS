@@ -15,11 +15,13 @@
   [:div {:id "content"}
    [:h1 {:class "text-success"} "Hello Hiccup"]])
 
-(defn nav-links []
-  [[:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/news"} "Nachrichten"]]
-   [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/vision"} "Unsere Vision"]]
-   [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/join"} "Begleiten"]]
-   [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/about"} "Über uns" ]]])
+(defn top-links []
+  [:div {:class "div_inline_list"}
+   [:ul {:class "inline_list"}
+    [:li [:a {:href "/page/news"} "Nachrichten"]]
+    [:li [:a {:href "/page/vision"} "Unsere Vision"]]
+    [:li [:a {:href "/page/join"} "Begleiten"]]
+    [:li [:a {:href "/page/about"} "Über uns" ]]]])
 
 (defn display-flash [msg]
   [:div {:class "alert notice alert-success" :id "flash-msg"}

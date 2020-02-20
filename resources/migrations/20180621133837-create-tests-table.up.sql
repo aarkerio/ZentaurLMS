@@ -8,6 +8,7 @@ CREATE TABLE tests(
   tags VARCHAR(200),
   lang VARCHAR(2) NOT NULL DEFAULT 'en',
   origin VARCHAR(150) UNIQUE,
+  uurlid varchar(60) NOT NULL UNIQUE,
   from_test int,
   description VARCHAR(300),
   instructions VARCHAR(300),
