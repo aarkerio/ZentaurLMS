@@ -31,7 +31,7 @@
    ["/tests/edit/:uurlid"      {:get  cont-tests/edit}]
    ["/tests/exportpdf/:uurlid" {:get  cont-export/export-test-pdf}]
    ["/test/exportodf/:uurlid"  {:get  cont-export/export-test-odf}]
-   ["/files/:type"             {:get  cont-files/index}]
+   ["/files/:types"            {:get  cont-files/index}]
    ["/files"                   {:post cont-files/upload}]
    ["/files/archive/:uurlid"   {:get  cont-files/archive}]
    ["/files/download/:uurlid"  {:post cont-files/download}]

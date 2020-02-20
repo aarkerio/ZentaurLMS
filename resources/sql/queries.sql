@@ -83,26 +83,20 @@ ORDER BY p.id DESC
 
 -- :name get-files :? :*
 -- :doc retrieve files owned per user.
-SELECT * FROM files WHERE user_id = :user-id AND archive = false
-ORDER BY id DESC LIMIT 30
+SELECT * FROM files WHERE user_id = :user-id AND archived = false ORDER BY id DESC LIMIT 30
 
--- :name get-file :? :1
+-- :name get-one-file :? :1
 -- :doc retrieve one file owned per user.
-SELECT * FROM files WHERE user_id = :user-id AND identifier = :identifier
-
--- :name get-file-by-identifier :? :1
--- :doc Check identifier doesn't exist.
-SELECT id FROM files WHERE identifier = :identifier
+SELECT * FROM files WHERE user_id = :user-id AND uurlid = :uurlid
 
 -- :name save-file! :<! :1
 -- :doc creates a new file record
-INSERT INTO files (file, user_id, img, identifier) VALUES
-(:file, :user-id, :img, :identifier) RETURNING id
+INSERT INTO files (file, user_id, img, uurlid) VALUES
+(:file, :user-id, :img, :uurlid) RETURNING id
 
--- :name toggle-file! :! :1
+-- :name toggle-file :! :1
 -- :doc update an existing file record
-UPDATE file SET archive = :archive
-WHERE id = :id
+UPDATE file SET archived = :archive WHERE uurlid = :uurlid
 
 -- /*******************  UPLOADS   ***/
 

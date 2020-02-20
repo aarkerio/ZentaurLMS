@@ -39,9 +39,9 @@
 (defn get-files [user-id]
   (db/get-files {:user-id user-id}))
 
-(defn get-upload [identifier user-id]
+(defn get-file [uurlid user-id]
   (let [int-id (Integer/parseInt user-id)]
-    (db/get-file {:identifier identifier :user-id user-id})))
+    (db/get-one-file {:uurlid uurlid :user-id user-id})))
 
 (defn save-file! [params]
   (if-let [errors (validate-file params)]
@@ -57,23 +57,24 @@
         tempfile     (:tempfile upload-image)
         _            (log/info (str ">>> UPLOAD filename >>>>> " filename  " and tempfile " tempfile))
         unique-name  (str rand7 "-" filename)
-        identifier   (str rand7 "-" (dgt/sha-256 (io/as-file tempfile)))
+        uurlid       (str rand7 "-" (dgt/sha-256 (io/as-file tempfile)))
         final-path   (str root-path "/resources/public/files/" uname "/" unique-name)
         _            (io/make-parents final-path)
-        db-row       (assoc {} :file unique-name :user-id user-id :identifier identifier :img true)
+        db-row       (assoc {} :file unique-name :user-id user-id :uurlid uurlid :img true)
         _            (log/info (str ">>> DB-ROW >>>>> " db-row))
         ]
-    (if-not (db/get-file-by-identifier {:identifier identifier})
+    (if-not (db/get-one-file {:user-id user-id :uurlid uurlid})
       (do (log/info (str ">>> tempfile >>>>> " tempfile "   und final-path >>>>>" final-path))
           (h/copy-file tempfile final-path)
           (save-file! db-row))
       false)))
 
-(defn- download-without-db
-  "GET. /admin/uploads/download/:id"
-  [upload]
-  (let [filename (:filename upload)
-        body     (io/file (str "resources/public/uploads/" filename))]
+(defn download
+  "Download the file"
+  [uurlid user-id]
+  (let [file (db/get-one-file {:uurlid uurlid :user-id user-id})
+        filename (:filename file)
+        body     (io/file (str "resources/public/files/" filename))]
           {:status 200
            :body body
            :headers {"Content-Type" "application/pdf"
@@ -81,17 +82,8 @@
                      "Cache-Control" "no-cache"
                      "Content-Disposition" (str "attachment; filename=" filename)}}))
 
-(defn- get-upload-from-db [id]
-  (get-upload id))
-
-(defn download [id]
-  (-> id
-      get-upload-from-db
-      download-without-db))
-
 (defn toggle-archive
   "Pass the file to the archive zone"
-  [{:keys [id published]}]
-  (let [new-state (if (= published "true") false true)
-        int-id    (Integer/parseInt id)]
-    (db/toggle-post! {:id int-id :published new-state})))
+  [{:keys [uurlid published]}]
+  (let [new-state (if (= published "true") false true)]
+    (db/toggle-file {:uurlid uurlid :published new-state})))
