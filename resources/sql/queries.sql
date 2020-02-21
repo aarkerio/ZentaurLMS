@@ -86,7 +86,7 @@ ORDER BY p.id DESC
 SELECT * FROM files WHERE user_id = :user-id AND archived = false ORDER BY id DESC LIMIT 30
 
 -- :name get-one-file :? :1
--- :doc retrieve one file owned per user.
+-- :doc retrieves one file owned per user.
 SELECT * FROM files WHERE user_id = :user-id AND uurlid = :uurlid
 
 -- :name save-file! :<! :1

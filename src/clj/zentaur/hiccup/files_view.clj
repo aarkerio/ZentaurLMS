@@ -8,11 +8,14 @@
   [file uname type]
   (let [uurlid   (:uurlid file)
         archived (:archived file)
-        url      (str "/files/" uname "/" (:file file))]
-    [:div {:style "width:100%;"} [:a {:href url } (:file file)] "  "
-     [:img {:src "/img/icon_clipboard.png" :alt "Archive file" :title "Archive file" :onclick (str "zentaur.core.copytoclipboard('"url"')")}]
-     (hv/format-date (:created_at file))
-     [:a {:href (str "/vclass/files/archive/" type "/" uurlid "/" archived)} [:img {:src "/img/icon_archive.png" :alt "Archive file" :title "Archive file"}]]]))
+        url      (str "/files/" uname "/" (:file file))
+        up-date  (hv/format-date (:created_at file))]
+    [:tr
+     [:td [:a {:href url } (:file file)]]
+     [:td [:img {:src "/img/icon_clipboard.png" :alt "Copy to clipboard" :title "Copy to clipboard" :onclick (str "zentaur.core.copytoclipboard('"url"')")}]]
+     [:td up-date]
+     [:td  [:a {:href (str "/vclass/files/archive/" type "/" uurlid "/" archived)} [:img {:src "/img/icon_archive.png" :alt "Archive file" :title "Archive file"}]]]
+     [:td [:a {:onclick (str "zentaur.core.deletefile(" uurlid ")")} [:img {:src "/img/icon_delete.png" :alt "Delete file" :title "Delete file"}]]]]))
 
 (defn index [files base type]
   (let [uname           (-> base :identity :uname)
@@ -25,7 +28,15 @@
                 (f/hidden-field {:value type} "type")
                 [:div.div-separator (f/file-upload {:placeholder "Upload file"} "file")]
                 [:div (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")])
-     [:div {:id "content-files"} formatted-files]
+     [:table {:class "some-table-class"}
+      [:thead
+       [:tr
+        [:th "File"]
+        [:th "Uploaded"]
+        [:th "Copy to clipboard"]
+        [:th "Sent to archived files"]
+        [:th "Löschen"]]]
+      [:tbody formatted-files]]
       [:nav {:class "blog-pagination"}
         [:a {:class "btn btn-outline-primary-green" :href "#"} "Older"]
         [:a {:class "btn btn-outline-primary-green disabled" :href "#"} "Newer"]]]))
