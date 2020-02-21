@@ -83,7 +83,7 @@
     (when-let [test-form (.getElementById js/document "submit-test-form")]
       (set! (.-onsubmit test-form) validate-minimal-test))))
 
-(defn load-test []
+(defn load-tests []
   (toggle-form)
   (show-new-test-form))
 
@@ -95,9 +95,28 @@
                            toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
                        (set! (.-className divh) toggle))))))
 
-(defn load-vclassroom []
+(defn load-vclassrooms []
   (toggle-form)
   (hide-secret-field))
+
+
+(defn validate-update-file []
+  (let [file (.getElementById js/document "file")]
+    (if (> (count (.-value file)) 0)
+      true
+      (do (js/alert "Ooops, you need to seleect a file first")
+          false))))
+
+(defn set-upload-form
+  "Called in zentaur.hiccup.files-view"
+  []
+  (if (and js/document
+           (.-getElementById js/document))
+    (when-let [file-form (.getElementById js/document "upload-file-form")]
+      (set! (.-onsubmit file-form) validate-update-file))))
+
+(defn load-files []
+  (set-upload-form))
 
 (defn ^:export deletetest [uurlid]
   (when (js/confirm "Delete test?  (this cannot undo)")
@@ -141,9 +160,10 @@
       (s/includes? current_url "admin/posts")     (posts/load-posts)
       (s/includes? current_url "/posts/view/")    (validate-comment-form)
       (= current_url "/admin/posts/new")          (new-post-validation)
-      (= current_url "/vclass/tests")             (load-test)
-      (= current_url "/vclass/index")             (load-vclassroom)
-      (s/includes? current_url "/vclass/show/")   (load-vclassroom)
+      (= current_url "/vclass/tests")             (load-tests)
+      (= current_url "/vclass/index")             (load-vclassrooms)
+      (s/includes? current_url "/vclass/show/")   (load-vclassrooms)
+      (s/includes? current_url "/vclass/files/")  (load-files)
       :else "F")))
 
 (defn copytoclipboard

@@ -18,22 +18,23 @@
 (defn index
   "GET. /vclass/files"
   [request]
-  (let [type     (-> request :path-params :types)
+  (let [type     (-> request :path-params :type)
         base     (basec/set-vars request)
         user-id  (-> base :identity :id)
         files    (model-files/get-files user-id)
-        view     (merge base {:title "My Files" :contents (files-view/index files base)})
+        view     (merge base {:title "My Files" :contents (files-view/index files base type)})
         tpl      (load-tpl view type)]
     (basec/parser tpl)))
 
 (defn upload
   "POST. /vclass/files"
   [{:keys [params identity]}]
-  (let [user-id   (:id identity)
+  (let [type      (:type params)
+        user-id   (:id identity)
         uname     (:uname identity)
         result    (model-files/upload-file params user-id uname)
         message   (if (= result false) h/msg-fehler h/msg-erfolg)]
-    (assoc (response/found "/vclass/files/img") :flash  message)))
+    (assoc (response/found (str "/vclass/files/" type)) :flash  message)))
 
 (defn download
   "GET. /vclass/files/download/:uurlid"
@@ -43,8 +44,10 @@
     (model-files/download uurlid user-id)))
 
 (defn archive
-  "GET. /vclass/files/archive/:uurlid"
+  "GET. /vclass/files/archive/:type/:uurlid"
   [{:keys [path-params]}]
-  (model-files/toggle-archive path-params)
-    (assoc (response/found "/vclass/files") :flash "File modified" ))
+  (log/info (str ">>> PARAM path-params >>>>> " path-params))
+  (let [{:keys [type uurlid archived]} path-params]
+    (model-files/toggle-archive uurlid archived)
+    (assoc (response/found (str "/vclass/files/" type)) :flash "File modified" )))
 

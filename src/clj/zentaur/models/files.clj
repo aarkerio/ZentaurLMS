@@ -19,8 +19,8 @@
 ;;    VALIDATIONS
 ;;;;;;;;;;;;;;;;;;;;;
 (def file-schema
-  [[:identifier st/required st/string {:body "identifier field is obligatory"}]
-   [:user-id  st/required st/integer {:body "user-id field is obligatory"}]
+  [[:uurlid  st/required st/string {:body "identifier field is obligatory"}]
+   [:user-id st/required st/integer {:body "user-id field is obligatory"}]
    [:file
     st/required
     st/string
@@ -49,21 +49,21 @@
     (db/save-file! params)))
 
 (defn upload-file [params user-id uname]
-  (let [root-path    (.getCanonicalPath (io/file "."))
-        rand7        (crypto.random/hex 7)
-        upload-image (:upload-image params)
-        _            (log/info (str ">>> UPLOAD PARAM params >>>>> " params))
-        filename     (:filename upload-image)
-        tempfile     (:tempfile upload-image)
-        _            (log/info (str ">>> UPLOAD filename >>>>> " filename  " and tempfile " tempfile))
-        unique-name  (str rand7 "-" filename)
-        uurlid       (str rand7 "-" (dgt/sha-256 (io/as-file tempfile)))
-        final-path   (str root-path "/resources/public/files/" uname "/" unique-name)
-        _            (io/make-parents final-path)
-        db-row       (assoc {} :file unique-name :user-id user-id :uurlid uurlid :img true)
-        _            (log/info (str ">>> DB-ROW >>>>> " db-row))
-        ]
-    (if-not (db/get-one-file {:user-id user-id :uurlid uurlid})
+  (let [root-path     (.getCanonicalPath (io/file "."))
+        rand7         (crypto.random/hex 7)
+        uploaded-file (:file params)
+        _             (log/info (str ">>> UPLOAD uploaded-file uploaded-file params >>>>> " uploaded-file))
+        filename      (:filename uploaded-file)
+        tempfile      (:tempfile uploaded-file)
+        _             (log/info (str ">>> UPLOAD filename >>>>> " filename  " and tempfile " tempfile))
+        unique-name   (str rand7 "-" filename)
+        uurlid        (str rand7 "-" (dgt/sha-256 (io/as-file tempfile)))
+        final-path    (str root-path "/resources/public/files/" uname "/" unique-name)
+        _             (io/make-parents final-path) ;; create the path if it doesn't exist
+        db-row        (assoc {} :file unique-name :user-id user-id :uurlid uurlid :img true)
+        _             (log/info (str ">>> DB-ROW >>>>> " db-row))]
+    (if (and (db/get-one-file {:user-id user-id :uurlid uurlid})
+             (seq filename))
       (do (log/info (str ">>> tempfile >>>>> " tempfile "   und final-path >>>>>" final-path))
           (h/copy-file tempfile final-path)
           (save-file! db-row))
@@ -83,7 +83,7 @@
                      "Content-Disposition" (str "attachment; filename=" filename)}}))
 
 (defn toggle-archive
-  "Pass the file to the archive zone"
-  [{:keys [uurlid published]}]
-  (let [new-state (if (= published "true") false true)]
-    (db/toggle-file {:uurlid uurlid :published new-state})))
+  "Chnage the archive flag field"
+  [uurlid archived]
+  (let [new-state (if (= archived "true") false true)]
+    (db/toggle-file {:uurlid uurlid :archived new-state})))

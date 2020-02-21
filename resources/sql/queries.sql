@@ -96,7 +96,7 @@ INSERT INTO files (file, user_id, img, uurlid) VALUES
 
 -- :name toggle-file :! :1
 -- :doc update an existing file record
-UPDATE file SET archived = :archive WHERE uurlid = :uurlid
+UPDATE files SET archived = :archived WHERE uurlid = :uurlid
 
 -- /*******************  UPLOADS   ***/
 

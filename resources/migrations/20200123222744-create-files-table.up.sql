@@ -3,7 +3,7 @@
 -- ;; <-- this is necessary between statements to avoid "Too many update results were returned."
 CREATE TABLE files (
    id serial PRIMARY KEY,
-   file varchar(40) NOT NULL,
+   file varchar(250) NOT NULL,
    img boolean NOT NULL DEFAULT false,
    archived boolean NOT NULL DEFAULT false,
    uurlid varchar(250) NOT NULL UNIQUE,
