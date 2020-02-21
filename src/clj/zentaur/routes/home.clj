@@ -6,6 +6,7 @@
             [zentaur.controllers.tests-controller   :as cont-tests]
             [zentaur.controllers.uploads-controller :as cont-uploads]
             [zentaur.controllers.users-controller   :as cont-users]
+            [zentaur.controllers.vclass-controller  :as cont-vclass]
             [zentaur.middleware :as middleware]))
 
 (def site-routes
@@ -21,14 +22,19 @@
 (def vclass-routes
   ["/vclass"
    ["/"                        {:get  cont-posts/get-posts}]
+   ["/index"                   {:get  cont-vclass/index :post cont-vclass/create-vclass}]
+   ["/show/:uurlid"            {:get  cont-vclass/show}]
+   ["/show"                    {:post cont-vclass/update-vc}]
+   ["/toggle/:uurlid/:draft"   {:get  cont-vclass/toggle-published}]
+   ["/delete/:uurlid"          {:delete cont-vclass/delete-vclass}]
    ["/tests"                   {:get  cont-tests/index :post cont-tests/create-test}]
-   ["/tests/edit/:id"          {:get  cont-tests/edit}]
-   ["/tests/exporttestpdf/:id" {:get  cont-export/export-test-pdf}]
-   ["/tests/exporttestodf/:id" {:get  cont-export/export-test-odf}]
+   ["/tests/edit/:uurlid"      {:get  cont-tests/edit}]
+   ["/tests/exportpdf/:uurlid" {:get  cont-export/export-test-pdf}]
+   ["/test/exportodf/:uurlid"  {:get  cont-export/export-test-odf}]
    ["/files/:type"             {:get  cont-files/index}]
    ["/files"                   {:post cont-files/upload}]
-   ["/files/archive/:identif"  {:get  cont-files/archive}]
-   ["/files/download/:identif" {:post cont-files/download}]
+   ["/files/archive/:type/:uurlid/:archived" {:get  cont-files/archive}]
+   ["/files/download/:uurlid"  {:post cont-files/download}]
    ["/uploads"                 {:get  cont-uploads/index :post cont-uploads/upload-file}]
    ["/uploads/process/:id"     {:get  cont-uploads/process}]
    ["/uploads/export"          {:post cont-uploads/export-test}]

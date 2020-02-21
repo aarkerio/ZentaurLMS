@@ -3,29 +3,34 @@
   (:require [clojure.spec.alpha :as s]
             [clojure.tools.logging :as log]
             [zentaur.db.core :as db]
-            [zentaur.libs.helpers :as h]
             [zentaur.hiccup.helpers-view :as hv]
             [zentaur.libs.models.shared :as sh]
             [zentaur.models.validations.validations-test :as val-test]))
 
-(defn get-tests [user-id]
+(defn get-one-test
+  "Used by GraphQL resolver"
+  ([uurlid] (get-one-test uurlid false))
+  ([uurlid archived] (db/get-one-test {:uurlid uurlid :archived archived})))
+
+(defn get-tests
+  "Get the list of test by user"
+  [user-id]
   (db/get-tests {:user-id user-id}))
 
-(defn get-one-test
-  ([id] (get-one-test id false))
-  ([id archived] (db/get-one-test {:id id :archived archived})))
-
-(defn get-subjects []
+(defn get-subjects
+  "Populates the test form"
+  []
   (db/get-subjects))
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
-  (let [pre-params  (assoc params :user_id user-id)
+  (let [uurlid      (sh/gen-uuid)
+        pre-params  (assoc params :user_id user-id :uurlid uurlid)
         full-params (update pre-params :subject_id #(Integer/parseInt %))
-        _           (log/info (str ">>> full-paramsCREATE TEST >>>>> " full-params))
+        _           (log/info (str ">>> full-params CREATE TEST >>>>> " full-params))
         errors      (val-test/validate-test full-params)]
     (if (nil? errors)
-      (db/create-minimal-test! full-params)
+      (db/create-minimal-test full-params)
       {:error errors :ok false})))
 
 (defn- ^:private link-test-question!
@@ -75,9 +80,9 @@
 (defn build-test-structure
   "Build the map with the test, the questions and the answers.
    Function used by the Web and the Phone App."
-  [test-id archived]
-  (let [test          (db/get-one-test {:id test-id :archived archived})
-        questions     (get-questions test-id)
+  [uurlid archived]
+  (let [test          (db/get-one-test {:uurlid uurlid :archived archived})
+        questions     (get-questions (:id test))
         subjects      (db/get-subjects)
         subj-strs     (map #(update % :id str) subjects)]
     (try
@@ -110,8 +115,8 @@
 
 ;;;;;;;;;;;;    DELETES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn remove-test [params]
-  (let [test-id (:test-id params)]
-    (db/remove-test! {:test-id test-id})))
+  (let [uurlid (:uurlid params)]
+    (db/remove-test! {:uurlid uurlid})))
 
 (defn remove-question
   "Not a real delete, just unlink the question from test"

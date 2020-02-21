@@ -43,6 +43,29 @@
   (if-let [flash-msg (gdom/getElement "flash-msg")]
     (js/setTimeout (remove-flash) 90000)))
 
+(defn validate-comment-values []
+  (let [body (.getElementById js/document "body")]
+    (if (> (count (.-value body)) 0)
+      true
+      (do (js/alert "Ups, du musst etwas schreiben.")
+          false))))
+
+(defn validate-comment-form
+  "Called in zentaur.hiccup.posts-view"
+  []
+  (if (and js/document
+           (.-getElementById js/document))
+    (when-let [comment-form (.getElementById js/document "comment-textarea")]
+      (set! (.-onsubmit comment-form) validate-comment-values))))
+
+(defn toggle-form []
+  (when-let [hform (gdom/getElement "button-show-div")]  ;; versteckte Taste. Nur im Bearbeitungsmodus
+    (events/listen hform EventType.CLICK
+                   (fn [e]
+                     (let [divh    (gdom/getElement "hidden-form")
+                           toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
+                       (set! (.-className divh) toggle))))))
+
 (defn validate-minimal-test []
   (let [title  (.getElementById js/document "title")
         tags   (.getElementById js/document "tags")]
@@ -60,40 +83,58 @@
     (when-let [test-form (.getElementById js/document "submit-test-form")]
       (set! (.-onsubmit test-form) validate-minimal-test))))
 
-(defn validate-comment-values []
-  (let [body  (.getElementById js/document "body")]
-    (if (> (count (.-value body)) 0)
-      true
-      (do (js/alert "Ups, du musst etwas schreiben.")
-          false))))
+(defn load-tests []
+  (toggle-form)
+  (show-new-test-form))
 
-(defn validate-comment-form
-  "Called in zentaur.hiccup.posts-view"
-  []
-  (if (and js/document
-           (.-getElementById js/document))
-    (when-let [comment-form (.getElementById js/document "comment-textarea")]
-      (set! (.-onsubmit comment-form) validate-comment-values))))
-
-(defn- load-tests []
-  (when-let [hform (gdom/getElement "button-show-div")]  ;; versteckte Taste. Nur im Bearbeitungsmodus
+(defn hide-secret-field []
+  (when-let [hform (gdom/getElement "open-vc")]  ;; versteckte Taste. Nur im Bearbeitungsmodus
     (events/listen hform EventType.CLICK
                    (fn [e]
-                     (let [divh    (gdom/getElement "hidden-form")
+                     (let [divh    (gdom/getElement "secret-div")
                            toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
                        (set! (.-className divh) toggle))))))
 
-(defn delete-test [test-id]
-  (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-    (DELETE "/vclass/tests/deletetest"
-        {:params  {:test-id test-id}
-         :headers {"x-csrf-token" csrf-field}
-         :handler (fn [] (set! js/window.location.href "/admin/tests"))
-         :error-handler error-handler})))
+(defn load-vclassrooms []
+  (toggle-form)
+  (hide-secret-field))
 
-(defn ^:export deletetest [test-id]
-  (when (js/confirm "Delete test?")
-    (delete-test test-id)))
+
+(defn validate-update-file []
+  (let [file (.getElementById js/document "file")]
+    (if (> (count (.-value file)) 0)
+      true
+      (do (js/alert "Ooops, you need to seleect a file first")
+          false))))
+
+(defn set-upload-form
+  "Called in zentaur.hiccup.files-view"
+  []
+  (if (and js/document
+           (.-getElementById js/document))
+    (when-let [file-form (.getElementById js/document "upload-file-form")]
+      (set! (.-onsubmit file-form) validate-update-file))))
+
+(defn load-files []
+  (set-upload-form))
+
+(defn ^:export deletetest [uurlid]
+  (when (js/confirm "Delete test?  (this cannot undo)")
+      (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+        (DELETE "/vclass/tests/deletetest"
+            {:params  {:uurlid uurlid}
+             :headers {"x-csrf-token" csrf-field}
+             :handler (fn [] (set! js/window.location.href "/admin/tests"))
+             :error-handler error-handler}))))
+
+(defn ^:export deletevc [uurlid]
+  (when (js/confirm "Delete Classroom? (this cannot undo)")
+    (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+      (DELETE "/vclass/delete"
+          {:params  {:uurlid uurlid}
+           :headers {"x-csrf-token" csrf-field}
+           :handler (fn [] (set! js/window.location.href "/vclass/index"))
+           :error-handler error-handler}))))
 
 (defn ask-csrf [csrf-field]
   (when-let [csrf-value  (.-value csrf-field)]
@@ -111,8 +152,6 @@
 (defn ^:export init []
   (flash-timeout)
   (refresh-csrf)
-  (new-post-validation)
-  (show-new-test-form)
   (let [current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> **** tatsächliche: current. Jedoch However**** >>>>> " current_url))]
     (cond
@@ -120,8 +159,11 @@
       (s/includes? current_url "uploads/process") (uploads/mount)
       (s/includes? current_url "admin/posts")     (posts/load-posts)
       (s/includes? current_url "/posts/view/")    (validate-comment-form)
-      (= current_url "/admin/posts/new")          (.log js/console (str ">>> test-formtest(new-post-validation)"))
+      (= current_url "/admin/posts/new")          (new-post-validation)
       (= current_url "/vclass/tests")             (load-tests)
+      (= current_url "/vclass/index")             (load-vclassrooms)
+      (s/includes? current_url "/vclass/show/")   (load-vclassrooms)
+      (s/includes? current_url "/vclass/files/")  (load-files)
       :else "F")))
 
 (defn copytoclipboard

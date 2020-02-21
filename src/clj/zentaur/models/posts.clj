@@ -2,7 +2,6 @@
   (:require [clojure.tools.logging :as log]
             [struct.core :as st]
             [zentaur.db.core :as db]
-            [zentaur.libs.helpers :as h]
             [zentaur.libs.models.shared :as sh]))
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -68,7 +67,7 @@
       {:ok true})))
 
 (defn update-post! [params]
-  (let [first-step   (h/update-booleans params [:published :discution])
+  (let [first-step   (sh/update-booleans params [:published :discution])
         second-step  (update first-step :id #(Integer/parseInt %))]
     (db/update-post! second-step)
     {:ok true}))

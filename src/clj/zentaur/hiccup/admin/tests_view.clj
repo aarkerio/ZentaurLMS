@@ -6,17 +6,17 @@
             [hiccup.page :refer [include-css include-js]]
             [zentaur.hiccup.helpers-view :as hv]))
 
-(defn formatted-test [{:keys [title created_at tags published id subject]}]
+(defn formatted-test [{:keys [title created_at tags published id subject uurlid]}]
   (let [formatted-date (hv/format-date created_at)]
   [:tr
-   [:td [:a {:href (str "/vclass/tests/edit/" id)} [:img {:src "/img/icon_edit_test.png" :alt "Bearbeiten"  :title "Bearbeiten"}]]]
+   [:td [:a {:href (str "/vclass/tests/edit/" uurlid)} [:img {:src "/img/icon_edit_test.png" :alt "Bearbeiten"  :title "Bearbeiten"}]]]
    [:td title]
    [:td tags]
    [:td subject]
    [:td formatted-date]
-   [:td [:a {:href (str "/vclass/tests/exporttestpdf/" id)} [:img {:src "/img/icon_export_pdf.png" :alt "Export PDF" :title "Export PDF"}]]]
-   [:td [:a {:href (str "/vclass/tests/exporttestodf/" id)} [:img {:src "/img/icon_export_odf.png" :alt "Export DOC" :title "Export DOC"}]]]
-   [:td [:a {:onclick (str "zentaur.core.deletetest("id")")} [:img {:src "/img/icon_delete.png" :alt "Delete test" :title "Delete test"}]]]]))
+   [:td [:a {:href (str "/vclass/tests/exporttestpdf/" uurlid)} [:img {:src "/img/icon_export_pdf.png" :alt "Export PDF" :title "Export PDF"}]]]
+   [:td [:a {:href (str "/vclass/tests/exporttestodf/" uurlid)} [:img {:src "/img/icon_export_odf.png" :alt "Export DOC" :title "Export DOC"}]]]
+   [:td [:a {:onclick (str "zentaur.core.deletetest(" uurlid ")")} [:img {:src "/img/icon_delete.png" :alt "Delete test" :title "Delete test"}]]]]))
 
 (defn- test-new-form [subjects csrf-field]
   [:div.hidden-div {:id "hidden-form"}
@@ -52,17 +52,15 @@
             [:th "Export ODF"]
             [:th "Löschen"]]]
           [:tbody formatted-tests]]]
-      [:nav {:class "blog-pagination"}
-        [:a {:class "btn btn-outline-primary-green" :href "#"} "Older"]
-        [:a {:class "btn btn-outline-primary-green disabled" :href "#"} "Newer"]]]))
+      (hv/pagination "tests")]))
 
-(defn edit [base test-id]
+(defn edit [base uurlid]
   (let [csrf-field (:csrf-field base)
         user-id    (-> base :identity :id)]
     [:div
      [:h1 "Bearbeiten Quizz Test"]
      [:div (f/form-to [:id "hidden-form"]
                       (f/hidden-field {:value csrf-field} "__anti-forgery-token")
-                      (f/hidden-field {:value test-id} "test-id")
+                      (f/hidden-field {:value uurlid} "uurlid")
                       (f/hidden-field {:value user-id} "user-id"))]
      [:div {:id "test-root-app"}]]))

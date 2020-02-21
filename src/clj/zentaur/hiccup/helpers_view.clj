@@ -15,11 +15,16 @@
   [:div {:id "content"}
    [:h1 {:class "text-success"} "Hello Hiccup"]])
 
-(defn nav-links []
-  [[:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/news"} "Nachrichten"]]
-   [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/vision"} "Unsere Vision"]]
-   [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/join"} "Begleiten"]]
-   [:li {:class "nav-item"} [:a {:class "nav-link" :href "/page/about"} "Über uns" ]]])
+(defn top-links []
+  [:div {:class "div_inline_list"}
+   [:ul {:class "inline_list"}
+    [:li [:a {:href "/page/news"} "Nachrichten"]]
+    [:li.separator "|" ]
+    [:li [:a {:href "/page/vision"} "Unsere Vision"]]
+    [:li.separator "|" ]
+    [:li [:a {:href "/page/join"} "Begleiten"]]
+    [:li.separator "|" ]
+    [:li [:a {:href "/page/about"} "Über uns" ]]]])
 
 (defn display-flash [msg]
   [:div {:class "alert notice alert-success" :id "flash-msg"}
@@ -47,13 +52,11 @@
       (f/check-box {:ng-model "user.remember"} "user.remember-me") " Remember me"]]]
    [:pre "form = {{ user | json }}"]])
 
-(defn pagination []
-  [:div {:ng-controller "PaginationCtrl" :class "well"}
-   [:pre "[Browser] Current page: {{currentPage}}. [Server] {{partial}}"]
-   [:pagination {:total-items "totalItems" :page "currentPage" :on-select-page "displayPartial(page)"}]])
-
-(defn page [id]
-  (str "Got id: " id))
+(defn pagination [model-data]
+  [:div {:class "pagination"}
+   [:nav {:class "blog-pagination"}
+    [:a {:class "btn btn-outline-primary-green" :href "#"} "Older"]
+    [:a {:class "btn btn-outline-primary-green disabled" :href "#"} "Newer"]]])
 
 (defn not-found []
   [:div {:class "well"}
@@ -61,13 +64,36 @@
    [:p "There's no requested page. "]
    (link-to {:class "btn btn-primary"} "/" "Take me to Home")])
 
-(defn http-status [data]
-  [:div {:class "container-fluid"}
-    [:div {:class "row-fluid"}
-      [:div {:class "col-lg-12"}
-        [:div {:class "centering text-center"}
-          [:div {:class "text-center"}
-            [:h1 [:span {:class "text-danger"} (str "Error:" (:status data))]]
-              [:hr]
-              [:h2 {:class "without-margin" } (:title data)]
-              [:h4 {:class "text-danger" }   (:message data)]]]]]])
+(defmulti paginate
+  "Paginate the incoming collection/length"
+  (fn [coll? _ _] (sequential? coll?)))
+
+(defmethod paginate true [coll count-per-page page]
+  (paginate (count coll) count-per-page page))
+
+(defmethod paginate :default [length count-per-page page]
+  (let [pages (+ (int (/ length count-per-page))
+                 (if (zero? (mod length count-per-page))
+                   0
+                   1))
+        page (if (and (string? page)(not= page ""))
+               (Integer/parseInt page))
+        page (cond
+               (nil? page) 1 (or (neg? page) (zero? page)) 1
+               (> page pages) pages
+               :else page)
+        next (+ page 1)
+        prev (- page 1)]
+    (let [prev (if (or (neg? prev) (zero? prev)) nil prev)]
+      {:pages pages
+       :page page
+       :next-seq (range (inc page) (inc pages))
+       :prev-seq (reverse (range 1 (if (nil? prev) 1
+                                       (inc prev))))
+       :next (if (> next pages) nil next)
+       :prev prev})))
+
+;; USE :
+
+;; (= (paginate (range 101) 10 5)
+;;    {:prev-seq (4 3 2 1), :next-seq (6 7 8 9 10 11), :pages 11, :page 5, :next 6, :prev 4}

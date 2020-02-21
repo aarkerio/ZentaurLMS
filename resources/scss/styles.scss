@@ -11,6 +11,7 @@ $font-main: 'Open Sans', sans-serif;
 $primary-color: #333;
 $table-cell-padding:	0.5em 0.75em;
 $my-green-color: #0b9e00;
+$my-green-bg-color: #5ab541;
 $table-border-color: gray;
 
 $font-size-base:          14px;
@@ -245,17 +246,17 @@ blockquote {
 	background-color: rgba(0, 0, 0, 0.7);
 }
 .translucent-bg.blue:after {
-	background-color: rgba(85, 172, 238, 0.7);
+	background-color: $my-green-color;
 }
 .translucent-bg .container {
 	z-index: 3;
 	position: relative;
 }
 .bg-image-1 {
-	background: url("../images/bg-image-1.jpg") 50% 0px no-repeat;
+	background: url("../img/bg-image-1.jpg") 50% 0px no-repeat;
 }
 .bg-image-2 {
-	background: url("../images/bg-image-2.jpg") 50% 0px no-repeat;
+	background: url("../img/bg-image-2.jpg") 50% 0px no-repeat;
 }
 
 /* Misc
@@ -317,11 +318,13 @@ blockquote {
 ---------------------------------- */
 .btn {
 	padding: 8px 15px;
-	font-size: 14px;
+	font-size: 12px;
 	line-height: 1.42857143;
 	min-width: 160px;
 	text-align: center;
 	border-radius: 0;
+  background-color: $my-green-bg-color;
+  color: #fff;
 	text-transform: uppercase;
 	-webkit-transition: all 0.2s ease-in-out;
 	-moz-transition: all 0.2s ease-in-out;
@@ -330,13 +333,12 @@ blockquote {
 	transition: all 0.2s ease-in-out;
 }
 .btn-default {
-	color: #55acee;
 	border: 1px solid #cccccc;
 }
 .btn-default:hover {
 	color: #ffffff;
-	background-color: #339BEB;
-	border-color: #339BEB;
+	background-color: $my-green-bg-color;
+	border-color: $my-green-color;
 }
 
 /* Collapse
@@ -367,7 +369,7 @@ blockquote {
 	padding: 12px 35px 12px 15px;
 	display: inline-block;
 	width: 100%;
-	background-color: #55acee;
+	background-color: $my-green-color;
 	color: #ffffff;
 	position: relative;
 	text-decoration: none;
@@ -392,7 +394,7 @@ blockquote {
 }
 .panel-heading a:hover {
 	text-decoration: none;
-	background-color: #55acee;
+	background-color: $my-green-bg-color;
 	color: #ffffff;
 }
 .panel-title a i {
@@ -406,8 +408,8 @@ blockquote {
 .nav-pills > li.active > a:hover,
 .nav-pills > li.active > a:focus,
 .nav-pills > li > a:hover {
-	background-color: #55acee;
-	border-color: #55acee;
+	background-color: $my-green-bg-color;
+	border-color: $my-green-color;
 	color: #ffffff;
 }
 .nav-pills > li > a {
@@ -495,11 +497,11 @@ textarea {
 }
 .main-navigation .navbar-default .navbar-nav > li.active > a {
 	background-color: transparent;
-	color: #55acee;
+	color: $my-green-color;
 }
 .main-navigation .navbar-default .navbar-nav > li > a:hover,
 .main-navigation .navbar-default .navbar-nav > li.active > a:hover {
-	color: #55acee;
+	color: $my-green-color;
 }
 @media (min-width:768px) {
 	.main-navigation .navbar-default .navbar-nav > li > a {
@@ -831,15 +833,16 @@ textarea {
 .form-box {
    justify-content: right;
    position: relative;
-   width:100%
+   width: auto;
 }
 
 .login-form{
    position: absolute;
    justify-content: right;
    right: 10px;
-   top: 3px;
+   top: 30px;
    width: 30%;
+   font-size: 9pt;
 }
 
 .login-form-group{
@@ -934,7 +937,7 @@ textarea {
         background-color: #fdfdfd;
     }
     .div-new-answer{
-      border: 1px dotted green;
+      border: 1px dotted $my-green-color;
     }
 }
 
@@ -979,7 +982,7 @@ textarea {
 
 .all-width-green {
     font-weight: bold;
-    color: green;
+    color: $my-green-color;
 }
 
 .all-width-red {
@@ -1019,6 +1022,7 @@ table.some-table-class {
 .btn-outline-primary-green {
   color: $my-green-color;
   border-color: $my-green-color;
+  background-color: $my-green-bg-color;
 }
 
 .btn-outline-primary-green:hover {
@@ -1028,7 +1032,7 @@ table.some-table-class {
 }
 
 .btn-outline-primary-green:focus, .btn-outline-primary-green.focus {
-  box-shadow: 0 0 0 0.2rem rgba(11, 158, 0, 0.5);
+  box-shadow: 0 0 0 0.2rem $my-green-color;
 }
 
 .btn-outline-primary-green.disabled, .btn-outline-primary-green:disabled {
@@ -1047,7 +1051,7 @@ table.some-table-class {
 .btn-outline-primary-green:not(:disabled):not(.disabled):active:focus, .btn-outline-primary-green:not(:disabled):not(.disabled).active:focus,
 
 .show > .btn-outline-primary-green.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem rgba(11, 158, 0, 0.5);
+  box-shadow: 0 0 0 0.2rem $my-green-color;
 }
 
 .caption {
@@ -1075,4 +1079,44 @@ table.some-table-class {
     margin: 5px;
     border: 1px dotted gray;
     flex: auto;
+}
+
+/** TOP NAVIGATION BAR */
+.div_inline_list {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    right: 10px;
+    width: 35%;
+    background-color: $my-green-color;
+    border: 1px solid #e0e0e0;
+    z-index: 1;
+    text-align: right;
+    ul {
+        text-align: center;
+        list-style-type: none;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        li {
+            display: inline;
+            color: #fff;
+            font-size: 10pt;
+            font-weight: bold;
+            margin: 0 30px 0 10px;
+            a {
+                color: #fff;
+                text-decoration: none;
+                padding: 5px;
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
+}
+
+.separator {
+    color: #fff;
+    font-weight: bold;
 }

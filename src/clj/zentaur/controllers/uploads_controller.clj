@@ -23,7 +23,7 @@
   (let [user-id   (-> request :identity :id)
         params    (:params request)
         result    (model-upload/upload-file params user-id)
-        message   (if (= result false) "wrong" "success")]
+        message   (if (= result false) basec/msg-fehler basec/msg-erfolg)]
     (assoc (response/found "/admin/uploads") :flash (assoc params :message message))))
 
 (defn process

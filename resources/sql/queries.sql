@@ -40,8 +40,7 @@ SELECT * FROM subjects ORDER BY subject ASC
 
 -- :name save-post! :! :1
 -- :doc creates a new post record
-INSERT INTO posts
-(title, body, published, discution, tags, user_id, slug)
+INSERT INTO posts (title, body, published, discution, tags, user_id, slug)
 VALUES (:title, :body, :published, :discution, :tags, :user_id, :slug) RETURNING id
 
 -- :name update-post! :! :1
@@ -52,13 +51,11 @@ WHERE id = :id
 
 -- :name toggle-post! :! :n
 -- :doc update an existing post record
-UPDATE posts SET published = :published
-WHERE id = :id
+UPDATE posts SET published = :published WHERE id = :id
 
 -- :name delete-post! :! :n
 -- :doc delete a post given the id
-DELETE FROM posts
-WHERE id = :id
+DELETE FROM posts WHERE id = :id
 
 -- :name save-comment :! :1
 -- :doc creates a new message record
@@ -86,26 +83,20 @@ ORDER BY p.id DESC
 
 -- :name get-files :? :*
 -- :doc retrieve files owned per user.
-SELECT * FROM files WHERE user_id = :user-id AND archive = false
-ORDER BY id DESC LIMIT 30
+SELECT * FROM files WHERE user_id = :user-id AND archived = false ORDER BY id DESC LIMIT 30
 
--- :name get-file :? :1
--- :doc retrieve one file owned per user.
-SELECT * FROM files WHERE user_id = :user-id AND identifier = :identifier
-
--- :name get-file-by-identifier :? :1
--- :doc Check identifier doesn't exist.
-SELECT id FROM files WHERE identifier = :identifier
+-- :name get-one-file :? :1
+-- :doc retrieves one file owned per user.
+SELECT * FROM files WHERE user_id = :user-id AND uurlid = :uurlid
 
 -- :name save-file! :<! :1
 -- :doc creates a new file record
-INSERT INTO files (file, user_id, img, identifier) VALUES
-(:file, :user-id, :img, :identifier) RETURNING id
+INSERT INTO files (file, user_id, img, uurlid) VALUES
+(:file, :user-id, :img, :uurlid) RETURNING id
 
--- :name toggle-file! :! :1
+-- :name toggle-file :! :1
 -- :doc update an existing file record
-UPDATE file SET archive = :archive
-WHERE id = :id
+UPDATE files SET archived = :archived WHERE uurlid = :uurlid
 
 -- /*******************  UPLOADS   ***/
 
@@ -132,12 +123,12 @@ SELECT id FROM uploads WHERE hashvar = :hashvar
 
 -- :name create-test! :<!
 -- :doc creates a new test record
-INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id, subject_id)
-VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id, :subject-id) RETURNING id
+INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id, subject_id, uurlid)
+VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id, :subject-id, :uurlid) RETURNING id
 
--- :name create-minimal-test! :<! :n
+-- :name create-minimal-test :<! :n
 -- :doc creates a minimal test record
-INSERT INTO tests (title, tags, user_id, subject_id) VALUES (:title, :tags, :user_id, :subject_id) RETURNING id
+INSERT INTO tests (title, tags, user_id, subject_id, uurlid) VALUES (:title, :tags, :user_id, :subject_id, :uurlid) RETURNING id
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
@@ -156,8 +147,7 @@ UPDATE questions SET fulfill = :fulfill WHERE id = :id RETURNING *
 
 -- :name update-answer! :>! :1
 -- :doc updates an answer record
-UPDATE answers SET answer = :answer, correct = :correct
-WHERE id = :id RETURNING *
+UPDATE answers SET answer = :answer, correct = :correct WHERE id = :id RETURNING *
 
 -- :name update-test! :>! :1
 -- :doc updates an answer record
@@ -178,18 +168,18 @@ INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question_id,
 
 -- :name get-tests :? :*
 -- :doc retrieve a test given the id.
-SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, s.subject
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t. uurlid, s.subject
 FROM tests t INNER JOIN subjects s
 ON t.subject_id = s.id
 WHERE t.user_id = :user-id AND t.archived = false
 ORDER BY t.id DESC
 
 -- :name get-one-test :? :1
--- :doc retrieve a test given the id.
-SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, s.subject
+-- :doc retrieve a test given the uurlid.
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, t.uurlid, s.subject
 FROM tests t INNER JOIN subjects s
 ON t.subject_id = s.id
-WHERE t.archived = :archived AND t.id = :id
+WHERE t.archived = :archived AND t.uurlid = :uurlid
 ORDER BY t.id DESC
 
 -- :name get-questions :? :*
@@ -203,8 +193,7 @@ WHERE qt.test_id = :test-id AND qt.question_id = q.id ORDER BY qt.ordnen ASC
 -- :doc retrieve a question given the id.
 SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.fulfill, q.active, q.reviewed_lang, q.reviewed_fact, q.reviewed_cr,
 q.created_at, qt.ordnen FROM question_tests qt INNER JOIN questions q
-ON q.id = qt.question_id
-WHERE qt.question_id = q.id AND qt.id = :id LIMIT 1
+ON q.id = qt.question_id WHERE qt.question_id = q.id AND qt.id = :id LIMIT 1
 
 -- :name get-last-answer :? :1
 -- :doc retrieve all questions tests.
@@ -299,3 +288,33 @@ TRUNCATE pages, composite_answers, roles, users, posts, question_tests, tests, u
 -- :name get-one-quote :? :1
 -- :doc retrieve a random quote.
 SELECT * FROM	quotes OFFSET floor(random() * (SELECT COUNT(*)	FROM quotes)) LIMIT 1
+
+/********  VCLASSROOMS ***/
+
+-- :name get-vclassrooms :? :*
+-- :doc retrieve array posts given the id.
+SELECT id, name, user_id, draft, historical, secret, public, uurlid, description, created_at
+FROM vclassrooms WHERE historical = :historical AND user_id = :user-id ORDER BY id DESC LIMIT 10
+
+-- :name get-vclass :? :1
+-- :doc retrieve a vclassroom given the uurlid.
+SELECT id, name, draft, historical, secret, public, uurlid, description, created_at
+FROM vclassrooms WHERE user_id = :user-id AND uurlid = :uurlid
+
+-- :name create-vclass! :<! :1
+-- :doc creates a new message record
+INSERT INTO vclassrooms (name, user_id, draft, historical, secret, public, description, uurlid)
+ VALUES (:name, :user-id, :draft, :historical, :secret, :public, :description, :uurlid) RETURNING *
+
+-- :name update-vclass :<! :1
+-- :doc update an existing vclassroom record
+UPDATE vclassrooms SET name = :name, secret = :secret, description = :description,
+draft = :draft, historical = :historical, public = :public WHERE uurlid = :uurlid AND user_id = :user-id RETURNING *
+
+-- :name toggle-vclassroom :! :n
+-- :doc update an existing vclassroom record
+UPDATE vclassrooms SET draft = :draft WHERE uurlid = :uurlid
+
+-- :name delete-vclassroom :! :n
+-- :doc delete a post given the id
+DELETE FROM vclassrooms WHERE uurlid = :uurlid
