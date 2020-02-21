@@ -1100,6 +1100,7 @@ table.some-table-class {
         padding: 0;
         li {
             display: inline;
+            color: #fff;
             font-size: 10pt;
             font-weight: bold;
             margin: 0 30px 0 10px;
@@ -1115,4 +1116,7 @@ table.some-table-class {
     }
 }
 
-
+.separator {
+    color: #fff;
+    font-weight: bold;
+}

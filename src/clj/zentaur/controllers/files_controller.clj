@@ -5,7 +5,6 @@
             [zentaur.hiccup.layouts.application-layout :as layout]
             [zentaur.hiccup.layouts.basic-layout :as blay]
             [zentaur.hiccup.files-view :as files-view]
-            [zentaur.libs.helpers :as h]
             [zentaur.models.files :as model-files]))
 
 (defn- ^:private load-tpl
@@ -33,7 +32,7 @@
         user-id   (:id identity)
         uname     (:uname identity)
         result    (model-files/upload-file params user-id uname)
-        message   (if (= result false) h/msg-fehler h/msg-erfolg)]
+        message   (if (= result false) basec/msg-fehler basec/msg-erfolg)]
     (assoc (response/found (str "/vclass/files/" type)) :flash  message)))
 
 (defn download

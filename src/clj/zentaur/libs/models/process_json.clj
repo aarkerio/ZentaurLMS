@@ -3,7 +3,6 @@
             [clojure.tools.logging :as log]
             [ring.util.codec :as c]
             [zentaur.db.core :as db]
-            [zentaur.libs.helpers :as h]
             [zentaur.libs.models.shared :as shar]))
 
 (defn- build-test [{:keys [title description instructions level lang tags origin] :or {level "1"}} user-id]

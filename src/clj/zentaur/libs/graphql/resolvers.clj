@@ -4,7 +4,6 @@
             [clojure.tools.logging :as log]
             [com.walmartlabs.lacinia.resolve :refer [resolve-as]]
             [zentaur.db.core :as db]
-            [zentaur.libs.helpers :as h]
             [zentaur.models.tests :as mt]))
 
 (defn- ^:private id-to-string

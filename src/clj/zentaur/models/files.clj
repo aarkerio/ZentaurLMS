@@ -6,7 +6,7 @@
             [pantomime.extract :as extract]
             [struct.core :as st]
             [zentaur.db.core :as db]
-            [zentaur.libs.helpers :as h])
+            [zentaur.libs.models.shared :as sh])
   (:import  [java.security MessageDigest]
             [java.math BigInteger]))
 
@@ -30,7 +30,6 @@
 (defn validate-file [params]
   (first
     (st/validate params file-schema)))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;    ACTIONS
@@ -62,8 +61,7 @@
         _             (log/info (str ">>> DB-ROW >>>>> " db-row))]
     (if-not (and (db/get-one-file {:user-id user-id :uurlid uurlid})
                  (seq filename))
-      (do (log/info (str ">>> tempfile >>>>> " tempfile "   und final-path >>>>>" final-path))
-          (h/copy-file tempfile final-path)
+      (do (sh/copy-file tempfile final-path)
           (save-file! db-row))
       false)))
 

@@ -4,8 +4,7 @@
             [hiccup.form :as f]
             [hiccup.element :refer [link-to]]
             [markdown.core :as md]
-            [zentaur.hiccup.helpers-view :as hv]
-            [zentaur.libs.helpers :as h]))
+            [zentaur.hiccup.helpers-view :as hv]))
 
 (defn format-row
   [{:keys [name draft historical secret public description uurlid created_at]}]
@@ -61,9 +60,7 @@
             [:th "Created"]
             [:th "Löschen"]]]
           [:tbody formatted-vclassrooms]]]
-      [:nav {:class "blog-pagination"}
-        [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
-        [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
+     (hv/pagination "tests")]))
 
 (defn show [vclassroom csrf-field]
   (let [form (vc-new-form csrf-field vclassroom)

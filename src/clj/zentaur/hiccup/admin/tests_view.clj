@@ -52,9 +52,7 @@
             [:th "Export ODF"]
             [:th "Löschen"]]]
           [:tbody formatted-tests]]]
-      [:nav {:class "blog-pagination"}
-        [:a {:class "btn btn-outline-primary-green" :href "#"} "Older"]
-        [:a {:class "btn btn-outline-primary-green disabled" :href "#"} "Newer"]]]))
+      (hv/pagination "tests")]))
 
 (defn edit [base uurlid]
   (let [csrf-field (:csrf-field base)

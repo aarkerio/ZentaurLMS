@@ -12,7 +12,7 @@
         up-date  (hv/format-date (:created_at file))]
     [:tr
      [:td [:a {:href url } (:file file)]]
-     [:td [:img {:src "/img/icon_clipboard.png" :alt "Copy to clipboard" :title "Copy to clipboard" :onclick (str "zentaur.core.copytoclipboard('"url"')")}]]
+     [:td [:img {:src "/img/icon_clipboard.png" :alt "In die Zwischenablage kopieren" :title "In die Zwischenablage kopieren" :onclick (str "zentaur.core.copytoclipboard('"url"')")}]]
      [:td up-date]
      [:td  [:a {:href (str "/vclass/files/archive/" type "/" uurlid "/" archived)} [:img {:src "/img/icon_archive.png" :alt "Archive file" :title "Archive file"}]]]
      [:td [:a {:onclick (str "zentaur.core.deletefile(" uurlid ")")} [:img {:src "/img/icon_delete.png" :alt "Delete file" :title "Delete file"}]]]]))
@@ -31,14 +31,12 @@
      [:table {:class "some-table-class"}
       [:thead
        [:tr
-        [:th "File"]
+        [:th "Datein"]
         [:th "Uploaded"]
         [:th "Copy to clipboard"]
-        [:th "Sent to archived files"]
+        [:th "Sent file to the archive"]
         [:th "Löschen"]]]
       [:tbody formatted-files]]
-      [:nav {:class "blog-pagination"}
-        [:a {:class "btn btn-outline-primary-green" :href "#"} "Older"]
-        [:a {:class "btn btn-outline-primary-green disabled" :href "#"} "Newer"]]]))
+      (hv/pagination "files")]))
 
 

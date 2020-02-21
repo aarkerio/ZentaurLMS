@@ -1,5 +1,6 @@
 (ns zentaur.libs.models.shared
-  (:require [clojure.string :as s]
+  (:require [clojure.java.io :as io]
+            [clojure.string :as s]
             [clojure.tools.logging :as log]
             [zentaur.db.core :as db])
    (:import (java.text Normalizer)))
@@ -16,8 +17,18 @@
     "answers"   (db/get-last-ordnen-answer {:question-id id})
     "questions" (db/get-last-ordnen-questions {:test-id id})))
 
+(defn copy-file
+  "Copy a file"
+  [source-path dest-path]
+  (io/copy (io/file source-path) (io/file dest-path)))
+
+(defn update-booleans
+  "Change true/false string for booleans"
+  [mymap keys-vector]
+  (reduce #(assoc %1 %2  (if (= (%1 %2) "true") true false)) mymap keys-vector))
+
 (defn- ^:private normalize
-  "Normalize string"
+  "Normalize string (remove non-estandard characters)"
   [^CharSequence string]
   (let [normalized (Normalizer/normalize string java.text.Normalizer$Form/NFD)]
     (s/replace normalized #"\p{InCombiningDiacriticalMarks}+" "")))

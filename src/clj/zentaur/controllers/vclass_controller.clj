@@ -4,7 +4,6 @@
             [zentaur.controllers.base-controller :as basec]
             [zentaur.hiccup.layouts.application-layout :as layout]
             [zentaur.hiccup.vclassrooms-view :as vclass-view]
-            [zentaur.libs.helpers :as h]
             [zentaur.models.vclassrooms :as model-vclass]
             [ring.util.http-response :as response]))
 
@@ -24,7 +23,7 @@
   (let [user-id   (-> request :identity :id)
         params    (dissoc (:params request) :__anti-forgery-token)
         result    (model-vclass/create-vclass params user-id)
-        message   (if (= result false) "wrong" "success")]
+        message   (if (= result false) basec/msg-fehler basec/msg-erfolg)]
     (assoc (response/found "/vclass/index") :flash  message)))
 
 (defn update-vc
@@ -34,7 +33,7 @@
         params    (dissoc (:params request) :__anti-forgery-token)
         uurlid    (:uurlid params)
         result    (model-vclass/update-vclass params user-id)
-        message   (if (= result false) h/msg-fehler h/msg-erfolg)]
+        message   (if (= result false) basec/msg-fehler basec/msg-erfolg)]
     (assoc (response/found (str "/vclass/show/" uurlid)) :flash  message)))
 
 (defn show
@@ -52,11 +51,11 @@
   "GET /vclass/toggle/:uurlid/:draft"
   [{:keys [path-params]}]
   (model-vclass/toggle path-params)
-    (assoc (response/found "/vclass/index") :flash h/msg-erfolg))
+    (assoc (response/found "/vclass/index") :flash basec/msg-erfolg))
 
 (defn delete-vclass
   "DELETE /vclass/delete/:uurlid"
   [params]
   (let [uurlid (params :uurlid)]
     (model-vclass/destroy {:uurlid uurlid})
-    (assoc (response/found "/vclass/index") :flash h/msg-erfolg)))
+    (assoc (response/found "/vclass/index") :flash basec/msg-erfolg)))

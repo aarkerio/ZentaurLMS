@@ -2,9 +2,7 @@
   "Business logic for the export section"
   (:require [clj-pdf.core :as pdf]
             [clojure.tools.logging :as log]
-            [zentaur.db.core :as db]
-            [zentaur.libs.helpers :as h]))
-
+            [zentaur.db.core :as db]))
 
 (def questions
   [{:question "What is germany?"
