@@ -49,19 +49,22 @@
   (let [uurlid   (:uurlid file)
         archived (:archived file)
         url      (str "/files/" uname "/" (:file file))
+        hostname (hv/get-localhost)
+        message  (str "Hi guys! \n\n I'm sending you this file related to the class. \n\n Cheers!")
         up-date  (hv/format-date (:created_at file))
-        fvc      (reduce #(conj %1 [(:name %2) (:id %2)]) [] vclassrooms)
-        _ (log/info (str ">>> PARAM  FFFVVVCCCCCCC >>>>> " fvc))
-        ]
+        fvc      (reduce #(conj %1 [(:name %2) (:id %2)]) [] vclassrooms)]
     [:div
      [:div.div-separator [:a {:href (str "/vclass/files/" archived)} "<< Go back to your files"]]
-     [:div (str "<b>Created</b>: " up-date)]
+     [:h2 "Send this file to one of your Classrooms:"]
+     [:div (str "<b>Uploaded</b>: " up-date)]
      [:div [:a {:href url :target "_blank"} (:file file)]]
      [:div [:img {:src "/img/icon_clipboard.png" :alt "In die Zwischenablage kopieren" :title "In die Zwischenablage kopieren" :onclick (str "zentaur.core.copytoclipboard('"url"')")}]]
      [:div.div-separator
       (f/form-to {:enctype "multipart/form-data" :class "form-inline my-2 my-lg-0" :id "upload-file-form"}
                  [:post "/vclass/share"]
                  (f/hidden-field {:value (:csrf-field base)} "__anti-forgery-token")
-                 ;; [:div.div-separator (f/text-field {:id "email" :placeholder "email"} "email")]
+                 [:div.div-separator (f/label {} "message" "<b>Your Message:</b> *")]
+                 [:div.div-separator (f/text-area {:cols 90 :rows 7 :id "msg" :placeholder "Message"} "message", message)]
+                 [:div.div-separator "* This is a generic message that you can customize, you don't need to paste the file here, the link to the file will appear in the student's email."]
                  [:div.div-separator (f/drop-down {:class "form-class"} "vclassroom_id" fvc)]
        [:div (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Teilen")])]]))

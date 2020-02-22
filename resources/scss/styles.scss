@@ -896,12 +896,14 @@ textarea {
 }
 
 .div-separator {
-    padding: 12px;
-    margin: 15px;
+    padding: 10px;
+    margin: 15px 0 15px0;
+    width: 100%;
     //  border: 1px dotted gray;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    clear: both;
     &:hover {
         opacity:1;
         transition: 1s ease;

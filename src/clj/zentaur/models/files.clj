@@ -56,8 +56,7 @@
         uurlid        (str rand7 "-" (dgt/sha-256 (io/as-file tempfile)))
         final-path    (str root-path "/resources/public/files/" uname "/" unique-name)
         _             (io/make-parents final-path) ;; create the path if it doesn't exist
-        db-row        (assoc {} :file unique-name :user-id user-id :uurlid uurlid :img true)
-        _             (log/info (str ">>> DB-ROW >>>>> " db-row))]
+        db-row        (assoc {} :file unique-name :user-id user-id :uurlid uurlid :img true)]
     (if-not (and (db/get-one-file {:user-id user-id :uurlid uurlid})
                  (seq filename))
       (do (sh/copy-file tempfile final-path)

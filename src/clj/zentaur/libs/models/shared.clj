@@ -60,5 +60,3 @@
   [params & args]
   (let [new-values (reduce #(assoc %1 %2 (contains? params %2)) {} args)]
     (merge params new-values)))
-
-

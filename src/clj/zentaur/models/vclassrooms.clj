@@ -20,17 +20,13 @@
   [params user-id]
   (let [uurlid      (sh/gen-uuid)
         pre-params  (dissoc params :__anti-forgery-token)
-        _    (log/info (str ">>> PARAMS BEFORE gggg ******* >>>>> " pre-params))
         bool-params (sh/checkboxboolean pre-params :draft :public :historical)
         full-params (assoc bool-params :user-id user-id :uurlid uurlid)]
-    (log/info (str ">>> PARAM AFTER bool-paramsbool-paramsbool-params **** >>>>> " full-params))
     (db/create-vclass! full-params)))
 
 (defn update-vclass [params user-id]
-  (log/info (str ">>> PARAM update-vclass **** >>>>> " params))
   (let [full-params (dissoc params :active)
         bool-params (sh/checkboxboolean full-params :draft :public :historical)]
-    (log/info (str ">>> PARAM bool-paramsbool-paramsbool-params **** >>>>> " bool-params))
     (db/update-vclass (assoc bool-params :user-id user-id))))
 
 (defn toggle [{:keys [uurlid draft]}]
