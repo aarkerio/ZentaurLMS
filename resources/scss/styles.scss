@@ -896,9 +896,9 @@ textarea {
 }
 
 .div-separator {
-    padding: 5px;
-    margin: 5px;
-    border: 1px dotted gray;
+    padding: 12px;
+    margin: 15px;
+    //  border: 1px dotted gray;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -1119,4 +1119,14 @@ table.some-table-class {
 .separator {
     color: #fff;
     font-weight: bold;
+}
+
+.right_separator {
+    text-align: right;
+    color: #fff;
+    font-weight: bold;
+    margin: 9px;
+    padding: 3px;
+    display: flex;
+    justify-content: right;
 }

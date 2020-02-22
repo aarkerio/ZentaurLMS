@@ -35,12 +35,11 @@
 ;;    ACTIONS
 ;;;;;;;;;;;;;;;;;;;;;
 
-(defn get-files [user-id]
-  (db/get-files {:user-id user-id}))
+(defn get-files [user-id archived]
+  (db/get-files {:user-id user-id :archived archived}))
 
-(defn get-file [uurlid user-id]
-  (let [int-id (Integer/parseInt user-id)]
-    (db/get-one-file {:uurlid uurlid :user-id user-id})))
+(defn get-one-file [user-id uurlid]
+    (db/get-one-file {:uurlid uurlid :user-id user-id}))
 
 (defn save-file! [params]
   (if-let [errors (validate-file params)]
