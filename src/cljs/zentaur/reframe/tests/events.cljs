@@ -90,7 +90,7 @@
   [trim-event]
   (fn [db [ {:keys [data errors] :as payload}]]
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
-    (let [test          (:test_by_id  data)
+    (let [test          (:test_by_uurlid data)
           questions     (:questions test)
           ques-answers  (map #(update % :answers vector-to-idxmap) questions)
           questions-idx (vector-to-idxmap ques-answers)
@@ -113,10 +113,9 @@
   (fn                      ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (let [uurlid  (.-value (gdom/getElement "uurlid"))
-          query   (gstring/format "{test_by_uurlid(uurlid: \"%s\", archived: false) { id title description tags subject subject_id created_at
+          query   (gstring/format "{test_by_uurlid(uurlid: \"%s\", archived: false) { uurlid title description tags subject subject_id created_at
                                     subjects {id subject} questions { id question qtype hint points explanation fulfill answers {id answer ordnen correct question_id }}}}"
                                   uurlid)]
-      (.log js/console (str ">>> QUERRRYRRR >>>>> " query ))
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query query {} [:process-test-response]]))))
 
@@ -314,7 +313,6 @@
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
                            [:process-after-update-answer]]))))
 
-;; ### UPDATE ANSWER
 (re-frame/reg-event-db
  :process-after-update-test
  []
@@ -331,10 +329,10 @@
   (fn                         ;; <-- the handler function
     [cofx [_ updates]]        ;; <-- 1st argument is coeffect, from which we extract db
     (let [_  (.log js/console (str ">>> VALUES UPDATES >>>>> " updates ))
-          {:keys [title description tags subject_id test_id]} updates
-          mutation  (gstring/format "mutation { update_test( title: \"%s\", description: \"%s\", tags: \"%s\", subject_id: %i, test_id: %i)
-                                    { id title description subject_id  subject tags created_at }}"
-                                  title description tags subject_id test_id)]
+          {:keys [title description tags subject_id uurlid]} updates
+          mutation  (gstring/format "mutation { update_test( title: \"%s\", description: \"%s\", tags: \"%s\", subject_id: %i, uurlid: \"%s\")
+                                    { id title description subject_id subject tags created_at }}"
+                                  title description tags subject_id uurlid)]
        (.log js/console (str ">>> MUTATION UPDATE TEST >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
                            mutation                           ;; graphql query

@@ -57,7 +57,6 @@
 (defn edit [base uurlid]
   (let [csrf-field (:csrf-field base)
         user-id    (-> base :identity :id)]
-    (log/info (str ">>> UUUURRRLIDDDDDDDD ******  >>>>> " uurlid))
     [:div
      [:h1 "Bearbeiten Quizz Test"]
      [:div (f/form-to [:id "hidden-form"]
