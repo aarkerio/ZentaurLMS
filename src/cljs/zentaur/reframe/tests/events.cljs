@@ -112,11 +112,11 @@
   :test-load
   (fn                      ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [pre-test-id   (.-value (gdom/getElement "uurlid"))
-          test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "{test_by_id(uurlid: \"%s\", archived: false) { id title description tags subject subject_id created_at
-                                          subjects {id subject} questions { id question qtype hint points explanation fulfill answers {id answer ordnen correct question_id } } } }"
-                                        test-id)]
+    (let [uurlid  (.-value (gdom/getElement "uurlid"))
+          query   (gstring/format "{test_by_uurlid(uurlid: \"%s\", archived: false) { id title description tags subject subject_id created_at
+                                    subjects {id subject} questions { id question qtype hint points explanation fulfill answers {id answer ordnen correct question_id }}}}"
+                                  uurlid)]
+      (.log js/console (str ">>> QUERRRYRRR >>>>> " query ))
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query query {} [:process-test-response]]))))
 

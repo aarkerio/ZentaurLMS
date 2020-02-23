@@ -16,7 +16,7 @@
      [:td  [:a {:href (str "/vclass/show/" uurlid)} name]]
      [:td  description]
      [:td  formatted-date]
-     [:td  [:a {:onclick (str "zentaur.core.deletevc(" uurlid ")")} [:img {:src "/img/icon_delete.png" :alt "Delete Classroom" :title "Delete Classroom"}]]]]))
+     [:td  [:a {:onclick (str "zentaur.core.deletevc('" uurlid "')")} [:img {:src "/img/icon_delete.png" :alt "Delete Classroom" :title "Delete Classroom"}]]]]))
 
 (defn foo
   ([s] (foo s 10))

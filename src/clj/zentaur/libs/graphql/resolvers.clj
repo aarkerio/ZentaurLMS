@@ -14,9 +14,10 @@
   (let [full-params (assoc params :user-id user-id)]
     (mt/create-test! full-params user-id)))
 
-(defn- ^:private resolve-test-by-uurlid
+(defn- ^:private test-by-uurlid
   "Resolver to get and convert to map keyed"
   [context args value]
+  (log/info (str ">>> PARAM argsargsargsargs  >>>>> " args))
   (let [uurlid     (:uurlid args)
         archived   (:archived args)
         full-test  (mt/build-test-structure uurlid archived)]
@@ -73,7 +74,7 @@
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."
   []
-  {:test-by-uurlid (partial resolve-test-by-uurlid)
+  {:test-by-uurlid (partial test-by-uurlid)
    :create-question (partial create-question)
    :create-answer (partial create-answer)
    :update-test (partial update-test)

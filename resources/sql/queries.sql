@@ -211,10 +211,6 @@ SELECT ordnen FROM answers WHERE question_id = :question-id ORDER BY ordnen DESC
 -- :doc retrieve all tests.
 SELECT id, question_id, answer, correct FROM answers WHERE question_id = :question-id  ORDER BY ordnen DESC
 
--- :name remove-test! :<! :1
--- :doc delete a test given the id
-UPDATE tests SET active = false WHERE id = :test-id RETURNING TRUE
-
 -- :name unlink-question! :<! :1
 -- :doc unlink a question from the test
 DELETE FROM question_tests WHERE test_id = :test_id AND question_id = :question_id RETURNING TRUE
@@ -222,6 +218,10 @@ DELETE FROM question_tests WHERE test_id = :test_id AND question_id = :question_
 -- :name remove-answer! :<! :1
 -- :doc remove an answer given the question-id
 DELETE FROM answers WHERE question_id = :question_id AND id = :answer_id RETURNING TRUE
+
+-- :name toggle-test :<! :1
+-- :doc set test as archived
+UPDATE tests SET archived = true WHERE uurlid = :uurlid RETURNING TRUE
 
 /**** ROLES   ****/
 

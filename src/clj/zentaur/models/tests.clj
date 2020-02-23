@@ -82,6 +82,7 @@
    Function used by the Web and the Phone App."
   [uurlid archived]
   (let [test          (db/get-one-test {:uurlid uurlid :archived archived})
+        _ (log/info (str ">>> MY TESTSTS  >>>>> " test))
         questions     (get-questions (:id test))
         subjects      (db/get-subjects)
         subj-strs     (map #(update % :id str) subjects)]
@@ -116,7 +117,7 @@
 ;;;;;;;;;;;;    DELETES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn remove-test [params]
   (let [uurlid (:uurlid params)]
-    (db/remove-test! {:uurlid uurlid})))
+    (db/toggle-test {:uurlid uurlid})))
 
 (defn remove-question
   "Not a real delete, just unlink the question from test"
