@@ -1079,6 +1079,7 @@ table.some-table-class {
     margin: 5px;
     border: 1px dotted gray;
     flex: auto;
+    width: auto;
     &:hover {
         opacity:1;
         transition: 1s ease;

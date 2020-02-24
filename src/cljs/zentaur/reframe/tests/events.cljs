@@ -200,7 +200,7 @@
    (when (js/confirm "Frage löschen?")
      (let [uurlid    (.-value (gdom/getElement "uurlid"))
            mutation  (gstring/format "mutation { delete_question( question_id: %i, uurlid: \"%s\" ) { id }}"
-                                            question-id uurlid)]
+                                     question-id uurlid)]
        (re-frame/dispatch [::re-graph/mutate
                            mutation                           ;; graphql mutation
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
@@ -253,7 +253,7 @@
     (let [{:keys [id question hint explanation qtype points]} updates
           mutation  (gstring/format "mutation { update_question( id: %i, question: \"%s\",
                                       hint: \"%s\", explanation: \"%s\", qtype: %i, points: %i)
-                                     { id question hint explanation qtype points ordnen fulfill}}"
+                                     { id question hint explanation qtype points ordnen fulfill }}"
                                     id question hint explanation qtype points)]
        (re-frame/dispatch [::re-graph/mutate
                            mutation                                  ;; graphql query
@@ -335,3 +335,31 @@
                            mutation                           ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
                            [:process-after-update-test]]))))
+
+
+(re-frame/reg-event-db
+ :process-after-reorder-question
+ []
+ (fn [db [_ response]]
+   (.log js/console (str ">>> VALUE process-after-update-test >>>>> " response ))
+   (let [test (-> response :data :update_test)]
+   (-> db
+       (assoc :test test)
+       (update :loading?  not)
+       (update :testform  not)))))
+
+(re-frame/reg-event-fx       ;; <-- note the `-fx` extension
+  :reorder-question               ;; <-- the event id
+  (fn                         ;; <-- the handler function
+    [cofx [_ updates]]        ;; <-- 1st argument is coeffect, from which we extract db
+    (let [uurlid  (.-value (gdom/getElement "uurlid"))
+          _       (.log js/console (str ">>> VALUES UPDATES >>>>> " updates ))
+          {:keys [question-id uurlid direction]} updates
+           mutation  (gstring/format "mutation { reorder_question(uurlid: \"%s\", question_id: %i, direction: \"%s\")
+                                    { uurlid title questions { id question hint explanation qtype points ordnen fulfill }}}"
+                                  question-id uurlid direction)]
+       (.log js/console (str ">>> MUTATION UPDATE TEST >>>>> " mutation ))
+       (re-frame/dispatch [::re-graph/mutate
+                           mutation                           ;; graphql query
+                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
+                           [:process-after-reorder-question]]))))

@@ -131,3 +131,12 @@
   (let [result   (db/remove-answer! params)]
     (assoc params :ok (:bool result))))
 
+;;;; REORDERS
+
+(defn reorder-question [params]
+  (let [test         (get-one-test (:uurlid params))
+        questions    (if (= "up" (:direction params)) )
+        qtype        (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
+        full-params  (dissoc params :active)
+        qid          (db/update-question! (assoc full-params :qtype qtype))]
+    (db/update-order  {:ordnen 1})))

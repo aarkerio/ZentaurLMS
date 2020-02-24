@@ -66,7 +66,7 @@
         [:input {:type      "text"
                  :value     @aanswer
                  :maxLength 180
-                 :size      40
+                 :size      100
                  :on-change #(reset! aanswer (-> % .-target .-value))}]]
        [:input {:type      "checkbox"
                 :title     "richtig?"
@@ -177,7 +177,7 @@
 
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen points] :as q}]
+  [{:keys [question explanation hint qtype id ordnen points uurlid] :as q}]
   (let [editing-question (r/atom false)]
     (fn []
       [:div.question-container-div   ;; Flex container
@@ -185,11 +185,11 @@
         [:img.img-float-right {:title    "Frage nachbestellen"
                                :alt      "Frage nachbestellen"
                                :src      "/img/icon_up_green.png"
-                               :on-click #(rf/dispatch [:reorder-question {:question-id id :send "up"}])}]
+                               :on-click #(rf/dispatch [:reorder-question {:question-id id :direction "up"}])}]
         [:img.img-float-right {:title    "Senden Sie nach unten"
                                :alt      "Senden Sie nach unten"
                                :src      "/img/icon_down_green.png"
-                               :on-click #(rf/dispatch [:reorder-question {:question-id id :send "down"}])}]
+                               :on-click #(rf/dispatch [:reorder-question {:question-id id :direction "down"}])}]
         (if @editing-question
           [:img.img-float-right {:title    "Frage abbrechen"
                                  :alt      "Frage abbrechen"
