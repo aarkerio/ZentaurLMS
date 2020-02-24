@@ -122,7 +122,10 @@
 (defn remove-question
   "Not a real delete, just unlink the question from test"
   [params]
-    (db/unlink-question! params))
+  (let [test        (get-one-test (:uurlid params))
+        test-id     (:id test)
+        full-params (assoc params :test_id test-id)]
+    (db/unlink-question! full-params)))
 
 (defn remove-answer [params]
   (let [result   (db/remove-answer! params)]

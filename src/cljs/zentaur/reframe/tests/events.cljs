@@ -198,14 +198,11 @@
    [cofx [dispatch-id question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
    (.log js/console (str ">>> dispatch-id   OOO>>>>> " dispatch-id "  >>>> " question-id))
    (when (js/confirm "Frage löschen?")
-     (let [test-id          (.-value (gdom/getElement "test-id"))
-           _   (.log js/console (str ">>> VALUE test-id >>>>> " test-id ))
-           test-id-int      (js/parseInt test-id)
-           mutation         (gstring/format "mutation { delete_question( question_id: %i, test_id: %i ) { id }}"
-                                            question-id test-id)]
-       (.log js/console (str ">>> MUTATION DELETE QUESTION >>>>> " mutation ))
+     (let [uurlid    (.-value (gdom/getElement "uurlid"))
+           mutation  (gstring/format "mutation { delete_question( question_id: %i, uurlid: \"%s\" ) { id }}"
+                                            question-id uurlid)]
        (re-frame/dispatch [::re-graph/mutate
-                           mutation                           ;; graphql query
+                           mutation                           ;; graphql mutation
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
                            [:process-delete-question]])))))
 

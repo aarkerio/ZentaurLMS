@@ -83,8 +83,7 @@
         editing-answer  (r/atom false)]
     (fn []
       [:div {:class answer-class}
-       [:div
-        [:img.img-float-right {:title    "Frage nachbestellen"
+       [:img.img-float-right {:title    "Frage nachbestellen"
                               :alt      "Frage nachbestellen"
                               :src      "/img/icon_blue_up.png"
                               :on-click #(rf/dispatch [:reorder-answer {:answer-id id :question-id question_id}])}]
@@ -92,25 +91,23 @@
                               :alt      "Senden Sie nach unten"
                               :src      "/img/icon_blue_down.png"
                               :on-click #(rf/dispatch [:reorder-answer {:answer-id id :question-id question_id}])}]
-
-        (if @editing-answer
-          [:div
-           [answer-editing-input answer-record]
-           [:img.img-float-right {:title    "Antwort abbrechen"
-                                  :alt      "Antwort abbrechen"
-                                  :src      "/img/icon_cancel.png"
-                                  :on-click #(swap! editing-answer not)}]]
-          [:div
-           [:div [:span {:class answer-text} (str key ".-  ("correct")")] " " answer ]
-           [:img.img-float-right {:title    "Antwort bearbeiten"
-                                  :alt      "Antwort bearbeiten"
-                                  :src      "/img/icon_edit.png"
-                                  :on-click #(swap! editing-answer not)}]])]
-
        [:img.img-float-right {:title    "Antwort löschen"
                               :alt      "Antwort löschen"
                               :src      "/img/icon_delete.png"
-                              :on-click #(rf/dispatch [:delete-answer {:answer-id id :question-id question_id}])}]])))
+                              :on-click #(rf/dispatch [:delete-answer {:answer-id id :question-id question_id}])}]
+       (if @editing-answer
+         [:div
+          [:img.img-float-right {:title    "Antwort abbrechen"
+                                 :alt      "Antwort abbrechen"
+                                 :src      "/img/icon_cancel.png"
+                                 :on-click #(swap! editing-answer not)}]
+          [answer-editing-input answer-record]]
+         [:div
+          [:img.img-float-right {:title    "Antwort bearbeiten"
+                                 :alt      "Antwort bearbeiten"
+                                 :src      "/img/icon_edit.png"
+                                 :on-click #(swap! editing-answer not)}]
+          [:div [:span {:class answer-text} (str key ".-  ("correct")")] " " answer ]])])))
 
 (defn input-new-answer
   "Note: this is one-way bound to the global atom, it doesn't subscribe to it"
@@ -158,7 +155,7 @@
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
   (let [counter (r/atom 0)]
     (fn [{:keys [question explanation hint qtype id ordnen] :as q}]
-    [:div
+    [:div.question-items-divs
      [input-new-answer {:question-id id :on-stop #(js/console.log "stop") :props {:placeholder "Neue antwort"}}]
      (when-not (nil? (:answers q))
        (for [answer (:answers q)]
@@ -166,7 +163,7 @@
 
 (defmethod display-question 2
   [question]
-  [:p "(Dies ist eine offene Frage)"])
+  [:div.div-separator "(Dies ist eine offene Frage)"])
 
 (defmethod display-question 3
   [question]
@@ -183,17 +180,16 @@
   [{:keys [question explanation hint qtype id ordnen points] :as q}]
   (let [editing-question (r/atom false)]
     (fn []
-      [:div.question-container-div
+      [:div.question-container-div   ;; Flex container
        [:div.question-items-divs
         [:img.img-float-right {:title    "Frage nachbestellen"
                                :alt      "Frage nachbestellen"
                                :src      "/img/icon_up_green.png"
                                :on-click #(rf/dispatch [:reorder-question {:question-id id :send "up"}])}]
-       [:img.img-float-right {:title    "Senden Sie nach unten"
-                              :alt      "Senden Sie nach unten"
-                              :src      "/img/icon_down_green.png"
-                              :on-click #(rf/dispatch [:reorder-question {:question-id id :send "down"}])}]
-
+        [:img.img-float-right {:title    "Senden Sie nach unten"
+                               :alt      "Senden Sie nach unten"
+                               :src      "/img/icon_down_green.png"
+                               :on-click #(rf/dispatch [:reorder-question {:question-id id :send "down"}])}]
         (if @editing-question
           [:img.img-float-right {:title    "Frage abbrechen"
                                  :alt      "Frage abbrechen"
