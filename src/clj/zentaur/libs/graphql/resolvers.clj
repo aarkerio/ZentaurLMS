@@ -37,9 +37,8 @@
 
 (defn- ^:private update-test
   [context args value]
-  (let [updated-test (mt/update-test! args)
-        reload-test  (mt/get-one-test (:uurlid updated-test))]
-    (update reload-test :id str)))
+  (let [updated-test (mt/update-test! args)]
+    (mt/get-one-test (:uurlid updated-test))))
 
 (defn- ^:private update-question
   [context args value]

@@ -40,8 +40,9 @@
 
 (defn- ^:private get-last-question
   [params]
-  (let [test-id          (:test_id params)
-        created-question (db/create-question! (dissoc params :test_id))
+  (let [test             (get-one-test (:uurlid params))
+        test-id          (:id test)
+        created-question (db/create-question! params)
         question-id      (:id created-question)
         _                (link-test-question! question-id test-id)]
     created-question))
@@ -73,8 +74,7 @@
 (defn- ^:private get-questions
   "Get questions and convert to map keyed"
   [test-id]
-  (let [questions        (db/get-questions {:test-id test-id})
-        _                (log/info (str ">>> 111 questions >>>>> " (doall (map println questions))))]
+  (let [questions        (db/get-questions {:test-id test-id})]
      (map get-answers questions)))
 
 (defn build-test-structure
@@ -82,7 +82,6 @@
    Function used by the Web and the Phone App."
   [uurlid archived]
   (let [test          (db/get-one-test {:uurlid uurlid :archived archived})
-        _ (log/info (str ">>> MY TESTSTS  >>>>> " test))
         questions     (get-questions (:id test))
         subjects      (db/get-subjects)
         subj-strs     (map #(update % :id str) subjects)]
@@ -110,8 +109,9 @@
     (db/update-answer! full-params)))
 
 (defn update-test!
-  "Update test after editing with Re-frame"
+  "Update test after editing it with Re-frame"
   [params]
+  (log/info (str ">>> PARAM update-test!update-test!  >>>>> " params))
     (db/update-test! params))
 
 ;;;;;;;;;;;;    DELETES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

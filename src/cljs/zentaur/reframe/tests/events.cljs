@@ -138,15 +138,15 @@
 (re-frame/reg-event-fx
   :create-question
   (fn                    ;; <-- the handler function
-    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
+    [cfx _]             ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (.log js/console (str ">>>  und ebenfalls _ " (second _)))
     ;; question hint explanation qtype test-id user-id active
     (let [values        (libs/str-to-int (second _) :qtype :test-id :user-id)
           _             (.log js/console (str ">>> VALUES AFTER  >>>>> " values ))
-          {:keys [question hint explanation qtype points test-id user-id]} values
+          {:keys [question hint explanation qtype points uurlid user-id]} values
           mutation      (gstring/format "mutation { create_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, points: %i, test_id: %i, user_id: %i) { id question qtype hint explanation points}}"
-                                        question hint explanation qtype points test-id user-id)]
+                                         qtype: %i, points: %i, uurlid: \"%s\", user_id: %i) { id question qtype hint explanation points }}"
+                                        question hint explanation qtype points uurlid user-id)]
            (.log js/console (str ">>> MUTATTION  >>>>> " mutation ))
       ;; perform a query, with the response sent to the callback event provided
       (re-frame/dispatch [::re-graph/mutate
@@ -331,7 +331,7 @@
     (let [_  (.log js/console (str ">>> VALUES UPDATES >>>>> " updates ))
           {:keys [title description tags subject_id uurlid]} updates
           mutation  (gstring/format "mutation { update_test( title: \"%s\", description: \"%s\", tags: \"%s\", subject_id: %i, uurlid: \"%s\")
-                                    { id title description subject_id subject tags created_at }}"
+                                    { uurlid title description subject_id subject tags created_at }}"
                                   title description tags subject_id uurlid)]
        (.log js/console (str ">>> MUTATION UPDATE TEST >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate

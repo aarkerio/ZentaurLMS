@@ -341,7 +341,7 @@
                                                                   :qtype       @qtype
                                                                   :points      @points
                                                                   :explanation @explanation
-                                                                  :test-id     (.-value (gdom/getElement "test-id"))
+                                                                  :uurlid      (.-value (gdom/getElement "uurlid"))
                                                                   :user-id     (.-value (gdom/getElement "user-id"))}])
                                   (reset! new-question "")
                                   (reset! hint "")

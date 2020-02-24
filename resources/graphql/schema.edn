@@ -77,14 +77,14 @@
  :mutations {
              :create_question {:type :question
                                :description "Create new question."
-                               :args {:question    {:type (non-null String)}
+                               :args {:uurlid      {:type (non-null ID)}
+                                      :question    {:type (non-null String)}
                                       :hint        {:type String}
                                       :explanation {:type String}
                                       :fulfill     {:type String}
                                       :qtype       {:type (non-null Int)
                                                     :description "Type of question"}
                                       :points      {:type (non-null Int)}
-                                      :test_id     {:type (non-null Int)}
                                       :user_id     {:type (non-null Int)}}
                                :resolve :create-question}
              :create_answer {:type :answer
@@ -96,11 +96,11 @@
              :update_test {:type :test
                            :description "Update test."
                            :args {
+                                  :uurlid      {:type (non-null ID)}
                                   :title       {:type (non-null String)}
                                   :description {:type String}
                                   :tags        {:type String}
-                                  :subject_id  {:type (non-null Int)}
-                                  :test_id     {:type (non-null Int)}}
+                                  :subject_id  {:type (non-null Int)}}
                              :resolve :update-test}
              :update_question {:type :question
                                :description "Update a question."
