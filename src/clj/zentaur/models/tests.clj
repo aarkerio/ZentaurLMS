@@ -147,6 +147,7 @@
 (defn reorder-question [params]
   (let [test         (get-one-test (:uurlid params))
         data         (assoc {} :test_id (:id test) :question_id (:question_id params))
+        _  (log/info (str ">>> DAt444444444444444444444 >>>>> " data))
         direction    (:direction params)
         qt-rows      (if (= "up" direction) (db/question-order-up data) (db/question-order-down data))
         _            (reorder-rows qt-rows direction)]
