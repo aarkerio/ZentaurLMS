@@ -133,10 +133,21 @@
 
 ;;;; REORDERS
 
+(defn reorder-rows
+   "Reorder rows"
+  [rows direction]
+  (doseq [r rows]
+    (let  [_ (log/info (str ">>> rrrrrrrrrrrrrrrr  >>>>> " r))
+           ordnen (:ordnen r)
+           new-ordnen   (if (= "up" direction) (dec ordnen) (inc ordnen))]
+      (prn (str "  888888 ONE ROW   >>>> " r))
+      ;; (db/update-question-order {:ordnen new-ordnen :id (:id r)}))
+   )))
+
 (defn reorder-question [params]
   (let [test         (get-one-test (:uurlid params))
-        questions    (if (= "up" (:direction params)) )
-        qtype        (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
-        full-params  (dissoc params :active)
-        qid          (db/update-question! (assoc full-params :qtype qtype))]
-    (db/update-order  {:ordnen 1})))
+        data         (assoc {} :test_id (:id test) :question_id (:question_id params))
+        direction    (:direction params)
+        qt-rows      (if (= "up" direction) (db/question-order-up data) (db/question-order-down data))
+        _            (reorder-rows qt-rows direction)]
+    (db/get-questions  {:test-id (:id test)})))

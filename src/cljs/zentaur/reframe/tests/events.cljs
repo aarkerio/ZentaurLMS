@@ -227,8 +227,8 @@
    (when (js/confirm "Delete answer?")
      (let [{:keys [answer-id question-id]} data
            answer-id-int  (js/parseInt answer-id)
-           mutation     (gstring/format "mutation { delete_answer( answer_id: %i, question_id: %i ) { id question_id }}"
-                                         answer-id-int question-id)]
+           mutation       (gstring/format "mutation { delete_answer( answer_id: %i, question_id: %i ) { id question_id }}"
+                                          answer-id-int question-id)]
        (re-frame/dispatch [::re-graph/mutate
                            mutation                           ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
@@ -345,20 +345,20 @@
    (let [test (-> response :data :update_test)]
    (-> db
        (assoc :test test)
-       (update :loading?  not)
-       (update :testform  not)))))
+       (update :loading? not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
-  :reorder-question               ;; <-- the event id
+  :reorder-question          ;; <-- the event id
   (fn                         ;; <-- the handler function
-    [cofx [_ updates]]        ;; <-- 1st argument is coeffect, from which we extract db
+    [cofx [_ updates]]       ;; <-- 1st argument is coeffect, from which we extract db
     (let [uurlid  (.-value (gdom/getElement "uurlid"))
-          _       (.log js/console (str ">>> VALUES UPDATES >>>>> " updates ))
-          {:keys [question-id uurlid direction]} updates
-           mutation  (gstring/format "mutation { reorder_question(uurlid: \"%s\", question_id: %i, direction: \"%s\")
+          _       (.log js/console (str ">>> VALUES OOO UPDATES >>>>> " updates "  uurlid >>>> " uurlid))
+          {:keys [question-id direction]} updates
+          question-id-int (js/parseInt question-id)
+          mutation (gstring/format "mutation { reorder_question(uurlid: \"%s\", question_id: %i, direction: \"%s\")
                                     { uurlid title questions { id question hint explanation qtype points ordnen fulfill }}}"
-                                  question-id uurlid direction)]
-       (.log js/console (str ">>> MUTATION UPDATE TEST >>>>> " mutation ))
+                                  uurlid question-id-int direction)]
+       (.log js/console (str ">>> MUTATION UPDATE ORDER >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
                            mutation                           ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
