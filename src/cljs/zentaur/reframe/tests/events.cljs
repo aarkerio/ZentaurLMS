@@ -135,6 +135,7 @@
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
          (update :qform not)           ;; hide new question form
+         (update :qcounter inc)
          (update-in [:questions] conj final-question)))))
 
 (re-frame/reg-event-fx
@@ -192,6 +193,7 @@
      (.log js/console (str ">>> QUESTION >>>>> " question-id ))
      (-> db
          (update-in [:questions] dissoc (keyword question-id))
+         (update :qcounter dec)
          (update  :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
@@ -246,7 +248,7 @@
          idx-question (assoc {} qkeyword question)]
      (-> db
          (update-in [:questions qkeyword] conj question)
-         (update :loading?  not)))))
+         (update :loading? not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-question           ;; <-- the event id

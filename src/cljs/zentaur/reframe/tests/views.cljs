@@ -175,10 +175,9 @@
 
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen points counter] :as q}]
+  [{:keys [question explanation hint qtype id ordnen points counter uurlid] :as q}]
   (let [editing-question (r/atom false)
-        qcounter         @(rf/subscribe [:qcounter])
-        uurlid           (.-value (gdom/getElement "uurlid"))]
+        qcounter         @(rf/subscribe [:qcounter])]
     (.log js/console (str ">>> VALUE qcounter >>>>> " qcounter " >>>> counter >>> " counter  " >>>> uurlid >>>> " uurlid))
     (fn []
       [:div.question-container-div   ;; Flex container
@@ -218,11 +217,12 @@
 
 (defn questions-list
   []
-  (let [counter  (atom 1)]
+  (let [uurlid  (.-value (gdom/getElement "uurlid"))
+        counter (atom 1)]
     (fn []
       [:section
        (doall (for [question @(rf/subscribe [:questions])]
-                ^{:key (swap! counter inc)} [question-item (assoc (second question) :counter @counter) ]))])))
+                ^{:key (swap! counter inc)} [question-item (assoc (second question) :counter @counter :uurlid uurlid)]))])))
 
 (defn test-editor-form [test title description tags subject-id]
     [:div {:id "test-whole-display"}
