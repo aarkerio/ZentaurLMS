@@ -92,7 +92,6 @@
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
     (let [test          (:test_by_uurlid data)
           questions     (:questions test)
-          counter       (count questions)
           ques-answers  (map #(update % :answers vector-to-idxmap) questions)
           questions-idx (vector-to-idxmap ques-answers)
           subjects      (update-ids (:subjects test))
@@ -104,7 +103,6 @@
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
          (assoc :test      only-test)
-         (assoc :qcounter  counter)
          (assoc :subjects  subjects)
          (assoc :questions questions-idx)))))
 
@@ -135,7 +133,6 @@
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
          (update :qform not)           ;; hide new question form
-         (update :qcounter inc)
          (update-in [:questions] conj final-question)))))
 
 (re-frame/reg-event-fx
@@ -243,9 +240,10 @@
  []
  (fn
    [db [_ response]]
-   (let [question     (-> response :data :update_question)
-         qkeyword     (keyword (:id question))
-         idx-question (assoc {} qkeyword question)]
+   (.log js/console (str ">>> UPP XXXXX response response >>>>> " response))
+   (let [question   (-> response :data :update_question)
+         qkeyword   (keyword (:id question))
+             _   (.log js/console (str ">>> question llll >>>>> " question " >> >  >  " qkeyword))]
      (-> db
          (update-in [:questions qkeyword] conj question)
          (update :loading? not)))))

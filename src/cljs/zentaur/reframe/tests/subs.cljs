@@ -1,5 +1,5 @@
 (ns zentaur.reframe.tests.subs ^{:doc "Re-frame Subscriptions"}
-  (:require [re-frame.core :as re-frame]))  ;; [reg-sub subscribe]
+  (:require [re-frame.core :as rf]))
 
 ;; Subscribers automatically subscribe data from the global state and re-render on change.
 ;;
@@ -15,7 +15,7 @@
 ;; Why?  It is an efficiency thing. Every Layer 2 subscription will rerun any time
 ;; that `app-db` changes (in any way). As a result, we want Layer 2 to be trivial.
 ;;
-(re-frame/reg-sub
+(rf/reg-sub
   :showing             ;; usage:   (subscribe [:showing])
   (fn [db _]            ;; db is the (map) value stored in the app-db atom
     (:showing db)))    ;; extract a value from the application state
@@ -80,33 +80,34 @@
 ;; vector of input signals. The 1st function is not needed. Here is the example above rewritten using the sugar.
 
 ;; My new subscription functions
-(re-frame/reg-sub
+(rf/reg-sub
  :test
  (fn [db]
    (:test db)))
 
-(re-frame/reg-sub
+(rf/reg-sub
  :questions
  (fn [db]
    (get-in db [:questions])))
 
-(re-frame/reg-sub
+(rf/reg-sub
  :subjects
  (fn [db]
    (get-in db [:subjects])))
 
-(re-frame/reg-sub
+(rf/reg-sub
  :qform
  (fn [db]
    (get-in db [:qform])))
 
-(re-frame/reg-sub
+(rf/reg-sub
  :toggle-testform
  (fn [db]
    (get-in db [:testform])))
 
-(re-frame/reg-sub
- :qcounter
- (fn [db]
-   (get-in db [:qcounter])))
-
+(rf/reg-sub
+  :question-count
+  (fn [_]
+    (rf/subscribe [:questions]))
+  (fn [questions]
+    (count questions)))

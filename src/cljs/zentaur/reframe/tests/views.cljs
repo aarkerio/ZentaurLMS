@@ -6,7 +6,7 @@
             [zentaur.reframe.tests.forms.blocks :as blk]
             [zentaur.reframe.tests.libs :as zlib]))
 
-(defn edit-question [{:keys [question id hint explanation qtype points]}]
+(defn edit-question [{:keys [id question hint explanation qtype points]}]
   (let [aquestion    (r/atom question)
         ahint        (r/atom hint)
         aexplanation (r/atom explanation)
@@ -177,7 +177,7 @@
   "Display any type of question"
   [{:keys [question explanation hint qtype id ordnen points counter uurlid] :as q}]
   (let [editing-question (r/atom false)
-        qcounter         @(rf/subscribe [:qcounter])]
+        qcounter         @(rf/subscribe [:question-count])]
     (.log js/console (str ">>> VALUE qcounter >>>>> " qcounter " >>>> counter >>> " counter  " >>>> uurlid >>>> " uurlid))
     (fn []
       [:div.question-container-div   ;; Flex container
@@ -217,8 +217,9 @@
 
 (defn questions-list
   []
-  (let [uurlid  (.-value (gdom/getElement "uurlid"))
-        counter (atom 1)]
+  (let [uurlid    (.-value (gdom/getElement "uurlid"))
+        counter   (atom 1)]
+    [:div [:span.bold-font "Total questions: "] @(rf/subscribe [:question-count])]
     (fn []
       [:section
        (doall (for [question @(rf/subscribe [:questions])]
@@ -348,8 +349,8 @@
 (defn todo-app
   []
     [:div {:id "page-container"}
-      [test-editor-view]
-      [create-question-form]
-      [questions-list]
+     [test-editor-view]
+     [create-question-form]
+     [questions-list]
      [:div {:class "footer"}
       [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]])
