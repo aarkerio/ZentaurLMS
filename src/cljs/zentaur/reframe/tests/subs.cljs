@@ -105,3 +105,8 @@
  (fn [db]
    (get-in db [:testform])))
 
+(re-frame/reg-sub
+ :qcounter
+ (fn [db]
+   (get-in db [:qcounter])))
+

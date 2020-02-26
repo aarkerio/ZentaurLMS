@@ -3,7 +3,7 @@
   Structure: :name :command :result
   Type of commands
      :?  = fetch (query)
-     :!  = execute (statetment like INSERT) RETURNING DOESN'T WORK WITH THIS
+     :!  = execute (statetment like INSERT) RETURNING DOES N0T WORK WITH THIS
      :<! = returning-execute, for INSERT or DELETE with RETURNING
   Type of results:
     :* = vectors [1, 3, 4]

@@ -173,23 +173,26 @@
   [question]
   [:p "Question columns"])
 
-(def question-counter (r/atom 0))
-
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen points uurlid] :as q}]
-  (let [editing-question (r/atom false)]
+  [{:keys [question explanation hint qtype id ordnen points counter] :as q}]
+  (let [editing-question (r/atom false)
+        qcounter         @(rf/subscribe [:qcounter])
+        uurlid           (.-value (gdom/getElement "uurlid"))]
+    (.log js/console (str ">>> VALUE qcounter >>>>> " qcounter " >>>> counter >>> " counter  " >>>> uurlid >>>> " uurlid))
     (fn []
       [:div.question-container-div   ;; Flex container
        [:div.question-items-divs
-        [:img.img-float-right {:title    "Frage nachbestellen"
-                               :alt      "Frage nachbestellen"
-                               :src      "/img/icon_up_green.png"
-                               :on-click #(rf/dispatch [:reorder-question {:question-id id :direction "up"}])}]
-        [:img.img-float-right {:title    "Senden Sie nach unten"
-                               :alt      "Senden Sie nach unten"
-                               :src      "/img/icon_down_green.png"
-                               :on-click #(rf/dispatch [:reorder-question {:question-id id :direction "down"}])}]
+        (when (> counter 1)
+          [:a {:href (str "/vclass/tests/reorder/" uurlid "/" id "/up")}
+              [:img.img-float-right {:title    "Frage nachbestellen"
+                                     :alt      "Frage nachbestellen"
+                                     :src      "/img/icon_up_green.png"}]])
+        (when (< counter qcounter)
+          [:a {:href (str "/vclass/tests/reorder/" uurlid "/" id "/down")}
+              [:img.img-float-right {:title    "Senden Sie nach unten"
+                                     :alt      "Senden Sie nach unten"
+                                     :src      "/img/icon_down_green.png"}]])
         (if @editing-question
           [:img.img-float-right {:title    "Frage abbrechen"
                                  :alt      "Frage abbrechen"
@@ -200,7 +203,7 @@
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing-question not)}])]  ;; editing ends
      [:div.question-items-divs
-      [:div [:span.bold-font (str (swap! question-counter inc) ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+      [:div [:span.bold-font (str counter ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
       [:div [:span.bold-font "Hint: "] hint]
       [:div [:span.bold-font "Points: "] points]
       [:div [:span.bold-font "Erläuterung: "] explanation]]
@@ -215,12 +218,11 @@
 
 (defn questions-list
   []
-  (let [counter (r/atom 1)]
+  (let [counter  (atom 1)]
     (fn []
-      (reset! question-counter 0)
       [:section
        (doall (for [question @(rf/subscribe [:questions])]
-                ^{:key (swap! counter inc)} [question-item (second question)]))])))
+                ^{:key (swap! counter inc)} [question-item (assoc (second question) :counter @counter) ]))])))
 
 (defn test-editor-form [test title description tags subject-id]
     [:div {:id "test-whole-display"}

@@ -92,6 +92,7 @@
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
     (let [test          (:test_by_uurlid data)
           questions     (:questions test)
+          counter       (count questions)
           ques-answers  (map #(update % :answers vector-to-idxmap) questions)
           questions-idx (vector-to-idxmap ques-answers)
           subjects      (update-ids (:subjects test))
@@ -103,6 +104,7 @@
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
          (assoc :test      only-test)
+         (assoc :qcounter  counter)
          (assoc :subjects  subjects)
          (assoc :questions questions-idx)))))
 
@@ -114,7 +116,7 @@
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (let [uurlid  (.-value (gdom/getElement "uurlid"))
           query   (gstring/format "{test_by_uurlid(uurlid: \"%s\", archived: false) { uurlid title description tags subject subject_id created_at
-                                    subjects {id subject} questions { id question qtype hint points explanation fulfill answers {id answer ordnen correct question_id }}}}"
+                                    subjects {id subject} questions { id question qtype hint points explanation fulfill ordnen answers {id answer ordnen correct question_id }}}}"
                                   uurlid)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query query {} [:process-test-response]]))))

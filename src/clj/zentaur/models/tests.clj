@@ -136,19 +136,20 @@
 (defn reorder-rows
    "Reorder rows"
   [rows direction]
-  (doseq [r rows]
-    (let  [_ (log/info (str ">>> rrrrrrrrrrrrrrrr  >>>>> " r))
-           ordnen (:ordnen r)
-           new-ordnen   (if (= "up" direction) (dec ordnen) (inc ordnen))]
-      (prn (str "  888888 ONE ROW   >>>> " r))
-      ;; (db/update-question-order {:ordnen new-ordnen :id (:id r)}))
-   )))
+  (let [new-ordnen  (= "up" direction)
+        first       (first rows)
+        second      (second rows)
+        new-one     (assoc {} :id (:id first)  :ordnen (:ordnen second))
+        new-two     (assoc {} :id (:id second) :ordnen (:ordnen first))]
+    (log/info (str ">>> FIRST >>>>> " first " >>>>> second >>>>> " second))
+    (db/update-question-order new-one)
+    (db/update-question-order new-two)))
 
-(defn reorder-question [params]
-  (let [test         (get-one-test (:uurlid params))
-        data         (assoc {} :test_id (:id test) :question_id (:question_id params))
-        _  (log/info (str ">>> DAt444444444444444444444 >>>>> " data))
-        direction    (:direction params)
+(defn reorder-question [uurlid qid direction]
+  (let [question-id  (Integer/parseInt qid)
+        test         (get-one-test uurlid)
+        data         (assoc {} :test_id (:id test) :question_id question-id)
+        _            (log/info (str ">>> DAt444444444444444444444 >>>>> " data))
         qt-rows      (if (= "up" direction) (db/question-order-up data) (db/question-order-down data))
-        _            (reorder-rows qt-rows direction)]
-    (db/get-questions  {:test-id (:id test)})))
+    _   (reorder-rows qt-rows direction)]
+    (build-test-structure uurlid false)))
