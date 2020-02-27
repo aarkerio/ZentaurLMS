@@ -41,6 +41,5 @@
 (defn indexado [coll]
   (map-indexed (fn [idx itm] (assoc {} :idx (inc idx) :question (second itm))) coll))
 
-
 (defn sanitize [string]
   (clojure.string/escape string {\< "&lt;", \> "&gt;", \& "&amp;", \( "&#40;", \) "&#41;", \" "&quot;"}))

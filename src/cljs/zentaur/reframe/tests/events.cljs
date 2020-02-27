@@ -145,7 +145,7 @@
           _             (.log js/console (str ">>> VALUES AFTER  >>>>> " values ))
           {:keys [question hint explanation qtype points uurlid user-id]} values
           mutation      (gstring/format "mutation { create_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, points: %i, uurlid: \"%s\", user_id: %i) { id question qtype hint explanation points }}"
+                                         qtype: %i, points: %i, uurlid: \"%s\", user_id: %i) { id question qtype hint explanation ordnen points }}"
                                         question hint explanation qtype points uurlid user-id)]
            (.log js/console (str ">>> MUTATTION  >>>>> " mutation ))
       ;; perform a query, with the response sent to the callback event provided

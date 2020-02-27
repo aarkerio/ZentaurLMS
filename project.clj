@@ -1,4 +1,4 @@
-(defproject zentaur "0.0.9"
+(defproject zentaur "0.0.11"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
@@ -16,6 +16,7 @@
                  [day8.re-frame/http-fx "v0.2.0"]        ;; A re-frame effects handler for performing Ajax tasks
                  [digest "1.4.9"]                        ;; Message digest library for Clojure.
                  [funcool/struct "1.4.0"]                ;; Structural validation library for Clojure(Script)
+                 [hiccup "1.0.5"]                        ;; HTML templates
                  [luminus-migrations "0.6.5"]            ;; Migrations library for Luminus
                  [luminus-transit "0.1.2"]               ;; Transit helpers
                  [luminus/ring-ttl-session "0.3.3" :exclusions [joda-time clj-time]] ;; Ring's TTL (time to live) session
