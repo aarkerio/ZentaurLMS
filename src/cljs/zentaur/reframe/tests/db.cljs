@@ -56,6 +56,7 @@
    :questions        (sorted-map)
    :loading?         false
    :qform            false
+   :qcounter         0
    :testform         false
    :subjects         (vector)})
 

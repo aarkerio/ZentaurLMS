@@ -40,8 +40,9 @@
 
 (defn- ^:private get-last-question
   [params]
-  (let [test-id          (:test_id params)
-        created-question (db/create-question! (dissoc params :test_id))
+  (let [test             (get-one-test (:uurlid params))
+        test-id          (:id test)
+        created-question (db/create-question! params)
         question-id      (:id created-question)
         _                (link-test-question! question-id test-id)]
     created-question))
@@ -73,8 +74,7 @@
 (defn- ^:private get-questions
   "Get questions and convert to map keyed"
   [test-id]
-  (let [questions        (db/get-questions {:test-id test-id})
-        _                (log/info (str ">>> 111 questions >>>>> " (doall (map println questions))))]
+  (let [questions        (db/get-questions {:test-id test-id})]
      (map get-answers questions)))
 
 (defn build-test-structure
@@ -109,21 +109,47 @@
     (db/update-answer! full-params)))
 
 (defn update-test!
-  "Update test after editing with Re-frame"
+  "Update test after editing it with Re-frame"
   [params]
+  (log/info (str ">>> PARAM update-test!update-test!  >>>>> " params))
     (db/update-test! params))
 
 ;;;;;;;;;;;;    DELETES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn remove-test [params]
   (let [uurlid (:uurlid params)]
-    (db/remove-test! {:uurlid uurlid})))
+    (db/toggle-test {:uurlid uurlid})))
 
 (defn remove-question
   "Not a real delete, just unlink the question from test"
   [params]
-    (db/unlink-question! params))
+  (let [test        (get-one-test (:uurlid params))
+        test-id     (:id test)
+        full-params (assoc params :test_id test-id)]
+    (db/unlink-question! full-params)))
 
 (defn remove-answer [params]
   (let [result   (db/remove-answer! params)]
     (assoc params :ok (:bool result))))
 
+;;;; REORDERS
+
+(defn reorder-rows
+   "Reorder rows"
+  [rows direction]
+  (let [new-ordnen  (= "up" direction)
+        first       (first rows)
+        second      (second rows)
+        new-one     (assoc {} :id (:id first)  :ordnen (:ordnen second))
+        new-two     (assoc {} :id (:id second) :ordnen (:ordnen first))]
+    (log/info (str ">>> FIRST >>>>> " first " >>>>> second >>>>> " second))
+    (db/update-question-order new-one)
+    (db/update-question-order new-two)))
+
+(defn reorder-question [uurlid qid direction]
+  (let [question-id  (Integer/parseInt qid)
+        test         (get-one-test uurlid)
+        data         (assoc {} :test_id (:id test) :question_id question-id)
+        _            (log/info (str ">>> DAt444444444444444444444 >>>>> " data))
+        qt-rows      (if (= "up" direction) (db/question-order-up data) (db/question-order-down data))
+    _   (reorder-rows qt-rows direction)]
+    (build-test-structure uurlid false)))

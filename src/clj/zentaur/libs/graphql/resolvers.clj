@@ -14,9 +14,10 @@
   (let [full-params (assoc params :user-id user-id)]
     (mt/create-test! full-params user-id)))
 
-(defn- ^:private resolve-test-by-uurlid
+(defn- ^:private test-by-uurlid
   "Resolver to get and convert to map keyed"
   [context args value]
+  (log/info (str ">>> PARAM argsargsargsargs  >>>>> " args))
   (let [uurlid     (:uurlid args)
         archived   (:archived args)
         full-test  (mt/build-test-structure uurlid archived)]
@@ -36,15 +37,20 @@
 
 (defn- ^:private update-test
   [context args value]
-  (let [updated-test (mt/update-test! args)
-        reload-test  (mt/get-one-test (:uurlid updated-test))]
-    (update reload-test :id str)))
+  (let [updated-test (mt/update-test! args)]
+    (mt/get-one-test (:uurlid updated-test))))
 
 (defn- ^:private update-question
   [context args value]
   (log/info (str ">>> ***** update-question ARGS >>>>> " args))
   (let [updated-question (mt/update-question! args)]
     (update updated-question :id str)))
+
+(defn- ^:private reorder-question
+  [context args value]
+  (log/info (str ">>> ***** reorder-QUESTIONS   reorderreorder ARGS >>>>> " args))
+  (let [questions (mt/reorder-question args)]
+    (map #(update % :id str) questions)))
 
 (defn- ^:private update-fulfill
   [context args value]
@@ -73,11 +79,12 @@
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."
   []
-  {:test-by-uurlid (partial resolve-test-by-uurlid)
+  {:test-by-uurlid (partial test-by-uurlid)
    :create-question (partial create-question)
    :create-answer (partial create-answer)
    :update-test (partial update-test)
    :update-question (partial update-question)
+   :reorder-question (partial reorder-question)
    :update-fulfill (partial update-fulfill)
    :update-answer (partial update-answer)
    :delete-question (partial delete-question)

@@ -2,7 +2,8 @@
   (:require [clojure.tools.logging :as log]
             [java-time :as jt]
             [hiccup.form :as f]
-            [hiccup.element :refer [link-to]]))
+            [hiccup.element :refer [link-to]])
+  (:import [java.net InetAddress]))
 
 (defn format-date
   "Format a Java instant"
@@ -97,3 +98,11 @@
 
 ;; (= (paginate (range 101) 10 5)
 ;;    {:prev-seq (4 3 2 1), :next-seq (6 7 8 9 10 11), :pages 11, :page 5, :next 6, :prev 4}
+
+(defn get-localhost
+  "Returns the hostname of the local host."
+  ^InetAddress []
+  (let [lh (InetAddress/getLocalHost)]
+    ;; (.getHostName lh)
+    (.getCanonicalHostName lh)
+    ))

@@ -69,22 +69,22 @@
                                :correct     {:type Boolean}}}}
  :queries {
            :test_by_uurlid {:type        (non-null :test)
-                        :description "Access a test by its unique id, if it exists."
-                        :args        {:uurlid       {:type ID}
-                                      :archived {:type Boolean}}
-                        :resolve     :test-by-uurlid}
+                            :description "Access a test by its unique id, if it exists."
+                            :args        {:uurlid   {:type ID}
+                                          :archived {:type Boolean}}
+                            :resolve     :test-by-uurlid}
            }
  :mutations {
              :create_question {:type :question
                                :description "Create new question."
-                               :args {:question    {:type (non-null String)}
+                               :args {:uurlid      {:type (non-null ID)}
+                                      :question    {:type (non-null String)}
                                       :hint        {:type String}
                                       :explanation {:type String}
                                       :fulfill     {:type String}
                                       :qtype       {:type (non-null Int)
                                                     :description "Type of question"}
                                       :points      {:type (non-null Int)}
-                                      :test_id     {:type (non-null Int)}
                                       :user_id     {:type (non-null Int)}}
                                :resolve :create-question}
              :create_answer {:type :answer
@@ -96,11 +96,11 @@
              :update_test {:type :test
                            :description "Update test."
                            :args {
+                                  :uurlid      {:type (non-null ID)}
                                   :title       {:type (non-null String)}
                                   :description {:type String}
                                   :tags        {:type String}
-                                  :subject_id  {:type (non-null Int)}
-                                  :test_id     {:type (non-null Int)}}
+                                  :subject_id  {:type (non-null Int)}}
                              :resolve :update-test}
              :update_question {:type :question
                                :description "Update a question."
@@ -112,6 +112,13 @@
                                       :qtype       {:type (non-null Int)}
                                       :points      {:type (non-null Int)}}
                                :resolve :update-question}
+             :reorder_question {:type :test
+                                :description "Reorder question."
+                                :args {
+                                       :uurlid      {:type (non-null ID)}
+                                       :question_id {:type (non-null Int)}
+                                       :direction   {:type (non-null String)}}
+                                :resolve :reorder-question}
              :update_fulfill {:type :question
                                :description "Update the fulfill field."
                                :args {
@@ -126,8 +133,8 @@
                              :resolve :update-answer}
              :delete_question {:type :question
                                :description "Unlink question."
-                               :args {:question_id {:type (non-null Int)}
-                                      :test_id     {:type (non-null Int)}}
+                               :args {:uurlid      {:type (non-null ID)}
+                                      :question_id {:type (non-null Int)}}
                                :resolve :delete-question}
              :delete_answer {:type :answer
                              :description "Remove answer."

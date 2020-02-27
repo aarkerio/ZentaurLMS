@@ -16,7 +16,7 @@
    [:td formatted-date]
    [:td [:a {:href (str "/vclass/tests/exporttestpdf/" uurlid)} [:img {:src "/img/icon_export_pdf.png" :alt "Export PDF" :title "Export PDF"}]]]
    [:td [:a {:href (str "/vclass/tests/exporttestodf/" uurlid)} [:img {:src "/img/icon_export_odf.png" :alt "Export DOC" :title "Export DOC"}]]]
-   [:td [:a {:onclick (str "zentaur.core.deletetest(" uurlid ")")} [:img {:src "/img/icon_delete.png" :alt "Delete test" :title "Delete test"}]]]]))
+   [:td [:a {:onclick (str "zentaur.core.deletetest('" uurlid "')")} [:img {:src "/img/icon_delete.png" :alt "Delete test" :title "Delete test"}]]]]))
 
 (defn- test-new-form [subjects csrf-field]
   [:div.hidden-div {:id "hidden-form"}
@@ -31,7 +31,7 @@
       ]]
       (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]])
 
-(defn index [tests base subjects]
+(defn all-tests [tests base subjects]
   (let [csrf-field      (:csrf-field base)
         formatted-tests (for [test tests]
                           (formatted-test test))]

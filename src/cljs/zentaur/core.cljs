@@ -17,7 +17,7 @@
   (.log js/console (str response)))
 
 (defn error-handler [{:keys [status status-text]}]
-  (.log js/console (str "something bad happened: " status " " status-text)))
+  (.log js/console (str "Something bad happened: " status " " status-text)))
 
 (defn validate-new-post []
   (let [title  (.getElementById js/document "title")
@@ -83,6 +83,15 @@
     (when-let [test-form (.getElementById js/document "submit-test-form")]
       (set! (.-onsubmit test-form) validate-minimal-test))))
 
+(defn ^:export deletetest [uurlid]
+  (when (js/confirm "Delete test?  (this cannot undo)")
+      (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+        (DELETE "/vclass/tests/delete"
+            {:params  {:uurlid uurlid}
+             :headers {"x-csrf-token" csrf-field}
+             :handler (fn [] (set! js/window.location.href "/vclass/tests"))
+             :error-handler error-handler}))))
+
 (defn load-tests []
   (toggle-form)
   (show-new-test-form))
@@ -98,7 +107,6 @@
 (defn load-vclassrooms []
   (toggle-form)
   (hide-secret-field))
-
 
 (defn validate-update-file []
   (let [file (.getElementById js/document "file")]
@@ -117,15 +125,6 @@
 
 (defn load-files []
   (set-upload-form))
-
-(defn ^:export deletetest [uurlid]
-  (when (js/confirm "Delete test?  (this cannot undo)")
-      (let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
-        (DELETE "/vclass/tests/deletetest"
-            {:params  {:uurlid uurlid}
-             :headers {"x-csrf-token" csrf-field}
-             :handler (fn [] (set! js/window.location.href "/admin/tests"))
-             :error-handler error-handler}))))
 
 (defn ^:export deletevc [uurlid]
   (when (js/confirm "Delete Classroom? (this cannot undo)")

@@ -35,12 +35,11 @@
 ;;    ACTIONS
 ;;;;;;;;;;;;;;;;;;;;;
 
-(defn get-files [user-id]
-  (db/get-files {:user-id user-id}))
+(defn get-files [user-id archived]
+  (db/get-files {:user-id user-id :archived archived}))
 
-(defn get-file [uurlid user-id]
-  (let [int-id (Integer/parseInt user-id)]
-    (db/get-one-file {:uurlid uurlid :user-id user-id})))
+(defn get-one-file [user-id uurlid]
+    (db/get-one-file {:uurlid uurlid :user-id user-id}))
 
 (defn save-file! [params]
   (if-let [errors (validate-file params)]
@@ -57,8 +56,7 @@
         uurlid        (str rand7 "-" (dgt/sha-256 (io/as-file tempfile)))
         final-path    (str root-path "/resources/public/files/" uname "/" unique-name)
         _             (io/make-parents final-path) ;; create the path if it doesn't exist
-        db-row        (assoc {} :file unique-name :user-id user-id :uurlid uurlid :img true)
-        _             (log/info (str ">>> DB-ROW >>>>> " db-row))]
+        db-row        (assoc {} :file unique-name :user-id user-id :uurlid uurlid :img true)]
     (if-not (and (db/get-one-file {:user-id user-id :uurlid uurlid})
                  (seq filename))
       (do (sh/copy-file tempfile final-path)

@@ -896,12 +896,14 @@ textarea {
 }
 
 .div-separator {
-    padding: 5px;
-    margin: 5px;
-    border: 1px dotted gray;
+    padding: 10px;
+    margin: 15px 0 15px0;
+    width: 100%;
+    //  border: 1px dotted gray;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    clear: both;
     &:hover {
         opacity:1;
         transition: 1s ease;
@@ -954,7 +956,7 @@ textarea {
 .bold-font {
     font-weight: bolder;
 }
-
+/******  Answer classes ***/
 .all-width {
     width: 95%;
     margin: 9px;
@@ -980,18 +982,18 @@ textarea {
     margin-right: 20px;
 }
 
-.all-width-green {
-    font-weight: bold;
-    color: $my-green-color;
-}
-
-.all-width-red {
-    font-weight: bold;
-    color: red;
-}
-
 .img-delete-right {
     align-self: flex-end;
+}
+
+.answer-text-red{
+    color: red;
+    font-weight: bold;
+}
+
+.answer-text-green{
+    color: green;
+    font-weight: bold;
 }
 
 table.some-table-class {
@@ -1020,7 +1022,7 @@ table.some-table-class {
 
 /** My boostrap button and link **/
 .btn-outline-primary-green {
-  color: $my-green-color;
+  color: #fff;
   border-color: $my-green-color;
   background-color: $my-green-bg-color;
 }
@@ -1059,19 +1061,17 @@ table.some-table-class {
   font-size: .8rem;
 }
 
+/******   ***/
 .question-container-div {
-    padding: 5px;
-    margin: 5px;
-    border: 1px dotted gray;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+    padding: 5px;
+    margin: 15px 0 15px 0;
+    border: 1px dotted gray;
     align-items: flex-start;
     justify-content: space-between;
-    &:hover {
-        opacity:1;
-        transition: 1s ease;
-        background-color: #eaeaea;
-   }
 }
 
 .question-container-div > .question-items-divs {
@@ -1079,6 +1079,12 @@ table.some-table-class {
     margin: 5px;
     border: 1px dotted gray;
     flex: auto;
+    width: auto;
+    &:hover {
+        opacity:1;
+        transition: 1s ease;
+        background-color: #eaeaea;
+   }
 }
 
 /** TOP NAVIGATION BAR */
@@ -1119,4 +1125,15 @@ table.some-table-class {
 .separator {
     color: #fff;
     font-weight: bold;
+    border: 1px dotted gray;
+}
+
+.right_separator {
+    text-align: right;
+    color: #fff;
+    font-weight: bold;
+    margin: 9px;
+    padding: 3px;
+    display: flex;
+    justify-content: right;
 }

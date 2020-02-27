@@ -3,7 +3,7 @@
   Structure: :name :command :result
   Type of commands
      :?  = fetch (query)
-     :!  = execute (statetment like INSERT) RETURNING DOESN'T WORK WITH THIS
+     :!  = execute (statetment like INSERT) RETURNING DOES N0T WORK WITH THIS
      :<! = returning-execute, for INSERT or DELETE with RETURNING
   Type of results:
     :* = vectors [1, 3, 4]
@@ -83,7 +83,7 @@ ORDER BY p.id DESC
 
 -- :name get-files :? :*
 -- :doc retrieve files owned per user.
-SELECT * FROM files WHERE user_id = :user-id AND archived = false ORDER BY id DESC LIMIT 30
+SELECT * FROM files WHERE user_id = :user-id AND archived = :archived ORDER BY id DESC LIMIT 30
 
 -- :name get-one-file :? :1
 -- :doc retrieves one file owned per user.
@@ -152,7 +152,7 @@ UPDATE answers SET answer = :answer, correct = :correct WHERE id = :id RETURNING
 -- :name update-test! :>! :1
 -- :doc updates an answer record
 UPDATE tests SET title = :title, tags = :tags, description = :description, subject_id = :subject_id
-WHERE id = :test_id RETURNING *
+WHERE uurlid = :uurlid RETURNING *
 
 -- :name get-answer :? :1
 -- :doc retrieve an answer given the id.
@@ -211,10 +211,6 @@ SELECT ordnen FROM answers WHERE question_id = :question-id ORDER BY ordnen DESC
 -- :doc retrieve all tests.
 SELECT id, question_id, answer, correct FROM answers WHERE question_id = :question-id  ORDER BY ordnen DESC
 
--- :name remove-test! :<! :1
--- :doc delete a test given the id
-UPDATE tests SET active = false WHERE id = :test-id RETURNING TRUE
-
 -- :name unlink-question! :<! :1
 -- :doc unlink a question from the test
 DELETE FROM question_tests WHERE test_id = :test_id AND question_id = :question_id RETURNING TRUE
@@ -222,6 +218,22 @@ DELETE FROM question_tests WHERE test_id = :test_id AND question_id = :question_
 -- :name remove-answer! :<! :1
 -- :doc remove an answer given the question-id
 DELETE FROM answers WHERE question_id = :question_id AND id = :answer_id RETURNING TRUE
+
+-- :name toggle-test :<! :1
+-- :doc set test as archived
+UPDATE tests SET archived = true WHERE uurlid = :uurlid RETURNING TRUE
+
+-- :name question-order-up :? :*
+-- :doc get two records
+SELECT id, test_id, question_id, ordnen FROM question_tests WHERE test_id = :test_id AND question_id >= :question_id LIMIT 2
+
+-- :name question-order-down :? :*
+-- :doc get two records
+SELECT id, test_id, question_id, ordnen FROM question_tests WHERE test_id = :test_id AND question_id <= :question_id LIMIT 2
+
+-- :name update-question-order :<! :1
+-- :doc set reorder in question
+UPDATE question_tests SET ordnen = :ordnen WHERE id = :id RETURNING TRUE
 
 /**** ROLES   ****/
 

@@ -90,7 +90,7 @@
   [trim-event]
   (fn [db [ {:keys [data errors] :as payload}]]
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
-    (let [test          (:test_by_id  data)
+    (let [test          (:test_by_uurlid data)
           questions     (:questions test)
           ques-answers  (map #(update % :answers vector-to-idxmap) questions)
           questions-idx (vector-to-idxmap ques-answers)
@@ -112,11 +112,10 @@
   :test-load
   (fn                      ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [pre-test-id   (.-value (gdom/getElement "uurlid"))
-          test-id       (js/parseInt pre-test-id)
-          query         (gstring/format "{test_by_id(uurlid: \"%s\", archived: false) { id title description tags subject subject_id created_at
-                                          subjects {id subject} questions { id question qtype hint points explanation fulfill answers {id answer ordnen correct question_id } } } }"
-                                        test-id)]
+    (let [uurlid  (.-value (gdom/getElement "uurlid"))
+          query   (gstring/format "{test_by_uurlid(uurlid: \"%s\", archived: false) { uurlid title description tags subject subject_id created_at
+                                    subjects {id subject} questions { id question qtype hint points explanation fulfill ordnen answers {id answer ordnen correct question_id }}}}"
+                                  uurlid)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query query {} [:process-test-response]]))))
 
@@ -139,15 +138,15 @@
 (re-frame/reg-event-fx
   :create-question
   (fn                    ;; <-- the handler function
-    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
+    [cfx _]             ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (.log js/console (str ">>>  und ebenfalls _ " (second _)))
     ;; question hint explanation qtype test-id user-id active
     (let [values        (libs/str-to-int (second _) :qtype :test-id :user-id)
           _             (.log js/console (str ">>> VALUES AFTER  >>>>> " values ))
-          {:keys [question hint explanation qtype points test-id user-id]} values
+          {:keys [question hint explanation qtype points uurlid user-id]} values
           mutation      (gstring/format "mutation { create_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, points: %i, test_id: %i, user_id: %i) { id question qtype hint explanation points}}"
-                                        question hint explanation qtype points test-id user-id)]
+                                         qtype: %i, points: %i, uurlid: \"%s\", user_id: %i) { id question qtype hint explanation points }}"
+                                        question hint explanation qtype points uurlid user-id)]
            (.log js/console (str ">>> MUTATTION  >>>>> " mutation ))
       ;; perform a query, with the response sent to the callback event provided
       (re-frame/dispatch [::re-graph/mutate
@@ -191,6 +190,7 @@
      (.log js/console (str ">>> QUESTION >>>>> " question-id ))
      (-> db
          (update-in [:questions] dissoc (keyword question-id))
+         (update :qcounter dec)
          (update  :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
@@ -199,14 +199,11 @@
    [cofx [dispatch-id question-id]]      ;; <-- 1st argument is coeffect, from which we extract db
    (.log js/console (str ">>> dispatch-id   OOO>>>>> " dispatch-id "  >>>> " question-id))
    (when (js/confirm "Frage löschen?")
-     (let [test-id          (.-value (gdom/getElement "test-id"))
-           _   (.log js/console (str ">>> VALUE test-id >>>>> " test-id ))
-           test-id-int      (js/parseInt test-id)
-           mutation         (gstring/format "mutation { delete_question( question_id: %i, test_id: %i ) { id }}"
-                                            question-id test-id)]
-       (.log js/console (str ">>> MUTATION DELETE QUESTION >>>>> " mutation ))
+     (let [uurlid    (.-value (gdom/getElement "uurlid"))
+           mutation  (gstring/format "mutation { delete_question( question_id: %i, uurlid: \"%s\" ) { id }}"
+                                     question-id uurlid)]
        (re-frame/dispatch [::re-graph/mutate
-                           mutation                           ;; graphql query
+                           mutation                           ;; graphql mutation
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
                            [:process-delete-question]])))))
 
@@ -231,8 +228,8 @@
    (when (js/confirm "Delete answer?")
      (let [{:keys [answer-id question-id]} data
            answer-id-int  (js/parseInt answer-id)
-           mutation     (gstring/format "mutation { delete_answer( answer_id: %i, question_id: %i ) { id question_id }}"
-                                         answer-id-int question-id)]
+           mutation       (gstring/format "mutation { delete_answer( answer_id: %i, question_id: %i ) { id question_id }}"
+                                          answer-id-int question-id)]
        (re-frame/dispatch [::re-graph/mutate
                            mutation                           ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
@@ -243,12 +240,13 @@
  []
  (fn
    [db [_ response]]
-   (let [question     (-> response :data :update_question)
-         qkeyword     (keyword (:id question))
-         idx-question (assoc {} qkeyword question)]
+   (.log js/console (str ">>> UPP XXXXX response response >>>>> " response))
+   (let [question   (-> response :data :update_question)
+         qkeyword   (keyword (:id question))
+             _      (.log js/console (str ">>> question llll >>>>> " question " >> >  >  " qkeyword))]
      (-> db
          (update-in [:questions qkeyword] conj question)
-         (update :loading?  not)))))
+         (update :loading? not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-question           ;; <-- the event id
@@ -257,7 +255,7 @@
     (let [{:keys [id question hint explanation qtype points]} updates
           mutation  (gstring/format "mutation { update_question( id: %i, question: \"%s\",
                                       hint: \"%s\", explanation: \"%s\", qtype: %i, points: %i)
-                                     { id question hint explanation qtype points ordnen fulfill}}"
+                                     { id question hint explanation qtype points ordnen fulfill }}"
                                     id question hint explanation qtype points)]
        (re-frame/dispatch [::re-graph/mutate
                            mutation                                  ;; graphql query
@@ -314,7 +312,6 @@
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
                            [:process-after-update-answer]]))))
 
-;; ### UPDATE ANSWER
 (re-frame/reg-event-db
  :process-after-update-test
  []
@@ -331,12 +328,40 @@
   (fn                         ;; <-- the handler function
     [cofx [_ updates]]        ;; <-- 1st argument is coeffect, from which we extract db
     (let [_  (.log js/console (str ">>> VALUES UPDATES >>>>> " updates ))
-          {:keys [title description tags subject_id test_id]} updates
-          mutation  (gstring/format "mutation { update_test( title: \"%s\", description: \"%s\", tags: \"%s\", subject_id: %i, test_id: %i)
-                                    { id title description subject_id  subject tags created_at }}"
-                                  title description tags subject_id test_id)]
+          {:keys [title description tags subject_id uurlid]} updates
+          mutation  (gstring/format "mutation { update_test( title: \"%s\", description: \"%s\", tags: \"%s\", subject_id: %i, uurlid: \"%s\")
+                                    { uurlid title description subject_id subject tags created_at }}"
+                                  title description tags subject_id uurlid)]
        (.log js/console (str ">>> MUTATION UPDATE TEST >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
                            mutation                           ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
                            [:process-after-update-test]]))))
+
+
+(re-frame/reg-event-db
+ :process-after-reorder-question
+ []
+ (fn [db [_ response]]
+   (.log js/console (str ">>> VALUE process-after-update-test >>>>> " response ))
+   (let [test (-> response :data :update_test)]
+   (-> db
+       (assoc :test test)
+       (update :loading? not)))))
+
+(re-frame/reg-event-fx       ;; <-- note the `-fx` extension
+  :reorder-question          ;; <-- the event id
+  (fn                         ;; <-- the handler function
+    [cofx [_ updates]]       ;; <-- 1st argument is coeffect, from which we extract db
+    (let [uurlid  (.-value (gdom/getElement "uurlid"))
+          _       (.log js/console (str ">>> VALUES OOO UPDATES >>>>> " updates "  uurlid >>>> " uurlid))
+          {:keys [question-id direction]} updates
+          question-id-int (js/parseInt question-id)
+          mutation (gstring/format "mutation { reorder_question(uurlid: \"%s\", question_id: %i, direction: \"%s\")
+                                    { uurlid title questions { id question hint explanation qtype points ordnen fulfill }}}"
+                                  uurlid question-id-int direction)]
+       (.log js/console (str ">>> MUTATION UPDATE ORDER >>>>> " mutation ))
+       (re-frame/dispatch [::re-graph/mutate
+                           mutation                           ;; graphql query
+                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
+                           [:process-after-reorder-question]]))))

@@ -6,7 +6,7 @@
             [zentaur.reframe.tests.forms.blocks :as blk]
             [zentaur.reframe.tests.libs :as zlib]))
 
-(defn edit-question [{:keys [question id hint explanation qtype points]}]
+(defn edit-question [{:keys [id question hint explanation qtype points]}]
   (let [aquestion    (r/atom question)
         ahint        (r/atom hint)
         aexplanation (r/atom explanation)
@@ -66,7 +66,7 @@
         [:input {:type      "text"
                  :value     @aanswer
                  :maxLength 180
-                 :size      40
+                 :size      100
                  :on-change #(reset! aanswer (-> % .-target .-value))}]]
        [:input {:type      "checkbox"
                 :title     "richtig?"
@@ -83,8 +83,7 @@
         editing-answer  (r/atom false)]
     (fn []
       [:div {:class answer-class}
-       [:div
-        [:img.img-float-right {:title    "Frage nachbestellen"
+       [:img.img-float-right {:title    "Frage nachbestellen"
                               :alt      "Frage nachbestellen"
                               :src      "/img/icon_blue_up.png"
                               :on-click #(rf/dispatch [:reorder-answer {:answer-id id :question-id question_id}])}]
@@ -92,25 +91,23 @@
                               :alt      "Senden Sie nach unten"
                               :src      "/img/icon_blue_down.png"
                               :on-click #(rf/dispatch [:reorder-answer {:answer-id id :question-id question_id}])}]
-
-        (if @editing-answer
-          [:div
-           [answer-editing-input answer-record]
-           [:img.img-float-right {:title    "Antwort abbrechen"
-                                  :alt      "Antwort abbrechen"
-                                  :src      "/img/icon_cancel.png"
-                                  :on-click #(swap! editing-answer not)}]]
-          [:div
-           [:div [:span {:class answer-text} (str key ".-  ("correct")")] " " answer ]
-           [:img.img-float-right {:title    "Antwort bearbeiten"
-                                  :alt      "Antwort bearbeiten"
-                                  :src      "/img/icon_edit.png"
-                                  :on-click #(swap! editing-answer not)}]])]
-
        [:img.img-float-right {:title    "Antwort löschen"
                               :alt      "Antwort löschen"
                               :src      "/img/icon_delete.png"
-                              :on-click #(rf/dispatch [:delete-answer {:answer-id id :question-id question_id}])}]])))
+                              :on-click #(rf/dispatch [:delete-answer {:answer-id id :question-id question_id}])}]
+       (if @editing-answer
+         [:div
+          [:img.img-float-right {:title    "Antwort abbrechen"
+                                 :alt      "Antwort abbrechen"
+                                 :src      "/img/icon_cancel.png"
+                                 :on-click #(swap! editing-answer not)}]
+          [answer-editing-input answer-record]]
+         [:div
+          [:img.img-float-right {:title    "Antwort bearbeiten"
+                                 :alt      "Antwort bearbeiten"
+                                 :src      "/img/icon_edit.png"
+                                 :on-click #(swap! editing-answer not)}]
+          [:div [:span {:class answer-text} (str key ".-  ("correct")")] " " answer ]])])))
 
 (defn input-new-answer
   "Note: this is one-way bound to the global atom, it doesn't subscribe to it"
@@ -158,7 +155,7 @@
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
   (let [counter (r/atom 0)]
     (fn [{:keys [question explanation hint qtype id ordnen] :as q}]
-    [:div
+    [:div.question-items-divs
      [input-new-answer {:question-id id :on-stop #(js/console.log "stop") :props {:placeholder "Neue antwort"}}]
      (when-not (nil? (:answers q))
        (for [answer (:answers q)]
@@ -166,7 +163,7 @@
 
 (defmethod display-question 2
   [question]
-  [:p "(Dies ist eine offene Frage)"])
+  [:div.div-separator "(Dies ist eine offene Frage)"])
 
 (defmethod display-question 3
   [question]
@@ -176,24 +173,24 @@
   [question]
   [:p "Question columns"])
 
-(def question-counter (r/atom 0))
-
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen points] :as q}]
+  [{:keys [question explanation hint qtype id ordnen points counter uurlid qcount] :as q}]
   (let [editing-question (r/atom false)]
+    (.log js/console (str ">>> VALUE qcounter >>>>> " qcount " >>>> counter >>> " counter  " >>>> uurlid >>>> " uurlid))
     (fn []
-      [:div.question-container-div
+      [:div.question-container-div   ;; Flex container
        [:div.question-items-divs
-        [:img.img-float-right {:title    "Frage nachbestellen"
-                               :alt      "Frage nachbestellen"
-                               :src      "/img/icon_up_green.png"
-                               :on-click #(rf/dispatch [:reorder-question {:question-id id :send "up"}])}]
-       [:img.img-float-right {:title    "Senden Sie nach unten"
-                              :alt      "Senden Sie nach unten"
-                              :src      "/img/icon_down_green.png"
-                              :on-click #(rf/dispatch [:reorder-question {:question-id id :send "down"}])}]
-
+        (when (> counter 1)
+          [:a {:href (str "/vclass/tests/reorder/" uurlid "/" id "/up")}
+              [:img.img-float-right {:title    "Frage nachbestellen"
+                                     :alt      "Frage nachbestellen"
+                                     :src      "/img/icon_up_green.png"}]])
+        (when (< counter qcount)
+          [:a {:href (str "/vclass/tests/reorder/" uurlid "/" id "/down")}
+              [:img.img-float-right {:title    "Senden Sie nach unten"
+                                     :alt      "Senden Sie nach unten"
+                                     :src      "/img/icon_down_green.png"}]])
         (if @editing-question
           [:img.img-float-right {:title    "Frage abbrechen"
                                  :alt      "Frage abbrechen"
@@ -204,7 +201,7 @@
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing-question not)}])]  ;; editing ends
      [:div.question-items-divs
-      [:div [:span.bold-font (str (swap! question-counter inc) ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+      [:div [:span.bold-font (str counter ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
       [:div [:span.bold-font "Hint: "] hint]
       [:div [:span.bold-font "Points: "] points]
       [:div [:span.bold-font "Erläuterung: "] explanation]]
@@ -217,14 +214,14 @@
               :alt    "Frage löschen"
               :on-click #(rf/dispatch [:delete-question id])}]]])))
 
-(defn questions-list
-  []
-  (let [counter (r/atom 1)]
-    (fn []
-      (reset! question-counter 0)
-      [:section
-       (doall (for [question @(rf/subscribe [:questions])]
-                ^{:key (swap! counter inc)} [question-item (second question)]))])))
+(defn display-questions-list
+  [uurlid question-count]
+  (let [questions (rf/subscribe [:questions])]
+    (fn [uurlid question-count]
+      [:div
+       (doall (for [{:keys [idx question]} (zlib/indexado @questions)]
+                ^{:key (hash question)}
+                [question-item (assoc question :counter idx :uurlid uurlid :qcount question-count)]))])))
 
 (defn test-editor-form [test title description tags subject-id]
     [:div {:id "test-whole-display"}
@@ -261,7 +258,7 @@
                                                        :description @description
                                                        :tags @tags
                                                        :subject_id @subject-id
-                                                       :test_id (:id test)}])}]]]
+                                                       :uurlid (:uurlid test)}])}]]]
       [:div
        [:h1 @title]
        [:div.div-simple-separator [:span {:class "bold-font"} "Tags: "] @tags [:span {:class "bold-font"} " Created:"] (:created_at test)]
@@ -341,7 +338,7 @@
                                                                   :qtype       @qtype
                                                                   :points      @points
                                                                   :explanation @explanation
-                                                                  :test-id     (.-value (gdom/getElement "test-id"))
+                                                                  :uurlid      (.-value (gdom/getElement "uurlid"))
                                                                   :user-id     (.-value (gdom/getElement "user-id"))}])
                                   (reset! new-question "")
                                   (reset! hint "")
@@ -349,9 +346,12 @@
 
 (defn todo-app
   []
+  (let [question-count (rf/subscribe [:question-count])
+        uurlid         (.-value (gdom/getElement "uurlid"))
+        qq             (js/parseInt @question-count)]
     [:div {:id "page-container"}
-      [test-editor-view]
-      [create-question-form]
-      [questions-list]
+     [test-editor-view]
+     [create-question-form]
+     [display-questions-list uurlid @question-count]
      [:div {:class "footer"}
-      [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]])
+      [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))
