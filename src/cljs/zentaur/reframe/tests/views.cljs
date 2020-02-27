@@ -175,10 +175,9 @@
 
 (defn question-item
   "Display any type of question"
-  [{:keys [question explanation hint qtype id ordnen points counter uurlid] :as q}]
-  (let [editing-question (r/atom false)
-        qcounter         @(rf/subscribe [:question-count])]
-    (.log js/console (str ">>> VALUE qcounter >>>>> " qcounter " >>>> counter >>> " counter  " >>>> uurlid >>>> " uurlid))
+  [{:keys [question explanation hint qtype id ordnen points counter uurlid qcount] :as q}]
+  (let [editing-question (r/atom false)]
+    (.log js/console (str ">>> VALUE qcounter >>>>> " qcount " >>>> counter >>> " counter  " >>>> uurlid >>>> " uurlid))
     (fn []
       [:div.question-container-div   ;; Flex container
        [:div.question-items-divs
@@ -187,7 +186,7 @@
               [:img.img-float-right {:title    "Frage nachbestellen"
                                      :alt      "Frage nachbestellen"
                                      :src      "/img/icon_up_green.png"}]])
-        (when (< counter qcounter)
+        (when (< counter qcount)
           [:a {:href (str "/vclass/tests/reorder/" uurlid "/" id "/down")}
               [:img.img-float-right {:title    "Senden Sie nach unten"
                                      :alt      "Senden Sie nach unten"
@@ -215,15 +214,14 @@
               :alt    "Frage löschen"
               :on-click #(rf/dispatch [:delete-question id])}]]])))
 
-(defn questions-list
-  []
-  (let [uurlid    (.-value (gdom/getElement "uurlid"))
-        counter   (atom 1)]
-    [:div [:span.bold-font "Total questions: "] @(rf/subscribe [:question-count])]
-    (fn []
-      [:section
-       (doall (for [question @(rf/subscribe [:questions])]
-                ^{:key (swap! counter inc)} [question-item (assoc (second question) :counter @counter :uurlid uurlid)]))])))
+(defn display-questions-list
+  [uurlid question-count]
+  (let [questions (rf/subscribe [:questions])]
+    (fn [uurlid question-count]
+      [:div
+       (doall (for [{:keys [idx question]} (zlib/indexado @questions)]
+                ^{:key (hash question)}
+                [question-item (assoc question :counter idx :uurlid uurlid :qcount question-count)]))])))
 
 (defn test-editor-form [test title description tags subject-id]
     [:div {:id "test-whole-display"}
@@ -348,9 +346,12 @@
 
 (defn todo-app
   []
+  (let [question-count (rf/subscribe [:question-count])
+        uurlid         (.-value (gdom/getElement "uurlid"))
+        qq             (js/parseInt @question-count)]
     [:div {:id "page-container"}
      [test-editor-view]
      [create-question-form]
-     [questions-list]
+     [display-questions-list uurlid @question-count]
      [:div {:class "footer"}
-      [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]])
+      [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))

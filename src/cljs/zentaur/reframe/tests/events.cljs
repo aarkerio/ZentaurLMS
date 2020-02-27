@@ -243,7 +243,7 @@
    (.log js/console (str ">>> UPP XXXXX response response >>>>> " response))
    (let [question   (-> response :data :update_question)
          qkeyword   (keyword (:id question))
-             _   (.log js/console (str ">>> question llll >>>>> " question " >> >  >  " qkeyword))]
+             _      (.log js/console (str ">>> question llll >>>>> " question " >> >  >  " qkeyword))]
      (-> db
          (update-in [:questions qkeyword] conj question)
          (update :loading? not)))))
