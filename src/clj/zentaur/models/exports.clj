@@ -2,6 +2,7 @@
   "Business logic for the export section"
   (:require [clj-pdf.core :as pdf]
             [clojure.tools.logging :as log]
+            [crypto.random :as cr]
             [zentaur.db.core :as db]))
 
 (def questions
@@ -54,7 +55,7 @@
 (defn export-pdf [test-id user-id]
   (let [test      (db/get-one-test {:id test-id :user-id user-id})
         _         (log/info (str ">>>  TEST >>>>> " test))
-        rand7     (crypto.random/hex 7)
+        rand7     (cr/hex 7)
         title     (clojure.string/replace (:title test) #" " "_")
         ;; final-pdf (questions-template questions)
         file-name (str "resources/public/tmp/" title  "-" rand7 ".pdf")

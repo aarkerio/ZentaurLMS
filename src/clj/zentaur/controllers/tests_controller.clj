@@ -43,10 +43,9 @@
     (basec/json-parser {:response msg})))
 
 (defn reorder
-  "GET /vclass/tests/reorder/:uurlid/:qid/:direction"
+  "GET /vclass/tests/reorder/:uurlid/:ordnen/:direction"
   [{:keys [path-params]}]
-  (log/info (str ">>> PARAM 88776666666 6663242343 666666666>>>>> " path-params))
-  (let [{:keys [uurlid qid  direction]} path-params
-        result (model-test/reorder-question uurlid qid direction)
+  (let [{:keys [uurlid ordnen direction]} path-params
+        result (model-test/reorder-question uurlid ordnen direction)
         msg    (if result basec/msg-erfolg basec/msg-fehler)]
     (assoc (response/found (str "/vclass/tests/edit/" uurlid)) :flash msg)))

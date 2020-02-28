@@ -54,8 +54,9 @@
       {:flash errors :ok false})))
 
 (defn create-answer! [params]
-  (let [question-id  (:question-id params)
-        next-ordnen  (or (:ordnen (sh/get-last-ordnen "answers" question-id)) 0)
+  (let [question-id  (:question_id params)
+        last-ordnen  (sh/get-last-ordnen "answers" question-id)
+        next-ordnen  (or (:ordnen last-ordnen) 0)
         full-params  (assoc params :ordnen (inc next-ordnen))
         errors       (val-test/validate-answer full-params)]
     (log/info (str "> PARAM create-answer! >>>>> " full-params " ERRORS >> " errors))
@@ -145,11 +146,11 @@
     (db/update-question-order new-one)
     (db/update-question-order new-two)))
 
-(defn reorder-question [uurlid qid direction]
-  (let [question-id  (Integer/parseInt qid)
+(defn reorder-question [uurlid ordnen direction]
+  (let [ordnen-id    (Integer/parseInt ordnen)
         test         (get-one-test uurlid)
-        data         (assoc {} :test_id (:id test) :question_id question-id)
-        _            (log/info (str ">>> DAt444444444444444444444 >>>>> " data))
+        data         (assoc {} :test_id (:id test) :ordnen ordnen-id)
+        _            (log/info (str ">>> DAt444444444444444444444 >>>>> " data "  >>>>  direction >>>> " direction))
         qt-rows      (if (= "up" direction) (db/question-order-up data) (db/question-order-down data))]
      (if (= 2 (count qt-rows))
        (do (reorder-rows qt-rows direction)
