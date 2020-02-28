@@ -8,7 +8,6 @@
                  [cljs-http "0.1.46"]                    ;; cljs-http returns core.async channels
                  [clj-pdf "2.4.0"]                       ;; PDF generation library
                  [clojure.java-time "0.3.2"]             ;; Java 8 Date-Time API for Clojure
-                 [com.bhauman/figwheel-main "0.2.3" :exclusions [joda-time clj-time]]  ;; Hot Reload cljs
                  [crypto-random "1.2.0"]                 ;; generating cryptographically secure random bytes and strings
                  [com.cognitect/transit-clj "0.8.319"]   ;; Marshalling Transit data to/from Clojure
                  [com.novemberain/pantomime "2.11.0"]    ;; A tiny Clojure library that deals with MIME types
@@ -43,10 +42,11 @@
   :min-lein-version "2.9.0"    ;; current CIDER needs 2.9 or +
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj"]
-  :resource-paths ["resources" "target/cljsbuild"]
+  :resource-paths ["resources"]
+  :paths ["src" "resources"]
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
             "fig:dev" ["trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
-            "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "prod"]
+            "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]
             "l:test" ["test" ":only" "zentaur.model.tests-test/test-fuction"]
             "l:bl" ["test" ":only" "business-logic"]
             "tree" ["deps" ":tree"]}
@@ -61,7 +61,7 @@
                       :prep-tasks ["javac" "compile"]
                       :aot :all
                       :uberjar-name "zentaur.jar"
-                      :source-paths ["env/prod/clj"]
+                      :source-paths ["env/prod/clj" "env/prod/cljs"]
                       :resource-paths ["env/prod/resources"]}
             :dev      [:project/dev :profiles/dev]
             :test     [:project/dev :project/test :profiles/test]
@@ -69,6 +69,7 @@
             :project/dev  {:jvm-opts ["-Dconf=dev-config.edn" "--illegal-access=warn"]
                            :dependencies [[binaryage/devtools "0.9.11"]              ;; CLJS DevTools
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
+                                          [com.bhauman/figwheel-main "0.2.3" :exclusions [joda-time clj-time]]  ;; Hot Reload cljs
                                           [day8.re-frame/re-frame-10x "0.5.1"]       ;; Debugging re-frame applications.
                                           [doo "0.1.11"]                             ;; Library and lein plugin to run cljs.test on different JS environments
                                           [enlive "1.1.6"]
