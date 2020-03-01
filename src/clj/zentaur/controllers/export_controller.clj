@@ -5,12 +5,11 @@
             [zentaur.models.exports :as model-export]))
 
 (defn export-test-pdf
-  "GET /vclass/tests/exporttestpdf/:id. Create PDF."
+  "GET /vclass/tests/exportpdf/:uurlid. Create PDF."
   [{:keys [path-params identity]}]
   (log/info (str ">>> PATH PARAM >>>>> " path-params   " >>>> identity >>>"  identity ))
-  (let [test-id  (:id (update path-params :id #(Integer/parseInt %)))
-        user-id  (:id identity)
-        pdf-path (model-export/export-pdf test-id user-id)
+  (let [uurlid   (:uurlid path-params)
+        pdf-path (model-export/export-pdf uurlid)
         file     (io/input-stream pdf-path)]
     (log/info (str ">>> PARAM DOC PDF >>>>> " pdf-path))
     (response/content-type (response/ok file) "application/pdf")))

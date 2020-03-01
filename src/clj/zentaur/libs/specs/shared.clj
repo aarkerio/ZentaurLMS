@@ -6,8 +6,8 @@
 (spec/def ::age int?)
 (spec/def ::skills list?)
 
-(spec/def ::new-test (s/keys :req [::name ::age ::id]
-                             :opt [::skills]))
+(spec/def ::new-test (spec/keys :req [::name ::age ::id]
+                                :opt [::skills]))
 
 (defn validate-test [params]
   (spec/valid? ::developer params))
@@ -16,5 +16,5 @@
   (inc x))
 
 (spec/fdef my-inc
-      :args (s/cat :x number?)
+      :args (spec/cat :x number?)
       :ret number?)

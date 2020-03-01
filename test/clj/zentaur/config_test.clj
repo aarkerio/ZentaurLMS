@@ -9,9 +9,10 @@
 (defn foo []
   (log/info (str "from-system-props: >> " (:lein-profile (source/from-system-props))   " >>>>>>" (System/getenv "lein.profile")   )))
 
+
 ;; (conman/with-transaction [db]
 ;;   (jdbc/db-set-rollback-only! db)
-;;   (create-user!
+;;   (mtcreate-user!
 ;;     {:id         "foo"
 ;;      :first_name "Sam"
 ;;      :last_name  "Smith"
@@ -43,5 +44,5 @@
 
 ;; (defn delete-test-db []
 ;;   (let [profile (:lein-profile (source/from-system-props))]
-;;   (not= profile "test" (db/delete-all-tables!))))
+;;   (when (= profile "test") (db/delete-all-tables!))))
 

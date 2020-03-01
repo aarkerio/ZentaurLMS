@@ -2,7 +2,9 @@
 {:main zentaur.app
  :optimizations :advanced
  :pretty-print false
+ :source-paths ["src/cljs" "env/prod/cljs"]
  :source-map "resources/public/js/prod.js.map"
  :asset-path "/js/prod"
  :output-to "resources/public/js/prod.js"
- :output-dir "resources/public/js/prod"}
+ :output-dir "resources/public/js/prod"
+ }

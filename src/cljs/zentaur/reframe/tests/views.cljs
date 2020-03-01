@@ -182,12 +182,12 @@
       [:div.question-container-div   ;; Flex container
        [:div.question-items-divs
         (when (> counter 1)
-          [:a {:href (str "/vclass/tests/reorder/" uurlid "/" id "/up")}
+          [:a {:href (str "/vclass/tests/reorder/" uurlid "/" ordnen "/up")}
               [:img.img-float-right {:title    "Frage nachbestellen"
                                      :alt      "Frage nachbestellen"
                                      :src      "/img/icon_up_green.png"}]])
         (when (< counter qcount)
-          [:a {:href (str "/vclass/tests/reorder/" uurlid "/" id "/down")}
+          [:a {:href (str "/vclass/tests/reorder/" uurlid "/" ordnen "/down")}
               [:img.img-float-right {:title    "Senden Sie nach unten"
                                      :alt      "Senden Sie nach unten"
                                      :src      "/img/icon_down_green.png"}]])

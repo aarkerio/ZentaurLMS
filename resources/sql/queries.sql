@@ -225,11 +225,11 @@ UPDATE tests SET archived = true WHERE uurlid = :uurlid RETURNING TRUE
 
 -- :name question-order-up :? :*
 -- :doc get two records
-SELECT id, test_id, question_id, ordnen FROM question_tests WHERE test_id = :test_id AND question_id >= :question_id LIMIT 2
+SELECT id, test_id, question_id, ordnen FROM question_tests WHERE test_id = :test_id AND ordnen <= :ordnen ORDER BY ordnen DESC LIMIT 2
 
 -- :name question-order-down :? :*
 -- :doc get two records
-SELECT id, test_id, question_id, ordnen FROM question_tests WHERE test_id = :test_id AND question_id <= :question_id LIMIT 2
+SELECT id, test_id, question_id, ordnen FROM question_tests WHERE test_id = :test_id AND ordnen >= :ordnen ORDER BY ordnen ASC LIMIT 2
 
 -- :name update-question-order :<! :1
 -- :doc set reorder in question

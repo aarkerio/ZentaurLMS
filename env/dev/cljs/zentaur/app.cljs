@@ -1,4 +1,4 @@
-(ns ^:figwheel-no-load zentaur.app
+(ns zentaur.app
   (:require [zentaur.core :as core]
             [cljs.spec.alpha :as s]
             [expound.alpha :as expound]

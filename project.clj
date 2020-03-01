@@ -1,4 +1,4 @@
-(defproject zentaur "0.0.9"
+(defproject zentaur "0.0.11"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
@@ -8,6 +8,7 @@
                  [cljs-http "0.1.46"]                    ;; cljs-http returns core.async channels
                  [clj-pdf "2.4.0"]                       ;; PDF generation library
                  [clojure.java-time "0.3.2"]             ;; Java 8 Date-Time API for Clojure
+                 [crypto-random "1.2.0"]                 ;; generating cryptographically secure random bytes and strings
                  [com.cognitect/transit-clj "0.8.319"]   ;; Marshalling Transit data to/from Clojure
                  [com.novemberain/pantomime "2.11.0"]    ;; A tiny Clojure library that deals with MIME types
                  [com.walmartlabs/lacinia "0.36.0-alpha-4"] ;; GraphQL implementation in pure Clojure
@@ -16,12 +17,13 @@
                  [day8.re-frame/http-fx "v0.2.0"]        ;; A re-frame effects handler for performing Ajax tasks
                  [digest "1.4.9"]                        ;; Message digest library for Clojure.
                  [funcool/struct "1.4.0"]                ;; Structural validation library for Clojure(Script)
+                 [hiccup "1.0.5"]                        ;; HTML templates
                  [luminus-migrations "0.6.5"]            ;; Migrations library for Luminus
                  [luminus-transit "0.1.2"]               ;; Transit helpers
                  [luminus/ring-ttl-session "0.3.3" :exclusions [joda-time clj-time]] ;; Ring's TTL (time to live) session
                  [markdown-clj "1.10.1"]                 ;; MD support
                  [metosin/muuntaja "0.6.6"]              ;; library for fast http api format negotiation, encoding and decoding.
-                 [metosin/reitit "0.4.1" :exclusions [joda-time clj-time]] ;; A fast data-driven router for Clojure(Script).
+                 [metosin/reitit "0.4.1" :exclusions [joda-time clj-time borkdude/edamame]] ;; A fast data-driven router for Clojure(Script).
                  [metosin/ring-http-response "0.9.1" :exclusions [joda-time]]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.16"]                        ;; Managing Clojure and ClojureScript app state
                  [org.clojure/clojure "1.10.1"]          ;; The sweet core!!
@@ -32,7 +34,7 @@
                  [org.postgresql/postgresql "42.2.9"]    ;; PostgreSQL rulez!
                  [re-frame "0.11.0"]                     ;; A Reagent Framework For Writing SPAs, in Clojurescript.
                  [reagent "0.9.1"]                       ;; Minimalistic React for ClojureScript
-                 [re-graph "0.1.11"]                     ;; A graphql client for clojurescript and clojure
+                 [re-graph "0.1.11" :exclusions [org.eclipse.jetty/jetty-http]] ;; A graphql client for clojurescript and clojure
                  [ring-webjars "0.2.0" :exclusions [joda-time clj-time]] ;; Web assets
                  [ring/ring-core "1.8.0"]                ;; A very thin HTTP abstraction
                  [ring/ring-defaults "0.3.2" :exclusions [joda-time clj-time]]] ;; Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
@@ -40,12 +42,14 @@
   :min-lein-version "2.9.0"    ;; current CIDER needs 2.9 or +
   :source-paths ["src/clj" "src/cljs" "src/cljc"]
   :test-paths ["test/clj"]
-  :resource-paths ["resources" "target/cljsbuild"]
+  :resource-paths ["resources"]
+  :paths ["src" "resources"]
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
             "fig:dev" ["trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
-            "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "deploy"]
+            "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]
             "l:test" ["test" ":only" "zentaur.model.tests-test/test-fuction"]
-            "l:bl" ["test" ":only" "business-logic"]}
+            "l:bl" ["test" ":only" "business-logic"]
+            "tree" ["deps" ":tree"]}
   :target-path "target/%s/"
   :main ^:skip-aot zentaur.core
   :migratus {:store :database}
@@ -54,18 +58,18 @@
   [:target-path [:builds :app :compiler :output-to]]
   :profiles {
             :uberjar {:omit-source true
-                      :prep-tasks ["compile" ["once" "min"]]
+                      :prep-tasks ["javac" "compile"]
                       :aot :all
                       :uberjar-name "zentaur.jar"
-                      :source-paths ["env/prod/clj"]
+                      :source-paths ["env/prod/clj" "env/prod/cljs"]
                       :resource-paths ["env/prod/resources"]}
             :dev      [:project/dev :profiles/dev]
             :test     [:project/dev :project/test :profiles/test]
 
             :project/dev  {:jvm-opts ["-Dconf=dev-config.edn" "--illegal-access=warn"]
                            :dependencies [[binaryage/devtools "0.9.11"]              ;; CLJS DevTools
-                                          [com.bhauman/figwheel-main "0.2.3" :exclusions [joda-time clj-time]]        ;; Hot Reload cljs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
+                                          [com.bhauman/figwheel-main "0.2.3" :exclusions [joda-time clj-time]]  ;; Hot Reload cljs
                                           [day8.re-frame/re-frame-10x "0.5.1"]       ;; Debugging re-frame applications.
                                           [doo "0.1.11"]                             ;; Library and lein plugin to run cljs.test on different JS environments
                                           [enlive "1.1.6"]
