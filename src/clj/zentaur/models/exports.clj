@@ -36,6 +36,15 @@
      [:chunk {:style :bold} "country: "] $country
      [:spacer]]))
 
+(def questions-template
+  (pdf/template
+    [:paragraph
+     [:heading $question]
+     [:chunk {:style :bold} "questions: "] $occupation "\n"
+     [:chunk {:style :bold} "answers: "] $place "\n"
+     [:chunk {:style :bold} "country: "] $country
+     [:spacer]]))
+
 (defn to-pdf [file-name test]
   (let [subject (:subject test)
         title   (:title test)
@@ -52,9 +61,9 @@
       [:paragraph "yet more text"]]
      file-name)))
 
-(defn export-pdf [test-id user-id]
-  (let [test      (db/get-one-test {:id test-id :user-id user-id})
-        _         (log/info (str ">>>  TEST >>>>> " test))
+(defn export-pdf [uurlid]
+  (let [test      (db/get-one-test {:uurlid uurlid :archived false})
+        _         (log/info (str ">>> export-pdfexport-pdf  TEST >>>>> " test))
         rand7     (cr/hex 7)
         title     (clojure.string/replace (:title test) #" " "_")
         ;; final-pdf (questions-template questions)
@@ -64,6 +73,6 @@
 
 ;; (defn export-odf
 ;;   "Export to open document format"
-;;   [test-id]
-;;   (let [test-id (inc test-id)]
-;;     (db/remove-test! {:test-id test-id})))
+;;   [uurlid]
+;;   (let [test (db/get-one-test {:uurlid uurlid :active true})
+;;     (db/remove-test! {:test-id test-id}) ))
