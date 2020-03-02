@@ -6,13 +6,14 @@
             [zentaur.db.core :as db]
             [zentaur.models.tests :as mt]))
 
-(defn answer-template [answer]
-  [:paragraph [:chunk {:style :bold} "[ ] "] (:answer answer)])
+(defn answer-template [answer idx]
+  (let [idx+ (inc idx)]
+    [:paragraph (str idx+ ").- [  ] ") (:answer answer)]))
 
 (def questions-template
   (pdf/template
     [:paragraph
-     [:paragraph (str $idx ").- " $question)]
+     [:paragraph [:chunk {:style :bold} (str $idx ").- ")] $question]
      [:chunk {:style :italic :color [227 227 227]} "points: "] $points ".  "
      [:chunk {:style :italic :color [227 227 227]} "hint: "] $hint "\n"
      [:chunk {:style :italic :color [227 227 227]} "qtype: "] $qtype "\n"
@@ -23,12 +24,14 @@
 (defn indexado [coll]
   (map-indexed (fn [idx itm] (assoc itm :idx (inc idx))) coll))
 
-(defn build-questions [one-question]
-  (let [qtype    (:qtype one-question)
-        content  (if (= qtype 1)
-                   (into [:paragraph] (map #(answer-template %) (:answers one-question)))
-                   [:paragraph "____________________________________________________________________________________"])]
-  (assoc one-question :content content)))
+(defn build-questions [one-question idx]
+  (let [idx+     (inc idx)
+        qtype    (:qtype one-question)
+        content  (cond
+                   (= qtype 1) (into [:paragraph] (map-indexed (fn [idx itm] (answer-template itm idx)) (:answers one-question)))
+                   (= qtype 2) [:paragraph "____________________________________________________________________________________"]
+                   (= qtype 3) [:paragraph "fulfill"])]
+  (assoc one-question :content content :idx idx+)))
 
 (defn to-pdf [file-name test]
   (let [counter     (atom 0)
@@ -36,7 +39,7 @@
         title       (:title test)
         description (:description test)
         tags        (:tags test)
-        questions   (map build-questions (:questions test))
+        questions   (map-indexed (fn [idx itm] (build-questions itm idx) ) (:questions test))
         qtpl        (questions-template questions)]
     (pdf/pdf
      [{}
