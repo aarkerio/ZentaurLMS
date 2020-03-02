@@ -142,7 +142,6 @@
         second      (second rows)
         new-one     (assoc {} :id (:id first)  :ordnen (:ordnen second))
         new-two     (assoc {} :id (:id second) :ordnen (:ordnen first))]
-    (log/info (str ">>> FIRST >>>>> " first " >>>>> second >>>>> " second))
     (db/update-question-order new-one)
     (db/update-question-order new-two)))
 

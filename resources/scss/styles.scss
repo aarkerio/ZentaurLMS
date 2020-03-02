@@ -1089,8 +1089,8 @@ table.some-table-class {
 
 /** TOP NAVIGATION BAR */
 .div_inline_list {
-    overflow: hidden;
-    position: fixed;
+    float:right;
+    position: absolute;
     top: 0;
     right: 10px;
     width: 35%;

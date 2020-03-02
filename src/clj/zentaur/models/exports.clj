@@ -3,66 +3,58 @@
   (:require [clj-pdf.core :as pdf]
             [clojure.tools.logging :as log]
             [crypto.random :as cr]
-            [zentaur.db.core :as db]))
+            [zentaur.db.core :as db]
+            [zentaur.models.tests :as mt]))
 
-(def questions
-  [{:question "What is germany?"
-    :points 1
-    :place "nuremberg"
-    :occupation "engineer"
-    :name "neil chetty"}
-   {:question "What is germany?"
-    :place "ulm"
-    :points 1
-    :occupation "engineer"
-    :name "vera ellison"}])
+(defn answer-template [answer]
+  [:paragraph [:chunk {:style :bold} "[ ] "] (:answer answer)])
 
 (def questions-template
   (pdf/template
     [:paragraph
-     [:heading $question]
-     [:chunk {:style :bold} "question: "] $question "\n"
-     [:chunk {:style :bold} "answers: "] $place "\n"
-     [:chunk {:style :bold} "country: "] $country
+     [:paragraph (str $idx ").- " $question)]
+     [:chunk {:style :italic :color [227 227 227]} "points: "] $points ".  "
+     [:chunk {:style :italic :color [227 227 227]} "hint: "] $hint "\n"
+     [:chunk {:style :italic :color [227 227 227]} "qtype: "] $qtype "\n"
+
+     $content
      [:spacer]]))
 
+(defn indexado [coll]
+  (map-indexed (fn [idx itm] (assoc itm :idx (inc idx))) coll))
 
-(def answers-template
-  (pdf/template
-    [:paragraph
-     [:heading $question]
-     [:chunk {:style :bold} "questions: "] $occupation "\n"
-     [:chunk {:style :bold} "answers: "] $place "\n"
-     [:chunk {:style :bold} "country: "] $country
-     [:spacer]]))
-
-(def questions-template
-  (pdf/template
-    [:paragraph
-     [:heading $question]
-     [:chunk {:style :bold} "questions: "] $occupation "\n"
-     [:chunk {:style :bold} "answers: "] $place "\n"
-     [:chunk {:style :bold} "country: "] $country
-     [:spacer]]))
+(defn build-questions [one-question]
+  (let [qtype    (:qtype one-question)
+        content  (if (= qtype 1)
+                   (into [:paragraph] (map #(answer-template %) (:answers one-question)))
+                   [:paragraph "____________________________________________________________________________________"])]
+  (assoc one-question :content content)))
 
 (defn to-pdf [file-name test]
-  (let [subject (:subject test)
-        title   (:title test)
-        rows    (questions-template questions)]
+  (let [counter     (atom 0)
+        subject     (:subject test)
+        title       (:title test)
+        description (:description test)
+        tags        (:tags test)
+        questions   (map build-questions (:questions test))
+        qtpl        (questions-template questions)]
     (pdf/pdf
-     [{:title title }
-      [:list {:roman true}
-       [:chunk {:style :bold} "Subject: " ]
-       "another item "  subject
-       "yet another item"]
-      rows
-      [:phrase "some text lo que sea PEDAZO DE ANIMAL"]
-      [:phrase "some more text África {ñóñá}"]
-      [:paragraph "yet more text"]]
+     [{}
+      [:image {:align :left} "resources/public/img/warning_clojure.png"]
+      [:heading {:style {:size 14 :color [66 135 245] :align :left}} title]
+      [:line {:gap 10 :color [66 135 245]}]
+      [:chunk {:style :bold :size 10} "Description: "] description
+      [:chunk {:style :bold :size 10} "Subject: "] subject
+      [:chunk {:style :bold :size 10} "Tags: "] tags
+      [:spacer]
+      qtpl
+      [:spacer]
+      [:spacer]
+      [:paragraph "Good luck! ;-)"]]
      file-name)))
 
 (defn export-pdf [uurlid]
-  (let [test      (db/get-one-test {:uurlid uurlid :archived false})
+  (let [test      (mt/build-test-structure uurlid false)
         _         (log/info (str ">>> export-pdfexport-pdf  TEST >>>>> " test))
         rand7     (cr/hex 7)
         title     (clojure.string/replace (:title test) #" " "_")
