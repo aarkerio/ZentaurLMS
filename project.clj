@@ -47,7 +47,7 @@
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
             "fig:dev" ["trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
             "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]
-            "l:test" ["test" ":only" "zentaur.model.tests-test/test-fuction"]
+            "l:test" ["test" ":only" "zentaur.model.tests-test/create-test!"]
             "l:bl" ["test" ":only" "business-logic"]
             "tree" ["deps" ":tree"]}
   :target-path "target/%s/"

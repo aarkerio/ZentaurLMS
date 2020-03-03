@@ -24,7 +24,7 @@ COMMENT on column questions.qtype is '1: multiple option, 2: open, 3: fulfill, 4
 -- ;; INSERT INTO questions (user_id, question, qtype, hint, explanation, created_at) VALUES (1, 'Some Question', 1, 'Some hint', 'Some explanation', NOW());
 --;;
 COMMENT on column questions.origin is 'Marks if the question is edited from another question, if not 0';
--- ;; INSERT INTO question_tests (test_id, question_id, ordnen, created_at) VALUES (1, 2, 2, NOW());
+--;; INSERT INTO question_tests (test_id, question_id, ordnen, created_at) VALUES (1, 2, 2, NOW());
 COMMENT on column questions.fulfill is 'This field is used when the question is type 3: fulfill';
 --;;
 CREATE TRIGGER trig_questions

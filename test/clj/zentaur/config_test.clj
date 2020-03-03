@@ -1,14 +1,12 @@
 (ns zentaur.config-test
   (:require [clojure.tools.logging :as log]
             [conman.core :as conman]
-            [cprop.source :as source]
-            [zentaur.db.core :as db]))
+            [cprop.source :as source]))
 
 (declare ^:dynamic *txn*) ;; transaction
 
 (defn foo []
   (log/info (str "from-system-props: >> " (:lein-profile (source/from-system-props))   " >>>>>>" (System/getenv "lein.profile")   )))
-
 
 ;; (conman/with-transaction [db]
 ;;   (jdbc/db-set-rollback-only! db)
