@@ -4,16 +4,14 @@
             [clojure.tools.logging :as log]
             [hiccup.element :only (link-to)]))
 
-(defn formatted-user [{:keys [fname lname uname email active id created_at]}]
+(defn formatted-user [{:keys [fname lname uuid email active id created_at]}]
     [:tr
-     [:td [:a {:href (str "/admin/users/edit/" id)} "Edit"]]
+     [:td [:a {:href (str "/admin/users/edit/" uuid)} "Edit"]]
      [:td fname]
      [:td lname]
-     [:td uname]
      [:td email]
      [:td created_at]
-     [:td [:a {:href (str "/admin/users/active/" id "/" active)}  "Active"]]
-     [:td [:a {:href (str "/admin/users/delete/" id)}  "Delete"]]])
+     [:td [:a {:href (str "/admin/users/active/" uuid "/" active)}  "Active"]]])
 
 (defn roles-options [roles]
   (for [x roles]
@@ -34,7 +32,6 @@
             (f/hidden-field { :value (:csrf-field base)} "__anti-forgery-token")
             (f/text-field  { :class "form-control mr-sm-2" :placeholder "First name" } :fname)
             (f/text-field  { :class "form-control mr-sm-2" :placeholder "Last name" } :lname)
-            (f/text-field  { :class "form-control mr-sm-2" :placeholder "Username" } :uname)
             (f/text-field  { :class "form-control mr-sm-2" :placeholder "email" } :email)
             (f/text-field  { :class "form-control mr-sm-2" :placeholder "prepassword" } :prepassword)
             [:div (c/html [:select {:class "form-control mr-sm-2" :name "role_id"}
@@ -47,11 +44,9 @@
             [:th "Edit"]
             [:th "Name"]
             [:th "Last"]
-            [:th "User name"]
             [:th "email"]
             [:th "Created"]
-            [:th "Active"]
-            [:th "Delete"]]]
+            [:th "Active"]]]
         [:tbody formatted-users]]]))
 
 (defn login [base]

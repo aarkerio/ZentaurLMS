@@ -5,7 +5,7 @@
             [clojure.tools.logging :as log]
             [buddy.hashers :as hashers]))
 
-(defn uuid [] (java.util.UUID/randomUUID))
+(defn gen-uuid [] (java.util.UUID/randomUUID))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;    VALIDATIONS
@@ -26,12 +26,13 @@
 (defn create [user]
   (let [prepassword  (:prepassword user)
         password     (hashers/derive prepassword env/secret-salt)
+        uuid         (gen-uuid)
         role_id      (Integer/parseInt (:role_id user))
         admin        (contains? user :preadmin)
         clean-user   (dissoc user :prepassword :preadmin)]
     ;; (log/info (format ">>> Whole User data %s" (merge clean-user {:password password :admin admin :active true :role_id role_id})))
     (-> clean-user
-        (assoc :password password :admin admin :active true :role_id role_id)
+        (assoc :password password :admin admin :active true :role_id role_id :uuid uuid)
         (db/create-user!))))
 
 (defn get-user-by-email-and-password

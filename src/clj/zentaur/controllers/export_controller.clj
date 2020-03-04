@@ -14,10 +14,10 @@
     (log/info (str ">>> PARAM DOC PDF >>>>> " pdf-path))
     (response/content-type (response/ok file) "application/pdf")))
 
-(defn export-test-odf
-  "GET /vclass/tests/exporttestodf/:id. Create ODF."
-  [{:keys [params]}]
-  (let [test-id  (:id params)
-        user-id  (:user-id params)]
-       ;; (model-export/export-odf test-id user-id)
-   ))
+(defn export-test-odt
+  "GET /vclass/tests/exportodt/:uurlid. Create OpenDocument file."
+  [{:keys [path-params]}]
+  (let [uurlid   (:uurlid path-params)
+        odt-path (model-export/export-odt uurlid)
+        file     (io/input-stream odt-path)]
+    (response/content-type (response/ok file) "application/vnd.oasis.opendocument.text")))
