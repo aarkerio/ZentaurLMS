@@ -55,7 +55,8 @@
    ["/posts/update"            {:post cont-posts/update-post}]
    ["/posts/published/:id/:published" {:get cont-posts/toggle-published}]
    ["/posts/new"               {:get cont-posts/admin-new}]
-   ["/users"                   {:get cont-users/admin-users :post cont-users/create-user}]])
+   ["/users/:archived"         {:get cont-users/admin-users}]
+   ["/users"                   {:post cont-users/create-user}]])
 
 (defn home-routes []
   [""

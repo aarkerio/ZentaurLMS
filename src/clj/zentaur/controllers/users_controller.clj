@@ -7,11 +7,12 @@
             [zentaur.models.users :as model-user]))
 
 (defn admin-users
-  "GET /admin/users"
+  "GET /admin/users/:archived"
   [request]
-  (let [base  (basec/set-vars request)
-        users (model-user/get-users true)
-        roles (model-user/get-roles)]
+  (let [archived  (-> request :path-params :archived)
+        base      (basec/set-vars request)
+        users     (model-user/get-users archived)
+        roles     (model-user/get-roles)]
     (basec/parser
      (layout/application (merge base {:contents (users-view/index base users roles)})))))
 
