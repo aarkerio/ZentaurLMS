@@ -135,21 +135,21 @@ INSERT INTO tests (title, tags, user_id, subject_id, uurlid) VALUES (:title, :ta
 INSERT INTO questions (question, qtype, hint, explanation, active, user_id, points)
 VALUES (:question, :qtype, :hint, :explanation, :active, :user_id, :points) RETURNING *
 
--- :name update-question! :>! :1
+-- :name update-question! :<! :1
 -- :doc updates a question record
 UPDATE questions
 SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, points = :points
 WHERE id = :id RETURNING id
 
--- :name update-question-fulfill! :>! :1
+-- :name update-question-fulfill! :<! :1
 -- :doc updates the fulfill field in the question
 UPDATE questions SET fulfill = :fulfill WHERE id = :id RETURNING *
 
--- :name update-answer! :>! :1
+-- :name update-answer! :<! :1
 -- :doc updates an answer record
 UPDATE answers SET answer = :answer, correct = :correct WHERE id = :id RETURNING *
 
--- :name update-test! :>! :1
+-- :name update-test! :<! :1
 -- :doc updates an answer record
 UPDATE tests SET title = :title, tags = :tags, description = :description, subject_id = :subject_id
 WHERE uurlid = :uurlid RETURNING *

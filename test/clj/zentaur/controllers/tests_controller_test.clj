@@ -87,9 +87,6 @@
 ;;            body     (:body response)]
 ;;        (is (= (:status response) 200))
 ;;        (is (= (:msg body) true)))))
-
-;; (run-tests)  ;; run tests in this NS
-
 ;; (defn create-question
 ;;   "POST /admin/tests/createquestion. JSON response."
 ;;   [request]
@@ -98,3 +95,6 @@
 ;;         new-params   (assoc params :user-id user-id :active true)
 ;;         response     (model-test/create-question! new-params)]
 ;;     (response/ok (ches/encode response non-ascii))))
+
+
+;; (run-tests)  ;; run tests in this NS

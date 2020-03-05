@@ -147,7 +147,6 @@
   (let [ordnen-id    (Integer/parseInt ordnen)
         test         (get-one-test uurlid)
         data         (assoc {} :test_id (:id test) :ordnen ordnen-id)
-        _            (log/info (str ">>> DAt444444444444444444444 >>>>> " data "  >>>>  direction >>>> " direction))
         qt-rows      (if (= "up" direction) (db/question-order-up data) (db/question-order-down data))]
      (if (= 2 (count qt-rows))
        (do (reorder-rows qt-rows direction)

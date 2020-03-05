@@ -1,10 +1,9 @@
 (ns zentaur.models.tests-test
-  "Business logic in models test"
+  "Tests for Business logic in the Test model"
   (:require [clojure.test :refer :all]
             [clojure.tools.logging :as log]
             [mount.core :as mount]
             [talltale.core :as tac]
-            [zentaur.factories.test-factory :as tf]
             [zentaur.models.users :as mu]
             [zentaur.models.tests :as mt]))
 
@@ -26,12 +25,12 @@
           params  {:fname (:first-name person) :lname (:last-name person) :email (:email person) :prepassword "iam4h4ck3r" :role_id "1"}
           user    (mu/create params)]
       (reset! first-user user)
-      (log/info (str ">>> UUSER >>  ********** >>>>> " @first-user))
-      (is (not (nil? (:id @first-user)))))))
+      (is (not (nil? (:uuid @first-user)))))))
 
 (deftest ^:business-logic create-test
   (testing "Create a new test"
     (let [user-id (:id @first-user)
+          _ (log/info (str ">>> PA @first-user @first-user >>>>> " @first-user))
           params  {:title "Test title" :hint "Some hint" :tags "tags" :user_id user-id :subject_id "3"}
           test    (mt/create-test! params user-id)]
       (reset! first-test test)
@@ -51,7 +50,9 @@
   (testing "Update a question"
     (let [question-id (:id @first-question)
           params      {:id question-id :question "Some question edited" :hint "hint" :explanation "" :qtype 1 :points 3}
-          upquestion    (mt/update-question! params)]
+          upquestion  (mt/update-question! params)]
+      (log/info (str ">>> PARAM @first-question@first-question@first-question  >>>>> " @first-question))
+      (is (= (:question upquestion) "Some question edited"))
       (is (not (nil? (:id upquestion)))))))
 
 (deftest ^:business-logic create-answer
@@ -59,7 +60,7 @@
     (let [question-id (:id @first-question)
           params      {:question_id question-id :answer "Some not so cool answer" :correct true}
           answer      (mt/create-answer! params)]
-      (is (not (nil? (:id answer))))
+      (is (not (nil? (:ordnen answer))))
       (is (= (:answer answer) "Some not so cool answer")))))
 
 (run-tests)
