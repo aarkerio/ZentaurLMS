@@ -27,7 +27,6 @@
   (let [uurlid      (sh/gen-uuid)
         pre-params  (assoc params :user_id user-id :uurlid uurlid)
         full-params (update pre-params :subject_id #(Integer/parseInt %))
-        _           (log/info (str ">>> full-params CREATE TEST >>>>> " full-params))
         errors      (val-test/validate-test full-params)]
     (if (nil? errors)
       (db/create-minimal-test full-params)
@@ -59,7 +58,6 @@
         next-ordnen  (or (:ordnen last-ordnen) 0)
         full-params  (assoc params :ordnen (inc next-ordnen))
         errors       (val-test/validate-answer full-params)]
-    (log/info (str "> PARAM create-answer! >>>>> " full-params " ERRORS >> " errors))
     (if (nil? errors)
       (db/create-answer! full-params)
       {:flash errors :ok false})))

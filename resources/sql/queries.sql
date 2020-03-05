@@ -124,11 +124,11 @@ SELECT id FROM uploads WHERE hashvar = :hashvar
 -- :name create-test! :<!
 -- :doc creates a new test record
 INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id, subject_id, uurlid)
-VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id, :subject-id, :uurlid) RETURNING id
+VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id, :subject-id, :uurlid) RETURNING *
 
 -- :name create-minimal-test :<! :n
 -- :doc creates a minimal test record
-INSERT INTO tests (title, tags, user_id, subject_id, uurlid) VALUES (:title, :tags, :user_id, :subject_id, :uurlid) RETURNING id
+INSERT INTO tests (title, tags, user_id, subject_id, uurlid) VALUES (:title, :tags, :user_id, :subject_id, :uurlid) RETURNING *
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record

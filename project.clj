@@ -82,7 +82,8 @@
                            :repl-options {:init-ns user :timeout 120000}}
              :project/test {:jvm-opts ["-Dconf=test-config.edn" "--illegal-access=warn"]
                             :dependencies [[com.jakemccrary/lein-test-refresh "0.24.1"]
-                                           [lein-autoexpect "1.9.0"]]
+                                           [lein-autoexpect "1.9.0"]
+                                           [talltale "0.4.3"]]    ;; fake data for test
                             :resource-paths ["env/test/resources"]
                             :source-paths ["env/test/clj" "test/clj"]
                             :test-selectors {:default (complement :integration)
