@@ -1,6 +1,6 @@
 (ns zentaur.env
   (:require [clojure.tools.logging :as log]
-            [zentaur.dev-middleware :refer [wrap-dev]]))
+            [zentaur.test-middleware :refer [wrap-test]]))
 
 (System/setProperty "tika.config" "tika-config.xml")
 (System/setProperty "lein.profile" "dev")
@@ -14,4 +14,4 @@
    :stop
    (fn []
      (log/info "\n-=[zentaur wurde erfolgreich heruntergefahren]=-"))
-   :middleware wrap-dev})  ;; <<--- load dev stuff like code reload
+   :middleware wrap-test})  ;; <<--- load dev stuff like code reload

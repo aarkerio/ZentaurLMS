@@ -1,10 +1,13 @@
 (ns zentaur.controllers.tests-controller-test
   "Integration tests with HTTP calls"
-  (:require [clojure.test :refer :all]
+  (:require [clojure.data.json :as json]
+            [clojure.java.io :as io]
+            [clojure.test :refer :all]
             [clojure.tools.logging :as log]
             [mount.core :as mount]
             [net.cgrand.enlive-html :as html]
             [ring.mock.request :as mock]
+            [zentaur.core :as zc]
             [zentaur.db.core :refer [*db*] :as db]
             [zentaur.handler :as zh]
             [zentaur.config-test :as ct]))
@@ -14,23 +17,9 @@
   (fn [f]
     (mount/start #'zentaur.config/env
                  #'zentaur.handler/app-routes
+                 #'zentaur.routes.services.graphql/compiled-schema
                  #'zentaur.db.core/*db*)
     (f)))
-
-;; (defn another-fixture [f]
-;;         (create-db-table)
-;;         (f)
-;;   (drop-db-table))
-
-;; (use-fixtures
-;;   :once
-;;   (fn [f]
-;;     (mount/start
-;;      #'zentaur.config/env
-;;      #'zentaur.db.core/*db*)
-;;     (migrations/migrate ["migrate"] (select-keys env [:database-url]))
-;;     (f)))
-
 
 (defn get-session
   "Given a response, grab out just the key=value of the ring session"
@@ -68,18 +57,35 @@
     ((zh/app) req)
     {:csrf csrf :session session}))
 
+(defn test-post-json-map [req-type uri params]
+  {:remote-addr "localhost"
+   :headers {"host" "localhost"
+             "content-type" "application/graphql"
+             "accept" "application/json"}
+   :server-port 3000
+   :content-type "application/graphql"
+   :uri uri
+   :server-name "localhost"
+   :query-string nil
+   :body (java.io.ByteArrayInputStream. (.getBytes (json/write-str params)))
+   :scheme :http
+   :request-method req-type})
+
 (deftest ^:integration get-test-nodes
   (testing "JSON response for the API"
-    (let [{:keys [csrf session]} (login! "admin@example.com" "password")
-          _          (log/info (str ">>> ** RESPONSE ** >>>>> " (prn-str session)))
-          response   (-> ((zh/app) (mock/request :post "/api/graphql" "{ test_by_id(id: 1, archived: false) { title subjects {subject} }}" ))
-                         (assoc :form-params {"__anti-forgery-token" csrf})
-                         (assoc :headers {"cookie" session :content-type "application/graphql"}))
-          body  (:body response)
+    (let [query     (json/write-str  {:query "{ test_by_uurlid(uurlid: \"96093211b24b47f4826a\" archived: false) { uurlid title description } }" })
+          response  (assoc ((zh/app) (mock/request :post "http://localhost:3000/api/graphql" query))
+                           :headers {:content-type "application/graphql"})
+          body  (slurp (:body response))
+          jso   (json/read-str body :key-fn keyword)
+          _     (log/info (str ">>> JJSSSOOOOOOO >>>>> " jso))
+          title (-> jso :data :test_by_uurlid :title)
+          _     (log/info (str ">>> TITLE >>>>> " title))
           ]
-      (log/info (str ">>> ***** RETURN >>>>> "  response))
-      (is (= (:msg body) true))
-      )))
+      (log/info (str ">>> ***** RETURN >>>>> "  response   " bbooodyyyy tests DATTAAA >>>>" jso))
+      (is (> (count title) 5)))))
+
+;; curl -X POST -H "Content-Type: application/graphql" --data '{ "query": "{ test_by_uurlid(uurlid: \"a315f83fb49423f7721e\" archived: false) { uurlid title description } }" }' http://localhost:3000/api/graphql
 
 ;; (deftest ^:integration a-test
 ;;    (testing "Test POST request to /api/v1/check returns expected response"
@@ -97,4 +103,4 @@
 ;;     (response/ok (ches/encode response non-ascii))))
 
 
-;; (run-tests)  ;; run tests in this NS
+(run-tests)  ;; run tests in this NS
