@@ -60,6 +60,3 @@
       (is (= (:answer answer) "Some not so cool answer")))))
 
 
-
-
-

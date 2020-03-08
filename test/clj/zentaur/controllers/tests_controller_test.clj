@@ -48,7 +48,6 @@
   "Login a user given a username and password"
   [username password]
   (let [{:keys [csrf session]} (get-login-session!)
-        _                      (log/info (str ">>> session  >>>>> " session "  und csrf >>>>>> " csrf))
         req                    (-> (mock/request :post "/login")
                                    (assoc :headers {"cookie" session})
                                    (assoc :params {:username username
@@ -78,11 +77,7 @@
                            :headers {:content-type "application/graphql"})
           body  (slurp (:body response))
           jso   (json/read-str body :key-fn keyword)
-          _     (log/info (str ">>> JJSSSOOOOOOO >>>>> " jso))
-          title (-> jso :data :test_by_uurlid :title)
-          _     (log/info (str ">>> TITLE >>>>> " title))
-          ]
-      (log/info (str ">>> ***** RETURN >>>>> "  response   " bbooodyyyy tests DATTAAA >>>>" jso))
+          title (-> jso :data :test_by_uurlid :title)]
       (is (> (count title) 5)))))
 
 ;; curl -X POST -H "Content-Type: application/graphql" --data '{ "query": "{ test_by_uurlid(uurlid: \"a315f83fb49423f7721e\" archived: false) { uurlid title description } }" }' http://localhost:3000/api/graphql
