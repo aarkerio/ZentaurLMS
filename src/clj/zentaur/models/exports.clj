@@ -17,7 +17,6 @@
      [:chunk {:style :italic :color [227 227 227]} "points: "] $points ".  "
      [:chunk {:style :italic :color [227 227 227]} "hint: "] $hint "\n"
      [:chunk {:style :italic :color [227 227 227]} "qtype: "] $qtype "\n"
-
      $content
      [:spacer]]))
 
