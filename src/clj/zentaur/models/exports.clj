@@ -4,6 +4,7 @@
             [clojure.tools.logging :as log]
             [crypto.random :as cr]
             [zentaur.db.core :as db]
+            [zentaur.libs.models.odt :as od]
             [zentaur.models.tests :as mt]))
 
 (defn answer-template [answer idx]
@@ -67,39 +68,14 @@
         _         (to-pdf file-name test)]
     file-name))
 
-(defn to-odt [file-name test]
-  (let [counter     (atom 0)
-        subject     (:subject test)
-        title       (:title test)
-        description (:description test)
-        tags        (:tags test)
-        questions   (map-indexed (fn [idx itm] (build-questions itm idx) ) (:questions test))
-        qtpl        (questions-template questions)]
-    (pdf/pdf
-     [{}
-      [:image {:align :left} "resources/public/img/warning_clojure.png"]
-      [:heading {:style {:size 14 :color [66 135 245] :align :left}} title]
-      [:line {:gap 10 :color [66 135 245]}]
-      [:chunk {:style :bold :size 10} "Description: "] description
-      [:chunk {:style :bold :size 10} "Subject: "] subject
-      [:chunk {:style :bold :size 10} "Tags: "] tags
-      [:spacer]
-      qtpl
-      [:spacer]
-      [:spacer]
-      [:paragraph "Good luck! ;-)"]]
-     file-name)))
-
 (defn export-odt
   "Generate Open Document file"
   [uurlid]
   (let [test      (mt/build-test-structure uurlid false)
-        _         (log/info (str ">>> export-pdfexport-ODF LIBRE OFFICE  TEST >>>>> " test))
+        _         (log/info (str ">>> export- ODT LIBRE OFFICE  TEST >>>>> " test))
         rand7     (cr/hex 7)
         title     (clojure.string/replace (:title test) #" " "_")
-        ;; final-pdf (questions-template questions)
         file-name (str "resources/public/tmp/" title  "-" rand7 ".odt")
-        _         (to-odt file-name test)]
+        _         (dt/generate-odt file-name test)]
     file-name))
-
 

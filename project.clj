@@ -31,6 +31,7 @@
                  [org.clojure/tools.cli "0.4.2"]         ;; parses command line arguments and stuff like that
                  [org.clojure/tools.logging "0.4.1"]     ;; Logs duh!
                  [org.immutant/web "2.1.10" :exclusions [joda-time]] ;; Serve web requests using Ring handlers, Servlets, or Undertow HttpHandlers
+                 [org.odftoolkit/simple-odf "0.9.0-RC1"] ;; Open Document libraries
                  [org.postgresql/postgresql "42.2.9"]    ;; PostgreSQL rulez!
                  [re-frame "0.11.0"]                     ;; A Reagent Framework For Writing SPAs, in Clojurescript.
                  [reagent "0.9.1"]                       ;; Minimalistic React for ClojureScript
