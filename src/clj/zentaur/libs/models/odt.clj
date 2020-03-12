@@ -1,4 +1,5 @@
 (ns zentaur.libs.models.odt
+  (:require [clojure.tools.logging :as log])
   (:import java.net.URI
            org.odftoolkit.simple.TextDocument
            org.odftoolkit.simple.table.Cell
@@ -23,6 +24,11 @@
                 :explanation "two explanation two explanation two explanation two explanation."
                 :points 6}])
 
+
+(defn answer-template [answer idx]
+  (let [idx+ (inc idx)]
+    [:paragraph (str idx+ ").- [  ] ") (:answer answer)]))
+
 (def questions-template
   (template
     [:paragraph
@@ -45,7 +51,7 @@
 (defn generate-odt [filename test]
   (let [questions  (map-indexed (fn [idx itm] (build-questions itm idx) ) (:questions test))
         qtpl       (questions-template questions)
-        _          (println qtpl)
+        _          (log/info (str ">>> **** qtpl  qtpl ***** >>>>> " (apply prn qtpl)))
         outputOdt  (TextDocument/newTextDocument)
         uri        (URI. "/home/manuel/Documents/lisplogo_fancy_256.png")
         items      (into-array String ["Primer Asunto" "Segundo punto" "Tercer negocio" "Too long list"])]

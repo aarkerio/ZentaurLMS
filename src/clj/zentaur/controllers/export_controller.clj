@@ -7,7 +7,6 @@
 (defn export-test-pdf
   "GET /vclass/tests/exportpdf/:uurlid. Create PDF."
   [{:keys [path-params identity]}]
-  (log/info (str ">>> PATH PARAM >>>>> " path-params   " >>>> identity >>>"  identity ))
   (let [uurlid   (:uurlid path-params)
         pdf-path (model-export/export-pdf uurlid)
         file     (io/input-stream pdf-path)]
@@ -17,6 +16,7 @@
 (defn export-test-odt
   "GET /vclass/tests/exportodt/:uurlid. Create OpenDocument file."
   [{:keys [path-params]}]
+  (log/info (str ">>> PATH PARAM >>>>> " path-params   " >>>> identity >>>"  identity ))
   (let [uurlid   (:uurlid path-params)
         odt-path (model-export/export-odt uurlid)
         file     (io/input-stream odt-path)]

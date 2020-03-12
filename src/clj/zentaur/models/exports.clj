@@ -4,7 +4,7 @@
             [clojure.tools.logging :as log]
             [crypto.random :as cr]
             [zentaur.db.core :as db]
-            [zentaur.libs.models.odt :as od]
+            [zentaur.libs.models.odt :as dt]
             [zentaur.models.tests :as mt]))
 
 (defn answer-template [answer idx]
@@ -78,4 +78,3 @@
         file-name (str "resources/public/tmp/" title  "-" rand7 ".odt")
         _         (dt/generate-odt file-name test)]
     file-name))
-

@@ -15,7 +15,7 @@
    [:td subject]
    [:td formatted-date]
    [:td [:a {:href (str "/vclass/tests/exportpdf/" uurlid)} [:img {:src "/img/icon_export_pdf.png" :alt "Export PDF" :title "Export PDF"}]]]
-   [:td [:a {:href (str "/vclass/tests/exportodf/" uurlid)} [:img {:src "/img/icon_export_odf.png" :alt "Export DOC" :title "Export DOC"}]]]
+   [:td [:a {:href (str "/vclass/tests/exportodt/" uurlid)} [:img {:src "/img/icon_export_odt.png" :alt "Export ODT" :title "Export ODT"}]]]
    [:td [:a {:onclick (str "zentaur.core.deletetest('" uurlid "')")} [:img {:src "/img/icon_delete.png" :alt "Delete test" :title "Delete test"}]]]]))
 
 (defn- test-new-form [subjects csrf-field]
