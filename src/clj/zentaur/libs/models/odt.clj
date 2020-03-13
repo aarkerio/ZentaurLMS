@@ -65,7 +65,7 @@
       (doto (.addList outputOdt)
         (.addItems items))
 
-      ;; ".." threading macro, Expands into a member access (.) of the first member on the first
+      ;; ".." threading macro, Expands into a member access (.) of the first member   on the first
       ;; argument, followed by the next member on the result, etc.
       (.. outputOdt
          (addTable 2 2)
