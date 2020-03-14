@@ -60,9 +60,8 @@
   "Generate PDF file"
   [uurlid]
   (let [test      (mt/build-test-structure uurlid false)
-        _         (log/info (str ">>> export-pdfexport-pdf  TEST >>>>> " test))
         rand7     (cr/hex 7)
-        title     (clojure.string/replace (:title test) #" " "_")
+        title     (clojure.string/lower-case (clojure.string/replace (:title test) #" " "_"))
         ;; final-pdf (questions-template questions)
         file-name (str "resources/public/tmp/" title  "-" rand7 ".pdf")
         _         (to-pdf file-name test)]
@@ -72,9 +71,8 @@
   "Generate Open Document file"
   [uurlid]
   (let [test      (mt/build-test-structure uurlid false)
-        _         (log/info (str ">>> export- ODT LIBRE OFFICE  TEST >>>>> " test))
         rand7     (cr/hex 7)
-        title     (clojure.string/replace (:title test) #" " "_")
-        file-name (str "resources/public/tmp/" title  "-" rand7 ".odt")
-        _         (dt/generate-odt file-name test)]
+        title     (clojure.string/lower-case (clojure.string/replace (:title test) #" |," "_"))
+        file-name (str "resources/public/tmp/" title  "-" rand7 ".odt")]
+    (dt/generate-odt file-name test)
     file-name))

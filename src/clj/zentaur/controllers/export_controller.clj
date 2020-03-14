@@ -16,8 +16,13 @@
 (defn export-test-odt
   "GET /vclass/tests/exportodt/:uurlid. Create OpenDocument file."
   [{:keys [path-params]}]
-  (log/info (str ">>> PATH PARAM >>>>> " path-params   " >>>> identity >>>"  identity ))
   (let [uurlid   (:uurlid path-params)
         odt-path (model-export/export-odt uurlid)
-        file     (io/input-stream odt-path)]
-    (response/content-type (response/ok file) "application/vnd.oasis.opendocument.text")))
+        _        (log/info (str ">>> odt-path //////////////// odt-path >>>>> " odt-path))
+        name     (last (clojure.string/split odt-path #"/"))
+        file     (io/file odt-path)]
+     (-> (response/ok (io/input-stream file))
+         (response/header "Content-Type" "application/vnd.oasis.opendocument.text")
+         (response/header "Content-Disposition" (str "filename=" name ""))
+         (response/header "Content-Length" (.length file))
+         (response/status 200))))
