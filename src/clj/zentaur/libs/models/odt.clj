@@ -19,7 +19,6 @@
                    (= qtype 3) "fulfill \n")]
     (str idx+ ").- " (:question one-question) " \n " content "\n")))
 
-
 (defn add-paragraph [outputOdt questions]
   (map (fn [q] (.addParagraph outputOdt q)) questions))
 
@@ -27,7 +26,7 @@
   (let [questions  (map-indexed (fn [idx itm] (build-questions itm idx) ) (:questions test))
         outputOdt  (TextDocument/newTextDocument)
         uri        (URI. "resources/public/img/quiz-logo.png")
-        _          (log/info (str ">>>  questionsquestionsquestions 33333 >>>>> " (pr-str questions)))]
+        _          (log/info (str ">>>  questionsquestionsquestions 33333 >>>>> " (type questions)))]
     (try
       (.newImage outputOdt uri)
       (add-paragraph outputOdt questions)
