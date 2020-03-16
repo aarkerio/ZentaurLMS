@@ -36,8 +36,8 @@
           (log/info (str ">>>  questionquestionquestion ****  >>>>> " question  " qtype >>>>> " qtype))
           (.addParagraph outputOdt (str (:idx q) ").- " (:question question)))
           (cond
-            ;; (= qtype 1) (doall (map-indexed (fn [idx answer] (.addParagraph outputOdt (str (inc idx) ").- [  ] " (:answer answer)))) (:answers question)))
-            (= qtype 2) (.addParagraph outputOdt (take 70 (repeat "_")))
+            (= qtype 1) (doall (map-indexed (fn [idx answer] (.addParagraph outputOdt (str (inc idx) ").- [  ] " (:answer answer)))) (:answers question)))
+            (= qtype 2) (.addParagraph outputOdt (clojure.string/join (take 80 (repeat "_"))))
             (= qtype 3) (.addParagraph outputOdt "fulfill"))
           (.addParagraph outputOdt "")))
 
