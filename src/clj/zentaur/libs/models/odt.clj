@@ -8,30 +8,38 @@
 
 (defn answer-template [answer idx]
   (let [idx+ (inc idx)]
-    (str idx+ ").- [  ] " (:answer answer) "\n")))
+    (str idx+ ").- [  ] " (:answer answer))))
 
 (defn build-questions [one-question idx]
   (let [idx+     (inc idx)
         qtype    (:qtype one-question)
         content  (cond
                    (= qtype 1) (into '() (map-indexed (fn [idx itm] (answer-template itm idx)) (:answers one-question)))
-                   (= qtype 2) "____________________________________________________________________________________\n"
-                   (= qtype 3) "fulfill \n")]
+                   (= qtype 2) "____________________________________________________________________________________"
+                   (= qtype 3) "fulfill")]
     (str idx+ ").- " (:question one-question) " \n " content "\n")))
 
-(defn add-paragraph [outputOdt questions]
-  (map (fn [q] (.addParagraph outputOdt q)) questions))
-
 (defn generate-odt [filename test]
-  (let [questions  (map-indexed (fn [idx itm] (build-questions itm idx) ) (:questions test))
+  (let [questions  (map-indexed (fn [idx itm] (assoc {} :idx (inc idx) :question itm)) (:questions test))
         outputOdt  (TextDocument/newTextDocument)
-        uri        (URI. "resources/public/img/quiz-logo.png")
-        _          (log/info (str ">>>  questionsquestionsquestions 33333 >>>>> " (type questions)))]
+        uri        (URI. "resources/public/img/quiz-logo.png")]
     (try
-      (.newImage outputOdt uri)
-      (add-paragraph outputOdt questions)
+      (.addParagraph outputOdt "")
 
-      (.addParagraph outputOdt "Good luck :-)")
+      (.newImage outputOdt uri)
+
+      (.addParagraph outputOdt (:title test))
+
+      (doseq [q questions]
+        (let [question (:question q)
+              qtype    (:qtype question)]
+          (log/info (str ">>>  questionquestionquestion ****  >>>>> " question  " qtype >>>>> " qtype))
+          (.addParagraph outputOdt (str (:idx q) ").- " (:question question)))
+          (cond
+            ;; (= qtype 1) (doall (map-indexed (fn [idx answer] (.addParagraph outputOdt (str (inc idx) ").- [  ] " (:answer answer)))) (:answers question)))
+            (= qtype 2) (.addParagraph outputOdt (take 70 (repeat "_")))
+            (= qtype 3) (.addParagraph outputOdt "fulfill"))
+          (.addParagraph outputOdt "")))
 
       (.save outputOdt filename)
       (catch Exception e (str "ERROR: unable to create output file: " (.getMessage e))))))
