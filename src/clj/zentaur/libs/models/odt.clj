@@ -7,7 +7,8 @@
            org.odftoolkit.simple.text.list.List
            org.odftoolkit.odfdom.dom.style.OdfStyleFamily
            org.odftoolkit.odfdom.dom.style.props.OdfParagraphProperties
-           org.odftoolkit.odfdom.dom.style.props.OdfTextProperties))
+           org.odftoolkit.odfdom.dom.style.props.OdfTextProperties
+           org.odftoolkit.odfdom.incubator.doc.text.OdfTextHeading))
 
 (defn answer-template [answer idx]
   (let [idx+ (inc idx)]
@@ -25,14 +26,24 @@
 (defn generate-odt [filename test]
   (let [questions  (map-indexed (fn [idx itm] (assoc {} :idx (inc idx) :question itm)) (:questions test))
         outputOdt  (TextDocument/newTextDocument)
-        styles     (.getOrCreateAutomaticStyles (.getContentDom outputOdt))
+        styles     (.getOrCreateDocumentStyles outputOdt)
         _          (log/info (str ">>> styles stylesstyles TYPE >>>>> " (type styles)))
-        negro      (.newStyle styles "negro" (OdfStyleFamily/Text))
-        _          (log/info (str ">>> style *************** style style kkkk TYPE >>>>> " (type negro)))
-        _          (.setProperty negro (OdfTextProperties/FontWeight) "Regular")
+        negro      (.newStyle styles "negro" (OdfStyleFamily/Paragraph))
+        _          (.setStyleDisplayNameAttribute negro "negro")
+        _          (.setProperty negro (OdfTextProperties/FontWeight) "bold")
         _          (.setProperty negro (OdfTextProperties/FontSize) "14pt")
-        uri        (URI. "resources/public/img/quiz-logo.png")]
+        _          (.setProperty negro (OdfTextProperties/Color) "#a85a32")
+        _          (.setProperty negro (OdfParagraphProperties/TextAlign) "center")
+        nodoFormateado (.getContentRoot outputOdt)   ;; Obtenemos el inicio de nuestro parrafo
+        textoAFormatear (.getContentDom outputOdt)   ;; Creamos el objeto que almacenará nuestro Contenido.
+        uri        (URI. "resources/public/img/quiz-logo.png")
+        _          (log/info (str ">>> style *************** style style NEGRO  kkkk TYPE >>>>> " (type negro) ">>>>>>> ALL " negro))]
     (try
+      (.setStyleName (.appendChild nodoFormateado (new OdfTextHeading textoAFormatear "negro" "PRUEBA ESTILOS")) "negro")
+      (.appendChild nodoFormateado (.addStyledContent (new OdfTextHeading textoAFormatear "negro" "dsfdsfdsf") "negro" "PRUEBA GGGGGGGGGG Wagner Tanhauser ESTILOS"))
+
+      (.setStyleName (.getOdfElement (.addParagraph outputOdt "México 68 ------- asdasdasdasd KKKKKK")) "negro")
+      (.addParagraph outputOdt "")
       (.setStyleName (.addParagraph outputOdt "asdasdasdasd") "negro")
 
       (.addParagraph outputOdt (.newImage outputOdt uri))
