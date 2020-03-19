@@ -7,8 +7,7 @@
            org.odftoolkit.simple.text.list.List
            org.odftoolkit.odfdom.dom.style.OdfStyleFamily
            org.odftoolkit.odfdom.dom.style.props.OdfParagraphProperties
-           org.odftoolkit.odfdom.dom.style.props.OdfTextProperties
-           org.odftoolkit.odfdom.incubator.doc.text.OdfTextHeading))
+           org.odftoolkit.odfdom.dom.style.props.OdfTextProperties))
 
 (defn answer-template [answer idx]
   (let [idx+ (inc idx)]
@@ -32,28 +31,15 @@
         _          (.setStyleDisplayNameAttribute negro "negro")
         _          (.setProperty negro (OdfTextProperties/FontWeight) "bold")
         _          (.setProperty negro (OdfTextProperties/FontSize) "14pt")
-        _          (.setProperty negro (OdfTextProperties/Color) "#a85a32")
-        _          (.setProperty negro (OdfParagraphProperties/TextAlign) "center")
-        nodoFormateado (.getContentRoot outputOdt)   ;; Obtenemos el inicio de nuestro parrafo
-        textoAFormatear (.getContentDom outputOdt)   ;; Creamos el objeto que almacenará nuestro Contenido.
-        uri        (URI. "resources/public/img/quiz-logo.png")
-        _          (log/info (str ">>> style *************** style style NEGRO  kkkk TYPE >>>>> " (type negro) ">>>>>>> ALL " negro))]
+        _          (.setProperty negro (OdfTextProperties/Color) "#a85a32")]
     (try
-      (.setStyleName (.appendChild nodoFormateado (new OdfTextHeading textoAFormatear "negro" "PRUEBA ESTILOS")) "negro")
-      (.appendChild nodoFormateado (.addStyledContent (new OdfTextHeading textoAFormatear "negro" "dsfdsfdsf") "negro" "PRUEBA GGGGGGGGGG Wagner Tanhauser ESTILOS"))
-
-      (.setStyleName (.getOdfElement (.addParagraph outputOdt "México 68 ------- asdasdasdasd KKKKKK")) "negro")
+      (.addParagraph outputOdt "Date: __ /__ / ____")
       (.addParagraph outputOdt "")
-      (.setStyleName (.addParagraph outputOdt "asdasdasdasd") "negro")
-
-      (.addParagraph outputOdt (.newImage outputOdt uri))
-
-      (.addParagraph outputOdt (:title test))
-
+      (.setStyleName (.getOdfElement (.addParagraph outputOdt (:title test))) "negro")
+      (.addParagraph outputOdt "")
       (doseq [q questions]
         (let [question (:question q)
               qtype    (:qtype question)]
-          (log/info (str ">>>  questionquestionquestion ****  >>>>> " question  " qtype >>>>> " qtype))
           (.addParagraph outputOdt (str (:idx q) ").- " (:question question)))
           (cond
             (= qtype 1) (doall (map-indexed (fn [idx answer] (.addParagraph outputOdt (str (inc idx) ").- [  ] " (:answer answer)))) (:answers question)))
