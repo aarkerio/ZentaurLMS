@@ -21,7 +21,7 @@ VALUES (:title, :body, :tags, :published, :discution, :slug) RETURNING id
 
 -- :name get-posts :? :*
 -- :doc retrieve array posts given the id.
-SELECT p.id, p.title, p.body, p.tags, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
+SELECT p.id, p.title, p.body, p.tags, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uuid
 FROM posts p INNER JOIN users u
 ON p.user_id = u.id
 WHERE p.published = true
@@ -29,7 +29,7 @@ ORDER BY p.id DESC LIMIT 10
 
 -- :name get-post :? :1
 -- :doc retrieve a post given the id.
-SELECT p.id, p.title, p.tags, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
+SELECT p.id, p.title, p.tags, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uuid
 FROM posts p INNER JOIN users u
 ON p.user_id = u.id
 WHERE p.published = true AND p.id = :id
@@ -71,7 +71,7 @@ WHERE c.post_id = :id AND u.id=c.user_id ORDER BY c.id
 -- :name admin-get-posts :? :*
 -- :doc retrieve array posts given the user id.
 SELECT
-    p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uname
+    p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uuid
 FROM
     posts p INNER JOIN users u
     ON p.user_id = u.id
@@ -124,32 +124,32 @@ SELECT id FROM uploads WHERE hashvar = :hashvar
 -- :name create-test! :<!
 -- :doc creates a new test record
 INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id, subject_id, uurlid)
-VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id, :subject-id, :uurlid) RETURNING id
+VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id, :subject-id, :uurlid) RETURNING *
 
 -- :name create-minimal-test :<! :n
 -- :doc creates a minimal test record
-INSERT INTO tests (title, tags, user_id, subject_id, uurlid) VALUES (:title, :tags, :user_id, :subject_id, :uurlid) RETURNING id
+INSERT INTO tests (title, tags, user_id, subject_id, uurlid) VALUES (:title, :tags, :user_id, :subject_id, :uurlid) RETURNING *
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
 INSERT INTO questions (question, qtype, hint, explanation, active, user_id, points)
 VALUES (:question, :qtype, :hint, :explanation, :active, :user_id, :points) RETURNING *
 
--- :name update-question! :>! :1
+-- :name update-question! :<! :1
 -- :doc updates a question record
 UPDATE questions
 SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, points = :points
 WHERE id = :id RETURNING id
 
--- :name update-question-fulfill! :>! :1
+-- :name update-question-fulfill! :<! :1
 -- :doc updates the fulfill field in the question
 UPDATE questions SET fulfill = :fulfill WHERE id = :id RETURNING *
 
--- :name update-answer! :>! :1
+-- :name update-answer! :<! :1
 -- :doc updates an answer record
 UPDATE answers SET answer = :answer, correct = :correct WHERE id = :id RETURNING *
 
--- :name update-test! :>! :1
+-- :name update-test! :<! :1
 -- :doc updates an answer record
 UPDATE tests SET title = :title, tags = :tags, description = :description, subject_id = :subject_id
 WHERE uurlid = :uurlid RETURNING *
@@ -261,16 +261,16 @@ SELECT id FROM :i:table-name ORDER BY id DESC LIMIT 1
 
 /******************* USERS ***/
 
--- :name create-user! :! :n
+-- :name create-user! :<! :1
 -- :doc creates a new user record
-INSERT INTO users (fname, lname, uname, email, password, admin, active, role_id)
-VALUES (:fname, :lname, :uname, :email, :password, :admin, :active, :role_id)
+INSERT INTO users (fname, lname, email, password, admin, active, role_id, uuid)
+VALUES (:fname, :lname, :email, :password, :admin, :active, :role_id, :uuid) RETURNING *
 
 -- :name update-user! :! :n
 -- :doc update an existing user record
 UPDATE users
 SET fname = :fname, lname = :lname, email = :email
-WHERE id = :id
+WHERE uuid = :uuid
 
 -- :name get-user :? :1
 -- :doc retrieve a user given the id.
@@ -283,7 +283,7 @@ WHERE active = :active ORDER BY id DESC
 
 -- :name get-user-login :? :1
 -- :doc retrieve a user given the email and password.
-SELECT id, fname, lname, uname, email, admin FROM users
+SELECT id, fname, lname, uuid, email, admin FROM users
 WHERE email = :email AND password = :password
 
 -- :name delete-user! :<! :n

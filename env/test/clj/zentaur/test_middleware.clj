@@ -1,5 +1,6 @@
 (ns zentaur.test-middleware
-  (:require [zentaur.middleware.error-page :refer [wrap-error-page]]))
+  (:require [zentaur.middleware.error-page :refer [wrap-exception]]))
 
 (defn wrap-test [handler]
-  (wrap-error-page handler))
+  (-> handler
+      wrap-exception))

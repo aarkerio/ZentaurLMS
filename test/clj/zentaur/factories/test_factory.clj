@@ -12,14 +12,14 @@
          password (take n (repeatedly #(rand-nth chars)))]
      (reduce str password))))
 
-(def sites ["net" "com" "mx" "com.mx" "org" "travel"])
-
 (defn rand-str
   ([] (rand-str 8))
   ([len]
    (clojure.string/lower-case (apply str (take len (repeatedly #(char (+ (rand 26) 65))))))))
 
-(deffactory :user {:fname "Pedro" :lname "Quentin" :uname "77samdddl" :email "77samu@gmail.com" :prepassword "s0m3p4ss" :role_id "1"})
+(def sites ["net" "com" "mx" "com.mx" "org" "travel"])
+
+(deffactory :user {:fname "Pedro" :lname "Quentin" :uname "77samdddl" :email "77samu@gmail.com" :prepassword (fixed-length-password) :role_id "1"})
 
 (deffactory :admin {:fname "Ludwig" :preadmin "1"}
   :extends-factory :user
@@ -29,7 +29,8 @@
                :lname (fn [n] (rand-str 9))
                })
 
-
 (deffactory :teacher {:fname "Ludwig"}
   :extends-factory :user
   :generators {:annoying (fn [n] (even? n))})
+
+(deffactory :test {:title "Test title" :hint "Some hint" :tags "tags" :user_id 1 :subject_id "3"})

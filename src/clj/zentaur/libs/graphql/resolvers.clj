@@ -17,7 +17,6 @@
 (defn- ^:private test-by-uurlid
   "Resolver to get and convert to map keyed"
   [context args value]
-  (log/info (str ">>> PARAM argsargsargsargs  >>>>> " args))
   (let [uurlid     (:uurlid args)
         archived   (:archived args)
         full-test  (mt/build-test-structure uurlid archived)]
@@ -31,7 +30,6 @@
 
 (defn- ^:private create-answer
   [context args value]
-  (log/info (str ">>> ARGS *** create-answer **** >>>>> " args))
   (let [new-answer (mt/create-answer! args)]
     (update new-answer :id str)))  ;; graphql wants strings on :ids
 
@@ -42,13 +40,11 @@
 
 (defn- ^:private update-question
   [context args value]
-  (log/info (str ">>> ***** update-question ARGS >>>>> " args))
   (let [updated-question (mt/update-question! args)]
     (update updated-question :id str)))
 
 (defn- ^:private reorder-question
   [context args value]
-  (log/info (str ">>> ***** reorder-QUESTIONS   reorderreorder ARGS >>>>> " args))
   (let [questions (mt/reorder-question args)]
     (map #(update % :id str) questions)))
 

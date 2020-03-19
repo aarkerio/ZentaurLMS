@@ -16,5 +16,5 @@
 ;;     (ct/testing "it should returns an empty map"
 ;;       (ct/is (= 1 (mu/create (ftime/build :admin {:fname "Robert"})))))))
 
-;; (ct/run-tests)
+;; (ct/ run-tests)
 

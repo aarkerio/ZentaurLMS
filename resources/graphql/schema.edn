@@ -21,7 +21,7 @@
                                :uurlid       {:type (non-null ID)}
                                :title        {:type (non-null String)}
                                :user_id      {:type Int}
-                               :description  {:type (non-null String)}
+                               :description  {:type String}
                                :instructions {:type String}
                                :subject      {:type String}
                                :subject_id   {:type Int}

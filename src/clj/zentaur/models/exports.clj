@@ -3,76 +3,76 @@
   (:require [clj-pdf.core :as pdf]
             [clojure.tools.logging :as log]
             [crypto.random :as cr]
-            [zentaur.db.core :as db]))
+            [zentaur.db.core :as db]
+            [zentaur.libs.models.odt :as dt]
+            [zentaur.models.tests :as mt]))
 
-(def questions
-  [{:question "What is germany?"
-    :points 1
-    :place "nuremberg"
-    :occupation "engineer"
-    :name "neil chetty"}
-   {:question "What is germany?"
-    :place "ulm"
-    :points 1
-    :occupation "engineer"
-    :name "vera ellison"}])
+(defn answer-template [answer idx]
+  (let [idx+ (inc idx)]
+    [:paragraph (str idx+ ").- [  ] ") (:answer answer)]))
 
 (def questions-template
   (pdf/template
     [:paragraph
-     [:heading $question]
-     [:chunk {:style :bold} "question: "] $question "\n"
-     [:chunk {:style :bold} "answers: "] $place "\n"
-     [:chunk {:style :bold} "country: "] $country
+     [:paragraph [:chunk {:style :bold} (str $idx ").- ")] $question]
+     [:chunk {:style :italic :color [227 227 227]} "points: "] $points ".  "
+     [:chunk {:style :italic :color [227 227 227]} "hint: "] $hint "\n"
+     [:chunk {:style :italic :color [227 227 227]} "qtype: "] $qtype "\n"
+     $content
      [:spacer]]))
 
+(defn indexado [coll]
+  (map-indexed (fn [idx itm] (assoc itm :idx (inc idx))) coll))
 
-(def answers-template
-  (pdf/template
-    [:paragraph
-     [:heading $question]
-     [:chunk {:style :bold} "questions: "] $occupation "\n"
-     [:chunk {:style :bold} "answers: "] $place "\n"
-     [:chunk {:style :bold} "country: "] $country
-     [:spacer]]))
-
-(def questions-template
-  (pdf/template
-    [:paragraph
-     [:heading $question]
-     [:chunk {:style :bold} "questions: "] $occupation "\n"
-     [:chunk {:style :bold} "answers: "] $place "\n"
-     [:chunk {:style :bold} "country: "] $country
-     [:spacer]]))
+(defn build-questions [one-question idx]
+  (let [idx+     (inc idx)
+        qtype    (:qtype one-question)
+        content  (cond
+                   (= qtype 1) (into [:paragraph] (map-indexed (fn [idx itm] (answer-template itm idx)) (:answers one-question)))
+                   (= qtype 2) [:paragraph "____________________________________________________________________________________"]
+                   (= qtype 3) [:paragraph "fulfill"])]
+  (assoc one-question :content content :idx idx+)))
 
 (defn to-pdf [file-name test]
-  (let [subject (:subject test)
-        title   (:title test)
-        rows    (questions-template questions)]
+  (let [counter     (atom 0)
+        subject     (:subject test)
+        title       (:title test)
+        description (:description test)
+        tags        (:tags test)
+        questions   (map-indexed (fn [idx itm] (build-questions itm idx) ) (:questions test))
+        qtpl        (questions-template questions)]
     (pdf/pdf
-     [{:title title }
-      [:list {:roman true}
-       [:chunk {:style :bold} "Subject: " ]
-       "another item "  subject
-       "yet another item"]
-      rows
-      [:phrase "some text lo que sea PEDAZO DE ANIMAL"]
-      [:phrase "some more text África {ñóñá}"]
-      [:paragraph "yet more text"]]
+     [{}
+      [:image {:align :left} "resources/public/img/warning_clojure.png"]
+      [:heading {:style {:size 14 :color [66 135 245] :align :left}} title]
+      [:line {:gap 10 :color [66 135 245]}]
+      [:chunk {:style :bold :size 10} "Description: "] description
+      [:chunk {:style :bold :size 10} "Subject: "] subject
+      [:chunk {:style :bold :size 10} "Tags: "] tags
+      [:spacer]
+      qtpl
+      [:spacer]
+      [:spacer]
+      [:paragraph "Good luck! ;-)"]]
      file-name)))
 
-(defn export-pdf [uurlid]
-  (let [test      (db/get-one-test {:uurlid uurlid :archived false})
-        _         (log/info (str ">>> export-pdfexport-pdf  TEST >>>>> " test))
+(defn export-pdf
+  "Generate PDF file"
+  [uurlid]
+  (let [test      (mt/build-test-structure uurlid false)
         rand7     (cr/hex 7)
-        title     (clojure.string/replace (:title test) #" " "_")
+        title     (clojure.string/lower-case (clojure.string/replace (:title test) #" " "_"))
         ;; final-pdf (questions-template questions)
         file-name (str "resources/public/tmp/" title  "-" rand7 ".pdf")
         _         (to-pdf file-name test)]
     file-name))
 
-;; (defn export-odf
-;;   "Export to open document format"
-;;   [uurlid]
-;;   (let [test (db/get-one-test {:uurlid uurlid :active true})
-;;     (db/remove-test! {:test-id test-id}) ))
+(defn export-odt
+  "Generate Open Document file"
+  [uurlid]
+  (let [test      (mt/build-test-structure uurlid false)
+        rand7     (cr/hex 7)
+        title     (clojure.string/lower-case (clojure.string/replace (:title test) #" |," "_"))
+        file-name (str "resources/public/tmp/" title  "-" rand7 ".odt")]
+    (dt/generate-odt file-name test)
+    file-name))

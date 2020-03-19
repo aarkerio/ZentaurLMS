@@ -31,7 +31,7 @@
    ["/tests/edit/:uurlid"      {:get  cont-tests/edit}]
    ["/tests/reorder/:uurlid/:ordnen/:direction" {:get cont-tests/reorder}]
    ["/tests/exportpdf/:uurlid" {:get  cont-export/export-test-pdf}]
-   ["/tests/exportodf/:uurlid" {:get  cont-export/export-test-odf}]
+   ["/tests/exportodt/:uurlid" {:get  cont-export/export-test-odt}]
    ["/tests/delete"            {:delete cont-tests/delete-test}]
    ["/files/:archived"         {:get  cont-files/index}]
    ["/files/popup/:archived"   {:get  cont-files/popup}]
@@ -55,7 +55,8 @@
    ["/posts/update"            {:post cont-posts/update-post}]
    ["/posts/published/:id/:published" {:get cont-posts/toggle-published}]
    ["/posts/new"               {:get cont-posts/admin-new}]
-   ["/users"                   {:get cont-users/admin-users :post cont-users/create-user}]])
+   ["/users/:archived"         {:get cont-users/admin-users}]
+   ["/users"                   {:post cont-users/create-user}]])
 
 (defn home-routes []
   [""

@@ -31,6 +31,7 @@
                  [org.clojure/tools.cli "0.4.2"]         ;; parses command line arguments and stuff like that
                  [org.clojure/tools.logging "0.4.1"]     ;; Logs duh!
                  [org.immutant/web "2.1.10" :exclusions [joda-time]] ;; Serve web requests using Ring handlers, Servlets, or Undertow HttpHandlers
+                 [org.odftoolkit/simple-odf "0.9.0-RC1"] ;; Open Document libraries
                  [org.postgresql/postgresql "42.2.9"]    ;; PostgreSQL rulez!
                  [re-frame "0.11.0"]                     ;; A Reagent Framework For Writing SPAs, in Clojurescript.
                  [reagent "0.9.1"]                       ;; Minimalistic React for ClojureScript
@@ -47,13 +48,14 @@
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
             "fig:dev" ["trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
             "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]
-            "l:test" ["test" ":only" "zentaur.model.tests-test/test-fuction"]
+            "l:test" ["test" ":only" "zentaur.model.tests-test/create-test!"]
             "l:bl" ["test" ":only" "business-logic"]
             "tree" ["deps" ":tree"]}
   :target-path "target/%s/"
   :main ^:skip-aot zentaur.core
   :migratus {:store :database}
-  :plugins [[migratus-lein "0.7.2"]]  ;;  plugin for deploying/testing Immutant apps with WildFly
+  :plugins [[migratus-lein "0.7.2"]        ;; Migrate database queries
+            ]
   :clean-targets ^{:protect false}
   [:target-path [:builds :app :compiler :output-to]]
   :profiles {
@@ -75,14 +77,16 @@
                                           [enlive "1.1.6"]
                                           [factory-time "0.1.2"]                     ;; Factory-bot like library for tests
                                           [prone "2019-07-08"]                       ;; Better exception reporting middleware for Ring.
-                                          [ring/ring-devel "1.8.0"]                  ;; Ring dev options
-                                          [ring/ring-mock "0.4.0"]]                  ;; Library to create mock Ring requests for unit tests
+                                          [ring/ring-devel "1.8.0"]       ;; Ring dev options
+                                          [ring/ring-mock "0.4.0"]        ;; Library to create mock Ring requests for unit tests
+                                          ]
                            :source-paths ["env/dev/clj" "target" "env/dev/cljs"]
                            :resource-paths ["env/dev/resources"]
                            :repl-options {:init-ns user :timeout 120000}}
              :project/test {:jvm-opts ["-Dconf=test-config.edn" "--illegal-access=warn"]
                             :dependencies [[com.jakemccrary/lein-test-refresh "0.24.1"]
-                                           [lein-autoexpect "1.9.0"]]
+                                           [lein-autoexpect "1.9.0"]
+                                           [talltale "0.4.3"]]    ;; fake data for test
                             :resource-paths ["env/test/resources"]
                             :source-paths ["env/test/clj" "test/clj"]
                             :test-selectors {:default (complement :integration)
