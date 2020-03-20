@@ -153,13 +153,14 @@
 ;; 1: multi 2: open, 3: fullfill, 4: composite questions (columns)
 (defmethod display-question 1
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
-  (let [counter (r/atom 0)]
+  (let [counter  (r/atom 0)
+        acounter (:answers q)]
     (fn [{:keys [question explanation hint qtype id ordnen] :as q}]
     [:div.question-items-divs
      [input-new-answer {:question-id id :on-stop #(js/console.log "stop") :props {:placeholder "Neue antwort"}}]
      (when-not (nil? (:answers q))
        (for [answer (:answers q)]
-         [display-answer (assoc (second answer) :key (swap! counter inc))]))])))
+         [display-answer (assoc (second answer) :acounter acounter :key (swap! counter inc))]))])))
 
 (defmethod display-question 2
   [question]
@@ -347,8 +348,7 @@
 (defn todo-app
   []
   (let [question-count (rf/subscribe [:question-count])
-        uurlid         (.-value (gdom/getElement "uurlid"))
-        qq             (js/parseInt @question-count)]
+        uurlid         (.-value (gdom/getElement "uurlid"))]
     [:div {:id "page-container"}
      [test-editor-view]
      [create-question-form]
