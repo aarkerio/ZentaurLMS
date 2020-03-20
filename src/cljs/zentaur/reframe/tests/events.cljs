@@ -365,3 +365,32 @@
                            mutation                           ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
                            [:process-after-reorder-question]]))))
+
+
+(re-frame/reg-event-db
+ :process-after-reorder-answer
+ []
+ (fn [db [_ response]]
+   (.log js/console (str ">>> VALUE process-after-update-test >>>>> " response ))
+   (let [data      (-> response :data :reorder_answer)
+         answers   (:answers data)
+         q-keyword (keyword (:id data))
+         _         (.log js/console (str ">>> ANNNSWRES answers >>>>> " answers "  >>> QIIIDDD >>> q-keyword >>> " q-keyword))]
+   (-> db
+       (update-in [:questions q-keyword :answers] conj answers)
+       (update :loading? not)))))
+
+(re-frame/reg-event-fx       ;; <-- note the `-fx` extension
+  :reorder-answer            ;; <-- the event id
+  (fn                         ;; <-- the handler function
+    [cofx [_ updates]]       ;; <-- 1st argument is coeffect, from which we extract db
+    (let [_       (.log js/console (str ">>> VALUES OOO UPDATES >>>>> " updates))
+          {:keys [ordnen question-id direction]} updates
+          mutation (gstring/format "mutation { reorder_answer(ordnen: %i, question_id: %i, direction: \"%s\")
+                                    { id question hint qtype fulfill answers { id answer correct ordnen }}}"
+                                  ordnen question-id direction)]
+       (.log js/console (str ">>> MUTATION UPDATE ORDER >>>>> " mutation ))
+       (re-frame/dispatch [::re-graph/mutate
+                           mutation                                   ;; graphql query
+                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
+                           [:process-after-reorder-answer]]))))

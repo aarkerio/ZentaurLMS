@@ -73,7 +73,7 @@
 (defn- ^:private get-questions
   "Get questions and convert to map keyed"
   [test-id]
-  (let [questions        (db/get-questions {:test-id test-id})]
+  (let [questions (db/get-questions {:test-id test-id})]
      (map get-answers questions)))
 
 (defn build-test-structure
@@ -110,7 +110,6 @@
 (defn update-test!
   "Update test after editing it with Re-frame"
   [params]
-  (log/info (str ">>> PARAM update-test!update-test!  >>>>> " params))
     (db/update-test! params))
 
 ;;;;;;;;;;;;    DELETES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -132,11 +131,10 @@
 
 ;;;; REORDERS
 
-(defn reorder-rows
-   "Reorder rows"
+(defn reorder-question-rows
+   "Reorder questions"
   [rows direction]
-  (let [new-ordnen  (= "up" direction)
-        first       (first rows)
+  (let [first       (first rows)
         second      (second rows)
         new-one     (assoc {} :id (:id first)  :ordnen (:ordnen second))
         new-two     (assoc {} :id (:id second) :ordnen (:ordnen first))]
@@ -149,6 +147,26 @@
         data         (assoc {} :test_id (:id test) :ordnen ordnen-id)
         qt-rows      (if (= "up" direction) (db/question-order-up data) (db/question-order-down data))]
      (if (= 2 (count qt-rows))
-       (do (reorder-rows qt-rows direction)
+       (do (reorder-question-rows qt-rows direction)
            (build-test-structure uurlid false))
        {:error "Not enough rows"})))
+
+(defn reorder-answer-rows
+   "Reorder answer"
+  [rows]
+  (let [first       (first rows)
+        second      (second rows)
+        new-one     (assoc {} :id (:id first)  :ordnen (:ordnen second))
+        new-two     (assoc {} :id (:id second) :ordnen (:ordnen first))]
+     (log/info (str ">>> RWORDER ANSWERS FIRST  >>>>> " first " >>>>> SECOND >>>> " second))
+    (db/update-answer-order new-one)
+    (db/update-answer-order new-two)))
+
+(defn reorder-answer
+  [{:keys [ordnen question_id  direction]}]
+  (let [data         (assoc {} :ordnen ordnen :question-id question_id)
+        answer-rows  (if (= "up" direction) (db/answer-order-up data) (db/answer-order-down data))]
+     (if (= 2 (count answer-rows))
+       (do (reorder-answer-rows answer-rows)
+           (db/get-answers {:question-id question_id}))
+       {:error "Not enough answer rows"})))

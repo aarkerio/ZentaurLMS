@@ -77,20 +77,20 @@
                                                                    :correct @acorrect
                                                                    :answer_id id}])}]]])))
 
-(defn display-answer [{:keys [id answer correct question_id key] :as answer-record}]
+(defn display-answer [{:keys [id answer correct ordnen question_id key] :as answer-record}]
   (let [answer-class    (if-not correct "all-width-red" "all-width-green")
         answer-text     (if-not correct "answer-text-red" "answer-text-green")
         editing-answer  (r/atom false)]
     (fn []
       [:div {:class answer-class}
-       [:img.img-float-right {:title    "Frage nachbestellen"
-                              :alt      "Frage nachbestellen"
+       [:img.img-float-right {:title    "Antwort an up senden"
+                              :alt      "Antwort an up senden"
                               :src      "/img/icon_blue_up.png"
-                              :on-click #(rf/dispatch [:reorder-answer {:answer-id id :question-id question_id}])}]
+                              :on-click #(rf/dispatch [:reorder-answer {:ordnen ordnen :question-id question_id :direction "up"}])}]
        [:img.img-float-right {:title    "Senden Sie nach unten"
                               :alt      "Senden Sie nach unten"
                               :src      "/img/icon_blue_down.png"
-                              :on-click #(rf/dispatch [:reorder-answer {:answer-id id :question-id question_id}])}]
+                              :on-click #(rf/dispatch [:reorder-answer {:ordnen ordnen :question-id question_id :direction "down"}])}]
        [:img.img-float-right {:title    "Antwort löschen"
                               :alt      "Antwort löschen"
                               :src      "/img/icon_delete.png"
