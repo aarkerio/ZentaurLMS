@@ -77,20 +77,23 @@
                                                                    :correct @acorrect
                                                                    :answer_id id}])}]]])))
 
-(defn display-answer [{:keys [id answer correct ordnen question_id key] :as answer-record}]
+(defn display-answer [{:keys [id answer correct ordnen acounter question_id key idx] :as answer-record}]
   (let [answer-class    (if-not correct "all-width-red" "all-width-green")
         answer-text     (if-not correct "answer-text-red" "answer-text-green")
         editing-answer  (r/atom false)]
+    (.log js/console (str ">>> acounteracounteracounteracounter >>>>> " acounter ">>>> answer-record >>> " answer-record))
     (fn []
       [:div {:class answer-class}
-       [:img.img-float-right {:title    "Antwort an up senden"
-                              :alt      "Antwort an up senden"
-                              :src      "/img/icon_blue_up.png"
-                              :on-click #(rf/dispatch [:reorder-answer {:ordnen ordnen :question-id question_id :direction "up"}])}]
-       [:img.img-float-right {:title    "Senden Sie nach unten"
-                              :alt      "Senden Sie nach unten"
-                              :src      "/img/icon_blue_down.png"
-                              :on-click #(rf/dispatch [:reorder-answer {:ordnen ordnen :question-id question_id :direction "down"}])}]
+       (when (> idx 1)
+         [:img.img-float-right {:title    "Antwort an up senden"
+                                :alt      "Antwort an up senden"
+                                :src      "/img/icon_blue_up.png"
+                                :on-click #(rf/dispatch [:reorder-answer {:ordnen ordnen :question-id question_id :direction "up"}])}])
+       (when (< idx acounter)
+         [:img.img-float-right {:title    "Senden Sie nach unten"
+                                :alt      "Senden Sie nach unten"
+                                :src      "/img/icon_blue_down.png"
+                                :on-click #(rf/dispatch [:reorder-answer {:ordnen ordnen :question-id question_id :direction "down"}])}])
        [:img.img-float-right {:title    "Antwort löschen"
                               :alt      "Antwort löschen"
                               :src      "/img/icon_delete.png"
@@ -153,14 +156,15 @@
 ;; 1: multi 2: open, 3: fullfill, 4: composite questions (columns)
 (defmethod display-question 1
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
-  (let [counter  (r/atom 0)
-        acounter (:answers q)]
+  (let [counter      (r/atom 0)
+        idx-answers  (map-indexed (fn [idx answer] (assoc (second answer) :idx (inc idx))) (:answers q))
+        acounter     (count idx-answers)]
     (fn [{:keys [question explanation hint qtype id ordnen] :as q}]
     [:div.question-items-divs
      [input-new-answer {:question-id id :on-stop #(js/console.log "stop") :props {:placeholder "Neue antwort"}}]
-     (when-not (nil? (:answers q))
-       (for [answer (:answers q)]
-         [display-answer (assoc (second answer) :acounter acounter :key (swap! counter inc))]))])))
+     (when-not (nil? idx-answers)
+       (for [answer idx-answers]
+         [display-answer (assoc answer :acounter acounter :key (swap! counter inc))]))])))
 
 (defmethod display-question 2
   [question]
