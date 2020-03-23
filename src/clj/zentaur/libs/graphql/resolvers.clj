@@ -45,12 +45,21 @@
 
 (defn- ^:private reorder-question
   [context args value]
-  (let [questions (mt/reorder-question args)]
-    (map #(update % :id str) questions)))
+  (let [pre-questions (mt/reorder-question args)
+        questions (map #(update % :id str) pre-questions)]
+    (log/info (str ">>> PAR  questions >>>>> " (prn questions)))
+    (assoc {} :uurlid "uurlid" :title "fake title" :questions questions)))
+
+(defn- ^:private reorder-answer
+  [context args value]
+  (let [pre-answers (mt/reorder-answer args)
+        id-str      (str (:question_id args))
+        answers     (map #(update % :id str) pre-answers)]
+    (log/info (str ">>> QUESTIONS answers >>>>> " (pr-str answers)))
+    (assoc {} :id id-str :question "Foo" :answers answers)))
 
 (defn- ^:private update-fulfill
   [context args value]
-  (log/info (str ">>> ***** FUL FILL ARGS update- FUL FILL ARGS >>>>> " args))
   (let [updated-question (mt/update-fulfill! args)]
     (update updated-question :id str)))
 
@@ -81,6 +90,7 @@
    :update-test (partial update-test)
    :update-question (partial update-question)
    :reorder-question (partial reorder-question)
+   :reorder-answer (partial reorder-answer)
    :update-fulfill (partial update-fulfill)
    :update-answer (partial update-answer)
    :delete-question (partial delete-question)

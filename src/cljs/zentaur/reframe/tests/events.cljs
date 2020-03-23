@@ -343,25 +343,50 @@
  :process-after-reorder-question
  []
  (fn [db [_ response]]
-   (.log js/console (str ">>> VALUE process-after-update-test >>>>> " response ))
-   (let [test (-> response :data :update_test)]
+   (let [questions     (-> response :data :reorder_question :questions)
+         ques-answers  (map #(update % :answers vector-to-idxmap) questions)
+         idx-questions (vector-to-idxmap ques-answers)]
    (-> db
-       (assoc :test test)
+       (assoc-in [:questions] idx-questions)
        (update :loading? not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :reorder-question          ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ updates]]       ;; <-- 1st argument is coeffect, from which we extract db
-    (let [uurlid  (.-value (gdom/getElement "uurlid"))
-          _       (.log js/console (str ">>> VALUES OOO UPDATES >>>>> " updates "  uurlid >>>> " uurlid))
-          {:keys [question-id direction]} updates
-          question-id-int (js/parseInt question-id)
-          mutation (gstring/format "mutation { reorder_question(uurlid: \"%s\", question_id: %i, direction: \"%s\")
-                                    { uurlid title questions { id question hint explanation qtype points ordnen fulfill }}}"
-                                  uurlid question-id-int direction)]
-       (.log js/console (str ">>> MUTATION UPDATE ORDER >>>>> " mutation ))
+    (let [_       (.log js/console (str ">>> VALUES OOO UPDATES >>>>> " updates))
+          {:keys [uurlid ordnen direction]} updates
+          mutation (gstring/format "mutation { reorder_question(uurlid: \"%s\", ordnen: %i, direction: \"%s\")
+                                    { uurlid title questions { id question hint explanation qtype points ordnen fulfill
+                                                               answers { id answer correct ordnen question_id } }}}"
+                                   uurlid ordnen direction)]
+         (.log js/console (str ">>> GRAPHQL Mutation >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
-                           mutation                           ;; graphql query
-                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
+                           mutation             ;; graphql query
+                           {}                   ;; arguments map
                            [:process-after-reorder-question]]))))
+
+
+(re-frame/reg-event-db
+ :process-after-reorder-answer
+ []
+ (fn [db [_ response]]
+   (let [data      (-> response :data :reorder_answer)
+         answers   (vector-to-idxmap (:answers data))
+         q-keyword (keyword (:id data))]
+   (-> db
+       (assoc-in [:questions q-keyword :answers] answers)
+       (update :loading? not)))))
+
+(re-frame/reg-event-fx       ;; <-- note the `-fx` extension
+  :reorder-answer            ;; <-- the event id
+  (fn                         ;; <-- the handler function
+    [cofx [_ updates]]       ;; <-- 1st argument is coeffect, from which we extract db
+    (let [{:keys [ordnen question-id direction]} updates
+          mutation (gstring/format "mutation { reorder_answer(ordnen: %i, question_id: %i, direction: \"%s\")
+                                    { id question hint qtype fulfill answers { id answer correct ordnen question_id }}}"
+                                  ordnen question-id direction)]
+       (re-frame/dispatch [::re-graph/mutate
+                           mutation                                   ;; graphql query
+                           {}   ;; arguments map
+                           [:process-after-reorder-answer]]))))

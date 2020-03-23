@@ -3,7 +3,6 @@
 CREATE TABLE answers (
   id serial PRIMARY KEY,
   question_id INT NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
-  answer_id INT,
   answer TEXT,
   ordnen SMALLINT NOT NULL DEFAULT 1,
   correct BOOLEAN NOT NULL DEFAULT false,

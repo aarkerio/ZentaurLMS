@@ -116,9 +116,17 @@
                                 :description "Reorder question."
                                 :args {
                                        :uurlid      {:type (non-null ID)}
-                                       :question_id {:type (non-null Int)}
+                                       :ordnen      {:type (non-null Int)}
                                        :direction   {:type (non-null String)}}
                                 :resolve :reorder-question}
+             :reorder_answer {:type :question
+                              :description "Reorder answer."
+                              :args {
+                                     :ordnen      {:type (non-null Int)}
+                                     :question_id {:type (non-null Int)}
+                                     :direction   {:type (non-null String)}}
+                              :resolve :reorder-answer}
+
              :update_fulfill {:type :question
                                :description "Update the fulfill field."
                                :args {

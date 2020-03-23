@@ -77,20 +77,23 @@
                                                                    :correct @acorrect
                                                                    :answer_id id}])}]]])))
 
-(defn display-answer [{:keys [id answer correct question_id key] :as answer-record}]
+(defn display-answer [{:keys [id answer correct ordnen acounter question_id key idx] :as answer-record}]
   (let [answer-class    (if-not correct "all-width-red" "all-width-green")
         answer-text     (if-not correct "answer-text-red" "answer-text-green")
         editing-answer  (r/atom false)]
+    (.log js/console (str ">>> acounteracounteracounteracounter >>>>> " acounter ">>>> answer-record >>> " answer-record))
     (fn []
       [:div {:class answer-class}
-       [:img.img-float-right {:title    "Frage nachbestellen"
-                              :alt      "Frage nachbestellen"
-                              :src      "/img/icon_blue_up.png"
-                              :on-click #(rf/dispatch [:reorder-answer {:answer-id id :question-id question_id}])}]
-       [:img.img-float-right {:title    "Senden Sie nach unten"
-                              :alt      "Senden Sie nach unten"
-                              :src      "/img/icon_blue_down.png"
-                              :on-click #(rf/dispatch [:reorder-answer {:answer-id id :question-id question_id}])}]
+       (when (> idx 1)
+         [:img.img-float-right {:title    "Antwort an up senden"
+                                :alt      "Antwort an up senden"
+                                :src      "/img/icon_blue_up.png"
+                                :on-click #(rf/dispatch [:reorder-answer {:ordnen ordnen :question-id question_id :direction "up"}])}])
+       (when (< idx acounter)
+         [:img.img-float-right {:title    "Senden Sie nach unten"
+                                :alt      "Senden Sie nach unten"
+                                :src      "/img/icon_blue_down.png"
+                                :on-click #(rf/dispatch [:reorder-answer {:ordnen ordnen :question-id question_id :direction "down"}])}])
        [:img.img-float-right {:title    "Antwort löschen"
                               :alt      "Antwort löschen"
                               :src      "/img/icon_delete.png"
@@ -153,13 +156,15 @@
 ;; 1: multi 2: open, 3: fullfill, 4: composite questions (columns)
 (defmethod display-question 1
   [{:keys [question explanation hint key qtype id ordnen] :as q}]
-  (let [counter (r/atom 0)]
+  (let [counter      (r/atom 0)
+        idx-answers  (map-indexed (fn [idx answer] (assoc (second answer) :idx (inc idx))) (:answers q))
+        acounter     (count idx-answers)]
     (fn [{:keys [question explanation hint qtype id ordnen] :as q}]
     [:div.question-items-divs
      [input-new-answer {:question-id id :on-stop #(js/console.log "stop") :props {:placeholder "Neue antwort"}}]
-     (when-not (nil? (:answers q))
-       (for [answer (:answers q)]
-         [display-answer (assoc (second answer) :key (swap! counter inc))]))])))
+     (when-not (nil? idx-answers)
+       (for [answer idx-answers]
+         [display-answer (assoc answer :acounter acounter :key (swap! counter inc))]))])))
 
 (defmethod display-question 2
   [question]
@@ -182,15 +187,15 @@
       [:div.question-container-div   ;; Flex container
        [:div.question-items-divs
         (when (> counter 1)
-          [:a {:href (str "/vclass/tests/reorder/" uurlid "/" ordnen "/up")}
-              [:img.img-float-right {:title    "Frage nachbestellen"
-                                     :alt      "Frage nachbestellen"
-                                     :src      "/img/icon_up_green.png"}]])
+          [:img.img-float-right {:title    "Frage nachbestellen"
+                                 :alt      "Frage nachbestellen"
+                                 :src      "/img/icon_up_green.png"
+                                 :on-click #(rf/dispatch [:reorder-question {:uurlid uurlid :ordnen ordnen :direction "up"}])}])
         (when (< counter qcount)
-          [:a {:href (str "/vclass/tests/reorder/" uurlid "/" ordnen "/down")}
-              [:img.img-float-right {:title    "Senden Sie nach unten"
-                                     :alt      "Senden Sie nach unten"
-                                     :src      "/img/icon_down_green.png"}]])
+          [:img.img-float-right {:title    "Senden Sie nach unten"
+                                 :alt      "Senden Sie nach unten"
+                                 :src      "/img/icon_down_green.png"
+                                 :on-click #(rf/dispatch [:reorder-question {:uurlid uurlid :ordnen ordnen :direction "down"}])}])
         (if @editing-question
           [:img.img-float-right {:title    "Frage abbrechen"
                                  :alt      "Frage abbrechen"
@@ -347,8 +352,7 @@
 (defn todo-app
   []
   (let [question-count (rf/subscribe [:question-count])
-        uurlid         (.-value (gdom/getElement "uurlid"))
-        qq             (js/parseInt @question-count)]
+        uurlid         (.-value (gdom/getElement "uurlid"))]
     [:div {:id "page-container"}
      [test-editor-view]
      [create-question-form]

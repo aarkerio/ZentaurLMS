@@ -154,10 +154,6 @@ UPDATE answers SET answer = :answer, correct = :correct WHERE id = :id RETURNING
 UPDATE tests SET title = :title, tags = :tags, description = :description, subject_id = :subject_id
 WHERE uurlid = :uurlid RETURNING *
 
--- :name get-answer :? :1
--- :doc retrieve an answer given the id.
-SELECT * FROM answers WHERE id = :id
-
 -- :name create-question-test! :<! :n
 -- :doc creates a new question test record
 INSERT INTO question_tests (question_id, test_id, ordnen) VALUES (:question_id, :test_id, :ordnen) RETURNING true
@@ -209,7 +205,7 @@ SELECT ordnen FROM answers WHERE question_id = :question-id ORDER BY ordnen DESC
 
 -- :name get-answers :? :*
 -- :doc retrieve all tests.
-SELECT id, question_id, answer, correct FROM answers WHERE question_id = :question-id  ORDER BY ordnen DESC
+SELECT id, question_id, answer, ordnen, correct FROM answers WHERE question_id = :question-id  ORDER BY ordnen ASC
 
 -- :name unlink-question! :<! :1
 -- :doc unlink a question from the test
@@ -223,6 +219,8 @@ DELETE FROM answers WHERE question_id = :question_id AND id = :answer_id RETURNI
 -- :doc set test as archived
 UPDATE tests SET archived = true WHERE uurlid = :uurlid RETURNING TRUE
 
+/***** REORDER QUESTIONS STARTS ******/
+
 -- :name question-order-up :? :*
 -- :doc get two records
 SELECT id, test_id, question_id, ordnen FROM question_tests WHERE test_id = :test_id AND ordnen <= :ordnen ORDER BY ordnen DESC LIMIT 2
@@ -234,6 +232,25 @@ SELECT id, test_id, question_id, ordnen FROM question_tests WHERE test_id = :tes
 -- :name update-question-order :<! :1
 -- :doc set reorder in question
 UPDATE question_tests SET ordnen = :ordnen WHERE id = :id RETURNING TRUE
+
+/***** REORDER QUESTIONS ENDS ******/
+
+/***** REORDER ANSWERS STARTS ******/
+
+-- :name answer-order-up :? :*
+-- :doc get two records
+SELECT id, ordnen FROM answers WHERE question_id = :question-id  AND ordnen <= :ordnen ORDER BY ordnen DESC LIMIT 2
+
+-- :name answer-order-down :? :*
+-- :doc get two records
+SELECT id, ordnen FROM answers WHERE question_id = :question-id  AND ordnen >= :ordnen ORDER BY ordnen ASC LIMIT 2
+
+-- :name update-answer-order :<! :1
+-- :doc set reorder in question
+UPDATE answers SET ordnen = :ordnen WHERE id = :id RETURNING TRUE
+
+/***** REORDER ANSWERS ENDS ******/
+
 
 /**** ROLES   ****/
 
