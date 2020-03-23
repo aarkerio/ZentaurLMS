@@ -45,9 +45,10 @@
 
 (defn- ^:private reorder-question
   [context args value]
-  (log/info (str ">>> ARGS reorder-question >>>>> " args))
-  (let [questions (mt/reorder-question args)]
-    (map #(update % :id str) questions)))
+  (let [pre-questions (mt/reorder-question args)
+        questions (map #(update % :id str) pre-questions)]
+    (log/info (str ">>> PAR  questions >>>>> " (prn questions)))
+    (assoc {} :uurlid "uurlid" :title "fake title" :questions questions)))
 
 (defn- ^:private reorder-answer
   [context args value]

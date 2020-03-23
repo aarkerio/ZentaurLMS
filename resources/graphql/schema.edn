@@ -116,7 +116,7 @@
                                 :description "Reorder question."
                                 :args {
                                        :uurlid      {:type (non-null ID)}
-                                       :question_id {:type (non-null Int)}
+                                       :ordnen      {:type (non-null Int)}
                                        :direction   {:type (non-null String)}}
                                 :resolve :reorder-question}
              :reorder_answer {:type :question
