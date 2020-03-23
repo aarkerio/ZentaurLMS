@@ -77,8 +77,8 @@
                                           [enlive "1.1.6"]
                                           [factory-time "0.1.2"]                     ;; Factory-bot like library for tests
                                           [prone "2019-07-08"]                       ;; Better exception reporting middleware for Ring.
-                                          [ring/ring-devel "1.8.0"]       ;; Ring dev options
-                                          [ring/ring-mock "0.4.0"]        ;; Library to create mock Ring requests for unit tests
+                                          [ring/ring-devel "1.8.0"]                  ;; Ring dev default options
+                                          [ring/ring-mock "0.4.0"]                   ;; Library to create mock Ring requests for unit tests
                                           ]
                            :source-paths ["env/dev/clj" "target" "env/dev/cljs"]
                            :resource-paths ["env/dev/resources"]

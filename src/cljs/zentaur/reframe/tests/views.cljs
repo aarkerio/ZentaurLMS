@@ -187,15 +187,15 @@
       [:div.question-container-div   ;; Flex container
        [:div.question-items-divs
         (when (> counter 1)
-          [:a {:href (str "/vclass/tests/reorder/" uurlid "/" ordnen "/up")}
-              [:img.img-float-right {:title    "Frage nachbestellen"
-                                     :alt      "Frage nachbestellen"
-                                     :src      "/img/icon_up_green.png"}]])
+          [:img.img-float-right {:title    "Frage nachbestellen"
+                                 :alt      "Frage nachbestellen"
+                                 :src      "/img/icon_up_green.png"
+                                 :on-click #(rf/dispatch [:reorder-question {:uurlid uurlid :ordnen ordnen :direction "up"}])}])
         (when (< counter qcount)
-          [:a {:href (str "/vclass/tests/reorder/" uurlid "/" ordnen "/down")}
-              [:img.img-float-right {:title    "Senden Sie nach unten"
-                                     :alt      "Senden Sie nach unten"
-                                     :src      "/img/icon_down_green.png"}]])
+          [:img.img-float-right {:title    "Senden Sie nach unten"
+                                 :alt      "Senden Sie nach unten"
+                                 :src      "/img/icon_down_green.png"
+                                 :on-click #(rf/dispatch [:reorder-question {:uurlid uurlid :ordnen ordnen :direction "down"}])}])
         (if @editing-question
           [:img.img-float-right {:title    "Frage abbrechen"
                                  :alt      "Frage abbrechen"

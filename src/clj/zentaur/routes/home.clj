@@ -29,7 +29,6 @@
    ["/delete/:uurlid"          {:delete cont-vclass/delete-vclass}]
    ["/tests"                   {:get  cont-tests/index :post cont-tests/create-test}]
    ["/tests/edit/:uurlid"      {:get  cont-tests/edit}]
-   ["/tests/reorder/:uurlid/:ordnen/:direction" {:get cont-tests/reorder}]
    ["/tests/exportpdf/:uurlid" {:get  cont-export/export-test-pdf}]
    ["/tests/exportodt/:uurlid" {:get  cont-export/export-test-odt}]
    ["/tests/delete"            {:delete cont-tests/delete-test}]

@@ -45,6 +45,7 @@
 
 (defn- ^:private reorder-question
   [context args value]
+  (log/info (str ">>> ARGS reorder-question >>>>> " args))
   (let [questions (mt/reorder-question args)]
     (map #(update % :id str) questions)))
 
@@ -58,7 +59,6 @@
 
 (defn- ^:private update-fulfill
   [context args value]
-  (log/info (str ">>> ***** FUL FILL ARGS update- FUL FILL ARGS >>>>> " args))
   (let [updated-question (mt/update-fulfill! args)]
     (update updated-question :id str)))
 

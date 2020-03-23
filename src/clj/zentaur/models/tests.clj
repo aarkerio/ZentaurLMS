@@ -141,7 +141,7 @@
     (db/update-question-order new-one)
     (db/update-question-order new-two)))
 
-(defn reorder-question [uurlid ordnen direction]
+(defn reorder-question [{:keys [uurlid ordnen direction]}]
   (let [ordnen-id    (Integer/parseInt ordnen)
         test         (get-one-test uurlid)
         data         (assoc {} :test_id (:id test) :ordnen ordnen-id)
@@ -158,7 +158,7 @@
         second      (second rows)
         new-one     (assoc {} :id (:id first)  :ordnen (:ordnen second))
         new-two     (assoc {} :id (:id second) :ordnen (:ordnen first))]
-     (log/info (str ">>> RWORDER ANSWERS FIRST  >>>>> " first " >>>>> SECOND >>>> " second))
+     (log/info (str ">>> ORDER ANSWERS.   FIRST ANSWER  >>>>> " first " >>>>> SECOND ANSWER >>>> " second))
     (db/update-answer-order new-one)
     (db/update-answer-order new-two)))
 
@@ -168,5 +168,5 @@
         answer-rows  (if (= "up" direction) (db/answer-order-up data) (db/answer-order-down data))]
      (if (= 2 (count answer-rows))
        (do (reorder-answer-rows answer-rows)
-           (db/get-answers {:question-id question_id}))
+          (db/get-answers {:question-id question_id}))
        {:error "Not enough answer rows"})))
