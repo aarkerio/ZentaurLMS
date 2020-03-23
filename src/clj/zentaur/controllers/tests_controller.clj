@@ -42,10 +42,13 @@
         msg    (if result basec/msg-erfolg basec/msg-fehler)]
     (basec/json-parser {:response msg})))
 
-(defn reorder
-  "GET /vclass/tests/reorder/:uurlid/:ordnen/:direction"
-  [{:keys [path-params]}]
-  (let [{:keys [uurlid ordnen direction]} path-params
-        result (model-test/reorder-question uurlid ordnen direction)
-        msg    (if result basec/msg-erfolg basec/msg-fehler)]
-    (assoc (response/found (str "/vclass/tests/edit/" uurlid)) :flash msg)))
+(defn apply-test
+  "GET /vclass/tests/apply/:uurlid"
+  [{:keys [path-params] :as request}]
+  (let [base    (basec/set-vars request)
+        uurlid  (:uurlid path-params)
+        msg     (if true basec/msg-erfolg basec/msg-fehler)]
+    (basec/parser
+     (layout/application (merge base {:title "Vclassrrooms" :contents (tests-view/edit base uurlid) })))))
+
+

@@ -140,10 +140,11 @@
 (defn fulfill-question-form
   [question]
   (let [afulfill  (r/atom (:fulfill question))
-        id        (:id question)]
+        id        (:id question)
+        ats       (fnil zlib/asterisks-to-spaces "")]
     (fn []
       [:div
-       [:div.div-separator (zlib/asterisks-to-spaces @afulfill)]
+       [:div.div-separator "Preview:" [:br] (ats @afulfill)]
        [:div.div-separator
         [:textarea {:value @afulfill :on-change  #(reset! afulfill (-> % .-target .-value))
                     :placeholder "Text and asterisks" :title "Text and asterisks" :cols 120  :rows 10}]]

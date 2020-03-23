@@ -126,7 +126,6 @@
                                      :question_id {:type (non-null Int)}
                                      :direction   {:type (non-null String)}}
                               :resolve :reorder-answer}
-
              :update_fulfill {:type :question
                                :description "Update the fulfill field."
                                :args {

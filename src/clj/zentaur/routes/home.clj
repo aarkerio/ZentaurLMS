@@ -31,6 +31,7 @@
    ["/tests/edit/:uurlid"      {:get  cont-tests/edit}]
    ["/tests/exportpdf/:uurlid" {:get  cont-export/export-test-pdf}]
    ["/tests/exportodt/:uurlid" {:get  cont-export/export-test-odt}]
+   ["/tests/apply/:uurlid"     {:get  cont-tests/apply-test}]
    ["/tests/delete"            {:delete cont-tests/delete-test}]
    ["/files/:archived"         {:get  cont-files/index}]
    ["/files/popup/:archived"   {:get  cont-files/popup}]

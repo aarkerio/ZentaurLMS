@@ -267,11 +267,10 @@
  (fn
    [db [_ response]]
    (let [question  (-> response :data :update_fulfill)
-         _         (.log js/console (str ">>> VALUE QQUESTION FULFILL >>>>> " question ))
          qkeyword  (keyword (:id question))
          fulfill   (:fulfill question)]
      (-> db
-         (update-in [:questions qkeyword :fulfill] conj fulfill)
+         (assoc-in [:questions qkeyword :fulfill] fulfill)
          (update :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
@@ -282,10 +281,11 @@
           mutation  (gstring/format "mutation { update_fulfill( id: %i, fulfill: \"%s\")
                                      { id fulfill }}"
                                     id fulfill)]
-       (re-frame/dispatch [::re-graph/mutate
-                           mutation                                  ;; graphql query
-                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
-                           [:process-after-update-fulfill]]))))
+      (.log js/console (str ">>> MUTATION  >>>>> " mutation))
+      (re-frame/dispatch [::re-graph/mutate
+                          mutation                                  ;; graphql query
+                          {:some "Pumas campeón prros!! variable"}   ;; arguments map
+                          [:process-after-update-fulfill]]))))
 
 (re-frame/reg-event-db
  :process-after-update-answer
