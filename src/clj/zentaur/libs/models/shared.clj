@@ -60,3 +60,8 @@
   [params & args]
   (let [new-values (reduce #(assoc %1 %2 (contains? params %2)) {} args)]
     (merge params new-values)))
+
+(defn asterisks-to-spaces
+  "Replace sub-strings surrounded by asterisks for spaces"
+  [text]
+  (clojure.string/replace text #"\*(.*?)\*" #(clojure.string/join (take (count (% 1)) (repeat "_")))))

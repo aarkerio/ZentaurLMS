@@ -9,7 +9,7 @@ CREATE TABLE questions (
   points smallint NOT NULL DEFAULT 1,
   origin INT NOT NULL DEFAULT 0,
   explanation text,
-  fulfill text,
+  fulfill text NOT NULL DEFAULT "",
   active BOOLEAN NOT NULL DEFAULT false,
   reviewed_lang BOOLEAN NOT NULL DEFAULT false,
   reviewed_fact BOOLEAN NOT NULL DEFAULT false,

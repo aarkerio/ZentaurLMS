@@ -5,6 +5,7 @@
             [crypto.random :as cr]
             [zentaur.db.core :as db]
             [zentaur.libs.models.odt :as dt]
+            [zentaur.libs.models.shared :as sh]
             [zentaur.models.tests :as mt]))
 
 (defn answer-template [answer idx]
@@ -29,8 +30,8 @@
         qtype    (:qtype one-question)
         content  (cond
                    (= qtype 1) (into [:paragraph] (map-indexed (fn [idx itm] (answer-template itm idx)) (:answers one-question)))
-                   (= qtype 2) [:paragraph "____________________________________________________________________________________"]
-                   (= qtype 3) [:paragraph "fulfill"])]
+                   (= qtype 2) [:paragraph (clojure.string/join (take 80 (repeat "_")))]
+                   (= qtype 3) [:paragraph (sh/asterisks-to-spaces (:fulfill one-question))])]
   (assoc one-question :content content :idx idx+)))
 
 (defn to-pdf [file-name test]
