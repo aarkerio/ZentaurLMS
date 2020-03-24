@@ -23,7 +23,10 @@
     (try
       (.addParagraph outputOdt "Date: __  / __  / ____")
       (.addParagraph outputOdt "")
-      (.setStyleName (.getOdfElement (.addParagraph outputOdt (:title test))) "negro")
+      (.. outputOdt
+          (addParagraph (:title test))
+          (getOdfElement)
+          (setStyleName "negro"))
       (.addParagraph outputOdt "")
       (doseq [q questions]
         (let [_   (log/info (str ">>> qqqqqq >>>>> " q))
