@@ -70,11 +70,12 @@
 (defn link-questions [test-id params]
   (let [questions (db/random-questions params)]
     (doseq [q questions]
-      (link-test-question! (:id question) test-id))))
+      (link-test-question! (:id q) test-id))))
 
 (defn generate-test [params]
-  (let [test     (create-test! params 2)
-        _        link-questions (:id test) params]
+  (let [full-params (assoc params :title "Your knew test" :tags "list of tags")
+        test        (create-test! full-params 2)
+        _           (link-questions (:id test) params)]
     {:error nil :ok false}))
 
 ;;;;; TEST BUILD SECTION STARTS

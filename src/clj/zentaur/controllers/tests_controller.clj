@@ -2,9 +2,10 @@
   (:require [cheshire.core :as ches]
             [clojure.tools.logging :as log]
             [zentaur.controllers.base-controller :as basec]
-            [zentaur.models.tests :as model-test]
             [zentaur.hiccup.tests-view :as tests-view]
             [zentaur.hiccup.layouts.application-layout :as layout]
+            [zentaur.models.tests :as model-test]
+            [zentaur.models.users :as model-user]
             [ring.util.http-response :as response]))
 
 (defn index
@@ -28,9 +29,8 @@
 
 (defn create-test
   "POST /vclass/tests"
-  [request]
-  (let [params       (:params request)
-        user-id      (-> request :identity :id)
+  [{:keys [params identity]}]
+  (let [user-id      (:id identity)
         clean-params (dissoc params :__anti-forgery-token :submit :button-save)
         result       (model-test/create-test! clean-params user-id)
         msg          (if (false? result) "Etwas ging schief ;-(" "Test hinzufügen!! ;-)")]
@@ -38,13 +38,9 @@
 
 (defn generate-test
   "POST /vclass/tests/generate"
-  [request]
-  (log/info (str ">>> request XXX  >>>>> " request))
-  (let [params       (:params request)
-        session      (:session request)
-        user-id      (-> request :identity :id)
-        clean-params (dissoc params :__anti-forgery-token :submit :button-save)
-        result       (model-test/generate-test clean-params user-id)
+  [{:keys [params session]}]
+  (let [clean-params (dissoc params :__anti-forgery-token :submit :button-save)
+        result       (model-test/generate-test clean-params)
         msg          (if (false? result) "Etwas ging schief ;-(" "Test hinzufügen!! ;-)")
         uurlid       (:uurlid result)
         user         (model-user/get-user-by-email-and-password "user@demo.com" "password")]
