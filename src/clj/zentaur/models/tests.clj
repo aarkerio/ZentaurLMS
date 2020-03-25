@@ -18,9 +18,14 @@
   (db/get-tests {:user-id user-id}))
 
 (defn get-subjects
-  "Populates the test form"
+  "Data for populates the test form"
   []
   (db/get-subjects))
+
+(defn get-levels
+  "Data for populates the test form"
+  []
+  (db/get-levels))
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]

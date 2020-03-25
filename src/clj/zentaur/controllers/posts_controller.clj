@@ -5,15 +5,18 @@
             [zentaur.hiccup.admin.posts-view :as admin-posts-view]
             [zentaur.hiccup.layouts.application-layout :as layout]
             [zentaur.hiccup.posts-view :as posts-view]
-            [zentaur.models.posts :as model-post]))
+            [zentaur.models.posts :as model-post]
+            [zentaur.models.tests :as model-test]))
 
 (defn get-posts
   "GET  /  (index site)"
   [request]
-  (let [base     (basec/set-vars request)
-        posts    (model-post/get-posts)]
+  (let [base       (basec/set-vars request)
+        posts      (model-post/get-posts)
+        csrf-field (:csrf-field base)
+        subjects   (model-test/get-subjects)]
     (basec/parser
-     (layout/application (merge base {:title "List of Posts" :contents (posts-view/index posts)})))))
+     (layout/application (merge base {:title "List of Posts" :contents (posts-view/index posts csrf-field subjects)})))))
 
 (defn save-comment
   "POST /post/savecomment"

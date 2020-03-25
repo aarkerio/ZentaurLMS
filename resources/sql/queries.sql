@@ -34,9 +34,13 @@ FROM posts p INNER JOIN users u
 ON p.user_id = u.id
 WHERE p.published = true AND p.id = :id
 
+-- :name get-levels :? :raw
+-- :doc retrieves all levels.
+SELECT id, level FROM levels ORDER BY id ASC
+
 -- :name get-subjects :? :raw
--- :doc retrieve all subjects.
-SELECT * FROM subjects ORDER BY subject ASC
+-- :doc retrieves all subjects.
+SELECT id, subject FROM subjects ORDER BY subject ASC
 
 -- :name save-post! :! :1
 -- :doc creates a new post record

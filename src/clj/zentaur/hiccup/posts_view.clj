@@ -24,9 +24,27 @@
         [:div {:style "font-size:8pt;font-weight:bold;"} (str (:last_name comment) " wrote: ")]
         [:div {:class "font"} (:comment comment)]])
 
-(defn index [posts]
+(defn index [posts csrf-field subjects]
   (let [formatted-posts (doall (for [post posts]
                                  (format-post post)))]
+    [:div.create-test-form
+     [:form {:id "submit-comment-form" :action "/vclass/test/generate" :method "post" :class "css-class-form"}
+      (f/hidden-field {:value csrf-field} "__anti-forgery-token")
+      [:label {:for "subject_id"} "Grade:"]
+      [:div.div-separator
+       [:select.form-control.mr-sm-2 {:name "subject_id" :value 1}
+        (for [subject subjects]
+          [:option {:value (:id subject)} (:subject subject)])
+        ]]
+
+      [:label {:for "subject_id"} "Subject:"]
+      [:div.div-separator
+       [:select.form-control.mr-sm-2 {:name "subject_id" :value 1}
+        (for [subject subjects]
+          [:option {:value (:id subject)} (:subject subject)])
+        ]]
+      [:div (f/text-area {:cols 90 :rows 5} "comment-textarea")]
+      (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]]
     [:div {:id "cont"}
       [:div {:id "content"} formatted-posts]
       [:nav {:class "blog-pagination"}
@@ -50,5 +68,4 @@
      [:div {:id "content"} formatted-post]
      [:div {:id "comments"} formatted-comments]
      [:div {:id "comment-form"} comment-form]]))
-
 
