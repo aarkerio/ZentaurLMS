@@ -132,18 +132,23 @@ VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :use
 
 -- :name create-minimal-test :<! :n
 -- :doc creates a minimal test record
-INSERT INTO tests (title, tags, user_id, subject_id, uurlid) VALUES (:title, :tags, :user_id, :subject_id, :uurlid) RETURNING *
+INSERT INTO tests (title, tags, user_id, subject_id, level_id, uurlid) VALUES (:title, :tags, :user_id, :subject_id, :level_id, :uurlid) RETURNING *
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
-INSERT INTO questions (question, qtype, hint, explanation, active, user_id, points)
-VALUES (:question, :qtype, :hint, :explanation, :active, :user_id, :points) RETURNING *
+INSERT INTO questions (question, qtype, hint, explanation, active, user_id, points, subject_id, level_id)
+VALUES (:question, :qtype, :hint, :explanation, :active, :user_id, :points, :subject_id, :level_id) RETURNING *
 
 -- :name update-question! :<! :1
 -- :doc updates a question record
 UPDATE questions
 SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, points = :points
 WHERE id = :id RETURNING id
+
+-- :name random-questions :? :raw
+-- :select random questions
+SELECT id, question, qtype, hint, points, explanation, fulfill FROM questions
+WHERE subject_id = :subject_id AND level_id = :level_id ORDER BY RANDOM() LIMIT :limit
 
 -- :name update-question-fulfill! :<! :1
 -- :doc updates the fulfill field in the question

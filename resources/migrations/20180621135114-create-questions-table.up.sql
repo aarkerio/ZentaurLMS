@@ -2,9 +2,11 @@
 -- ;; lein run migrate
 CREATE TABLE questions (
   id serial PRIMARY KEY,
+  subject_id int NOT NULL REFERENCES subjects(id),
+  level_id int NOT NULL REFERENCES levels(id),
   user_id int NOT NULL REFERENCES users(id),
   question text NOT NULL,
-  qtype smallint NOT NULL DEFAULT 1,  -- qtype 1: multiple option, 2: open, 3: fulfill, 4: composite questions
+  qtype smallint NOT NULL DEFAULT 1,
   hint varchar(300),
   points smallint NOT NULL DEFAULT 1,
   origin INT NOT NULL DEFAULT 0,
@@ -26,6 +28,8 @@ COMMENT on column questions.qtype is '1: multiple option, 2: open, 3: fulfill, 4
 COMMENT on column questions.origin is 'Marks if the question is edited from another question, if not 0';
 --;; INSERT INTO question_tests (test_id, question_id, ordnen, created_at) VALUES (1, 2, 2, NOW());
 COMMENT on column questions.fulfill is 'This field is used when the question is type 3: fulfill';
+--;; INSERT INTO question_tests (test_id, question_id, ordnen, created_at) VALUES (1, 2, 2, NOW());
+COMMENT on column questions.active is 'Active the question only after the reviews are finished';
 --;;
 CREATE TRIGGER trig_questions
 BEFORE UPDATE ON "questions"

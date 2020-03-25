@@ -30,8 +30,8 @@
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
   (let [uurlid      (sh/gen-uuid)
-        pre-params  (assoc params :user_id user-id :uurlid uurlid)
-        full-params (update pre-params :subject_id #(Integer/parseInt %))
+        pre-params  (sh/str-to-int params :subject_id :level_id)
+        full-params (assoc pre-params :user_id user-id :uurlid uurlid)
         errors      (val-test/validate-test full-params)]
     (if (nil? errors)
       (db/create-minimal-test full-params)
@@ -66,6 +66,16 @@
     (if (nil? errors)
       (db/create-answer! full-params)
       {:flash errors :ok false})))
+
+(defn link-questions [test-id params]
+  (let [questions (db/random-questions params)]
+    (doseq [q questions]
+      (link-test-question! (:id question) test-id))))
+
+(defn generate-test [params]
+  (let [test     (create-test! params 2)
+        _        link-questions (:id test) params]
+    {:error nil :ok false}))
 
 ;;;;; TEST BUILD SECTION STARTS
 

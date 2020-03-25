@@ -41,7 +41,7 @@
     (s/lower-case under_norm)))
 
 (defn str-to-int
-  "Convert some keys in map to integer"
+  "Change str keys in map to integer"
   [coll & int-keys]
   (let [listed (set int-keys)]
     (reduce-kv #(assoc %1 %2 (if (contains? listed %2) (Integer/parseInt %3) %3)) {} coll)))

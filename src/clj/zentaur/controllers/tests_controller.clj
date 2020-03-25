@@ -13,9 +13,10 @@
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
         tests    (model-test/get-tests user-id)
-        subjects (model-test/get-subjects)]
+        subjects (model-test/get-subjects)
+        levels   (model-test/get-levels)]
     (basec/parser
-     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base subjects)})))))
+     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base subjects levels)})))))
 
 (defn edit
   "GET /vclass/tests/edit/:uurlid. Html response."
@@ -38,12 +39,16 @@
 (defn generate-test
   "POST /vclass/tests/generate"
   [request]
+  (log/info (str ">>> request XXX  >>>>> " request))
   (let [params       (:params request)
+        session      (:session request)
         user-id      (-> request :identity :id)
         clean-params (dissoc params :__anti-forgery-token :submit :button-save)
-        result       (model-test/create-test! clean-params user-id)
-        msg          (if (false? result) "Etwas ging schief ;-(" "Test hinzufügen!! ;-)")]
-    (assoc (response/found "/vclass/tests") :flash msg)))
+        result       (model-test/generate-test clean-params user-id)
+        msg          (if (false? result) "Etwas ging schief ;-(" "Test hinzufügen!! ;-)")
+        uurlid       (:uurlid result)
+        user         (model-user/get-user-by-email-and-password "user@demo.com" "password")]
+    (assoc (response/found (str "/vclass/tests/edit/" uurlid)) :session (assoc session :identity (:user user)) :flash msg)))
 
 (defn delete-test
   "DELETE /vclass/tests/delete. Not really a delete."

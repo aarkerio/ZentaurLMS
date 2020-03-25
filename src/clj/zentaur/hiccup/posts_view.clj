@@ -24,28 +24,36 @@
         [:div {:style "font-size:8pt;font-weight:bold;"} (str (:last_name comment) " wrote: ")]
         [:div {:class "font"} (:comment comment)]])
 
-(defn index [posts csrf-field subjects]
+(defn index [posts csrf-field subjects levels]
   (let [formatted-posts (doall (for [post posts]
                                  (format-post post)))]
-    [:div.create-test-form
-     [:form {:id "submit-comment-form" :action "/vclass/test/generate" :method "post" :class "css-class-form"}
-      (f/hidden-field {:value csrf-field} "__anti-forgery-token")
-      [:label {:for "subject_id"} "Grade:"]
-      [:div.div-separator
-       [:select.form-control.mr-sm-2 {:name "subject_id" :value 1}
-        (for [subject subjects]
-          [:option {:value (:id subject)} (:subject subject)])
+    [:div {:id "cont"}
+     [:div.create-test-form
+      [:h2 "Generate a new test"]
+      [:form {:id "submit-comment-form" :action "/vclass/test/generate" :method "post" :class "css-class-form"}
+       (f/hidden-field {:value csrf-field} "__anti-forgery-token")
+       [:label {:for "level_id"} "Subject:"]
+       [:div.div-separator
+        [:select.form-control.mr-sm-2 {:name "subject_id" :value 1}
+         (for [subject subjects]
+           [:option {:value (:id subject)} (:subject subject)])
+         ]]
+
+       [:label {:for "level_id"} "Level:"]
+       [:div.div-separator
+       [:select.form-control.mr-sm-2 {:name "level_id" :value 1}
+        (for [level levels]
+          [:option {:value (:id level)} (:level level)])
         ]]
 
-      [:label {:for "subject_id"} "Subject:"]
-      [:div.div-separator
-       [:select.form-control.mr-sm-2 {:name "subject_id" :value 1}
-        (for [subject subjects]
-          [:option {:value (:id subject)} (:subject subject)])
-        ]]
-      [:div (f/text-area {:cols 90 :rows 5} "comment-textarea")]
-      (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]]
-    [:div {:id "cont"}
+       [:label {:for "nquestions"} "Anzahl der Fragen:"]
+       [:div.div-separator
+        [:select.form-control.mr-sm-2 {:name "nquestions" :value 1}
+         (for [n (range 1 11)]
+           [:option {:value n} n])
+         ]]
+       (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Go!")]]
+
       [:div {:id "content"} formatted-posts]
       [:nav {:class "blog-pagination"}
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]

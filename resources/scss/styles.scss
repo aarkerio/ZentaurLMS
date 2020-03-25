@@ -1,4 +1,4 @@
-/* ------------- My Typography ----------------- */
+/* ------------- Zentaur Typography ----------------- */
 /**  $ sass scss/styles.scss public/css/styles.css **/
 /*** importing extras ***/
 
@@ -341,87 +341,6 @@ blockquote {
 	border-color: $my-green-color;
 }
 
-/* Collapse
----------------------------------- */
-.panel-group .panel {
-	-webkit-border-radius: 0px;
-	-moz-border-radius: 0px;
-	border-radius: 0px;
-	border: none;
-}
-.panel-default > .panel-heading {
-	padding: 0;
-	outline: none;
-	border: none;
-	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
-	-o-border-radius: 0;
-	border-radius: 0;
-	width: 100%;
-}
-.panel-default > .panel-heading + .panel-collapse > .panel-body {
-	border: 1px solid #f0f0f0;
-	border-top: none;
-	background-color: #fafafa
-}
-.panel-heading a {
-	font-weight: 400;
-	padding: 12px 35px 12px 15px;
-	display: inline-block;
-	width: 100%;
-	background-color: $my-green-color;
-	color: #ffffff;
-	position: relative;
-	text-decoration: none;
-}
-.panel-heading a.collapsed {
-	color: #ffffff;
-	background-color: #333333;
-}
-.panel-heading a:after {
-	font-family: "FontAwesome";
-	content: "\f147";
-	position: absolute;
-	right: 15px;
-	font-size: 14px;
-	font-weight: 300;
-	top: 50%;
-	line-height: 1;
-	margin-top: -7px;
-}
-.panel-heading a.collapsed:after {
-	content: "\f196";
-}
-.panel-heading a:hover {
-	text-decoration: none;
-	background-color: $my-green-bg-color;
-	color: #ffffff;
-}
-.panel-title a i {
-	padding-right: 10px;
-	font-size: 20px;
-}
-
-/* Pills
----------------------------------- */
-.nav-pills > li.active > a,
-.nav-pills > li.active > a:hover,
-.nav-pills > li.active > a:focus,
-.nav-pills > li > a:hover {
-	background-color: $my-green-bg-color;
-	border-color: $my-green-color;
-	color: #ffffff;
-}
-.nav-pills > li > a {
-	border-radius: 0;
-	padding: 8px 20px;
-	border: 1px solid #cacaca;
-	color: #666666;
-	font-size: 12px;
-	text-transform: uppercase;
-	font-weight: 300;
-}
-
 /* Forms
 ---------------------------------- */
 .form-control {
@@ -440,44 +359,13 @@ textarea {
 	resize: vertical;
 }
 
-/* Modals
+/* create-test-form
 ---------------------------------- */
-.modal-content {
-	-webkit-border-radius: 0px;
-	-moz-border-radius: 0px;
-	border-radius: 0px;
-}
-.modal-header {
-	background-color: #55acee;
-	color: #ffffff;
-}
-.modal-header h4 {
-	color: #ffffff;
-}
-.modal-header .close {
-	font-weight: 300;
-	color: #FFFFFF;
-	text-shadow: none;
-	filter: alpha(opacity=100);
-	opacity: 1;
-}
-
-/* Large devices (Large desktops 1200px and up) */
-@media (min-width:1200px) {
-	.modal-lg {
-		width: 1140px;
-	}
-}
-
-/* Media
----------------------------------- */
-.media .fa {
-	font-size: 24px;
-	width: 40px;
-	height: 25px;
-	line-height: 25px;
-	padding: 0 5px;
-	text-align: center;
+.create-test-form {
+	width: 50%;
+  margin: auto;
+	padding: 15px;
+  border: 1px dotted green;
 }
 
 /* Navigations

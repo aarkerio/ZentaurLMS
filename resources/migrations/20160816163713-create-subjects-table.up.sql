@@ -38,4 +38,6 @@ INSERT INTO subjects (subject) VALUES ('Philosophy');
 INSERT INTO subjects (subject) VALUES ('Physical Education');
 --;;
 INSERT INTO subjects (subject) VALUES ('Literature');
+--;;
+INSERT INTO subjects (subject) VALUES ('Computer Sciences');
 
