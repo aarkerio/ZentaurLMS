@@ -147,8 +147,7 @@ WHERE id = :id RETURNING id
 
 -- :name random-questions :? :raw
 -- :select random questions
-SELECT id, question, qtype, hint, points, explanation, fulfill FROM questions
-WHERE subject_id = :subject_id AND level_id = :level_id ORDER BY RANDOM() LIMIT :limit
+SELECT id FROM questions WHERE subject_id = :subject_id AND level_id = :level_id ORDER BY RANDOM() LIMIT :limit
 
 -- :name update-question-fulfill! :<! :1
 -- :doc updates the fulfill field in the question

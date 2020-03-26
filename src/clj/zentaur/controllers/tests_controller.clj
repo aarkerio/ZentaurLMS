@@ -38,13 +38,13 @@
 
 (defn generate-test
   "POST /vclass/tests/generate"
-  [{:keys [params session]}]
+  [{:keys [params session identity]}]
+  (log/info (str ">>> PARAMSSSS kkkkkkkkkk >>>>> " params))
   (let [clean-params (dissoc params :__anti-forgery-token :submit :button-save)
-        result       (model-test/generate-test clean-params)
-        msg          (if (false? result) "Etwas ging schief ;-(" "Test hinzufügen!! ;-)")
-        uurlid       (:uurlid result)
-        user         (model-user/get-user-by-email-and-password "user@demo.com" "password")]
-    (assoc (response/found (str "/vclass/tests/edit/" uurlid)) :session (assoc session :identity (:user user)) :flash msg)))
+        user-id      (:id identity)
+        new-uurlid   (model-test/generate-test clean-params user-id)
+        msg          (if (nil? new-uurlid) "Etwas ging schief ;-(" "Test hinzufügen!! ;-)")]
+    (assoc (response/found (str "/vclass/tests/edit/" new-uurlid)) :flash msg)))
 
 (defn delete-test
   "DELETE /vclass/tests/delete. Not really a delete."
