@@ -46,7 +46,8 @@
   [params]
   (let [test             (get-one-test (:uurlid params))
         test-id          (:id test)
-        created-question (db/create-question! params)
+        full-params      (assoc params :subject_id (:subject_id test) :level_id (:level_id test))
+        created-question (db/create-question! full-params)
         question-id      (:id created-question)
         _                (link-test-question! question-id test-id)]
     created-question))

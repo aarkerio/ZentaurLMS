@@ -25,6 +25,7 @@
                                :instructions {:type String}
                                :subject      {:type String}
                                :subject_id   {:type Int}
+                               :level_id     {:type Int}
                                :tags         {:type String}
                                :level        {:type Int}
                                :active       {:type Boolean}
@@ -42,6 +43,8 @@
                       :fields {
                                :id            {:type (non-null ID)}
                                :question      {:type (non-null String)}
+                               :subject_id    {:type Int}
+                               :level_id      {:type Int}
                                :qtype         {:type Int}
                                :hint          {:type String}
                                :explanation   {:type String}

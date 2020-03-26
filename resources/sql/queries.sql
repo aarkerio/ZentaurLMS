@@ -180,7 +180,7 @@ ORDER BY t.id DESC
 
 -- :name get-one-test :? :1
 -- :doc retrieve a test given the uurlid.
-SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, t.uurlid, s.subject
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, t.level_id, t.uurlid, s.subject
 FROM tests t INNER JOIN subjects s
 ON t.subject_id = s.id
 WHERE t.archived = :archived AND t.uurlid = :uurlid
