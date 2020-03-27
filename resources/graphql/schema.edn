@@ -111,6 +111,7 @@
                                       :id           {:type (non-null Int)}
                                       :question     {:type (non-null String)}
                                       :hint         {:type String}
+                                      :uurlid       {:type String}
                                       :explanation  {:type String}
                                       :quest_update {:type (non-null Boolean)}
                                       :qtype        {:type (non-null Int)}

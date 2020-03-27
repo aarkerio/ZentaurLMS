@@ -14,8 +14,7 @@
         aexplanation  (r/atom explanation)
         aqtype        (r/atom qtype)
         apoints       (r/atom points)
-        uurlid        (rf/subscribe [:test-uurlid])]
-    (.log js/console (str ">>> VALUE uurlid >>>>> " uurlid ))
+        uurlid        @(rf/subscribe [:test-uurlid])]
     (fn []
       [:div.edit_question
        [:div "Question: " [:br]
@@ -61,7 +60,7 @@
                                                                      :qtype        @aqtype
                                                                      :explanation  @aexplanation
                                                                      :quest_update quest-update
-                                                                     :uurlid       (.-value (gdom/getElement "uurlid"))}])}]]])))
+                                                                     :uurlid       uurlid}])}]]])))
 
 (defn answer-editing-input [{:keys [answer correct id]}]
   (let [aanswer   (r/atom answer)

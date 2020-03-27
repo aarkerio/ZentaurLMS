@@ -118,3 +118,11 @@
     (rf/subscribe [:test]))
   (fn [test]
     (:uurlid test)))
+
+(rf/reg-sub
+  :test-user-id
+  (fn [_]
+    (rf/subscribe [:test]))
+  (fn [test]
+    (:user_id test)))
+

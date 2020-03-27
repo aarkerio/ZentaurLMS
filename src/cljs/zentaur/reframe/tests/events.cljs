@@ -252,11 +252,11 @@
   :update-question           ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ updates]]       ;; <-- 1st argument is coeffect, from which we extract db
-    (let [{:keys [id question hint explanation qtype points quest_update test_id]} updates
+    (let [{:keys [id question hint explanation qtype points quest_update uurlid]} updates
           mutation  (gstring/format "mutation { update_question( id: %i, question: \"%s\",
-                                      hint: \"%s\", explanation: \"%s\", qtype: %i, points: %i, quest_update: %s, test_id: %i)
+                                      hint: \"%s\", explanation: \"%s\", qtype: %i, points: %i, quest_update: %s, uurlid: \"%s\")
                                      { id question hint explanation qtype points ordnen fulfill user_id }}"
-                                    id question hint explanation qtype points quest_update)]
+                                    id question hint explanation qtype points quest_update uurlid)]
        (re-frame/dispatch [::re-graph/mutate
                            mutation                                  ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map

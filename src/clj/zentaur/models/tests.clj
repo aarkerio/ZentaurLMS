@@ -38,25 +38,28 @@
       {:error errors :ok false})))
 
 (defn- ^:private link-test-question!
-  [question-id test-id]
-  (let [next-ordnen (or (:ordnen (sh/get-last-ordnen "questions" test-id)) 0)]
-    (db/create-question-test! {:question_id question-id :test_id test-id :ordnen (inc next-ordnen)})))
+  [question-id test-id ordnen]
+  (let [final-ordnen  (if (nil? ordnen) (-> (or (:ordnen (sh/get-last-ordnen "questions" test-id)) 0)
+                                            inc)
+                          ordnen)]
+    (db/create-question-test! {:question_id question-id :test_id test-id :ordnen final-ordnen})))
 
 (defn- ^:private get-last-question
-  [params]
-  (let [test             (get-one-test (:uurlid params))
-        test-id          (:id test)
+  [params test order]
+  (let [test-id          (:id test)
         origin           (if (nil? (:origin params)) 0 (:origin params))
         full-params      (assoc params :subject_id (:subject_id test) :level_id (:level_id test) :origin origin)
         created-question (db/create-question! full-params)
         question-id      (:id created-question)
-        _                (link-test-question! question-id test-id)]
+        _                (link-test-question! question-id test-id order)]
     created-question))
 
 (defn create-question! [params]
-  (let [errors (val-test/validate-question params)]
+  (let [test   (get-one-test (:uurlid params))
+        order  (when (false? (:quest_update params) (db/unlink-question (:id params) (:id test)) ) )
+        errors (val-test/validate-question params)]
     (if (nil? errors)
-      (get-last-question params)
+      (get-last-question params test order)
       {:flash errors :ok false})))
 
 (defn create-answer! [params]
@@ -112,10 +115,6 @@
 
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn unlink-and-create [params]
-  (let [unlink (db/unlink-question params)]
-    (create-question! params)))
-
 (defn choose-action
   "Choose update or create questions based in the 'quest_update' flag"
   [params]
@@ -123,7 +122,7 @@
         _            (log/info (str ">>> QUESTION CHOOSE PARAMS >>>>> " params))]
     (if quest_update
       (db/update-question! params)
-      (unlink-and-create params))))
+      (create-question! params))))
 
 (defn update-question! [params]
   (let [qtype          (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
