@@ -46,7 +46,8 @@
   [params]
   (let [test             (get-one-test (:uurlid params))
         test-id          (:id test)
-        full-params      (assoc params :subject_id (:subject_id test) :level_id (:level_id test))
+        origin           (if (nil? (:origin params)) 0 (:origin params))
+        full-params      (assoc params :subject_id (:subject_id test) :level_id (:level_id test) :origin origin)
         created-question (db/create-question! full-params)
         question-id      (:id created-question)
         _                (link-test-question! question-id test-id)]
@@ -110,11 +111,27 @@
 ;;;;; TEST BUILD SECTION ENDS
 
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn unlink-and-create [params]
+  (let [unlink (db/unlink-question params)]
+    (create-question! params)))
+
+(defn choose-action
+  "Choose update or create questions based in the 'quest_update' flag"
+  [params]
+  (let [quest_update (:quest_update params)
+        _            (log/info (str ">>> QUESTION CHOOSE PARAMS >>>>> " params))]
+    (if quest_update
+      (db/update-question! params)
+      (unlink-and-create params))))
+
 (defn update-question! [params]
-  (let [qtype        (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
-        full-params  (dissoc params :active)
-        qid          (db/update-question! (assoc full-params :qtype qtype))]
-    (db/get-one-question qid)))
+  (let [qtype          (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
+        updated-quest  (choose-action (assoc params :qtype qtype))
+        quest_update   (:quest_update params)]
+    (if (and (= qtype 1) quest_update)
+      (get-answers updated-quest)
+      updated-quest)))
 
 (defn update-fulfill! [params]
   (db/update-question-fulfill! params))

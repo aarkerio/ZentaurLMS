@@ -114,7 +114,7 @@
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (let [uurlid  (.-value (gdom/getElement "uurlid"))
           query   (gstring/format "{test_by_uurlid(uurlid: \"%s\", archived: false) { uurlid title description tags subject subject_id created_at
-                                    subjects {id subject} questions { id question qtype hint points explanation fulfill ordnen answers {id answer ordnen correct question_id }}}}"
+                                    subjects {id subject} questions { id question qtype hint points user_id explanation fulfill ordnen answers {id answer ordnen correct question_id }}}}"
                                   uurlid)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query query {} [:process-test-response]]))))
@@ -145,7 +145,7 @@
           _             (.log js/console (str ">>> VALUES AFTER  >>>>> " values ))
           {:keys [question hint explanation qtype points uurlid user-id]} values
           mutation      (gstring/format "mutation { create_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, points: %i, uurlid: \"%s\", user_id: %i) { id question qtype hint explanation ordnen points }}"
+                                         qtype: %i, points: %i, uurlid: \"%s\", user_id: %i) { id question qtype hint explanation user_id ordnen points }}"
                                         question hint explanation qtype points uurlid user-id)]
            (.log js/console (str ">>> MUTATTION  >>>>> " mutation ))
       ;; perform a query, with the response sent to the callback event provided
@@ -252,11 +252,11 @@
   :update-question           ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ updates]]       ;; <-- 1st argument is coeffect, from which we extract db
-    (let [{:keys [id question hint explanation qtype points]} updates
+    (let [{:keys [id question hint explanation qtype points quest_update test_id]} updates
           mutation  (gstring/format "mutation { update_question( id: %i, question: \"%s\",
-                                      hint: \"%s\", explanation: \"%s\", qtype: %i, points: %i)
-                                     { id question hint explanation qtype points ordnen fulfill }}"
-                                    id question hint explanation qtype points)]
+                                      hint: \"%s\", explanation: \"%s\", qtype: %i, points: %i, quest_update: %s, test_id: %i)
+                                     { id question hint explanation qtype points ordnen fulfill user_id }}"
+                                    id question hint explanation qtype points quest_update)]
        (re-frame/dispatch [::re-graph/mutate
                            mutation                                  ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map

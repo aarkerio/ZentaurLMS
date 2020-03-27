@@ -1,15 +1,15 @@
 ;; /**********   UNDERSCORES IN NAMES PLEASE!!!!    ********/
 {:enums {
-         :episode {:description "The episodes of the original Star Wars trilogy."
-                   :values [:NEWHOPE :EMPIRE :JEDI]}
+         :question_origin {:description "Question edited from a previous one"
+                   :values [:ORIGINAL :DERIVED]}
          :question_type {:description "Question options"
                    :values [:CLOSED :OPTIONS :OPEN :COLUMNS]}}
  :interfaces {
               :character {
                           :fields {:id         {:type String}
                                    :name       {:type String}
-                                   :appears_in {:type (list :episode)}
-                                   :friends    {:type (list :character)}}}}
+                                   :appears_in {:type (list :question_origin)}
+                                   :friends    {:type (list :question_type)}}}}
  :objects {
            :fulltest  {
                         :description "List of Tests schema."
@@ -108,12 +108,13 @@
              :update_question {:type :question
                                :description "Update a question."
                                :args {
-                                      :id          {:type (non-null Int)}
-                                      :question    {:type (non-null String)}
-                                      :hint        {:type String}
-                                      :explanation {:type String}
-                                      :qtype       {:type (non-null Int)}
-                                      :points      {:type (non-null Int)}}
+                                      :id           {:type (non-null Int)}
+                                      :question     {:type (non-null String)}
+                                      :hint         {:type String}
+                                      :explanation  {:type String}
+                                      :quest_update {:type (non-null Boolean)}
+                                      :qtype        {:type (non-null Int)}
+                                      :points       {:type (non-null Int)}}
                                :resolve :update-question}
              :reorder_question {:type :test
                                 :description "Reorder question."

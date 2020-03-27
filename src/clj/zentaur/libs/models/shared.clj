@@ -5,6 +5,8 @@
             [zentaur.db.core :as db])
    (:import (java.text Normalizer)))
 
+(def not-nil? (comp not nil?))
+
 (defn get-last-id
   "Get the last id for any table"
   [table]

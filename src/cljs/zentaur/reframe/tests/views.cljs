@@ -6,12 +6,16 @@
             [zentaur.reframe.tests.forms.blocks :as blk]
             [zentaur.reframe.tests.libs :as zlib]))
 
-(defn edit-question [{:keys [id question hint explanation qtype points]}]
-  (let [aquestion    (r/atom question)
-        ahint        (r/atom hint)
-        aexplanation (r/atom explanation)
-        aqtype       (r/atom qtype)
-        apoints      (r/atom points)]
+(defn edit-question [{:keys [id question hint explanation qtype points user-id]}]
+  (let [test-user-id  (.-value (gdom/getElement "user-id"))
+        quest-update  (= test-user-id user-id)  ;; question belongs to the current user?, then just update
+        aquestion     (r/atom question)
+        ahint         (r/atom hint)
+        aexplanation  (r/atom explanation)
+        aqtype        (r/atom qtype)
+        apoints       (r/atom points)
+        uurlid        (rf/subscribe [:test-uurlid])]
+    (.log js/console (str ">>> VALUE uurlid >>>>> " uurlid ))
     (fn []
       [:div.edit_question
        [:div "Question: " [:br]
@@ -50,12 +54,14 @@
          ;; [:option {:value "4"} "Columns"]
          ]]
        [:div [:input.btn {:type  "button" :class "btn btn btn-outline-primary-green" :value "Speichern"
-                          :on-click #(rf/dispatch [:update-question {:id          id
-                                                                     :question    @aquestion
-                                                                     :hint        @ahint
-                                                                     :points      @apoints
-                                                                     :qtype       @aqtype
-                                                                     :explanation @aexplanation}])}]]])))
+                          :on-click #(rf/dispatch [:update-question {:id           id
+                                                                     :question     @aquestion
+                                                                     :hint         @ahint
+                                                                     :points       @apoints
+                                                                     :qtype        @aqtype
+                                                                     :explanation  @aexplanation
+                                                                     :quest_update quest-update
+                                                                     :uurlid       (.-value (gdom/getElement "uurlid"))}])}]]])))
 
 (defn answer-editing-input [{:keys [answer correct id]}]
   (let [aanswer   (r/atom answer)
