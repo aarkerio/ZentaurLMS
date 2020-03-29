@@ -7,8 +7,8 @@
             [zentaur.reframe.tests.libs :as zlib]))
 
 (defn edit-question [{:keys [id question hint explanation qtype points user-id]}]
-  (let [test-user-id  (.-value (gdom/getElement "user-id"))
-        quest-update  (= test-user-id user-id)  ;; question belongs to the current user?, then just update
+  (let [test-user-id  @(rf/subscribe [:test-user-id])
+        quest-update  (= test-user-id user-id)  ;; this question belongs to the current user?, then just update
         aquestion     (r/atom question)
         ahint         (r/atom hint)
         aexplanation  (r/atom explanation)
@@ -60,6 +60,7 @@
                                                                      :qtype        @aqtype
                                                                      :explanation  @aexplanation
                                                                      :quest_update quest-update
+                                                                     :user_id      user-id
                                                                      :uurlid       uurlid}])}]]])))
 
 (defn answer-editing-input [{:keys [answer correct id]}]

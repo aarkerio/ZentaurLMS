@@ -115,6 +115,7 @@
                                       :explanation  {:type String}
                                       :quest_update {:type (non-null Boolean)}
                                       :qtype        {:type (non-null Int)}
+                                      :user_id      {:type (non-null Int)}
                                       :points       {:type (non-null Int)}}
                                :resolve :update-question}
              :reorder_question {:type :test

@@ -41,6 +41,7 @@
 (defn- ^:private update-question
   [context args value]
   (let [updated-question (mt/update-question! args)]
+     (log/info (str ">>> RESOLVERS updated-question >>>>> " updated-question))
     (update updated-question :id str)))
 
 (defn- ^:private reorder-question

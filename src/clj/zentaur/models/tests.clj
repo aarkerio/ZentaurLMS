@@ -39,10 +39,12 @@
 
 (defn- ^:private link-test-question!
   [question-id test-id ordnen]
-  (let [final-ordnen  (if (nil? ordnen) (-> (or (:ordnen (sh/get-last-ordnen "questions" test-id)) 0)
-                                            inc)
-                          ordnen)]
-    (db/create-question-test! {:question_id question-id :test_id test-id :ordnen final-ordnen})))
+  (let [final-ordnen  (if (nil? ordnen)
+                        (inc (or (:ordnen (sh/get-last-ordnen "questions" test-id)) 0))
+                        ordnen)
+        full-params   (assoc {} :question_id question-id :test_id test-id :ordnen final-ordnen)]
+    (log/info (str ">>> PA  ******** full-params >>>>> " full-params))
+    (db/create-question-test! full-params)))
 
 (defn- ^:private get-last-question
   [params test order]
@@ -56,7 +58,7 @@
 
 (defn create-question! [params]
   (let [test   (get-one-test (:uurlid params))
-        order  (when (false? (:quest_update params) (db/unlink-question (:id params) (:id test)) ) )
+        order  (when (false? (:quest_update params)) (db/unlink-question {:question_id (:id params) :test_id (:id test)}))
         errors (val-test/validate-question params)]
     (if (nil? errors)
       (get-last-question params test order)
@@ -73,9 +75,10 @@
       {:flash errors :ok false})))
 
 (defn generate-questions [test-id params]
-  (let [questions (db/random-questions params)]
+  (let [questions (db/random-questions params)
+        ordnen    nil]
     (doseq [q questions]
-      (link-test-question! (:id q) test-id))))
+      (link-test-question! (:id q) test-id ordnen))))
 
 (defn generate-test [params user-id]
   (let [pre-params  (sh/str-to-int params :subject_id :level_id :limit)
