@@ -38,30 +38,25 @@
       {:error errors :ok false})))
 
 (defn- ^:private link-test-question!
-  [question-id test-id ordnen]
-  (let [final-ordnen  (if (nil? ordnen)
-                        (inc (or (:ordnen (sh/get-last-ordnen "questions" test-id)) 0))
-                        ordnen)
-        full-params   (assoc {} :question_id question-id :test_id test-id :ordnen final-ordnen)]
-    (log/info (str ">>> PA  ******** full-params >>>>> " full-params))
-    (db/create-question-test! full-params)))
+  [question-id test-id]
+  (let [next-ordnen (inc (or (:ordnen (sh/get-last-ordnen "questions" test-id)) 0))
+        _           (db/create-question-test! {:question_id question-id :test_id test-id :ordnen next-ordnen})]
+    next-ordnen))
 
-(defn- ^:private get-last-question
-  [params test order]
-  (let [test-id          (:id test)
-        origin           (if (nil? (:origin params)) 0 (:origin params))
-        full-params      (assoc params :subject_id (:subject_id test) :level_id (:level_id test) :origin origin)
-        created-question (db/create-question! full-params)
+(defn- ^:private insert-and-link-question [params test-id]
+  (let [created-question (db/create-question! params)
         question-id      (:id created-question)
-        _                (link-test-question! question-id test-id order)]
-    created-question))
+        ordnen           (link-test-question! question-id test-id)]
+    (assoc created-question :ordnen ordnen)))
 
-(defn create-question! [params]
-  (let [test   (get-one-test (:uurlid params))
-        order  (when (false? (:quest_update params)) (db/unlink-question {:question_id (:id params) :test_id (:id test)}))
-        errors (val-test/validate-question params)]
+(defn create-question!
+  [params]
+  (let [test         (get-one-test (:uurlid params))
+        test-id      (:id test)
+        full-params  (assoc params :subject_id (:subject_id test) :level_id (:level_id test) :origin 0)
+        errors       (val-test/validate-question full-params)]
     (if (nil? errors)
-      (get-last-question params test order)
+      (insert-and-link-question full-params test-id)
       {:flash errors :ok false})))
 
 (defn create-answer! [params]

@@ -80,10 +80,18 @@
                (let [trim-fn (fn [event] (-> event rest vec))]
                  (update-in context [:coeffects :event] trim-fn)))))
 
-(defn vector-to-idxmap
+(defn vector-to-ordered-idxmap
   "Convert vector od maps to an indexed map"
   [rows]
-  (into {} (map-indexed (fn [idx row] {(keyword (:id row)) row}) rows)))
+  (let [indexed (into {} (map-indexed (fn [idx row] {(keyword (:id row)) row}) rows))]
+
+    (def gg {
+ :39427 {:explanation "" :ordnen 4 :question "Vitae  porta nibh venenatis  felis." :points 3 :hint "vestibulum sed arcu" :qtype 1 :user_id 1 :fulfill ""}
+ :76823 {:explanation "Moroccan Amazigh  traditional", :ordnen 9, :question "Moroccan ornaments", :points 1, :hint "Moroccan Riffian woman ", :qtype 1, :id "76823", :answers {}, :user_id 1, :fulfill ""},
+ :76820 {:explanation "Not to mention practices,", :ordnen 3, :question "Not to mention  imperialist practices,", :points 1, :hint "Not to men", :qtype 1, :id "76820", :answers {}, :user_id 1, :fulfill ""}
+ :68820 {:explanation "", :ordnen 1, :question "In München treffen sich der Universität.", :points 2, :hint "vestibulum sed arcu", :qtype 1, :id "68820" :answers {} :user_id 1 :fulfill ""}})
+
+  ))
 
 (re-frame/reg-event-db
  :process-test-response
@@ -145,7 +153,7 @@
           _             (.log js/console (str ">>> VALUES AFTER  >>>>> " values ))
           {:keys [question hint explanation qtype points uurlid user-id]} values
           mutation      (gstring/format "mutation { create_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, points: %i, uurlid: \"%s\", user_id: %i) { id question qtype hint explanation user_id ordnen points }}"
+                                         qtype: %i, points: %i, uurlid: \"%s\", user_id: %i) { id question qtype hint explanation user_id ordnen points fulfill }}"
                                         question hint explanation qtype points uurlid user-id)]
            (.log js/console (str ">>> MUTATTION  >>>>> " mutation ))
       ;; perform a query, with the response sent to the callback event provided
