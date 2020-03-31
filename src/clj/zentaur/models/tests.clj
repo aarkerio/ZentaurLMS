@@ -122,12 +122,12 @@
       (create-question! params))))
 
 (defn update-question! [params]
-  (let [qtype          (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
-        updated-quest  (choose-action (assoc params :qtype qtype))
-        quest_update   (:quest_update params)]
-    (if (and (= qtype 1) quest_update)
-      (get-answers updated-quest)
-      updated-quest)))
+  (let [qtype        (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
+        full-params  (dissoc params :active)
+        qid          (db/update-question! (assoc full-params :qtype qtype))
+        qupdated     (db/get-one-question qid)
+        answers      (get-answers qupdated)]
+    (assoc qupdated :answers answers)))
 
 (defn update-fulfill! [params]
   (db/update-question-fulfill! params))

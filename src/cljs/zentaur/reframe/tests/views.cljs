@@ -213,7 +213,7 @@
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing-question not)}])]  ;; editing ends
      [:div.question-items-divs
-      [:div [:span.bold-font (str counter ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+      [:div [:span.bold-font (str counter ".- Frage: ")] question  "  >>>>ordnen:>>>" ordnen "   question id:" id]
       [:div [:span.bold-font "Hint: "] hint]
       [:div [:span.bold-font "Points: "] points]
       [:div [:span.bold-font "Erläuterung: "] explanation]]
@@ -359,10 +359,10 @@
 (defn todo-app
   []
   (let [question-count (rf/subscribe [:question-count])
-        uurlid         (.-value (gdom/getElement "uurlid"))]
+        uurlid         (rf/subscribe [:test-uurlid])]
     [:div {:id "page-container"}
      [test-editor-view]
      [create-question-form]
-     [display-questions-list uurlid @question-count]
+     [display-questions-list @uurlid @question-count]
      [:div {:class "footer"}
       [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))

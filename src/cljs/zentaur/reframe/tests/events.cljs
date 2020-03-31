@@ -23,25 +23,6 @@
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
 (def todo-interceptors [check-spec-interceptor])
 
-(defn order-questions
-  "helper to reorder"
-  [db]
-  (let [questions (:questions db)]
-    (into (sorted-map-by
-           (fn [key1 key2]
-             (compare (:ordnen (get questions key1))
-                      (:ordnen (get questions key2)))))
-          questions)))
-
-(def reorder-event
-  (re-frame/->interceptor
-   :id      :reorder-event
-   :after   (fn [context]
-              (let [ordered-questions (order-questions (-> context  :effects :db)) ]
-                (assoc-in context [:effects :db :questions] ordered-questions)))))
-
-;; (def reorder-after-interceptor (re-frame/after (partial order-questions)))
-
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
 (re-frame/reg-event-fx         ;; part of the re-frame API
@@ -83,15 +64,29 @@
 (defn vector-to-ordered-idxmap
   "Convert vector od maps to an indexed map"
   [rows]
-  (let [indexed (map #(assoc {} (keyword (:id %)) %) rows)]
-    ;; (apply hash-map (sort-by (comp :ordnen second) < indexed))
-     indexed
+  (let [indexed (reduce #(assoc %1 (keyword (:id %2)) %2) {} rows)]
+     (into (sorted-map-by (fn [key1 key2]
+                            (compare
+                             (get-in indexed [key1 :ordnen])
+                             (get-in indexed [key2 :ordnen]))))
+      indexed)
     ))
+
+(def reorder-questions
+  (re-frame/->interceptor
+   :id      :reorder-questions
+   :after   (fn [context]
+              (let [app-db    (-> context :effects :db)
+                    questions (:questions app-db)
+                    qordered  (vector-to-ordered-idxmap questions)]
+                (assoc-in context [:effects :db :questions] qordered)))))
+
+(def reorder-after-questions-interceptor (re-frame/after (partial reorder-questions)))
 
 (re-frame/reg-event-db
  :process-test-response
   [trim-event]
-  (fn [db [ {:keys [data errors] :as payload}]]
+  (fn [db [{:keys [data errors]}]]
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
     (let [test          (:test_by_uurlid data)
           questions     (:questions test)
@@ -122,17 +117,28 @@
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query query {} [:process-test-response]]))))
 
+(def reorder-after-questions
+  (re-frame/->interceptor
+   :id      :reorder-questions
+   :after   (fn [context]
+              (let [app-db    (-> context :effects :db)
+                    questions (:questions app-db)
+                    qordered  (fn [rows] (into (sorted-map-by (fn [key1 key2]
+                                                               (compare
+                                                                (get-in rows [key1 :ordnen])
+                                                                (get-in rows [key2 :ordnen]))))
+                                              rows))]
+                (update-in context [:effects :db :questions] qordered)))))
+
 (re-frame/reg-event-db
  :process-create-question
- []
+ [reorder-after-questions]
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
-   (.log js/console (str ">>> respoNSE AFTER NEW question >>>>> " response ))
    (let [question       (-> response :data :create_question)
          qkeyword       (keyword (:id question))
          ques-answers   (assoc question :answers {})
-         final-question (assoc {} qkeyword ques-answers)
-         _              (.log js/console (str ">>> final-question >>>>> " final-question ))]
+         final-question (assoc {} qkeyword ques-answers)]
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
          (update :qform not)           ;; hide new question form
