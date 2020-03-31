@@ -32,7 +32,7 @@
                       :points points :origin 0 :explanation "" :fulfill "" :active true}
         params       (assoc pre-params :level_id level-id :subject_id subject-id)
         new-question (db/create-question! params)]
-        (map (mt/create-answer! {:question_id (:id new-question) :answer (rand-nth question-txt) :correct (rand-nth corr)} ) (range 4))))
+        (map (mt/create-answer! {:question_id (:id new-question) :answer (rand-nth question-txt) :correct (rand-nth corr)}) (range 4))))
 
 (defn main []
   (let [_        (start)

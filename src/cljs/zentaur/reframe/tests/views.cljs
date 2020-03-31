@@ -189,7 +189,7 @@
   "Display any type of question"
   [{:keys [question explanation hint qtype id ordnen points counter uurlid qcount] :as q}]
   (let [editing-question (r/atom false)]
-    (.log js/console (str ">>> VALUE qcounter >>>>> " qcount " >>>> counter >>> " counter  " >>>> uurlid >>>> " uurlid))
+    (.log js/console (str ">>> VALUE qcounter >>>>> " qcount " >>>> counter >>> " counter  " >>>> uurlid >>>> " uurlid " >>>> " q "  >>>> " question))
     (fn []
       [:div.question-container-div   ;; Flex container
        [:div.question-items-divs

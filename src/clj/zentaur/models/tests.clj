@@ -70,10 +70,9 @@
       {:flash errors :ok false})))
 
 (defn generate-questions [test-id params]
-  (let [questions (db/random-questions params)
-        ordnen    nil]
+  (let [questions (db/random-questions params)]
     (doseq [q questions]
-      (link-test-question! (:id q) test-id ordnen))))
+      (link-test-question! (:id q) test-id))))
 
 (defn generate-test [params user-id]
   (let [pre-params  (sh/str-to-int params :subject_id :level_id :limit)

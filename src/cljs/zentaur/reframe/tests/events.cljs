@@ -83,15 +83,10 @@
 (defn vector-to-ordered-idxmap
   "Convert vector od maps to an indexed map"
   [rows]
-  (let [indexed (into {} (map-indexed (fn [idx row] {(keyword (:id row)) row}) rows))]
-
-    (def gg {
- :39427 {:explanation "" :ordnen 4 :question "Vitae  porta nibh venenatis  felis." :points 3 :hint "vestibulum sed arcu" :qtype 1 :user_id 1 :fulfill ""}
- :76823 {:explanation "Moroccan Amazigh  traditional", :ordnen 9, :question "Moroccan ornaments", :points 1, :hint "Moroccan Riffian woman ", :qtype 1, :id "76823", :answers {}, :user_id 1, :fulfill ""},
- :76820 {:explanation "Not to mention practices,", :ordnen 3, :question "Not to mention  imperialist practices,", :points 1, :hint "Not to men", :qtype 1, :id "76820", :answers {}, :user_id 1, :fulfill ""}
- :68820 {:explanation "", :ordnen 1, :question "In München treffen sich der Universität.", :points 2, :hint "vestibulum sed arcu", :qtype 1, :id "68820" :answers {} :user_id 1 :fulfill ""}})
-
-  ))
+  (let [indexed (map #(assoc {} (keyword (:id %)) %) rows)]
+    ;; (apply hash-map (sort-by (comp :ordnen second) < indexed))
+     indexed
+    ))
 
 (re-frame/reg-event-db
  :process-test-response
@@ -100,8 +95,8 @@
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
     (let [test          (:test_by_uurlid data)
           questions     (:questions test)
-          ques-answers  (map #(update % :answers vector-to-idxmap) questions)
-          questions-idx (vector-to-idxmap ques-answers)
+          ques-answers  (map #(update % :answers vector-to-ordered-idxmap) questions)
+          questions-idx (vector-to-ordered-idxmap ques-answers)
           subjects      (update-ids (:subjects test))
           only-test     (dissoc test :subjects :questions)
           _             (.log js/console (str ">>> subjects >>>>> " subjects))
@@ -352,8 +347,8 @@
  []
  (fn [db [_ response]]
    (let [questions     (-> response :data :reorder_question :questions)
-         ques-answers  (map #(update % :answers vector-to-idxmap) questions)
-         idx-questions (vector-to-idxmap ques-answers)]
+         ques-answers  (map #(update % :answers vector-to-ordered-idxmap) questions)
+         idx-questions (vector-to-ordered-idxmap ques-answers)]
    (-> db
        (assoc-in [:questions] idx-questions)
        (update :loading? not)))))
@@ -380,7 +375,7 @@
  []
  (fn [db [_ response]]
    (let [data      (-> response :data :reorder_answer)
-         answers   (vector-to-idxmap (:answers data))
+         answers   (vector-to-ordered-idxmap (:answers data))
          q-keyword (keyword (:id data))]
    (-> db
        (assoc-in [:questions q-keyword :answers] answers)

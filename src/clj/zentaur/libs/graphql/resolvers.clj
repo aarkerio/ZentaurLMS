@@ -26,7 +26,7 @@
   [context args value]
   (let [full-args    (assoc args :active true)
         created-question (mt/create-question! full-args)]
-    (log/info (str ">>> created-question >>>>> " created-question))
+    (log/info (str ">>> RESOLVER created-question >>>>> " created-question))
     (update created-question :id str)))  ;; graphql wants strings on :ids
 
 (defn- ^:private create-answer
