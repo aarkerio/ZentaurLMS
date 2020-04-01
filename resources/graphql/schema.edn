@@ -52,7 +52,6 @@
                                :ordnen        {:type Int}
                                :points        {:type Int}
                                :user_id       {:type Int}
-                               :active        {:type Boolean}
                                :reviewed_fact {:type Boolean}
                                :reviewed_lang {:type Boolean}
                                :created_at    {:type String}

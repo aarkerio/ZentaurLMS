@@ -136,12 +136,16 @@ INSERT INTO tests (title, tags, user_id, subject_id, level_id, uurlid) VALUES (:
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
-INSERT INTO questions (question, qtype, hint, explanation, active, user_id, points, subject_id, level_id, origin)
-VALUES (:question, :qtype, :hint, :explanation, :active, :user_id, :points, :subject_id, :level_id, :origin) RETURNING *
+INSERT INTO questions (question, qtype, hint, explanation, user_id, points, subject_id, level_id, origin)
+VALUES (:question, :qtype, :hint, :explanation, :user_id, :points, :subject_id, :level_id, :origin) RETURNING id
 
 -- :name create-question-test! :<! :n
 -- :doc creates a new question test record
 INSERT INTO question_tests (question_id, test_id, ordnen) VALUES (:question_id, :test_id, :ordnen) RETURNING true
+
+-- :name update-question-test :<! :1
+-- :doc updates the QT relationship
+UPDATE question_tests SET question_id = :question_id, test_id = :test_id WHERE test_id = :test_id AND question_id = :old_question_id RETURNING id
 
 -- :name update-question! :<! :1
 -- :doc updates a question record
@@ -188,16 +192,16 @@ ORDER BY t.id DESC
 
 -- :name get-questions :? :*
 -- :doc retrieve all questions tests.
-SELECT q.id, q.question, q.user_id, q.qtype, q.hint, q.points, q.explanation, q.fulfill, q.active, q.reviewed_lang, q.reviewed_fact,
+SELECT q.id, q.question, q.user_id, q.qtype, q.hint, q.points, q.explanation, q.fulfill, q.reviewed_lang, q.reviewed_fact,
 q.reviewed_cr, q.created_at, qt.ordnen FROM question_tests qt INNER JOIN questions q
 ON q.id = qt.question_id
 WHERE qt.test_id = :test-id AND qt.question_id = q.id ORDER BY qt.ordnen ASC
 
 -- :name get-one-question :? :1
 -- :doc retrieve a question given the id.
-SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.fulfill, q.active, q.reviewed_lang, q.reviewed_fact, q.reviewed_cr,
+SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.fulfill, q.reviewed_lang, q.reviewed_fact, q.reviewed_cr,
 q.created_at, q.user_id, q.origin, qt.ordnen FROM question_tests qt INNER JOIN questions q
-ON q.id = qt.question_id WHERE qt.question_id = q.id AND qt.id = :id LIMIT 1
+ON q.id = qt.question_id WHERE q.id = :id LIMIT 1
 
 -- :name get-last-answer :? :1
 -- :doc retrieve all questions tests.
@@ -213,7 +217,7 @@ SELECT ordnen FROM answers WHERE question_id = :question-id ORDER BY ordnen DESC
 
 -- :name get-answers :? :*
 -- :doc retrieve all tests.
-SELECT id, question_id, answer, ordnen, correct FROM answers WHERE question_id = :question-id  ORDER BY ordnen ASC
+SELECT id, question_id, answer, ordnen, correct FROM answers WHERE question_id = :question_id  ORDER BY ordnen ASC
 
 -- :name unlink-question! :<! :1
 -- :doc unlink a question from the test

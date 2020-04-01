@@ -84,7 +84,7 @@
 ;;;;; TEST BUILD SECTION STARTS
 
 (defn- ^:private get-answers [{:keys [id] :as question}]
-  (let [answers          (db/get-answers {:question-id id})
+  (let [answers          (db/get-answers {:question_id id})
         answers-graphql  (map #(update % :id str) answers)
         question-graphql (update question :id str)]
     (assoc question-graphql :answers answers-graphql)))
@@ -112,17 +112,26 @@
 
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn clone-answers [question-id]
+  (let [answers (db/get-answers {:question_id question-id})]
+    (doseq [a answers]
+      (db/create-answer! (assoc a :question_id question-id)))))   ;; :question_id, :answer, :correct, :ordnen
+
 (defn clone-question [params]
-  (let [qupdated     (db/get-one-question (:id params))
-        ;; :question :qtype :hint :explanation :active :user_id :points :subject_id :level_id :origin
-        answers      (get-answers qupdated)]
-    (assoc qupdated :answers answers)))
+  (let [test          (get-one-test (:uurlid params))
+        old_ques_id   (:id params)
+        ntest         (assoc params :user_id (:user_id test) :subject_id (:subject_id test) :level_id (:level_id test) :origin old_ques_id)
+        qnew          (db/create-question! ntest)
+        qupdated      (db/update-question-test {:question_id (:id qnew) :test_id (:id test) :old_question_id old_ques_id})
+        _             (log/info (str " >>> qnewqnew QNEW  >>>>> " qnew))
+        _             (clone-answers (:id qnew))
+        full-question (db/get-one-question qnew)]
+    (get-answers full-question)))
 
 (defn regular-update-question [params]
   (let [qid          (db/update-question! params)
-        qupdated     (db/get-one-question qid)
-        answers      (get-answers qupdated)]
-    (assoc qupdated :answers answers)))
+        qupdated     (db/get-one-question {:id (:id qid)})]
+    (get-answers qupdated)))
 
 (defn update-question!
   "Choose update or create questions based in the 'quest_update' flag"
@@ -202,5 +211,5 @@
         answer-rows  (if (= "up" direction) (db/answer-order-up data) (db/answer-order-down data))]
      (if (= 2 (count answer-rows))
        (do (reorder-answer-rows answer-rows)
-          (db/get-answers {:question-id question_id}))
+          (db/get-answers {:question_id question_id}))
        {:error "Not enough answer rows"})))

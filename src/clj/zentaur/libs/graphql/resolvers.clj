@@ -40,8 +40,7 @@
 
 (defn- ^:private update-question
   [context args value]
-  (let [updated-question (mt/update-question! args)]
-    (update updated-question :id str)))
+  (mt/update-question! args))
 
 (defn- ^:private reorder-question
   [context args value]

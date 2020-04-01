@@ -12,7 +12,6 @@ CREATE TABLE questions (
   origin INT NOT NULL DEFAULT 0,
   explanation text,
   fulfill text NOT NULL DEFAULT '',
-  active BOOLEAN NOT NULL DEFAULT false,
   reviewed_lang BOOLEAN NOT NULL DEFAULT false,
   reviewed_fact BOOLEAN NOT NULL DEFAULT false,
   reviewed_cr BOOLEAN NOT NULL DEFAULT false,    -- reviewed copyright
@@ -28,8 +27,6 @@ COMMENT on column questions.qtype is '1: multiple option, 2: open, 3: fulfill, 4
 COMMENT on column questions.origin is 'Marks if the question is edited from another question, if not 0';
 --;; INSERT INTO question_tests (test_id, question_id, ordnen, created_at) VALUES (1, 2, 2, NOW());
 COMMENT on column questions.fulfill is 'This field is used when the question is type 3: fulfill';
---;; INSERT INTO question_tests (test_id, question_id, ordnen, created_at) VALUES (1, 2, 2, NOW());
-COMMENT on column questions.active is 'Active the question only after the reviews are finished';
 --;;
 CREATE TRIGGER trig_questions
 BEFORE UPDATE ON "questions"

@@ -111,7 +111,7 @@
   (fn                      ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (let [uurlid  (.-value (gdom/getElement "uurlid"))
-          query   (gstring/format "{test_by_uurlid(uurlid: \"%s\", archived: false) { uurlid title description tags subject subject_id created_at
+          query   (gstring/format "{test_by_uurlid(uurlid: \"%s\", archived: false) { uurlid title description tags subject subject_id created_at user_id
                                     subjects {id subject} questions { id question qtype hint points user_id explanation fulfill ordnen answers {id answer ordnen correct question_id }}}}"
                                   uurlid)]
           ;; perform a query, with the response sent to the callback event provided
@@ -250,12 +250,15 @@
  (fn
    [db [_ response]]
    (.log js/console (str ">>> UPP XXXXX response response >>>>> " response))
-   (let [question   (-> response :data :update_question)
-         qkeyword   (keyword (:id question))
-             _      (.log js/console (str ">>> question llll >>>>> " question " >> >  >  " qkeyword))]
-     (-> db
-         (update-in [:questions qkeyword] conj question)
-         (update :loading? not)))))
+   (let [question     (-> response :data :update_question)
+         qkeyword     (keyword (:id question))
+         new-question false
+         _            (.log js/console (str ">>> question llll >>>>> " question " >> >  >  " qkeyword))]
+     (if new-question
+       (update-in [:questions] dissoc qkeyword )
+       (-> db
+           (update-in [:questions qkeyword] conj question)
+           (update :loading? not))))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-question           ;; <-- the event id

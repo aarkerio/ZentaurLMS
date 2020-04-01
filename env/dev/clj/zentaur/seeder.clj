@@ -28,7 +28,7 @@
   (let [question     (rand-nth question-txt)
         points       (rand-nth points-int)
         points       (rand-nth points-int)
-        pre-params   {:user_id 1 :question question :qtype 1 :hint "vestibulum sed arcu"
+        pre-params   {:user_id 2 :question question :qtype 1 :hint "vestibulum sed arcu"
                       :points points :origin 0 :explanation "" :fulfill "" :active true}
         params       (assoc pre-params :level_id level-id :subject_id subject-id)
         new-question (db/create-question! params)]
