@@ -266,6 +266,7 @@
                                       hint: \"%s\", explanation: \"%s\", qtype: %i, points: %i, quest_update: %s, uurlid: \"%s\")
                                      { id question hint explanation qtype points ordnen fulfill user_id }}"
                                     id question hint explanation qtype points quest_update uurlid)]
+      (.log js/console (str ">>> UQ MUTATION >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
                            mutation                                  ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map

@@ -112,22 +112,26 @@
 
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn choose-action
-  "Choose update or create questions based in the 'quest_update' flag"
-  [params]
-  (let [quest_update (:quest_update params)
-        _            (log/info (str ">>> QUESTION CHOOSE PARAMS >>>>> " params))]
-    (if quest_update
-      (db/update-question! params)
-      (create-question! params))))
+(defn clone-question [params]
+  (let [qupdated     (db/get-one-question (:id params))
+        ;; :question :qtype :hint :explanation :active :user_id :points :subject_id :level_id :origin
+        answers      (get-answers qupdated)]
+    (assoc qupdated :answers answers)))
 
-(defn update-question! [params]
-  (let [qtype        (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
-        full-params  (dissoc params :active)
-        qid          (db/update-question! (assoc full-params :qtype qtype))
+(defn regular-update-question [params]
+  (let [qid          (db/update-question! params)
         qupdated     (db/get-one-question qid)
         answers      (get-answers qupdated)]
     (assoc qupdated :answers answers)))
+
+(defn update-question!
+  "Choose update or create questions based in the 'quest_update' flag"
+  [params]
+  (let [quest_update (:quest_update params)
+        _            (log/info (str ">>> update-question! PARAMS >>>>> " params))]
+    (if quest_update
+      (regular-update-question params)
+      (clone-question params))))
 
 (defn update-fulfill! [params]
   (db/update-question-fulfill! params))

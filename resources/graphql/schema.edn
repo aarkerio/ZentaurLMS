@@ -110,12 +110,11 @@
                                :args {
                                       :id           {:type (non-null Int)}
                                       :question     {:type (non-null String)}
-                                      :hint         {:type String}
-                                      :uurlid       {:type String}
+                                      :uurlid       {:type (non-null String)}
                                       :explanation  {:type String}
+                                      :hint         {:type String}
                                       :quest_update {:type (non-null Boolean)}
                                       :qtype        {:type (non-null Int)}
-                                      :user_id      {:type (non-null Int)}
                                       :points       {:type (non-null Int)}}
                                :resolve :update-question}
              :reorder_question {:type :test

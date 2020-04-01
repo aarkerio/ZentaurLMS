@@ -9,6 +9,7 @@
 (defn edit-question [{:keys [id question hint explanation qtype points user-id]}]
   (let [test-user-id  @(rf/subscribe [:test-user-id])
         quest-update  (= test-user-id user-id)  ;; this question belongs to the current user?, then just update
+        _    (.log js/console (str ">>> quest-updatequest-updatequest-update >>>>> " quest-update ))
         aquestion     (r/atom question)
         ahint         (r/atom hint)
         aexplanation  (r/atom explanation)
@@ -87,7 +88,6 @@
   (let [answer-class    (if-not correct "all-width-red" "all-width-green")
         answer-text     (if-not correct "answer-text-red" "answer-text-green")
         editing-answer  (r/atom false)]
-    (.log js/console (str ">>> acounteracounteracounteracounter >>>>> " acounter ">>>> answer-record >>> " answer-record))
     (fn []
       [:div {:class answer-class}
        (when (> idx 1)
