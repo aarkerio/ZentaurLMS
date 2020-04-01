@@ -38,7 +38,7 @@
   (let [_        (start)
         subjects (mt/get-subjects)
         levels   (mt/get-levels)]
-    (for [n (range 1000)]
+    (for [n (range 100)]
         (for [subject subjects
           level   levels]
       (create (:id subject) (:id level))))))
