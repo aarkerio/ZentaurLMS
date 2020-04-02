@@ -8,9 +8,8 @@
 (defn format-date
   "Format a Java instant"
   [date]
-  (let [formatter         (jt/format "dd-MM-yyyy HH:mm")
-        instant-with-zone (.atZone date (jt/zone-id))]
-    (jt/format formatter instant-with-zone)))
+  (let [formatter (java.text.SimpleDateFormat. "MM/dd/yyyy")]
+    (.format formatter date)))
 
 (defn index []
   [:div {:id "content"}

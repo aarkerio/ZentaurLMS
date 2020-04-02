@@ -32,7 +32,8 @@
                                :shared       {:type Boolean}
                                :created_at   {:type String}
                                :questions    {:type (list :question)}
-                               :subjects     {:type (list :subject)}}}
+                               :subjects     {:type (list :subject)}
+                               :levels       {:type (list :level)}}}
            :ided_question {
                            :description "Question with ID"
                            :fields {
@@ -61,6 +62,11 @@
                       :fields {
                                :id            {:type (non-null ID)}
                                :subject       {:type (non-null String)}}}
+           :level {
+                     :description "Level type."
+                     :fields {
+                              :id            {:type (non-null ID)}
+                              :level         {:type (non-null String)}}}
            :answer {
                       :description "Answer type."
                       :fields {

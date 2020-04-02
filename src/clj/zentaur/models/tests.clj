@@ -35,7 +35,7 @@
         errors      (val-test/validate-test full-params)]
     (if (nil? errors)
       (db/create-minimal-test full-params)
-      {:error errors :ok false})))
+      (log/info (str ">> CREATE tests errors >> " errors)))))
 
 (defn- ^:private link-test-question!
   [question-id test-id]
@@ -78,7 +78,8 @@
 (defn clone-question [question uurlid]
   (let [test          (get-one-test uurlid)
         old-quest-id  (:id question)
-        qnew          (db/create-question! (assoc question :user_id (:user_id test) :origin old-quest-id))
+        params        (assoc question :user_id (:user_id test) :origin old-quest-id)
+        qnew          (db/create-question! params)
         _             (link-test-question! (:id qnew) (:id test))]
     (clone-answers old-quest-id (:id qnew))))
 
@@ -115,7 +116,9 @@
   (let [test          (db/get-one-test {:uurlid uurlid :archived archived})
         questions     (get-questions (:id test))
         subjects      (db/get-subjects)
-        subj-strs     (map #(update % :id str) subjects)]
+        levels        (db/get-levels)
+        subj-strs     (map #(update % :id str) subjects)
+        leve-strs     (map #(update % :id str) levels)]
     (try
       (assoc test :questions questions :subjects subj-strs)
       (catch Exception e (str "******** >>> Caught exception: " (.getMessage e)))

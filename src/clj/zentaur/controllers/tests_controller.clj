@@ -39,7 +39,6 @@
 (defn generate-test
   "POST /vclass/tests/generate"
   [{:keys [params session identity]}]
-  (log/info (str ">>> PARAMSSSS kkkkkkkkkk >>>>> " params))
   (let [clean-params (dissoc params :__anti-forgery-token :submit :button-save)
         user-id      (:id identity)
         new-uurlid   (model-test/generate-test clean-params user-id)

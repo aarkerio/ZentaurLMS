@@ -6,13 +6,14 @@
             [hiccup.page :refer [include-css include-js]]
             [zentaur.hiccup.helpers-view :as hv]))
 
-(defn formatted-test [{:keys [title created_at tags published id subject uurlid]}]
+(defn formatted-test [{:keys [title created_at tags published id subject uurlid level]}]
   (let [formatted-date (hv/format-date created_at)]
   [:tr
    [:td [:a {:href (str "/vclass/tests/edit/" uurlid)} [:img {:src "/img/icon_edit_test.png" :alt "Bearbeiten"  :title "Bearbeiten"}]]]
    [:td title]
    [:td tags]
    [:td subject]
+   [:td level]
    [:td formatted-date]
    [:td [:a {:href (str "/vclass/tests/exportpdf/" uurlid)} [:img {:src "/img/icon_export_pdf.png" :alt "Export PDF" :title "Export PDF"}]]]
    [:td [:a {:href (str "/vclass/tests/exportodt/" uurlid)} [:img {:src "/img/icon_export_odt.png" :alt "Export ODT" :title "Export ODT"}]]]
@@ -57,6 +58,7 @@
             [:th "Titel"]
             [:th "Stichworte"]
             [:th "Fach"]
+            [:th "Stufe"]
             [:th "Erstellt"]
             [:th "Export PDF"]
             [:th "Export ODF"]

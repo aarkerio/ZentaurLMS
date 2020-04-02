@@ -2,7 +2,7 @@
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
-                 [cheshire "5.9.0"]                      ;; Clojure JSON and BSON encoding/decoding
+                 [cheshire "5.10.0"]                      ;; Clojure JSON and BSON encoding/decoding
                  [cljs-ajax "0.8.0"]                     ;; Simple Ajax client for ClojureScript and Clojure
                  [clj-commons/secretary "1.2.4"]         ;; A client-side router for ClojureScript.
                  [cljs-http "0.1.46"]                    ;; cljs-http returns core.async channels
@@ -12,27 +12,27 @@
                  [com.cognitect/transit-clj "0.8.319"]   ;; Marshalling Transit data to/from Clojure
                  [com.novemberain/pantomime "2.11.0"]    ;; A tiny Clojure library that deals with MIME types
                  [com.walmartlabs/lacinia "0.36.0-alpha-4"] ;; GraphQL implementation in pure Clojure
-                 [conman "0.8.4"]                        ;; Luminus database connection management and SQL query generation library
-                 [cprop "0.1.14"]                        ;; where all configuration properties converge
+                 [conman "0.8.6"]                        ;; Luminus database connection management and SQL query generation library
+                 [cprop "0.1.16"]                        ;; where all configuration properties converge
                  [day8.re-frame/http-fx "v0.2.0"]        ;; A re-frame effects handler for performing Ajax tasks
                  [digest "1.4.9"]                        ;; Message digest library for Clojure.
                  [funcool/struct "1.4.0"]                ;; Structural validation library for Clojure(Script)
                  [hiccup "1.0.5"]                        ;; HTML templates
-                 [luminus-migrations "0.6.5"]            ;; Migrations library for Luminus
+                 [luminus-migrations "0.6.7"]            ;; Migrations library for Luminus
                  [luminus-transit "0.1.2"]               ;; Transit helpers
                  [luminus/ring-ttl-session "0.3.3" :exclusions [joda-time clj-time]] ;; Ring's TTL (time to live) session
                  [markdown-clj "1.10.1"]                 ;; MD support
                  [metosin/muuntaja "0.6.6"]              ;; library for fast http api format negotiation, encoding and decoding.
-                 [metosin/reitit "0.4.1" :exclusions [joda-time clj-time borkdude/edamame]] ;; A fast data-driven router for Clojure(Script).
+                 [metosin/reitit "0.4.2" :exclusions [joda-time clj-time borkdude/edamame]] ;; A fast data-driven router for Clojure(Script).
                  [metosin/ring-http-response "0.9.1" :exclusions [joda-time]]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.16"]                        ;; Managing Clojure and ClojureScript app state
                  [org.clojure/clojure "1.10.1"]          ;; The sweet core!!
                  [org.clojure/clojurescript "1.10.597"]
-                 [org.clojure/tools.cli "0.4.2"]         ;; parses command line arguments and stuff like that
-                 [org.clojure/tools.logging "0.4.1"]     ;; Logs duh!
+                 [org.clojure/tools.cli "1.0.194"]       ;; parses command line arguments and stuff like that
+                 [org.clojure/tools.logging "1.0.0"]     ;; Logs duh!
                  [org.immutant/web "2.1.10" :exclusions [joda-time]] ;; Serve web requests using Ring handlers, Servlets, or Undertow HttpHandlers
                  [org.odftoolkit/simple-odf "0.9.0-RC1"] ;; Open Document libraries
-                 [org.postgresql/postgresql "42.2.9"]    ;; PostgreSQL rulez!
+                 [org.postgresql/postgresql "42.2.12"]   ;; PostgreSQL rulez!
                  [re-frame "0.11.0"]                     ;; A Reagent Framework For Writing SPAs, in Clojurescript.
                  [reagent "0.9.1"]                       ;; Minimalistic React for ClojureScript
                  [re-graph "0.1.11" :exclusions [org.eclipse.jetty/jetty-http]] ;; A graphql client for clojurescript and clojure
