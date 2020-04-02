@@ -2,15 +2,16 @@
 -- ;; lein run migrate
 CREATE TABLE questions (
   id serial PRIMARY KEY,
+  subject_id int NOT NULL REFERENCES subjects(id),
+  level_id int NOT NULL REFERENCES levels(id),
   user_id int NOT NULL REFERENCES users(id),
   question text NOT NULL,
-  qtype smallint NOT NULL DEFAULT 1,  -- qtype 1: multiple option, 2: open, 3: fulfill, 4: composite questions
+  qtype smallint NOT NULL DEFAULT 1,
   hint varchar(300),
   points smallint NOT NULL DEFAULT 1,
   origin INT NOT NULL DEFAULT 0,
   explanation text,
-  fulfill text,
-  active BOOLEAN NOT NULL DEFAULT false,
+  fulfill text NOT NULL DEFAULT '',
   reviewed_lang BOOLEAN NOT NULL DEFAULT false,
   reviewed_fact BOOLEAN NOT NULL DEFAULT false,
   reviewed_cr BOOLEAN NOT NULL DEFAULT false,    -- reviewed copyright

@@ -24,10 +24,35 @@
         [:div {:style "font-size:8pt;font-weight:bold;"} (str (:last_name comment) " wrote: ")]
         [:div {:class "font"} (:comment comment)]])
 
-(defn index [posts]
+(defn index [posts csrf-field subjects levels identity]
   (let [formatted-posts (doall (for [post posts]
                                  (format-post post)))]
     [:div {:id "cont"}
+     (when identity
+       [:div.create-test-form
+        [:h2 "Generate a new test"]
+        [:form {:id "submit-comment-form" :action "/vclass/tests/generate" :method "post" :class "css-class-form"}
+         (f/hidden-field {:value csrf-field} "__anti-forgery-token")
+         [:label {:for "level_id"} "Subject:"]
+         [:div.div-separator
+          [:select.form-control.mr-sm-2 {:name "subject_id"}
+           (for [subject subjects]
+             [:option {:value (:id subject)} (:subject subject)])
+           ]]
+         [:label {:for "level_id"} "Level:"]
+         [:div.div-separator
+          [:select.form-control.mr-sm-2 {:name "level_id"}
+           (for [level levels]
+             [:option {:value (:id level)} (:level level)])
+           ]]
+         [:label {:for "limit"} "Anzahl der Fragen:"]
+         [:div.div-separator
+           (f/drop-down {:class "form-control mr-sm-2"} "limit"
+                        (for [n (range 1 11)]
+                          [(str n) n]) 5
+                        )]
+         (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0"} "Go!")]])
+
       [:div {:id "content"} formatted-posts]
       [:nav {:class "blog-pagination"}
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
@@ -50,5 +75,4 @@
      [:div {:id "content"} formatted-post]
      [:div {:id "comments"} formatted-comments]
      [:div {:id "comment-form"} comment-form]]))
-
 

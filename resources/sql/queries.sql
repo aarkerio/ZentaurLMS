@@ -34,9 +34,13 @@ FROM posts p INNER JOIN users u
 ON p.user_id = u.id
 WHERE p.published = true AND p.id = :id
 
+-- :name get-levels :? :raw
+-- :doc retrieves all levels.
+SELECT id, level FROM levels ORDER BY id ASC
+
 -- :name get-subjects :? :raw
--- :doc retrieve all subjects.
-SELECT * FROM subjects ORDER BY subject ASC
+-- :doc retrieves all subjects.
+SELECT id, subject FROM subjects ORDER BY subject ASC
 
 -- :name save-post! :! :1
 -- :doc creates a new post record
@@ -128,18 +132,27 @@ VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :use
 
 -- :name create-minimal-test :<! :n
 -- :doc creates a minimal test record
-INSERT INTO tests (title, tags, user_id, subject_id, uurlid) VALUES (:title, :tags, :user_id, :subject_id, :uurlid) RETURNING *
+INSERT INTO tests (title, tags, user_id, subject_id, level_id, uurlid) VALUES (:title, :tags, :user_id, :subject_id, :level_id, :uurlid) RETURNING *
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
-INSERT INTO questions (question, qtype, hint, explanation, active, user_id, points)
-VALUES (:question, :qtype, :hint, :explanation, :active, :user_id, :points) RETURNING *
+INSERT INTO questions (question, qtype, hint, explanation, user_id, points, subject_id, level_id, origin)
+VALUES (:question, :qtype, :hint, :explanation, :user_id, :points, :subject_id, :level_id, :origin) RETURNING id
+
+-- :name create-question-test! :<! :n
+-- :doc creates a new question test record
+INSERT INTO question_tests (question_id, test_id, ordnen) VALUES (:question_id, :test_id, :ordnen) RETURNING true
 
 -- :name update-question! :<! :1
 -- :doc updates a question record
 UPDATE questions
 SET question = :question, qtype = :qtype, hint = :hint, explanation = :explanation, points = :points
-WHERE id = :id RETURNING id
+WHERE id = :id RETURNING *
+
+-- :name random-questions :? :raw
+-- :select random questions
+SELECT id, question, qtype, hint, explanation, user_id, points, subject_id, level_id FROM questions
+WHERE subject_id = :subject_id AND level_id = :level_id ORDER BY RANDOM() LIMIT :limit
 
 -- :name update-question-fulfill! :<! :1
 -- :doc updates the fulfill field in the question
@@ -153,10 +166,6 @@ UPDATE answers SET answer = :answer, correct = :correct WHERE id = :id RETURNING
 -- :doc updates an answer record
 UPDATE tests SET title = :title, tags = :tags, description = :description, subject_id = :subject_id
 WHERE uurlid = :uurlid RETURNING *
-
--- :name create-question-test! :<! :n
--- :doc creates a new question test record
-INSERT INTO question_tests (question_id, test_id, ordnen) VALUES (:question_id, :test_id, :ordnen) RETURNING true
 
 -- :name create-answer! :<! :1
 -- :doc creates a new answer record
@@ -172,7 +181,7 @@ ORDER BY t.id DESC
 
 -- :name get-one-test :? :1
 -- :doc retrieve a test given the uurlid.
-SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, t.uurlid, s.subject
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, t.level_id, t.uurlid, s.subject
 FROM tests t INNER JOIN subjects s
 ON t.subject_id = s.id
 WHERE t.archived = :archived AND t.uurlid = :uurlid
@@ -180,16 +189,16 @@ ORDER BY t.id DESC
 
 -- :name get-questions :? :*
 -- :doc retrieve all questions tests.
-SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.fulfill, q.active, q.reviewed_lang, q.reviewed_fact,
+SELECT q.id, q.question, q.user_id, q.qtype, q.hint, q.points, q.explanation, q.fulfill, q.reviewed_lang, q.reviewed_fact,
 q.reviewed_cr, q.created_at, qt.ordnen FROM question_tests qt INNER JOIN questions q
 ON q.id = qt.question_id
 WHERE qt.test_id = :test-id AND qt.question_id = q.id ORDER BY qt.ordnen ASC
 
 -- :name get-one-question :? :1
 -- :doc retrieve a question given the id.
-SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.fulfill, q.active, q.reviewed_lang, q.reviewed_fact, q.reviewed_cr,
-q.created_at, qt.ordnen FROM question_tests qt INNER JOIN questions q
-ON q.id = qt.question_id WHERE qt.question_id = q.id AND qt.id = :id LIMIT 1
+SELECT q.id, q.question, q.qtype, q.hint, q.points, q.explanation, q.fulfill, q.reviewed_lang, q.reviewed_fact, q.reviewed_cr,
+q.created_at, q.user_id, q.origin, qt.ordnen FROM question_tests qt INNER JOIN questions q
+ON q.id = qt.question_id WHERE q.id = :id LIMIT 1
 
 -- :name get-last-answer :? :1
 -- :doc retrieve all questions tests.
@@ -205,7 +214,7 @@ SELECT ordnen FROM answers WHERE question_id = :question-id ORDER BY ordnen DESC
 
 -- :name get-answers :? :*
 -- :doc retrieve all tests.
-SELECT id, question_id, answer, ordnen, correct FROM answers WHERE question_id = :question-id  ORDER BY ordnen ASC
+SELECT id, question_id, answer, ordnen, correct FROM answers WHERE question_id = :question_id  ORDER BY ordnen ASC
 
 -- :name unlink-question! :<! :1
 -- :doc unlink a question from the test
@@ -233,6 +242,10 @@ SELECT id, test_id, question_id, ordnen FROM question_tests WHERE test_id = :tes
 -- :doc set reorder in question
 UPDATE question_tests SET ordnen = :ordnen WHERE id = :id RETURNING TRUE
 
+-- :name unlink-question :<! :1
+-- :doc remove question from test
+DELETE FROM question_tests WHERE question_id = :question_id AND test_id = :test_id RETURNING ordnen
+
 /***** REORDER QUESTIONS ENDS ******/
 
 /***** REORDER ANSWERS STARTS ******/
@@ -250,7 +263,6 @@ SELECT id, ordnen FROM answers WHERE question_id = :question-id  AND ordnen >= :
 UPDATE answers SET ordnen = :ordnen WHERE id = :id RETURNING TRUE
 
 /***** REORDER ANSWERS ENDS ******/
-
 
 /**** ROLES   ****/
 

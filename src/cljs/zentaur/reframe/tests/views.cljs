@@ -6,12 +6,15 @@
             [zentaur.reframe.tests.forms.blocks :as blk]
             [zentaur.reframe.tests.libs :as zlib]))
 
-(defn edit-question [{:keys [id question hint explanation qtype points]}]
-  (let [aquestion    (r/atom question)
-        ahint        (r/atom hint)
-        aexplanation (r/atom explanation)
-        aqtype       (r/atom qtype)
-        apoints      (r/atom points)]
+(defn edit-question [{:keys [id question hint explanation qtype points user_id]}]
+  (let [test-user-id  @(rf/subscribe [:test-user-id])
+        quest-update  (= test-user-id user_id)  ;; this question belongs to the current user?, then just update
+        aquestion     (r/atom question)
+        ahint         (r/atom hint)
+        aexplanation  (r/atom explanation)
+        aqtype        (r/atom qtype)
+        apoints       (r/atom points)
+        uurlid        @(rf/subscribe [:test-uurlid])]
     (fn []
       [:div.edit_question
        [:div "Question: " [:br]
@@ -50,12 +53,14 @@
          ;; [:option {:value "4"} "Columns"]
          ]]
        [:div [:input.btn {:type  "button" :class "btn btn btn-outline-primary-green" :value "Speichern"
-                          :on-click #(rf/dispatch [:update-question {:id          id
-                                                                     :question    @aquestion
-                                                                     :hint        @ahint
-                                                                     :points      @apoints
-                                                                     :qtype       @aqtype
-                                                                     :explanation @aexplanation}])}]]])))
+                          :on-click #(rf/dispatch [:update-question {:id           id
+                                                                     :question     @aquestion
+                                                                     :hint         @ahint
+                                                                     :points       @apoints
+                                                                     :qtype        @aqtype
+                                                                     :explanation  @aexplanation
+                                                                     :quest_update quest-update
+                                                                     :uurlid       uurlid}])}]]])))
 
 (defn answer-editing-input [{:keys [answer correct id]}]
   (let [aanswer   (r/atom answer)
@@ -81,7 +86,6 @@
   (let [answer-class    (if-not correct "all-width-red" "all-width-green")
         answer-text     (if-not correct "answer-text-red" "answer-text-green")
         editing-answer  (r/atom false)]
-    (.log js/console (str ">>> acounteracounteracounteracounter >>>>> " acounter ">>>> answer-record >>> " answer-record))
     (fn []
       [:div {:class answer-class}
        (when (> idx 1)
@@ -140,10 +144,11 @@
 (defn fulfill-question-form
   [question]
   (let [afulfill  (r/atom (:fulfill question))
-        id        (:id question)]
+        id        (:id question)
+        ats       (fnil zlib/asterisks-to-spaces "")]
     (fn []
       [:div
-       [:div.div-separator (zlib/asterisks-to-spaces @afulfill)]
+       [:div.div-separator "Preview:" [:br] (ats @afulfill)]
        [:div.div-separator
         [:textarea {:value @afulfill :on-change  #(reset! afulfill (-> % .-target .-value))
                     :placeholder "Text and asterisks" :title "Text and asterisks" :cols 120  :rows 10}]]
@@ -182,7 +187,7 @@
   "Display any type of question"
   [{:keys [question explanation hint qtype id ordnen points counter uurlid qcount] :as q}]
   (let [editing-question (r/atom false)]
-    (.log js/console (str ">>> VALUE qcounter >>>>> " qcount " >>>> counter >>> " counter  " >>>> uurlid >>>> " uurlid))
+    (.log js/console (str ">>> VALUE qcounter >>>>> " qcount " >>>> counter >>> " counter  " >>>> uurlid >>>> " uurlid " >>>> " q "  >>>> " question))
     (fn []
       [:div.question-container-div   ;; Flex container
        [:div.question-items-divs
@@ -206,7 +211,7 @@
                                  :src      "/img/icon_edit.png"
                                  :on-click #(swap! editing-question not)}])]  ;; editing ends
      [:div.question-items-divs
-      [:div [:span.bold-font (str counter ".- Frage: ")] question  "   ordnen:" ordnen "   question id:" id]
+      [:div [:span.bold-font (str counter ".- Frage: ")] question  "  >>>>ordnen:>>>" ordnen "   question id:" id]
       [:div [:span.bold-font "Hint: "] hint]
       [:div [:span.bold-font "Points: "] points]
       [:div [:span.bold-font "Erläuterung: "] explanation]]
@@ -352,10 +357,10 @@
 (defn todo-app
   []
   (let [question-count (rf/subscribe [:question-count])
-        uurlid         (.-value (gdom/getElement "uurlid"))]
+        uurlid         (rf/subscribe [:test-uurlid])]
     [:div {:id "page-container"}
      [test-editor-view]
      [create-question-form]
-     [display-questions-list uurlid @question-count]
+     [display-questions-list @uurlid @question-count]
      [:div {:class "footer"}
       [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))

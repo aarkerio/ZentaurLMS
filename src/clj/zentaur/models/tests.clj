@@ -18,15 +18,20 @@
   (db/get-tests {:user-id user-id}))
 
 (defn get-subjects
-  "Populates the test form"
+  "Data for populates the test form"
   []
   (db/get-subjects))
+
+(defn get-levels
+  "Data for populates the test form"
+  []
+  (db/get-levels))
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
   (let [uurlid      (sh/gen-uuid)
-        pre-params  (assoc params :user_id user-id :uurlid uurlid)
-        full-params (update pre-params :subject_id #(Integer/parseInt %))
+        pre-params  (if (int? (:subject_id params)) params (sh/str-to-int params :subject_id :level_id))
+        full-params (assoc pre-params :user_id user-id :uurlid uurlid)
         errors      (val-test/validate-test full-params)]
     (if (nil? errors)
       (db/create-minimal-test full-params)
@@ -34,22 +39,24 @@
 
 (defn- ^:private link-test-question!
   [question-id test-id]
-  (let [next-ordnen (or (:ordnen (sh/get-last-ordnen "questions" test-id)) 0)]
-    (db/create-question-test! {:question_id question-id :test_id test-id :ordnen (inc next-ordnen)})))
+  (let [next-ordnen (inc (or (:ordnen (sh/get-last-ordnen "questions" test-id)) 0))
+        _           (db/create-question-test! {:question_id question-id :test_id test-id :ordnen next-ordnen})]
+    next-ordnen))
 
-(defn- ^:private get-last-question
-  [params]
-  (let [test             (get-one-test (:uurlid params))
-        test-id          (:id test)
-        created-question (db/create-question! params)
+(defn- ^:private insert-and-link-question [params test-id]
+  (let [created-question (db/create-question! params)
         question-id      (:id created-question)
-        _                (link-test-question! question-id test-id)]
-    created-question))
+        ordnen           (link-test-question! question-id test-id)]
+    (assoc created-question :ordnen ordnen)))
 
-(defn create-question! [params]
-  (let [errors (val-test/validate-question params)]
+(defn create-question!
+  [params]
+  (let [test         (get-one-test (:uurlid params))
+        test-id      (:id test)
+        full-params  (assoc params :subject_id (:subject_id test) :level_id (:level_id test) :origin 0)
+        errors       (val-test/validate-question full-params)]
     (if (nil? errors)
-      (get-last-question params)
+      (insert-and-link-question full-params test-id)
       {:flash errors :ok false})))
 
 (defn create-answer! [params]
@@ -62,10 +69,35 @@
       (db/create-answer! full-params)
       {:flash errors :ok false})))
 
+;;; NEW TEST & CLONING QUESTIONS
+(defn clone-answers [old-question-id new-question-id]
+  (let [answers (db/get-answers {:question_id old-question-id})]
+    (doseq [a answers]
+      (db/create-answer! (assoc a :question_id new-question-id)))))   ;; :question_id, :answer, :correct, :ordnen
+
+(defn clone-question [question uurlid]
+  (let [test          (get-one-test uurlid)
+        old-quest-id  (:id question)
+        qnew          (db/create-question! (assoc question :user_id (:user_id test) :origin old-quest-id))
+        _             (link-test-question! (:id qnew) (:id test))]
+    (clone-answers old-quest-id (:id qnew))))
+
+(defn generate-questions [params uurlid]
+  (let [questions (db/random-questions params)]
+    (doseq [q questions]
+      (clone-question q uurlid))))
+
+(defn generate-test [params user-id]
+  (let [pre-params  (sh/str-to-int params :subject_id :level_id :limit)
+        full-params (assoc pre-params :title "Your new test" :tags "list of tags")
+        test        (create-test! full-params user-id)
+        _           (generate-questions pre-params (:uurlid test))]
+    (:uurlid test)))
+
 ;;;;; TEST BUILD SECTION STARTS
 
 (defn- ^:private get-answers [{:keys [id] :as question}]
-  (let [answers          (db/get-answers {:question-id id})
+  (let [answers          (db/get-answers {:question_id id})
         answers-graphql  (map #(update % :id str) answers)
         question-graphql (update question :id str)]
     (assoc question-graphql :answers answers-graphql)))
@@ -92,11 +124,11 @@
 ;;;;; TEST BUILD SECTION ENDS
 
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn update-question! [params]
-  (let [qtype        (if (int? (:qtype params)) (:qtype params) (Integer/parseInt (:qtype params)))
-        full-params  (dissoc params :active)
-        qid          (db/update-question! (assoc full-params :qtype qtype))]
-    (db/get-one-question qid)))
+  (let [qid       (db/update-question! params)
+        qupdated  (db/get-one-question {:id (:id qid)})]
+    (get-answers qupdated)))
 
 (defn update-fulfill! [params]
   (db/update-question-fulfill! params))
@@ -126,7 +158,7 @@
     (db/unlink-question! full-params)))
 
 (defn remove-answer [params]
-  (let [result   (db/remove-answer! params)]
+  (let [result (db/remove-answer! params)]
     (assoc params :ok (:bool result))))
 
 ;;;; REORDERS
@@ -167,5 +199,5 @@
         answer-rows  (if (= "up" direction) (db/answer-order-up data) (db/answer-order-down data))]
      (if (= 2 (count answer-rows))
        (do (reorder-answer-rows answer-rows)
-          (db/get-answers {:question-id question_id}))
+          (db/get-answers {:question_id question_id}))
        {:error "Not enough answer rows"})))

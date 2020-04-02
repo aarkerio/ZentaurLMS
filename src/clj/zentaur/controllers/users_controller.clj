@@ -33,10 +33,10 @@
 
 (defn post-login
   "POST /login"
-  [{{email "email" password "password"} :form-params session :session :as req}]
+  [{{email "email" password "password"} :form-params session :session}]
   (let [user (model-user/get-user-by-email-and-password email password)]
     (if-not (nil? (:user user))
-      (assoc (response/found "/")  :session (assoc session :identity (:user user)) :flash "Willkommen zurück!")
+      (assoc (response/found "/") :session (assoc session :identity (:user user)) :flash "Willkommen zurück!")
       (assoc (response/found "/login") :flash "Etwas stimmt nicht mit deinem Zugriffsprozess"))))
 
 (defn clear-session! [request]

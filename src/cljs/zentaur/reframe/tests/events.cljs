@@ -23,25 +23,6 @@
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
 (def todo-interceptors [check-spec-interceptor])
 
-(defn order-questions
-  "helper to reorder"
-  [db]
-  (let [questions (:questions db)]
-    (into (sorted-map-by
-           (fn [key1 key2]
-             (compare (:ordnen (get questions key1))
-                      (:ordnen (get questions key2)))))
-          questions)))
-
-(def reorder-event
-  (re-frame/->interceptor
-   :id      :reorder-event
-   :after   (fn [context]
-              (let [ordered-questions (order-questions (-> context  :effects :db)) ]
-                (assoc-in context [:effects :db :questions] ordered-questions)))))
-
-;; (def reorder-after-interceptor (re-frame/after (partial order-questions)))
-
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
 (re-frame/reg-event-fx         ;; part of the re-frame API
@@ -80,20 +61,37 @@
                (let [trim-fn (fn [event] (-> event rest vec))]
                  (update-in context [:coeffects :event] trim-fn)))))
 
-(defn vector-to-idxmap
+(defn vector-to-ordered-idxmap
   "Convert vector od maps to an indexed map"
   [rows]
-  (into {} (map-indexed (fn [idx row] {(keyword (:id row)) row}) rows)))
+  (let [indexed (reduce #(assoc %1 (keyword (:id %2)) %2) {} rows)]
+     (into (sorted-map-by (fn [key1 key2]
+                            (compare
+                             (get-in indexed [key1 :ordnen])
+                             (get-in indexed [key2 :ordnen]))))
+      indexed)
+    ))
+
+(def reorder-questions
+  (re-frame/->interceptor
+   :id      :reorder-questions
+   :after   (fn [context]
+              (let [app-db    (-> context :effects :db)
+                    questions (:questions app-db)
+                    qordered  (vector-to-ordered-idxmap questions)]
+                (assoc-in context [:effects :db :questions] qordered)))))
+
+(def reorder-after-questions-interceptor (re-frame/after (partial reorder-questions)))
 
 (re-frame/reg-event-db
  :process-test-response
   [trim-event]
-  (fn [db [ {:keys [data errors] :as payload}]]
+  (fn [db [{:keys [data errors]}]]
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
     (let [test          (:test_by_uurlid data)
           questions     (:questions test)
-          ques-answers  (map #(update % :answers vector-to-idxmap) questions)
-          questions-idx (vector-to-idxmap ques-answers)
+          ques-answers  (map #(update % :answers vector-to-ordered-idxmap) questions)
+          questions-idx (vector-to-ordered-idxmap ques-answers)
           subjects      (update-ids (:subjects test))
           only-test     (dissoc test :subjects :questions)
           _             (.log js/console (str ">>> subjects >>>>> " subjects))
@@ -113,23 +111,34 @@
   (fn                      ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (let [uurlid  (.-value (gdom/getElement "uurlid"))
-          query   (gstring/format "{test_by_uurlid(uurlid: \"%s\", archived: false) { uurlid title description tags subject subject_id created_at
-                                    subjects {id subject} questions { id question qtype hint points explanation fulfill ordnen answers {id answer ordnen correct question_id }}}}"
+          query   (gstring/format "{test_by_uurlid(uurlid: \"%s\", archived: false) { uurlid title description tags subject subject_id created_at user_id
+                                    subjects {id subject} questions { id question qtype hint points user_id explanation fulfill ordnen answers {id answer ordnen correct question_id }}}}"
                                   uurlid)]
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query query {} [:process-test-response]]))))
 
+(def reorder-after-questions
+  (re-frame/->interceptor
+   :id      :reorder-questions
+   :after   (fn [context]
+              (let [app-db    (-> context :effects :db)
+                    questions (:questions app-db)
+                    qordered  (fn [rows] (into (sorted-map-by (fn [key1 key2]
+                                                               (compare
+                                                                (get-in rows [key1 :ordnen])
+                                                                (get-in rows [key2 :ordnen]))))
+                                              rows))]
+                (update-in context [:effects :db :questions] qordered)))))
+
 (re-frame/reg-event-db
  :process-create-question
- []
+ [reorder-after-questions]
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
-   (.log js/console (str ">>> respoNSE AFTER NEW question >>>>> " response ))
    (let [question       (-> response :data :create_question)
          qkeyword       (keyword (:id question))
          ques-answers   (assoc question :answers {})
-         final-question (assoc {} qkeyword ques-answers)
-         _              (.log js/console (str ">>> final-question >>>>> " final-question ))]
+         final-question (assoc {} qkeyword ques-answers)]
      (-> db
          (assoc  :loading?  false)     ;; take away that "Loading ..." UI
          (update :qform not)           ;; hide new question form
@@ -145,7 +154,7 @@
           _             (.log js/console (str ">>> VALUES AFTER  >>>>> " values ))
           {:keys [question hint explanation qtype points uurlid user-id]} values
           mutation      (gstring/format "mutation { create_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
-                                         qtype: %i, points: %i, uurlid: \"%s\", user_id: %i) { id question qtype hint explanation ordnen points }}"
+                                         qtype: %i, points: %i, uurlid: \"%s\", user_id: %i) { id question qtype hint explanation user_id ordnen points fulfill }}"
                                         question hint explanation qtype points uurlid user-id)]
            (.log js/console (str ">>> MUTATTION  >>>>> " mutation ))
       ;; perform a query, with the response sent to the callback event provided
@@ -241,22 +250,23 @@
  (fn
    [db [_ response]]
    (.log js/console (str ">>> UPP XXXXX response response >>>>> " response))
-   (let [question   (-> response :data :update_question)
-         qkeyword   (keyword (:id question))
-             _      (.log js/console (str ">>> question llll >>>>> " question " >> >  >  " qkeyword))]
-     (-> db
-         (update-in [:questions qkeyword] conj question)
-         (update :loading? not)))))
+   (let [question     (-> response :data :update_question)
+         qkeyword     (keyword (:id question))
+         _            (.log js/console (str ">>> question UPDATED >>>>> " question " >> >  >  " qkeyword))]
+       (-> db
+           (update-in [:questions qkeyword] conj question)
+           (update :loading? not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-question           ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ updates]]       ;; <-- 1st argument is coeffect, from which we extract db
-    (let [{:keys [id question hint explanation qtype points]} updates
+    (let [{:keys [id question hint explanation qtype points quest_update uurlid]} updates
           mutation  (gstring/format "mutation { update_question( id: %i, question: \"%s\",
-                                      hint: \"%s\", explanation: \"%s\", qtype: %i, points: %i)
-                                     { id question hint explanation qtype points ordnen fulfill }}"
-                                    id question hint explanation qtype points)]
+                                      hint: \"%s\", explanation: \"%s\", qtype: %i, points: %i, quest_update: %s, uurlid: \"%s\")
+                                     { id question hint explanation qtype points ordnen fulfill user_id }}"
+                                    id question hint explanation qtype points quest_update uurlid)]
+      (.log js/console (str ">>> UQ MUTATION >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
                            mutation                                  ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
@@ -267,11 +277,10 @@
  (fn
    [db [_ response]]
    (let [question  (-> response :data :update_fulfill)
-         _         (.log js/console (str ">>> VALUE QQUESTION FULFILL >>>>> " question ))
          qkeyword  (keyword (:id question))
          fulfill   (:fulfill question)]
      (-> db
-         (update-in [:questions qkeyword :fulfill] conj fulfill)
+         (assoc-in [:questions qkeyword :fulfill] fulfill)
          (update :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
@@ -282,10 +291,11 @@
           mutation  (gstring/format "mutation { update_fulfill( id: %i, fulfill: \"%s\")
                                      { id fulfill }}"
                                     id fulfill)]
-       (re-frame/dispatch [::re-graph/mutate
-                           mutation                                  ;; graphql query
-                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
-                           [:process-after-update-fulfill]]))))
+      (.log js/console (str ">>> MUTATION  >>>>> " mutation))
+      (re-frame/dispatch [::re-graph/mutate
+                          mutation                                  ;; graphql query
+                          {:some "Pumas campeón prros!! variable"}   ;; arguments map
+                          [:process-after-update-fulfill]]))))
 
 (re-frame/reg-event-db
  :process-after-update-answer
@@ -344,8 +354,8 @@
  []
  (fn [db [_ response]]
    (let [questions     (-> response :data :reorder_question :questions)
-         ques-answers  (map #(update % :answers vector-to-idxmap) questions)
-         idx-questions (vector-to-idxmap ques-answers)]
+         ques-answers  (map #(update % :answers vector-to-ordered-idxmap) questions)
+         idx-questions (vector-to-ordered-idxmap ques-answers)]
    (-> db
        (assoc-in [:questions] idx-questions)
        (update :loading? not)))))
@@ -372,7 +382,7 @@
  []
  (fn [db [_ response]]
    (let [data      (-> response :data :reorder_answer)
-         answers   (vector-to-idxmap (:answers data))
+         answers   (vector-to-ordered-idxmap (:answers data))
          q-keyword (keyword (:id data))]
    (-> db
        (assoc-in [:questions q-keyword :answers] answers)

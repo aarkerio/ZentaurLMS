@@ -16,29 +16,39 @@
    [:td formatted-date]
    [:td [:a {:href (str "/vclass/tests/exportpdf/" uurlid)} [:img {:src "/img/icon_export_pdf.png" :alt "Export PDF" :title "Export PDF"}]]]
    [:td [:a {:href (str "/vclass/tests/exportodt/" uurlid)} [:img {:src "/img/icon_export_odt.png" :alt "Export ODT" :title "Export ODT"}]]]
+   [:td [:a {:href (str "/vclass/tests/apply/" uurlid)} [:img {:src "/img/icon_apply.png" :alt "Bewerben Sie sich für die Klasse" :title "Bewerben Sie sich für die Klasse"}]]]
    [:td [:a {:onclick (str "zentaur.core.deletetest('" uurlid "')")} [:img {:src "/img/icon_delete.png" :alt "Delete test" :title "Delete test"}]]]]))
 
-(defn- test-new-form [subjects csrf-field]
+(defn- test-new-form [subjects levels csrf-field]
   [:div.hidden-div {:id "hidden-form"}
    [:form {:id "submit-test-form" :action "/vclass/tests" :method "post" :class "css-class-form"}
     (f/hidden-field {:value csrf-field} "__anti-forgery-token")
+    [:label {:for "title"} "Title:"]
     [:div.div-separator (f/text-field {:maxlength 150 :size 90 :placeholder "Title"} "title")]
+    [:label {:for "tags"} "Tags:"]
     [:div.div-separator (f/text-field {:maxlength 150 :size 70 :placeholder "Tags"} "tags")]
+    [:label {:for "subject_id"} "Subject:"]
     [:div.div-separator
      [:select.form-control.mr-sm-2 {:name "subject_id" :value 1}
       (for [subject subjects]
         [:option {:value (:id subject)} (:subject subject)])
       ]]
-      (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]])
+    [:label {:for "level_id"} "Level:"]
+    [:div.div-separator
+     [:select.form-control.mr-sm-2 {:name "level_id" :value 1}
+      (for [level levels]
+        [:option {:value (:id level)} (:level level)])
+      ]]
+    (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]])
 
-(defn index [tests base subjects]
+(defn index [tests base subjects levels]
   (let [csrf-field      (:csrf-field base)
         formatted-tests (for [test tests]
                           (formatted-test test))]
     [:div {:id "cont"}
      [:h1 "Dein genialer Quiz Test"]
      [:div [:img {:src "/img/icon_add.png" :alt "Quizz test hinzüfugen" :title "Quizz test hinzüfugen" :id "button-show-div"}]]
-     (test-new-form subjects csrf-field)
+     (test-new-form subjects levels csrf-field)
      [:div {:id "content"}
        [:table {:class "some-table-class"}
          [:thead
@@ -50,6 +60,7 @@
             [:th "Erstellt"]
             [:th "Export PDF"]
             [:th "Export ODF"]
+            [:th "Apply to Classroom"]
             [:th "Löschen"]]]
           [:tbody formatted-tests]]]
       (hv/pagination "tests")]))

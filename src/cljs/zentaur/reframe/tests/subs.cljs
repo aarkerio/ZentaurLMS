@@ -111,3 +111,18 @@
     (rf/subscribe [:questions]))
   (fn [questions]
     (count questions)))
+
+(rf/reg-sub
+  :test-uurlid
+  (fn [_]
+    (rf/subscribe [:test]))
+  (fn [test]
+    (:uurlid test)))
+
+(rf/reg-sub
+  :test-user-id
+  (fn [_]
+    (rf/subscribe [:test]))
+  (fn [test]
+    (:user_id test)))
+

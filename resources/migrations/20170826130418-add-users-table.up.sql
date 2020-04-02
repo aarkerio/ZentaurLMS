@@ -26,7 +26,7 @@ INSERT INTO users (fname,
   password
 ) VALUES ('Manuel',
           'Montoya',
-          'dsfdsfdsfdfsdsf',
+          'a0655258-ccf8-45b6-b238-f010439e6ff2',
           'admin@example.com',
           4,
           true,

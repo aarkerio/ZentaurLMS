@@ -5,6 +5,8 @@
             [zentaur.db.core :as db])
    (:import (java.text Normalizer)))
 
+(def not-nil? (comp not nil?))
+
 (defn get-last-id
   "Get the last id for any table"
   [table]
@@ -41,7 +43,7 @@
     (s/lower-case under_norm)))
 
 (defn str-to-int
-  "Convert some keys in map to integer"
+  "Change str keys in map to integer"
   [coll & int-keys]
   (let [listed (set int-keys)]
     (reduce-kv #(assoc %1 %2 (if (contains? listed %2) (Integer/parseInt %3) %3)) {} coll)))
@@ -60,3 +62,9 @@
   [params & args]
   (let [new-values (reduce #(assoc %1 %2 (contains? params %2)) {} args)]
     (merge params new-values)))
+
+(defn asterisks-to-spaces
+  "Replace sub-strings surrounded by asterisks for spaces"
+  [text]
+  (clojure.string/replace text #"\*(.*?)\*" #(clojure.string/join (take (count (% 1)) (repeat "_")))))
+

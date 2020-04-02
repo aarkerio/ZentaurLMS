@@ -1,15 +1,15 @@
 ;; /**********   UNDERSCORES IN NAMES PLEASE!!!!    ********/
 {:enums {
-         :episode {:description "The episodes of the original Star Wars trilogy."
-                   :values [:NEWHOPE :EMPIRE :JEDI]}
+         :question_origin {:description "Question edited from a previous one"
+                   :values [:ORIGINAL :DERIVED]}
          :question_type {:description "Question options"
                    :values [:CLOSED :OPTIONS :OPEN :COLUMNS]}}
  :interfaces {
               :character {
                           :fields {:id         {:type String}
                                    :name       {:type String}
-                                   :appears_in {:type (list :episode)}
-                                   :friends    {:type (list :character)}}}}
+                                   :appears_in {:type (list :question_origin)}
+                                   :friends    {:type (list :question_type)}}}}
  :objects {
            :fulltest  {
                         :description "List of Tests schema."
@@ -25,6 +25,7 @@
                                :instructions {:type String}
                                :subject      {:type String}
                                :subject_id   {:type Int}
+                               :level_id     {:type Int}
                                :tags         {:type String}
                                :level        {:type Int}
                                :active       {:type Boolean}
@@ -42,6 +43,8 @@
                       :fields {
                                :id            {:type (non-null ID)}
                                :question      {:type (non-null String)}
+                               :subject_id    {:type Int}
+                               :level_id      {:type Int}
                                :qtype         {:type Int}
                                :hint          {:type String}
                                :explanation   {:type String}
@@ -49,7 +52,6 @@
                                :ordnen        {:type Int}
                                :points        {:type Int}
                                :user_id       {:type Int}
-                               :active        {:type Boolean}
                                :reviewed_fact {:type Boolean}
                                :reviewed_lang {:type Boolean}
                                :created_at    {:type String}
@@ -105,12 +107,14 @@
              :update_question {:type :question
                                :description "Update a question."
                                :args {
-                                      :id          {:type (non-null Int)}
-                                      :question    {:type (non-null String)}
-                                      :hint        {:type String}
-                                      :explanation {:type String}
-                                      :qtype       {:type (non-null Int)}
-                                      :points      {:type (non-null Int)}}
+                                      :id           {:type (non-null Int)}
+                                      :question     {:type (non-null String)}
+                                      :uurlid       {:type (non-null String)}
+                                      :explanation  {:type String}
+                                      :hint         {:type String}
+                                      :quest_update {:type (non-null Boolean)}
+                                      :qtype        {:type (non-null Int)}
+                                      :points       {:type (non-null Int)}}
                                :resolve :update-question}
              :reorder_question {:type :test
                                 :description "Reorder question."
@@ -126,7 +130,6 @@
                                      :question_id {:type (non-null Int)}
                                      :direction   {:type (non-null String)}}
                               :resolve :reorder-answer}
-
              :update_fulfill {:type :question
                                :description "Update the fulfill field."
                                :args {
