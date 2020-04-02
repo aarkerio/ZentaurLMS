@@ -69,16 +69,29 @@
       (db/create-answer! full-params)
       {:flash errors :ok false})))
 
-(defn generate-questions [test-id params]
+;;; NEW TEST & CLONING QUESTIONS
+(defn clone-answers [old-question-id new-question-id]
+  (let [answers (db/get-answers {:question_id old-question-id})]
+    (doseq [a answers]
+      (db/create-answer! (assoc a :question_id new-question-id)))))   ;; :question_id, :answer, :correct, :ordnen
+
+(defn clone-question [question uurlid]
+  (let [test          (get-one-test uurlid)
+        old-quest-id  (:id question)
+        qnew          (db/create-question! (assoc question :user_id (:user_id test) :origin old-quest-id))
+        _             (link-test-question! (:id qnew) (:id test))]
+    (clone-answers old-quest-id (:id qnew))))
+
+(defn generate-questions [params uurlid]
   (let [questions (db/random-questions params)]
     (doseq [q questions]
-      (link-test-question! (:id q) test-id))))
+      (clone-question q uurlid))))
 
 (defn generate-test [params user-id]
   (let [pre-params  (sh/str-to-int params :subject_id :level_id :limit)
-        full-params (assoc pre-params :title "Your knew test" :tags "list of tags")
+        full-params (assoc pre-params :title "Your new test" :tags "list of tags")
         test        (create-test! full-params user-id)
-        _           (generate-questions (:id test) pre-params)]
+        _           (generate-questions pre-params (:uurlid test))]
     (:uurlid test)))
 
 ;;;;; TEST BUILD SECTION STARTS
@@ -112,35 +125,10 @@
 
 ;;;;;;;;;;;;      UPDATES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn clone-answers [question-id]
-  (let [answers (db/get-answers {:question_id question-id})]
-    (doseq [a answers]
-      (db/create-answer! (assoc a :question_id question-id)))))   ;; :question_id, :answer, :correct, :ordnen
-
-(defn clone-question [params]
-  (let [test          (get-one-test (:uurlid params))
-        old_ques_id   (:id params)
-        ntest         (assoc params :user_id (:user_id test) :subject_id (:subject_id test) :level_id (:level_id test) :origin old_ques_id)
-        qnew          (db/create-question! ntest)
-        qupdated      (db/update-question-test {:question_id (:id qnew) :test_id (:id test) :old_question_id old_ques_id})
-        _             (log/info (str " >>> qnewqnew QNEW  >>>>> " qnew))
-        _             (clone-answers (:id qnew))
-        full-question (db/get-one-question qnew)]
-    (get-answers full-question)))
-
-(defn regular-update-question [params]
-  (let [qid          (db/update-question! params)
-        qupdated     (db/get-one-question {:id (:id qid)})]
+(defn update-question! [params]
+  (let [qid       (db/update-question! params)
+        qupdated  (db/get-one-question {:id (:id qid)})]
     (get-answers qupdated)))
-
-(defn update-question!
-  "Choose update or create questions based in the 'quest_update' flag"
-  [params]
-  (let [quest_update (:quest_update params)
-        _            (log/info (str ">>> update-question! PARAMS >>>>> " params))]
-    (if quest_update
-      (regular-update-question params)
-      (clone-question params))))
 
 (defn update-fulfill! [params]
   (db/update-question-fulfill! params))
@@ -170,7 +158,7 @@
     (db/unlink-question! full-params)))
 
 (defn remove-answer [params]
-  (let [result   (db/remove-answer! params)]
+  (let [result (db/remove-answer! params)]
     (assoc params :ok (:bool result))))
 
 ;;;; REORDERS

@@ -61,13 +61,13 @@
     {:flash errors}
     (let [slug      (sh/slugify (:title params))
           published (contains? params :published)
-          discution (contains? params :discution)
+          discussion (contains? params :discussion)
           user_id   (:id identity)]
-      (db/save-post! (assoc params :published published :discution discution :user_id user_id :slug slug))
+      (db/save-post! (assoc params :published published :discussion discussion :user_id user_id :slug slug))
       {:ok true})))
 
 (defn update-post! [params]
-  (let [first-step   (sh/update-booleans params [:published :discution])
+  (let [first-step   (sh/update-booleans params [:published :discussion])
         second-step  (update first-step :id #(Integer/parseInt %))]
     (db/update-post! second-step)
     {:ok true}))

@@ -252,13 +252,10 @@
    (.log js/console (str ">>> UPP XXXXX response response >>>>> " response))
    (let [question     (-> response :data :update_question)
          qkeyword     (keyword (:id question))
-         new-question false
-         _            (.log js/console (str ">>> question llll >>>>> " question " >> >  >  " qkeyword))]
-     (if new-question
-       (update-in [:questions] dissoc qkeyword )
+         _            (.log js/console (str ">>> question UPDATED >>>>> " question " >> >  >  " qkeyword))]
        (-> db
            (update-in [:questions qkeyword] conj question)
-           (update :loading? not))))))
+           (update :loading? not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
   :update-question           ;; <-- the event id

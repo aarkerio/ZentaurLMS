@@ -143,10 +143,6 @@ VALUES (:question, :qtype, :hint, :explanation, :user_id, :points, :subject_id, 
 -- :doc creates a new question test record
 INSERT INTO question_tests (question_id, test_id, ordnen) VALUES (:question_id, :test_id, :ordnen) RETURNING true
 
--- :name update-question-test :<! :1
--- :doc updates the QT relationship
-UPDATE question_tests SET question_id = :question_id, test_id = :test_id WHERE test_id = :test_id AND question_id = :old_question_id RETURNING id
-
 -- :name update-question! :<! :1
 -- :doc updates a question record
 UPDATE questions
@@ -155,7 +151,8 @@ WHERE id = :id RETURNING *
 
 -- :name random-questions :? :raw
 -- :select random questions
-SELECT id FROM questions WHERE subject_id = :subject_id AND level_id = :level_id ORDER BY RANDOM() LIMIT :limit
+SELECT id, question, qtype, hint, explanation, user_id, points, subject_id, level_id FROM questions
+WHERE subject_id = :subject_id AND level_id = :level_id ORDER BY RANDOM() LIMIT :limit
 
 -- :name update-question-fulfill! :<! :1
 -- :doc updates the fulfill field in the question
