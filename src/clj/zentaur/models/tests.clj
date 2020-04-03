@@ -120,7 +120,7 @@
         subj-strs     (map #(update % :id str) subjects)
         leve-strs     (map #(update % :id str) levels)]
     (try
-      (assoc test :questions questions :subjects subj-strs)
+      (assoc test :questions questions :subjects subj-strs :levels leve-strs)
       (catch Exception e (str "******** >>> Caught exception: " (.getMessage e)))
       (finally (assoc {} :error "function get-test-nodes in model error")))))
 

@@ -164,7 +164,7 @@ UPDATE answers SET answer = :answer, correct = :correct WHERE id = :id RETURNING
 
 -- :name update-test! :<! :1
 -- :doc updates an answer record
-UPDATE tests SET title = :title, tags = :tags, description = :description, subject_id = :subject_id
+UPDATE tests SET title = :title, tags = :tags, description = :description, subject_id = :subject_id, level_id = :level_id
 WHERE uurlid = :uurlid RETURNING *
 
 -- :name create-answer! :<! :1

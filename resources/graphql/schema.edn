@@ -25,9 +25,9 @@
                                :instructions {:type String}
                                :subject      {:type String}
                                :subject_id   {:type Int}
+                               :level        {:type String}
                                :level_id     {:type Int}
                                :tags         {:type String}
-                               :level        {:type Int}
                                :active       {:type Boolean}
                                :shared       {:type Boolean}
                                :created_at   {:type String}

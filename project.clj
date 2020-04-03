@@ -1,4 +1,4 @@
-(defproject zentaur "0.0.11"
+(defproject zentaur "0.0.16"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)

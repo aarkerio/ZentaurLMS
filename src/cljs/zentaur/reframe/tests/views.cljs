@@ -233,7 +233,7 @@
                 ^{:key (hash question)}
                 [question-item (assoc question :counter idx :uurlid uurlid :qcount question-count)]))])))
 
-(defn test-editor-form [test title description tags subject-id]
+(defn test-editor-form [test title description tags subject-id level-id]
     [:div {:id "test-whole-display"}
      [:div.edit-icon-div
       (if @(rf/subscribe [:toggle-testform])
@@ -262,32 +262,44 @@
         (for [row-subject @(rf/subscribe [:subjects])]
           ^{:key (:id row-subject)} [:option {:value (:id row-subject)} (:subject row-subject)])
         ]]
+      [:div.div-separator
+       [:select.form-control.mr-sm-2 {:name      "level-id"
+                                      :value     @level-id
+                                      :on-change #(reset! level-id (-> % .-target .-value))}
+        (for [row-level @(rf/subscribe [:levels])]
+          ^{:key (:id row-level)} [:option {:value (:id row-level)} (:level row-level)])
+        ]]
+
       [:div
        [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"
                 :on-click #(rf/dispatch [:update-test {:title @title
                                                        :description @description
                                                        :tags @tags
+                                                       :level_id @level-id
                                                        :subject_id @subject-id
                                                        :uurlid (:uurlid test)}])}]]]
       [:div
        [:h1 @title]
        [:div.div-simple-separator [:span {:class "bold-font"} "Tags: "] @tags [:span {:class "bold-font"} " Created:"] (:created_at test)]
-       [:div.div-simple-separator [:span {:class "bold-font"}  "Description: "] @description [:span {:class "bold-font"}  "Subject: "] (:subject test)]]])
+       [:div.div-simple-separator [:span {:class "bold-font"}  "Description: "] @description [:span {:class "bold-font"}  "Subject: "] (:subject test)
+        [:span {:class "bold-font"}  "Level: "] (:level test) ]]])
 
 (defn test-editor-view
   []
   (let [test        (rf/subscribe [:test])
         title       (r/atom nil)
         subject-id  (r/atom nil)
+        level-id    (r/atom nil)
         description (r/atom nil)
         tags        (r/atom nil)]
     (fn []
       (reset! title (:title @test))
       (reset! subject-id (:subject_id @test))
+      (reset! level-id (:level_id @test))
       (reset! description (:description @test))
       (reset! tags (:tags @test))
       [:div
-       [test-editor-form @test title description tags subject-id]
+       [test-editor-form @test title description tags subject-id level-id]
        [:img {:src "/img/icon_add_question.png" :alt "Fragen hinzüfugen" :title "Fragen hinzüfugen"
                         :on-click #(rf/dispatch [:toggle-qform])}]])))
 

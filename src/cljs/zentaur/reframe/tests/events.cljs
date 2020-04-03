@@ -103,7 +103,7 @@
          (assoc :loading?  false)     ;; take away that "Loading ..." UI element
          (assoc :test      only-test)
          (assoc :subjects  subjects)
-         (assoc :levels levels)
+         (assoc :levels    levels)
          (assoc :questions questions-idx)))))
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with GraphQL!)  ;;;;;;;;;;;;;;;;;;
@@ -113,7 +113,7 @@
   (fn                      ;; <-- the handler function
     [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (let [uurlid  (.-value (gdom/getElement "uurlid"))
-          query   (gstring/format "{test_by_uurlid(uurlid: \"%s\", archived: false) { uurlid title description tags subject subject_id created_at user_id
+          query   (gstring/format "{test_by_uurlid(uurlid: \"%s\", archived: false) { uurlid title description tags subject subject_id level level_id created_at user_id
                                     subjects {id subject} levels {id level}
                                     questions { id question qtype hint points user_id explanation fulfill ordnen answers {id answer ordnen correct question_id }}}}"
                                   uurlid)]
@@ -341,10 +341,10 @@
   (fn                         ;; <-- the handler function
     [cofx [_ updates]]        ;; <-- 1st argument is coeffect, from which we extract db
     (let [_  (.log js/console (str ">>> VALUES UPDATES >>>>> " updates ))
-          {:keys [title description tags subject_id uurlid]} updates
-          mutation  (gstring/format "mutation { update_test( title: \"%s\", description: \"%s\", tags: \"%s\", subject_id: %i, uurlid: \"%s\")
-                                    { uurlid title description subject_id subject tags created_at }}"
-                                  title description tags subject_id uurlid)]
+          {:keys [title description tags subject_id level_id uurlid]} updates
+          mutation  (gstring/format "mutation { update_test( title: \"%s\", description: \"%s\", tags: \"%s\", subject_id: %i, level_id: %i, uurlid: \"%s\")
+                                    { uurlid title description subject_id level_id subject tags created_at }}"
+                                  title description tags subject_id level_id uurlid)]
        (.log js/console (str ">>> MUTATION UPDATE TEST >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
                            mutation                           ;; graphql query
