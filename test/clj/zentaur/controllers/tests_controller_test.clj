@@ -72,7 +72,7 @@
 
 (deftest ^:integration get-test-nodes
   (testing "JSON response for the API"
-    (let [query     (json/write-str  {:query "{ test_by_uurlid(uurlid: \"96093211b24b47f4826a\" archived: false) { uurlid title description } }" })
+    (let [query     (json/write-str  {:query "{ test_by_uurlid(uurlid: \"b4a98b64267d0c77be85\" archived: false) { uurlid title description } }" })
           response  (assoc ((zh/app) (mock/request :post "http://localhost:3000/api/graphql" query))
                            :headers {:content-type "application/graphql"})
           body  (slurp (:body response))

@@ -1,4 +1,4 @@
-(ns zentaur.seeder
+(ns luminus.seeder
   "Seed DB for dev and test environments"
   (:require [clojure.tools.logging :as log]
             [mount.core :as mount]
@@ -24,21 +24,26 @@
                     #'zentaur.handler/app-routes
                     #'zentaur.db.core/*db*))
 
+(def first-test (atom nil))
+
 (defn create [subject-id level-id]
   (let [question     (rand-nth question-txt)
         points       (rand-nth points-int)
         points       (rand-nth points-int)
-        pre-params   {:user_id 2 :question question :qtype 1 :hint "vestibulum sed arcu"
+        pre-params   {:user_id 1 :question question :qtype 1 :hint "vestibulum sed arcu"
                       :points points :origin 0 :explanation "" :fulfill "" :active true}
-        params       (assoc pre-params :level_id level-id :subject_id subject-id)
+        params       (assoc pre-params :subject_id subject-id :level_id level-id)
         new-question (db/create-question! params)]
+        (log/info (str ">>> PARAM >>>>> " params  "   new-question >>> " new-question))
         (map (mt/create-answer! {:question_id (:id new-question) :answer (rand-nth question-txt) :correct (rand-nth corr)}) (range 4))))
 
 (defn main []
   (let [_        (start)
         subjects (mt/get-subjects)
-        levels   (mt/get-levels)]
-    (for [n (range 100)]
+        levels   (mt/get-levels)
+        test     (mt/create-test! {:title "Some foo test name" :tags "one two" :subject_id 1 :level_id 1} 1)
+        (reset! first-test test)]
+    (for [n (range 5)]
         (for [subject subjects
-          level   levels]
+              level   levels]
       (create (:id subject) (:id level))))))

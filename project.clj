@@ -1,4 +1,4 @@
-(defproject zentaur "0.0.16"
+(defproject zentaur "0.0.21"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
@@ -86,6 +86,7 @@
              :project/test {:jvm-opts ["-Dconf=test-config.edn" "--illegal-access=warn"]
                             :dependencies [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                            [lein-autoexpect "1.9.0"]
+                                           [nrepl "0.7.0"]
                                            [talltale "0.4.3"]]    ;; fake data for test
                             :resource-paths ["env/test/resources"]
                             :source-paths ["env/test/clj" "test/clj"]

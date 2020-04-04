@@ -19,9 +19,10 @@
 ;;;;;;;;;;;;;;;;;;;;;
 
 (def test-schema
-  [[:user_id st/required st/integer]
+  [[:user_id    st/required st/integer]
    [:subject_id st/required st/integer]
-   [:title   st/required st/string
+   [:level_id   st/required st/integer]
+   [:title      st/required st/string
      {:title "Title field must contain at least 2 characters"
       :validate #(> (count %) 2)}]])
 

@@ -108,7 +108,8 @@
                                   :title       {:type (non-null String)}
                                   :description {:type String}
                                   :tags        {:type String}
-                                  :subject_id  {:type (non-null Int)}}
+                                  :subject_id  {:type (non-null Int)}
+                                  :level_id    {:type (non-null Int)}}
                              :resolve :update-test}
              :update_question {:type :question
                                :description "Update a question."

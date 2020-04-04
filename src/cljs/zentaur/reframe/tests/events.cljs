@@ -343,12 +343,12 @@
     (let [_  (.log js/console (str ">>> VALUES UPDATES >>>>> " updates ))
           {:keys [title description tags subject_id level_id uurlid]} updates
           mutation  (gstring/format "mutation { update_test( title: \"%s\", description: \"%s\", tags: \"%s\", subject_id: %i, level_id: %i, uurlid: \"%s\")
-                                    { uurlid title description subject_id level_id subject tags created_at }}"
+                                    { uurlid title description subject_id level_id subject level tags created_at }}"
                                   title description tags subject_id level_id uurlid)]
        (.log js/console (str ">>> MUTATION UPDATE TEST >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
-                           mutation                           ;; graphql query
-                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
+                           mutation    ;; graphql query
+                           {}          ;; arguments map
                            [:process-after-update-test]]))))
 
 

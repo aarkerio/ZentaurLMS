@@ -281,8 +281,8 @@
       [:div
        [:h1 @title]
        [:div.div-simple-separator [:span {:class "bold-font"} "Tags: "] @tags [:span {:class "bold-font"} " Created:"] (:created_at test)]
-       [:div.div-simple-separator [:span {:class "bold-font"}  "Description: "] @description [:span {:class "bold-font"}  "Subject: "] (:subject test)
-        [:span {:class "bold-font"}  "Level: "] (:level test) ]]])
+       [:div.div-simple-separator [:span {:class "bold-font"}  "Description: "] @description [:span {:class "bold-font"}  " Subject:  "] (:subject test)
+        [:span {:class "bold-font"}  "  Level: "] (:level test) ]]])
 
 (defn test-editor-view
   []
