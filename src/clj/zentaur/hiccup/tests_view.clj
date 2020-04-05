@@ -77,3 +77,9 @@
                       (f/hidden-field {:value uurlid} "uurlid")
                       (f/hidden-field {:value user-id} "user-id"))]
      [:div {:id "test-root-app"}]]))
+
+(defn search [base]
+  (let [csrf-field (:csrf-field base)]
+    [:div
+     [:h1 "Browse and select Questions"]
+     [:div {:id "search-root-app"}]]))

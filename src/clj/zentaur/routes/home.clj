@@ -22,6 +22,7 @@
 (def vclass-routes
   ["/vclass"
    ["/"                        {:get  cont-posts/get-posts}]
+   ["/search"                  {:get  cont-tests/search}]
    ["/index"                   {:get  cont-vclass/index :post cont-vclass/create-vclass}]
    ["/show/:uurlid"            {:get  cont-vclass/show}]
    ["/show"                    {:post cont-vclass/update-vc}]

@@ -150,7 +150,7 @@
 
 (defn ^:export init []
   (flash-timeout)
-  (refresh-csrf)
+;;  (refresh-csrf)
   (let [current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> **** tatsächliche: current. Jedoch However**** >>>>> " current_url))]
     (cond

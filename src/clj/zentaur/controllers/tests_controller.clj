@@ -27,6 +27,13 @@
     (basec/parser
      (layout/application (merge base {:title "New Quiz Tests" :contents (tests-view/edit base uurlid) })))))
 
+(defn search
+  "GET /vclass/search. Html response."
+  [request]
+  (let [base    (basec/set-vars request)]
+    (basec/parser
+     (layout/application (merge base {:title "Search Questions" :contents (tests-view/search base) })))))
+
 (defn create-test
   "POST /vclass/tests"
   [{:keys [params identity]}]

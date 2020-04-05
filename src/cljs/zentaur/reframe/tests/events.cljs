@@ -117,6 +117,7 @@
                                     subjects {id subject} levels {id level}
                                     questions { id question qtype hint points user_id explanation fulfill ordnen answers {id answer ordnen correct question_id }}}}"
                                   uurlid)]
+      (.log js/console (str ">>> QUERRRY  >>>>> " query ))
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query query {} [:process-test-response]]))))
 
@@ -403,3 +404,46 @@
                            mutation                                   ;; graphql query
                            {}   ;; arguments map
                            [:process-after-reorder-answer]]))))
+
+
+
+
+;; SEARCH SCREEN QUESTIONS
+
+(re-frame/reg-event-db
+ :process-search-response
+  []
+  (fn [db [{:keys [data errors]}]]
+    (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
+    (let [test          (:test_by_uurlid data)
+          questions     (:questions test)
+          ques-answers  (map #(update % :answers vector-to-ordered-idxmap) questions)
+          questions-idx (vector-to-ordered-idxmap ques-answers)
+          subjects      (update-ids (:subjects test))
+          levels        (update-ids (:levels test))
+          only-test     (dissoc test :subjects :levels :questions)
+          _             (.log js/console (str ">>> LEVELS >>>>> " levels))
+          _             (.log js/console (str ">>> questions >>>>> " questions-idx))
+          _             (.log js/console (str ">>> TEST >>>>> " only-test))
+          ]
+     (-> db
+         (assoc :loading?  false)     ;; take away that "Loading ..." UI element
+         (assoc :test      only-test)
+         (assoc :subjects  subjects)
+         (assoc :levels    levels)
+         (assoc :questions questions-idx)))))
+
+;;;;;;;;    CO-EFFECT HANDLERS (with GraphQL!)  ;;;;;;;;;;;;;;;;;;
+;; reg-event-fx == event handler's coeffects, fx == effect
+(re-frame/reg-event-fx
+  :search-load
+  (fn                      ;; <-- the handler function
+    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
+    (let [uurlid  (.-value (gdom/getElement "uurlid"))
+          query   (gstring/format "{test_by_uurlid(uurlid: \"%i\", archived: false) { uurlid title description tags subject subject_id level level_id created_at user_id
+                                    subjects {id subject} levels {id level}
+                                    questions { id question qtype hint points user_id explanation fulfill ordnen answers {id answer ordnen correct question_id }}}}"
+                                  uurlid)]
+      (.log js/console (str ">>> QUERRRY  >>>>> " query ))
+          ;; perform a query, with the response sent to the callback event provided
+          (re-frame/dispatch [::re-graph/query query {} [:process-search-response]]))))

@@ -59,7 +59,9 @@
    :qcounter      0
    :testform      false
    :subjects      (vector)
-   :levels        (vector)})
+   :levels        (vector)
+   :selquestions  (sorted-map)  ;; selected questions
+   })
 
 ;; -- cofx Registrations  -----------------------------------------------------
 ;; Use `reg-cofx` to register a "coeffect handler" which will inject the todos

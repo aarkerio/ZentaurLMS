@@ -34,6 +34,7 @@
                     (conj nav-links [:li navclass [:a {:href "/vclass/tests" :class "nav-link"} "My tests"]]
                                     [:li navclass [:a {:href "/vclass/index" :class "nav-link"} "My Classrooms"]]
                                     [:li navclass [:a {:href "/vclass/files/false" :class "nav-link"} "My Files"]]
+                                    [:li navclass [:a {:href "/vclass/search" :class "nav-link"} "Search for questions"]]
                                     [:li navclass (str "Hallo " email "!")]
                                     [:li navclass [:a {:href "/admin/posts" :class "nav-link"} "Blogeinträge"]]
                                     [:li navclass [:a {:href "/vclass/uploads" :class "nav-link"} "Test Factory"]]

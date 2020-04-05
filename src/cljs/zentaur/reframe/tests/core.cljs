@@ -37,8 +37,13 @@
   []
   (when-let [hform (gdom/getElement "test-root-app")]
     (re-frame/dispatch-sync [:test-load])  ;; <--- boot process is started. Synchronously initialised *before*
-    (r/render [zviews/todo-app]               ;; Load views
-              (.getElementById js/document "test-root-app"))))
+    (r/render [zviews/test-app]               ;; Load views
+              (.getElementById js/document "test-root-app")))
+  (when-let [hform (gdom/getElement "search-root-app")]
+    (.log js/console (str ">>> VALUE KKKKKKKKK >>>>> "  ))
+    (re-frame/dispatch-sync [:search-load])  ;; <--- boot process is started. Synchronously initialised *before*
+    (r/render [zviews/search-app]               ;; Load views
+              (.getElementById js/document "search-root-app"))))
 
 (main)
 

@@ -366,7 +366,7 @@
                                   (reset! hint "")
                                   (reset! explanation ""))}]]])))
 
-(defn todo-app
+(defn test-app
   []
   (let [question-count (rf/subscribe [:question-count])
         uurlid         (rf/subscribe [:test-uurlid])]
@@ -376,3 +376,9 @@
      [display-questions-list @uurlid @question-count]
      [:div {:class "footer"}
       [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))
+
+(defn search-app
+  []
+  (let [dsfds "dsfdsfdsf"]
+    [:div {:id "page-container"}
+      [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]))
