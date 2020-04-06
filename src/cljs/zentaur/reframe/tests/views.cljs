@@ -307,6 +307,8 @@
   "Verstecken Form for a neue fragen"
   []
   (let [qform        (rf/subscribe [:qform])
+        uurlid       (rf/subscribe [:test-uurlid])
+        user-id      (rf/subscribe [:test-user-id])
         new-question (r/atom "")
         hint         (r/atom "")
         explanation  (r/atom "")
@@ -360,8 +362,8 @@
                                                                   :qtype       @qtype
                                                                   :points      @points
                                                                   :explanation @explanation
-                                                                  :uurlid      (.-value (gdom/getElement "uurlid"))
-                                                                  :user-id     (.-value (gdom/getElement "user-id"))}])
+                                                                  :uurlid      @uurlid
+                                                                  :user-id     @user-id}])
                                   (reset! new-question "")
                                   (reset! hint "")
                                   (reset! explanation ""))}]]])))
@@ -377,8 +379,9 @@
      [:div {:class "footer"}
       [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))
 
+;;;; SEARCH APP
 (defn search-app
   []
   (let [dsfds "dsfdsfdsf"]
-    [:div {:id "page-container"}
-      [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]))
+    [:div#page-container
+      [:p "Ziehen Sie."]]))

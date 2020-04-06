@@ -24,7 +24,7 @@
         [:div {:style "font-size:8pt;font-weight:bold;"} (str (:last_name comment) " wrote: ")]
         [:div {:class "font"} (:comment comment)]])
 
-(defn index [posts csrf-field subjects levels identity]
+(defn index [posts csrf-field subjects levels langs identity]
   (let [formatted-posts (doall (for [post posts]
                                  (format-post post)))]
     [:div {:id "cont"}
@@ -44,6 +44,12 @@
           [:select.form-control.mr-sm-2 {:name "level_id"}
            (for [level levels]
              [:option {:value (:id level)} (:level level)])
+           ]]
+         [:label {:for "lang_id"} "Lang:"]
+         [:div.div-separator
+          [:select.form-control.mr-sm-2 {:name "lang_id"}
+           (for [lang langs]
+             [:option {:value (:id lang)} (:lang lang)])
            ]]
          [:label {:for "limit"} "Anzahl der Fragen:"]
          [:div.div-separator

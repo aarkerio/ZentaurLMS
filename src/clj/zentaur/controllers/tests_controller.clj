@@ -15,9 +15,10 @@
         user-id  (-> request :identity :id)
         tests    (model-test/get-tests user-id)
         subjects (model-test/get-subjects)
-        levels   (model-test/get-levels)]
+        levels   (model-test/get-levels)
+        langs    (model-test/get-langs)]
     (basec/parser
-     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base subjects levels)})))))
+     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base subjects levels langs)})))))
 
 (defn edit
   "GET /vclass/tests/edit/:uurlid. Html response."

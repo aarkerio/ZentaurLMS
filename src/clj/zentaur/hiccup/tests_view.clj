@@ -20,7 +20,7 @@
    [:td [:a {:href (str "/vclass/tests/apply/" uurlid)} [:img {:src "/img/icon_apply.png" :alt "Bewerben Sie sich für die Klasse" :title "Bewerben Sie sich für die Klasse"}]]]
    [:td [:a {:onclick (str "zentaur.core.deletetest('" uurlid "')")} [:img {:src "/img/icon_delete.png" :alt "Delete test" :title "Delete test"}]]]]))
 
-(defn- test-new-form [subjects levels csrf-field]
+(defn- ^:private test-new-form [csrf-field subjects levels langs]
   [:div.hidden-div {:id "hidden-form"}
    [:form {:id "submit-test-form" :action "/vclass/tests" :method "post" :class "css-class-form"}
     (f/hidden-field {:value csrf-field} "__anti-forgery-token")
@@ -40,16 +40,22 @@
       (for [level levels]
         [:option {:value (:id level)} (:level level)])
       ]]
+    [:label {:for "lang_id"} "Lang:"]
+    [:div.div-separator
+     [:select.form-control.mr-sm-2 {:name "lang_id" :value 1}
+      (for [lang langs]
+        [:option {:value (:id lang)} (:lang lang)])
+      ]]
     (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]])
 
-(defn index [tests base subjects levels]
+(defn index [tests base subjects levels langs]
   (let [csrf-field      (:csrf-field base)
         formatted-tests (for [test tests]
                           (formatted-test test))]
     [:div {:id "cont"}
      [:h1 "Dein genialer Quiz Test"]
      [:div [:img {:src "/img/icon_add.png" :alt "Quizz test hinzüfugen" :title "Quizz test hinzüfugen" :id "button-show-div"}]]
-     (test-new-form subjects levels csrf-field)
+     (test-new-form csrf-field subjects levels langs)
      [:div {:id "content"}
        [:table {:class "some-table-class"}
          [:thead

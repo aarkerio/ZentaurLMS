@@ -34,11 +34,6 @@
                                :questions    {:type (list :question)}
                                :subjects     {:type (list :subject)}
                                :levels       {:type (list :level)}}}
-           :ided_question {
-                           :description "Question with ID"
-                           :fields {
-                                    :id       {:type (non-null ID)}
-                                    :question {:type :question}}}
            :question {
                       :description "Question schema."
                       :fields {
@@ -46,6 +41,7 @@
                                :question      {:type (non-null String)}
                                :subject_id    {:type Int}
                                :level_id      {:type Int}
+                               :lang_id       {:type Int}
                                :qtype         {:type Int}
                                :hint          {:type String}
                                :explanation   {:type String}
@@ -60,13 +56,18 @@
            :subject {
                       :description "Subject type."
                       :fields {
-                               :id            {:type (non-null ID)}
+                               :id            {:type (non-null Int)}
                                :subject       {:type (non-null String)}}}
            :level {
                      :description "Level type."
                      :fields {
-                              :id            {:type (non-null ID)}
+                              :id            {:type (non-null Int)}
                               :level         {:type (non-null String)}}}
+           :lang {
+                     :description "Language type."
+                     :fields {
+                              :id            {:type (non-null Int)}
+                              :language      {:type (non-null String)}}}
            :answer {
                       :description "Answer type."
                       :fields {
@@ -81,6 +82,12 @@
                             :args        {:uurlid   {:type ID}
                                           :archived {:type Boolean}}
                             :resolve     :test-by-uurlid}
+           :load_search {:type        (non-null :test)
+                         :description "Search questions"
+                         :args        {:subject_id {:type Int}
+                                       :level_id   {:type Int}
+                                       :lang_id    {:type Int}}
+                         :resolve     :load_search}
            }
  :mutations {
              :create_question {:type :question

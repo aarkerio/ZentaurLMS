@@ -34,13 +34,17 @@ FROM posts p INNER JOIN users u
 ON p.user_id = u.id
 WHERE p.published = true AND p.id = :id
 
+-- :name get-subjects :? :raw
+-- :doc retrieves all subjects.
+SELECT id, subject FROM subjects ORDER BY subject ASC
+
 -- :name get-levels :? :raw
 -- :doc retrieves all levels.
 SELECT id, level FROM levels ORDER BY id ASC
 
--- :name get-subjects :? :raw
+-- :name get-langs :? :raw
 -- :doc retrieves all subjects.
-SELECT id, subject FROM subjects ORDER BY subject ASC
+SELECT id, lang FROM langs ORDER BY id ASC
 
 -- :name save-post! :! :1
 -- :doc creates a new post record
@@ -132,12 +136,13 @@ VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :use
 
 -- :name create-minimal-test :<! :1
 -- :doc creates a minimal test record
-INSERT INTO tests (title, tags, user_id, subject_id, level_id, uurlid) VALUES (:title, :tags, :user_id, :subject_id, :level_id, :uurlid) RETURNING *
+INSERT INTO tests (title, tags, user_id, subject_id, level_id, lang_id, uurlid)
+VALUES (:title, :tags, :user_id, :subject_id, :level_id, :lang_id, :uurlid) RETURNING *
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
-INSERT INTO questions (question, qtype, hint, explanation, user_id, points, subject_id, level_id, origin)
-VALUES (:question, :qtype, :hint, :explanation, :user_id, :points, :subject_id, :level_id, :origin) RETURNING id
+INSERT INTO questions (question, qtype, hint, explanation, user_id, points, subject_id, level_id, lang_id, origin)
+VALUES (:question, :qtype, :hint, :explanation, :user_id, :points, :subject_id, :level_id, :lang_id, :origin) RETURNING id
 
 -- :name create-question-test! :<! :n
 -- :doc creates a new question test record
@@ -151,8 +156,8 @@ WHERE id = :id RETURNING *
 
 -- :name random-questions :? :raw
 -- :select random questions
-SELECT id, question, qtype, hint, explanation, user_id, points, subject_id, level_id FROM questions
-WHERE subject_id = :subject_id AND level_id = :level_id ORDER BY RANDOM() LIMIT :limit
+SELECT id, question, qtype, hint, explanation, user_id, points, subject_id, level_id, lang_id FROM questions
+WHERE subject_id = :subject_id AND level_id = :level_id AND lang_id = :lang_id  ORDER BY RANDOM() LIMIT :limit
 
 -- :name update-question-fulfill! :<! :1
 -- :doc updates the fulfill field in the question
@@ -164,8 +169,8 @@ UPDATE answers SET answer = :answer, correct = :correct WHERE id = :id RETURNING
 
 -- :name update-test! :<! :1
 -- :doc updates an answer record
-UPDATE tests SET title = :title, tags = :tags, description = :description, subject_id = :subject_id, level_id = :level_id
-WHERE uurlid = :uurlid RETURNING *
+UPDATE tests SET title = :title, tags = :tags, description = :description, subject_id = :subject_id,
+level_id = :level_id, lang_id = :lang_id WHERE uurlid = :uurlid RETURNING *
 
 -- :name create-answer! :<! :1
 -- :doc creates a new answer record
@@ -173,19 +178,21 @@ INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question_id,
 
 -- :name get-tests :? :*
 -- :doc retrieve a test given the id.
-SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t. uurlid, s.subject, l.level
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t. uurlid, s.subject, l.level, la.language
 FROM tests t
 INNER JOIN subjects s ON t.subject_id = s.id
 INNER JOIN levels l ON t.level_id = l.id
+INNER JOIN langs la ON t.lang_id = la.id
 WHERE t.user_id = :user-id AND t.archived = false
 ORDER BY t.id DESC
 
 -- :name get-one-test :? :1
 -- :doc retrieve a test given the uurlid.
-SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, t.level_id, t.uurlid, s.subject, l.level
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, t.level_id, t.uurlid, s.subject, l.level, la.lang
 FROM tests t
 INNER JOIN subjects s ON t.subject_id = s.id
 INNER JOIN levels l ON t.level_id = l.id
+INNER JOIN langs la ON t.lang_id = la.id
 WHERE t.archived = :archived AND t.uurlid = :uurlid
 ORDER BY t.id DESC
 

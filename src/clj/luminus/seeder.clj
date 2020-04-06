@@ -20,9 +20,8 @@
 (def corr [true false])
 
 (defn start []
-       (mount/start #'zentaur.config/env
-                    #'zentaur.handler/app-routes
-                    #'zentaur.db.core/*db*))
+  (mount/start #'zentaur.config/env
+               #'zentaur.db.core/*db*))
 
 (def first-test (atom nil))
 
@@ -32,7 +31,7 @@
         points       (rand-nth points-int)
         pre-params   {:user_id 1 :question question :qtype 1 :hint "vestibulum sed arcu"
                       :points points :origin 0 :explanation "" :fulfill "" :active true}
-        params       (assoc pre-params :subject_id subject-id :level_id level-id)
+        params       (assoc pre-params :subject_id subject-id :level_id level-id :lang_id 1)
         new-question (db/create-question! params)]
         (log/info (str ">>> PARAM >>>>> " params  "   new-question >>> " new-question))
         (map (mt/create-answer! {:question_id (:id new-question) :answer (rand-nth question-txt) :correct (rand-nth corr)}) (range 4))))
@@ -41,9 +40,10 @@
   (let [_        (start)
         subjects (mt/get-subjects)
         levels   (mt/get-levels)
-        test     (mt/create-test! {:title "Some foo test name" :tags "one two" :subject_id 1 :level_id 1} 1)
-        (reset! first-test test)]
+        test     (mt/create-test! {:title "Some foo test name" :tags "one two" :subject_id 1 :level_id 1 :lang_id 1} 1)
+        _        (reset! first-test test)]
     (for [n (range 5)]
         (for [subject subjects
               level   levels]
       (create (:id subject) (:id level))))))
+

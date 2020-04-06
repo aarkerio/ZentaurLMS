@@ -16,9 +16,10 @@
         csrf-field (:csrf-field base)
         subjects   (model-test/get-subjects)
         levels     (model-test/get-levels)
+        langs      (model-test/get-langs)
         identity   (:identity base)]
     (basec/parser
-     (layout/application (merge base {:title "List of Posts" :contents (posts-view/index posts csrf-field subjects levels identity)})))))
+     (layout/application (merge base {:title "List of Posts" :contents (posts-view/index posts csrf-field subjects levels langs identity)})))))
 
 (defn save-comment
   "POST /post/savecomment"

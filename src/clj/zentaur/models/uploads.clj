@@ -135,8 +135,3 @@
       get-upload-from-db
       download-without-db))
 
-(defn catto
-  "?????"
-  []
-  (let [files (mapv str (filter #(.isFile %) (file-seq (clojure.java.io/file "resources/sql/"))))]
-      (apply str (for [f files] (slurp f)))))
