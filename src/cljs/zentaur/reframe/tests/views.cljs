@@ -6,10 +6,8 @@
             [zentaur.reframe.tests.forms.blocks :as blk]
             [zentaur.reframe.tests.libs :as zlib]))
 
-(defn edit-question [{:keys [id question hint explanation qtype points user_id]}]
-  (let [test-user-id  @(rf/subscribe [:test-user-id])
-        quest-update  (= test-user-id user_id)  ;; this question belongs to the current user?, then just update
-        aquestion     (r/atom question)
+(defn edit-question [{:keys [id question hint explanation qtype points]}]
+  (let [aquestion     (r/atom question)
         ahint         (r/atom hint)
         aexplanation  (r/atom explanation)
         aqtype        (r/atom qtype)
@@ -59,7 +57,6 @@
                                                                      :points       @apoints
                                                                      :qtype        @aqtype
                                                                      :explanation  @aexplanation
-                                                                     :quest_update quest-update
                                                                      :uurlid       uurlid}])}]]])))
 
 (defn answer-editing-input [{:keys [answer correct id]}]
