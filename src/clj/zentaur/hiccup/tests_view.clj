@@ -30,22 +30,19 @@
     [:div.div-separator (f/text-field {:maxlength 150 :size 70 :placeholder "Tags"} "tags")]
     [:label {:for "subject_id"} "Subject:"]
     [:div.div-separator
-     [:select.form-control.mr-sm-2 {:name "subject_id" :value 1}
+     [:select.form-control.mr-sm-2 {:name "subject_id"}
       (for [subject subjects]
-        [:option {:value (:id subject)} (:subject subject)])
-      ]]
+        [:option {:value (:id subject)} (:subject subject)])]]
     [:label {:for "level_id"} "Level:"]
     [:div.div-separator
-     [:select.form-control.mr-sm-2 {:name "level_id" :value 1}
+     [:select.form-control.mr-sm-2 {:name "level_id"}
       (for [level levels]
-        [:option {:value (:id level)} (:level level)])
-      ]]
+        [:option {:value (:id level)} (:level level)])]]
     [:label {:for "lang_id"} "Lang:"]
     [:div.div-separator
-     [:select.form-control.mr-sm-2 {:name "lang_id" :value 1}
+     [:select.form-control.mr-sm-2 {:name "lang_id"}
       (for [lang langs]
-        [:option {:value (:id lang)} (:lang lang)])
-      ]]
+        [:option {:value (:id lang)} (:lang lang)])]]
     (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]])
 
 (defn index [tests base subjects levels langs]

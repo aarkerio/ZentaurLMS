@@ -22,6 +22,11 @@
    (get-in db [:levels])))
 
 (rf/reg-sub
+ :langs
+ (fn [db]
+   (get-in db [:langs])))
+
+(rf/reg-sub
  :qform
  (fn [db]
    (get-in db [:qform])))

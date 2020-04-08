@@ -81,8 +81,13 @@
 
 (defn- ^:private load-search
   [context args value]
-  (let [test (mt/load-search args)]
-    test))
+  (mt/load-search args))
+
+(defn- ^:private search-questions
+  [context args value]
+  (let [fields (mt/search-questions args)]
+    (log/info (str ">>> FIELDS >>>>> " fields))
+    fields))
 
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."
@@ -99,5 +104,6 @@
    :delete-question (partial delete-question)
    :delete-answer (partial delete-answer)
    :load_search (partial load-search)
+   :search_questions (partial search-questions)
    })
 

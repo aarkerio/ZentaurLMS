@@ -27,13 +27,17 @@
                                :subject_id   {:type Int}
                                :level        {:type String}
                                :level_id     {:type Int}
+                               :lang         {:type String}
+                               :lang_id      {:type Int}
                                :tags         {:type String}
                                :active       {:type Boolean}
                                :shared       {:type Boolean}
                                :created_at   {:type String}
                                :questions    {:type (list :question)}
                                :subjects     {:type (list :subject)}
-                               :levels       {:type (list :level)}}}
+                               :levels       {:type (list :level)}
+                               :langs        {:type (list :lang)}
+                               }}
            :question {
                       :description "Question schema."
                       :fields {
@@ -67,7 +71,7 @@
                      :description "Language type."
                      :fields {
                               :id            {:type (non-null Int)}
-                              :language      {:type (non-null String)}}}
+                              :lang          {:type (non-null String)}}}
            :answer {
                       :description "Answer type."
                       :fields {
@@ -84,10 +88,14 @@
                             :resolve     :test-by-uurlid}
            :load_search {:type        (non-null :test)
                          :description "Search questions"
-                         :args        {:subject_id {:type Int}
-                                       :level_id   {:type Int}
-                                       :lang_id    {:type Int}}
+                         :args        {}
                          :resolve     :load_search}
+           :search_questions {:type        (non-null :test)
+                              :description "Search questions"
+                              :args        {:subject_id {:type (non-null ID)}
+                                            :level_id   {:type (non-null ID)}
+                                            :lang_id    {:type (non-null ID)}}
+                              :resolve     :search_questions}
            }
  :mutations {
              :create_question {:type :question

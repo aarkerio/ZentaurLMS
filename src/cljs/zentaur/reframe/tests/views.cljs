@@ -376,9 +376,59 @@
      [:div {:class "footer"}
       [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))
 
-;;;; SEARCH APP
+;;;;   SEARCH APP   ;;;;;;;;
+
+(defn questions-selector []
+  (let [subject-id  (r/atom "1")
+        level-id    (r/atom "1")
+        lang-id     (r/atom "1")]
+    (fn []
+      [:div
+       [:h2 "Select options"]
+       [:div.div-separator
+        [:label {:for "subject_id"} "Subject:"]
+        [:select.form-control.mr-sm-2 {:name      "subject-id"
+                                       :value     @subject-id
+                                       :on-change #(reset! subject-id (-> % .-target .-value))}
+         (for [row-subject @(rf/subscribe [:subjects])]
+           ^{:key (:id row-subject)} [:option {:value (:id row-subject)} (:subject row-subject)])
+         ]]
+       [:div.div-separator
+        [:label {:for "level_id"} "Level:"]
+        [:select.form-control.mr-sm-2 {:name      "level-id"
+                                       :value     @level-id
+                                       :on-change #(reset! level-id (-> % .-target .-value))}
+         (for [row-level @(rf/subscribe [:levels])]
+           ^{:key (:id row-level)} [:option {:value (:id row-level)} (:level row-level)])
+         ]]
+       [:div.div-separator
+        [:label {:for "lang_id"} "Language:"]
+        [:select.form-control.mr-sm-2 {:name      "lang-id"
+                                       :value     @lang-id
+                                       :on-change #(reset! lang-id (-> % .-target .-value))}
+         (for [row-lang @(rf/subscribe [:langs])]
+           ^{:key (:id row-lang)} [:option {:value (:id row-lang)} (:lang row-lang)])
+         ]]
+       [:div
+        [:input {:class "btn btn-outline-primary-green" :type "button" :value "Search"
+                 :on-click #(rf/dispatch [:search-questions {:subject_id @subject-id
+                                                             :level_id @level-id
+                                                             :lang_id @lang-id}])}]]])))
+
+
+(defn offered-questions []
+  (let [subject-id  (r/atom 1)
+        level-id    (r/atom 1)
+        lang-id     (r/atom 1)]
+    [:div.div-separator
+       (for [q @(rf/subscribe [:questions])]
+         ^{:key (:id q)} [:div (:question q)])
+       ]))
+
 (defn search-app
   []
   (let [dsfds "dsfdsfdsf"]
-    [:div#page-container
+    [:div
+     [questions-selector]
+     [offered-questions]
       [:p "Ziehen Sie."]]))

@@ -40,6 +40,7 @@
   (let [_        (start)
         subjects (mt/get-subjects)
         levels   (mt/get-levels)
+        langs    (mt/get-langs)
         test     (mt/create-test! {:title "Some foo test name" :tags "one two" :subject_id 1 :level_id 1 :lang_id 1} 1)
         _        (reset! first-test test)]
     (for [n (range 5)]

@@ -159,6 +159,11 @@ WHERE id = :id RETURNING *
 SELECT id, question, qtype, hint, explanation, user_id, points, subject_id, level_id, lang_id FROM questions
 WHERE subject_id = :subject_id AND level_id = :level_id AND lang_id = :lang_id  ORDER BY RANDOM() LIMIT :limit
 
+-- :name search-questions :? :raw
+-- :select questions
+SELECT id, question, qtype, hint, explanation, user_id, points, subject_id, level_id, lang_id FROM questions
+WHERE subject_id = :subject_id AND level_id = :level_id AND lang_id = :lang_id  ORDER BY created_at DESC LIMIT :limit
+
 -- :name update-question-fulfill! :<! :1
 -- :doc updates the fulfill field in the question
 UPDATE questions SET fulfill = :fulfill WHERE id = :id RETURNING *
@@ -178,7 +183,7 @@ INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question_id,
 
 -- :name get-tests :? :*
 -- :doc retrieve a test given the id.
-SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t. uurlid, s.subject, l.level, la.language
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t. uurlid, s.subject, l.level, la.lang
 FROM tests t
 INNER JOIN subjects s ON t.subject_id = s.id
 INNER JOIN levels l ON t.level_id = l.id

@@ -408,42 +408,58 @@
 
 
 
-;; SEARCH SCREEN QUESTIONS
+;;;;;;;;;;;;;;;;;;;  SEARCH SCREEN QUESTIONS  ;;;;;;;;;;;;;;;;
 
 (re-frame/reg-event-db
  :process-search-response
   []
-  (fn [db [{:keys [data errors]}]]
-    (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
-    (let [test          (:test_by_uurlid data)
-          questions     (:questions test)
-          ques-answers  (map #(update % :answers vector-to-ordered-idxmap) questions)
-          questions-idx (vector-to-ordered-idxmap ques-answers)
-          subjects      (update-ids (:subjects test))
-          levels        (update-ids (:levels test))
-          only-test     (dissoc test :subjects :levels :questions)
-          _             (.log js/console (str ">>> LEVELS >>>>> " levels))
-          _             (.log js/console (str ">>> questions >>>>> " questions-idx))
-          _             (.log js/console (str ">>> TEST >>>>> " only-test))
+  (fn [db [_ {:keys [data errors]}]]
+    (let [post-data  (:load_search data)
+          subjects   (:subjects post-data)
+          levels     (:levels post-data)
+          langs      (:langs post-data)
+          _          (.log js/console (str ">>> SUBJECTS >>>>> " subjects))
+          _          (.log js/console (str ">>> LEVELS >>>>> " levels))
+          _          (.log js/console (str ">>> LANGS >>>>> " langs))
           ]
      (-> db
-         (assoc :loading?  false)     ;; take away that "Loading ..." UI element
-         (assoc :test      only-test)
-         (assoc :subjects  subjects)
-         (assoc :levels    levels)
-         (assoc :questions questions-idx)))))
+         (assoc :subjects subjects)
+         (assoc :levels   levels)
+         (assoc :langs    langs)))))
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with GraphQL!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
 (re-frame/reg-event-fx
-  :search-load
+  :load-search
   (fn                      ;; <-- the handler function
-    [cfx _]               ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [uurlid  (.-value (gdom/getElement "uurlid"))
-          query   (gstring/format "{test_by_uurlid(uurlid: \"%i\", archived: false) { uurlid title description tags subject subject_id level level_id created_at user_id
-                                    subjects {id subject} levels {id level}
-                                    questions { id question qtype hint points user_id explanation fulfill ordnen answers {id answer ordnen correct question_id }}}}"
-                                  uurlid)]
+    [cfx [_ _]]     ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
+    (let [query (gstring/format "{load_search {uurlid title subjects {id subject} levels {id level} langs {id lang}}}")]
+      (.log js/console (str ">>> QUEERY  >>>>> " query ))
+      (re-frame/dispatch [::re-graph/query query {} [:process-search-response]]))))
+
+(re-frame/reg-event-db
+ :search-question-response
+  []
+  (fn [db [{:keys [data errors]}]]
+    (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
+    (let [post-data     (:search_questions data)
+          questions     (:questions data)
+          _             (.log js/console (str ">>> questions >>>>> " questions))
+          ]
+     (-> db
+         (assoc :questions  questions)))))
+
+;;;;;;;;    CO-EFFECT HANDLERS (with GraphQL!)  ;;;;;;;;;;;;;;;;;;
+;; reg-event-fx == event handler's coeffects, fx == effect
+(re-frame/reg-event-fx
+  :search-questions
+  (fn                      ;; <-- the handler function
+    [cfx [_ updates]]     ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
+    (let [{:keys [subject_id level_id lang_id]} updates
+          _  (.log js/console (str ">>> UPDATE SQQQQQ >>>>> " updates ))
+          query      (gstring/format "{search_questions(subject_id: %i, level_id: %i, lang_id: %i)
+                                      { uurlid title questions { id question qtype }}}"
+                                     subject_id level_id lang_id)]
       (.log js/console (str ">>> QUERRRY  >>>>> " query ))
           ;; perform a query, with the response sent to the callback event provided
-          (re-frame/dispatch [::re-graph/query query {} [:process-search-response]]))))
+          (re-frame/dispatch [::re-graph/query query {} [:search-question-response]]))))
