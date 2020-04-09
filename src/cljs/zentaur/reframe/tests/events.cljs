@@ -440,10 +440,9 @@
 (re-frame/reg-event-db
  :search-question-response
   []
-  (fn [db [{:keys [data errors]}]]
+  (fn [db [_ {:keys [data errors]}]]
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
-    (let [post-data     (:search_questions data)
-          questions     (:questions data)
+    (let [questions     (-> data :search_questions :questions)
           _             (.log js/console (str ">>> questions >>>>> " questions))
           ]
      (-> db

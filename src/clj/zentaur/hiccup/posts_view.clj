@@ -59,8 +59,9 @@
                         )]
          (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0"} "Go!")]])
 
-      [:div {:id "content"} formatted-posts]
-      [:nav {:class "blog-pagination"}
+     [:div {:id "content"} formatted-posts]
+     [:div (hv/html-paginator {:records 100 :per-page 10 :max-pages 10 :current 8 :biased :left})]
+     [:nav {:class "blog-pagination"}
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
         [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
 

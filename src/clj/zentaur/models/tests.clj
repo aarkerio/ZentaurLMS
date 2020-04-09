@@ -219,8 +219,6 @@
 
 
 (defn search-questions [args]
-  (let [_           (log/info (str ">>> AAARGS >>>>> " args))
-        pre-params  (sh/str-to-int args :subject_id :level_id :lang_id)
-        full-params (assoc pre-params :limit 20)
-        questions   (db/search-questions full-params)]
-    questions))
+  (let [pre-params  (sh/str-to-int args :subject_id :level_id :lang_id)
+        full-params (assoc pre-params :limit 20)]
+    (db/search-questions full-params)))

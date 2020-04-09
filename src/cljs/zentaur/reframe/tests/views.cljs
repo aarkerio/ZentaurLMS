@@ -420,10 +420,17 @@
   (let [subject-id  (r/atom 1)
         level-id    (r/atom 1)
         lang-id     (r/atom 1)]
-    [:div.div-separator
-       (for [q @(rf/subscribe [:questions])]
-         ^{:key (:id q)} [:div (:question q)])
-       ]))
+    [:table {:class "some-table-class"}
+     [:thead
+      [:tr
+       [:th "Select"]
+       [:th "Question"]
+       [:th "Explanation"]]]
+     (for [q @(rf/subscribe [:questions])]
+       ^{:key (:id q)} [:tr
+                        [:td [:input {:type "checkbox" :title "Select" :on-change #(rf/dispatch [:add-question {:question_id (:id q)}])}]]
+                        [:td (:question q)]
+                        [:td (:explanation q)]])]))
 
 (defn search-app
   []

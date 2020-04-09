@@ -21,11 +21,10 @@ VALUES (:title, :body, :tags, :published, :discussion, :slug) RETURNING id
 
 -- :name get-posts :? :*
 -- :doc retrieve array posts given the id.
-SELECT p.id, p.title, p.body, p.tags, p.published, p.discussion, p.user_id, p.created_at, p.slug, u.uuid
+SELECT p.id, p.title, p.body, p.tags, p.published, p.discussion, p.user_id, p.created_at, p.slug, u.uuid, (SELECT COUNT(*) FROM posts WHERE published=true) AS total
 FROM posts p INNER JOIN users u
 ON p.user_id = u.id
-WHERE p.published = true
-ORDER BY p.id DESC LIMIT 10
+WHERE p.published = true ORDER BY p.id DESC OFFSET :offset LIMIT :limit
 
 -- :name get-post :? :1
 -- :doc retrieve a post given the id.
@@ -79,13 +78,14 @@ WHERE c.post_id = :id AND u.id=c.user_id ORDER BY c.id
 -- :name admin-get-posts :? :*
 -- :doc retrieve array posts given the user id.
 SELECT
-    p.id, p.title, p.body, p.published, p.discussion, p.user_id, p.created_at, p.slug, u.uuid
+    p.id, p.title, p.body, p.published, p.discussion, p.user_id, p.created_at, p.slug, u.uuid,
+    (SELECT COUNT(*) FROM posts WHERE published=true) AS total
 FROM
     posts p INNER JOIN users u
     ON p.user_id = u.id
 WHERE
     p.user_id = :user-id
-ORDER BY p.id DESC
+ORDER BY p.id DESC OFFSET :offset LIMIT :limit
 
 -- /*******************  USER FILES   ***/
 

@@ -85,9 +85,10 @@
 
 (defn- ^:private search-questions
   [context args value]
-  (let [fields (mt/search-questions args)]
-    (log/info (str ">>> FIELDS >>>>> " fields))
-    fields))
+  (let [questions    (mt/search-questions args)
+        ques-updated (map #(update % :id str) questions)]
+    (log/info (str ">>> questions >>>>> " (prn-str ques-updated)))
+     (assoc {} :uurlid "uurlid" :title "title" :questions ques-updated)))
 
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."

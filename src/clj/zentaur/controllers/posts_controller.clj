@@ -53,13 +53,14 @@
 ;;;;;;;;;;;;;;;;     ADMIN SECTION      ;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn admin-posts
-  "GET /admin/posts"
+  "GET /admin/posts/list/:page"
   [request]
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
-        posts    (model-post/admin-get-posts user-id)]
+        page     (or (Integer/parseInt (-> request :path-params :page)) 1)
+        posts    (model-post/admin-get-posts user-id page)]
     (basec/parser (layout/application
-                   (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts) })))))
+                   (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts page)})))))
 
 (defn save-post
   "POST /admin/posts"

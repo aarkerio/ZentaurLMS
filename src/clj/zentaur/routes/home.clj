@@ -51,7 +51,8 @@
 
 (def admin-routes
   ["/admin"
-   ["/posts"                   {:get cont-posts/admin-posts :post cont-posts/save-post}]
+   ["/posts/list/:page"        {:get cont-posts/admin-posts}]
+   ["/posts"                   {:post cont-posts/save-post}]
    ["/posts/delete/:id"        {:delete cont-posts/delete-post}]
    ["/posts/edit/:id"          {:get cont-posts/show-post}]
    ["/posts/update"            {:post cont-posts/update-post}]

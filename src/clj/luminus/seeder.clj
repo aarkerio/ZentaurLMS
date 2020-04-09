@@ -25,13 +25,13 @@
 
 (def first-test (atom nil))
 
-(defn create [subject-id level-id]
+(defn create [subject-id level-id lang-id]
   (let [question     (rand-nth question-txt)
         points       (rand-nth points-int)
         points       (rand-nth points-int)
         pre-params   {:user_id 1 :question question :qtype 1 :hint "vestibulum sed arcu"
                       :points points :origin 0 :explanation "" :fulfill "" :active true}
-        params       (assoc pre-params :subject_id subject-id :level_id level-id :lang_id 1)
+        params       (assoc pre-params :subject_id subject-id :level_id level-id :lang_id lang-id)
         new-question (db/create-question! params)]
         (log/info (str ">>> PARAM >>>>> " params  "   new-question >>> " new-question))
         (map (mt/create-answer! {:question_id (:id new-question) :answer (rand-nth question-txt) :correct (rand-nth corr)}) (range 4))))
@@ -43,8 +43,9 @@
         langs    (mt/get-langs)
         test     (mt/create-test! {:title "Some foo test name" :tags "one two" :subject_id 1 :level_id 1 :lang_id 1} 1)
         _        (reset! first-test test)]
-    (for [n (range 5)]
+    (for [n (range 50)]
         (for [subject subjects
-              level   levels]
-      (create (:id subject) (:id level))))))
+              level   levels
+              lang    langs]
+      (create (:id subject) (:id level) (:id lang))))))
 
