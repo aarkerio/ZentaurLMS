@@ -15,9 +15,10 @@
         user-id  (-> request :identity :id)
         tests    (model-test/get-tests user-id)
         subjects (model-test/get-subjects)
-        levels   (model-test/get-levels)]
+        levels   (model-test/get-levels)
+        langs    (model-test/get-langs)]
     (basec/parser
-     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base subjects levels)})))))
+     (layout/application (merge base {:title "Quiz Tests" :contents (tests-view/index tests base subjects levels langs)})))))
 
 (defn edit
   "GET /vclass/tests/edit/:uurlid. Html response."
@@ -26,6 +27,13 @@
         uurlid  (-> request :path-params :uurlid)]
     (basec/parser
      (layout/application (merge base {:title "New Quiz Tests" :contents (tests-view/edit base uurlid) })))))
+
+(defn search
+  "GET /vclass/search. Html response."
+  [request]
+  (let [base    (basec/set-vars request)]
+    (basec/parser
+     (layout/application (merge base {:title "Search Questions" :contents (tests-view/search base) })))))
 
 (defn create-test
   "POST /vclass/tests"
@@ -39,7 +47,6 @@
 (defn generate-test
   "POST /vclass/tests/generate"
   [{:keys [params session identity]}]
-  (log/info (str ">>> PARAMSSSS kkkkkkkkkk >>>>> " params))
   (let [clean-params (dissoc params :__anti-forgery-token :submit :button-save)
         user-id      (:id identity)
         new-uurlid   (model-test/generate-test clean-params user-id)

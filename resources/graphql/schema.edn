@@ -25,19 +25,19 @@
                                :instructions {:type String}
                                :subject      {:type String}
                                :subject_id   {:type Int}
+                               :level        {:type String}
                                :level_id     {:type Int}
+                               :lang         {:type String}
+                               :lang_id      {:type Int}
                                :tags         {:type String}
-                               :level        {:type Int}
                                :active       {:type Boolean}
                                :shared       {:type Boolean}
                                :created_at   {:type String}
                                :questions    {:type (list :question)}
-                               :subjects     {:type (list :subject)}}}
-           :ided_question {
-                           :description "Question with ID"
-                           :fields {
-                                    :id       {:type (non-null ID)}
-                                    :question {:type :question}}}
+                               :subjects     {:type (list :subject)}
+                               :levels       {:type (list :level)}
+                               :langs        {:type (list :lang)}
+                               }}
            :question {
                       :description "Question schema."
                       :fields {
@@ -45,6 +45,7 @@
                                :question      {:type (non-null String)}
                                :subject_id    {:type Int}
                                :level_id      {:type Int}
+                               :lang_id       {:type Int}
                                :qtype         {:type Int}
                                :hint          {:type String}
                                :explanation   {:type String}
@@ -59,8 +60,18 @@
            :subject {
                       :description "Subject type."
                       :fields {
-                               :id            {:type (non-null ID)}
+                               :id            {:type (non-null Int)}
                                :subject       {:type (non-null String)}}}
+           :level {
+                     :description "Level type."
+                     :fields {
+                              :id            {:type (non-null Int)}
+                              :level         {:type (non-null String)}}}
+           :lang {
+                     :description "Language type."
+                     :fields {
+                              :id            {:type (non-null Int)}
+                              :lang          {:type (non-null String)}}}
            :answer {
                       :description "Answer type."
                       :fields {
@@ -75,6 +86,16 @@
                             :args        {:uurlid   {:type ID}
                                           :archived {:type Boolean}}
                             :resolve     :test-by-uurlid}
+           :load_search {:type        (non-null :test)
+                         :description "Search questions"
+                         :args        {}
+                         :resolve     :load_search}
+           :search_questions {:type        (non-null :test)
+                              :description "Search questions"
+                              :args        {:subject_id {:type (non-null ID)}
+                                            :level_id   {:type (non-null ID)}
+                                            :lang_id    {:type (non-null ID)}}
+                              :resolve     :search_questions}
            }
  :mutations {
              :create_question {:type :question
@@ -102,7 +123,8 @@
                                   :title       {:type (non-null String)}
                                   :description {:type String}
                                   :tags        {:type String}
-                                  :subject_id  {:type (non-null Int)}}
+                                  :subject_id  {:type (non-null Int)}
+                                  :level_id    {:type (non-null Int)}}
                              :resolve :update-test}
              :update_question {:type :question
                                :description "Update a question."

@@ -1,6 +1,6 @@
 (ns zentaur.libs.models.shared
   (:require [clojure.java.io :as io]
-            [clojure.string :as s]
+            [clojure.string :as cs]
             [clojure.tools.logging :as log]
             [zentaur.db.core :as db])
    (:import (java.text Normalizer)))
@@ -33,14 +33,14 @@
   "Normalize string (remove non-estandard characters)"
   [^CharSequence string]
   (let [normalized (Normalizer/normalize string java.text.Normalizer$Form/NFD)]
-    (s/replace normalized #"\p{InCombiningDiacriticalMarks}+" "")))
+    (cs/replace normalized #"\p{InCombiningDiacriticalMarks}+" "")))
 
 (defn slugify
   "Returns a slugified string."
   [^CharSequence string]
   (let [normalized (normalize string)
-        under_norm (s/replace normalized " " "_")]
-    (s/lower-case under_norm)))
+        under_norm (cs/replace normalized " " "_")]
+    (cs/lower-case under_norm)))
 
 (defn str-to-int
   "Change str keys in map to integer"
@@ -67,4 +67,3 @@
   "Replace sub-strings surrounded by asterisks for spaces"
   [text]
   (clojure.string/replace text #"\*(.*?)\*" #(clojure.string/join (take (count (% 1)) (repeat "_")))))
-

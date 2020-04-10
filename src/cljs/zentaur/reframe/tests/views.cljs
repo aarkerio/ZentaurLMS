@@ -6,10 +6,8 @@
             [zentaur.reframe.tests.forms.blocks :as blk]
             [zentaur.reframe.tests.libs :as zlib]))
 
-(defn edit-question [{:keys [id question hint explanation qtype points user_id]}]
-  (let [test-user-id  @(rf/subscribe [:test-user-id])
-        quest-update  (= test-user-id user_id)  ;; this question belongs to the current user?, then just update
-        aquestion     (r/atom question)
+(defn edit-question [{:keys [id question hint explanation qtype points]}]
+  (let [aquestion     (r/atom question)
         ahint         (r/atom hint)
         aexplanation  (r/atom explanation)
         aqtype        (r/atom qtype)
@@ -59,7 +57,6 @@
                                                                      :points       @apoints
                                                                      :qtype        @aqtype
                                                                      :explanation  @aexplanation
-                                                                     :quest_update quest-update
                                                                      :uurlid       uurlid}])}]]])))
 
 (defn answer-editing-input [{:keys [answer correct id]}]
@@ -233,7 +230,7 @@
                 ^{:key (hash question)}
                 [question-item (assoc question :counter idx :uurlid uurlid :qcount question-count)]))])))
 
-(defn test-editor-form [test title description tags subject-id]
+(defn test-editor-form [test title description tags subject-id level-id]
     [:div {:id "test-whole-display"}
      [:div.edit-icon-div
       (if @(rf/subscribe [:toggle-testform])
@@ -262,32 +259,44 @@
         (for [row-subject @(rf/subscribe [:subjects])]
           ^{:key (:id row-subject)} [:option {:value (:id row-subject)} (:subject row-subject)])
         ]]
+      [:div.div-separator
+       [:select.form-control.mr-sm-2 {:name      "level-id"
+                                      :value     @level-id
+                                      :on-change #(reset! level-id (-> % .-target .-value))}
+        (for [row-level @(rf/subscribe [:levels])]
+          ^{:key (:id row-level)} [:option {:value (:id row-level)} (:level row-level)])
+        ]]
+
       [:div
        [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"
                 :on-click #(rf/dispatch [:update-test {:title @title
                                                        :description @description
                                                        :tags @tags
+                                                       :level_id @level-id
                                                        :subject_id @subject-id
                                                        :uurlid (:uurlid test)}])}]]]
       [:div
        [:h1 @title]
        [:div.div-simple-separator [:span {:class "bold-font"} "Tags: "] @tags [:span {:class "bold-font"} " Created:"] (:created_at test)]
-       [:div.div-simple-separator [:span {:class "bold-font"}  "Description: "] @description [:span {:class "bold-font"}  "Subject: "] (:subject test)]]])
+       [:div.div-simple-separator [:span {:class "bold-font"}  "Description: "] @description [:span {:class "bold-font"}  " Subject:  "] (:subject test)
+        [:span {:class "bold-font"}  "  Level: "] (:level test) ]]])
 
 (defn test-editor-view
   []
   (let [test        (rf/subscribe [:test])
         title       (r/atom nil)
         subject-id  (r/atom nil)
+        level-id    (r/atom nil)
         description (r/atom nil)
         tags        (r/atom nil)]
     (fn []
       (reset! title (:title @test))
       (reset! subject-id (:subject_id @test))
+      (reset! level-id (:level_id @test))
       (reset! description (:description @test))
       (reset! tags (:tags @test))
       [:div
-       [test-editor-form @test title description tags subject-id]
+       [test-editor-form @test title description tags subject-id level-id]
        [:img {:src "/img/icon_add_question.png" :alt "Fragen hinzüfugen" :title "Fragen hinzüfugen"
                         :on-click #(rf/dispatch [:toggle-qform])}]])))
 
@@ -295,6 +304,8 @@
   "Verstecken Form for a neue fragen"
   []
   (let [qform        (rf/subscribe [:qform])
+        uurlid       (rf/subscribe [:test-uurlid])
+        user-id      (rf/subscribe [:test-user-id])
         new-question (r/atom "")
         hint         (r/atom "")
         explanation  (r/atom "")
@@ -348,13 +359,13 @@
                                                                   :qtype       @qtype
                                                                   :points      @points
                                                                   :explanation @explanation
-                                                                  :uurlid      (.-value (gdom/getElement "uurlid"))
-                                                                  :user-id     (.-value (gdom/getElement "user-id"))}])
+                                                                  :uurlid      @uurlid
+                                                                  :user-id     @user-id}])
                                   (reset! new-question "")
                                   (reset! hint "")
                                   (reset! explanation ""))}]]])))
 
-(defn todo-app
+(defn test-app
   []
   (let [question-count (rf/subscribe [:question-count])
         uurlid         (rf/subscribe [:test-uurlid])]
@@ -364,3 +375,67 @@
      [display-questions-list @uurlid @question-count]
      [:div {:class "footer"}
       [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))
+
+;;;;   SEARCH APP   ;;;;;;;;
+
+(defn questions-selector []
+  (let [subject-id  (r/atom "1")
+        level-id    (r/atom "1")
+        lang-id     (r/atom "1")]
+    (fn []
+      [:div
+       [:h2 "Select options"]
+       [:div.div-separator
+        [:label {:for "subject_id"} "Subject:"]
+        [:select.form-control.mr-sm-2 {:name      "subject-id"
+                                       :value     @subject-id
+                                       :on-change #(reset! subject-id (-> % .-target .-value))}
+         (for [row-subject @(rf/subscribe [:subjects])]
+           ^{:key (:id row-subject)} [:option {:value (:id row-subject)} (:subject row-subject)])
+         ]]
+       [:div.div-separator
+        [:label {:for "level_id"} "Level:"]
+        [:select.form-control.mr-sm-2 {:name      "level-id"
+                                       :value     @level-id
+                                       :on-change #(reset! level-id (-> % .-target .-value))}
+         (for [row-level @(rf/subscribe [:levels])]
+           ^{:key (:id row-level)} [:option {:value (:id row-level)} (:level row-level)])
+         ]]
+       [:div.div-separator
+        [:label {:for "lang_id"} "Language:"]
+        [:select.form-control.mr-sm-2 {:name      "lang-id"
+                                       :value     @lang-id
+                                       :on-change #(reset! lang-id (-> % .-target .-value))}
+         (for [row-lang @(rf/subscribe [:langs])]
+           ^{:key (:id row-lang)} [:option {:value (:id row-lang)} (:lang row-lang)])
+         ]]
+       [:div
+        [:input {:class "btn btn-outline-primary-green" :type "button" :value "Search"
+                 :on-click #(rf/dispatch [:search-questions {:subject_id @subject-id
+                                                             :level_id @level-id
+                                                             :lang_id @lang-id}])}]]])))
+
+
+(defn offered-questions []
+  (let [subject-id  (r/atom 1)
+        level-id    (r/atom 1)
+        lang-id     (r/atom 1)]
+    [:table {:class "some-table-class"}
+     [:thead
+      [:tr
+       [:th "Select"]
+       [:th "Question"]
+       [:th "Explanation"]]]
+     (for [q @(rf/subscribe [:questions])]
+       ^{:key (:id q)} [:tr
+                        [:td [:input {:type "checkbox" :title "Select" :on-change #(rf/dispatch [:add-question {:question_id (:id q)}])}]]
+                        [:td (:question q)]
+                        [:td (:explanation q)]])]))
+
+(defn search-app
+  []
+  (let [dsfds "dsfdsfdsf"]
+    [:div
+     [questions-selector]
+     [offered-questions]
+      [:p "Ziehen Sie."]]))

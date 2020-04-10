@@ -22,6 +22,7 @@
 (def vclass-routes
   ["/vclass"
    ["/"                        {:get  cont-posts/get-posts}]
+   ["/search"                  {:get  cont-tests/search}]
    ["/index"                   {:get  cont-vclass/index :post cont-vclass/create-vclass}]
    ["/show/:uurlid"            {:get  cont-vclass/show}]
    ["/show"                    {:post cont-vclass/update-vc}]
@@ -50,7 +51,8 @@
 
 (def admin-routes
   ["/admin"
-   ["/posts"                   {:get cont-posts/admin-posts :post cont-posts/save-post}]
+   ["/posts/list/:page"        {:get cont-posts/admin-posts}]
+   ["/posts"                   {:post cont-posts/save-post}]
    ["/posts/delete/:id"        {:delete cont-posts/delete-post}]
    ["/posts/edit/:id"          {:get cont-posts/show-post}]
    ["/posts/update"            {:post cont-posts/update-post}]

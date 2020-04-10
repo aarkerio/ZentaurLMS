@@ -19,7 +19,7 @@
 (defn error-handler [{:keys [status status-text]}]
   (.log js/console (str "Something bad happened: " status " " status-text)))
 
-(defn validate-new-post []
+(defn ^:export validate-new-post []
   (let [title  (.getElementById js/document "title")
         tags   (.getElementById js/document "body")]
     (if (and (> (count (.-value title)) 0)
@@ -34,14 +34,9 @@
     (when-let [test-form (.getElementById js/document "new-post-form")]
       (set! (.-onsubmit test-form) validate-new-post))))
 
-(defn- remove-flash []
-  (when-let [flash-msg (.-value (gdom/getElement "flash-msg"))]
-    (.log js/console (str ">>> flash-msg VALUE >>>>> " flash-msg ))
-    (js/setTimeout (.-remove flash-msg) 9000)))
-
-(defn- flash-timeout []
-  (if-let [flash-msg (gdom/getElement "flash-msg")]
-    (js/setTimeout (remove-flash) 90000)))
+(defn ^:export flash-timeout []
+  (when-let [flash-msg (gdom/getElement "flash-msg")]
+    (js/setTimeout #(set! (.-className %) "goaway") 4000 flash-msg)))
 
 (defn validate-comment-values []
   (let [body (.getElementById js/document "body")]
@@ -50,7 +45,7 @@
       (do (js/alert "Ups, du musst etwas schreiben.")
           false))))
 
-(defn validate-comment-form
+(defn ^:export validate-comment-form
   "Called in zentaur.hiccup.posts-view"
   []
   (if (and js/document
@@ -66,7 +61,7 @@
                            toggle  (if (= (.-className divh) "hidden-div") "visible" "hidden-div")]
                        (set! (.-className divh) toggle))))))
 
-(defn validate-minimal-test []
+(defn ^:export validate-minimal-test []
   (let [title  (.getElementById js/document "title")
         tags   (.getElementById js/document "tags")]
     (if (and (> (count (.-value title)) 0)
@@ -145,13 +140,14 @@
          :error-handler error-handler})))
 
 (defn refresh-csrf []
-  (when-let [csrf-field (.-value (gdom/getElement "__anti-forgery-token"))]
+  (when-let [csrf-field (gdom/getElement "__anti-forgery-token")]
+    (.log js/console (str ">>> !!!! VALUE csrf-field >>>>> " csrf-field ))
     (js/setTimeout (do (ask-csrf csrf-field)) 6000000)))
 
 (defn ^:export init []
-  (flash-timeout)
-  (refresh-csrf)
-  (let [current_url (.-pathname (.-location js/document))
+  (let [_           (flash-timeout)
+        _           (refresh-csrf)
+        current_url (.-pathname (.-location js/document))
         _           (.log js/console (str ">>> **** tatsächliche: current. Jedoch However**** >>>>> " current_url))]
     (cond
       (s/includes? current_url "admin/users")     (users/load-users)

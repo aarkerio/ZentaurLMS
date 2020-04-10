@@ -46,7 +46,6 @@
   [context args value]
   (let [pre-questions (mt/reorder-question args)
         questions (map #(update % :id str) pre-questions)]
-    (log/info (str ">>> PAR  questions >>>>> " (prn questions)))
     (assoc {} :uurlid "uurlid" :title "fake title" :questions questions)))
 
 (defn- ^:private reorder-answer
@@ -80,6 +79,17 @@
   (let [deleted-answer (mt/remove-answer args)]
     {:id (str (:answer_id args)) :question_id (:question_id args) }))
 
+(defn- ^:private load-search
+  [context args value]
+  (mt/load-search args))
+
+(defn- ^:private search-questions
+  [context args value]
+  (let [questions    (mt/search-questions args)
+        ques-updated (map #(update % :id str) questions)]
+    (log/info (str ">>> questions >>>>> " (prn-str ques-updated)))
+     (assoc {} :uurlid "uurlid" :title "title" :questions ques-updated)))
+
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."
   []
@@ -94,5 +104,7 @@
    :update-answer (partial update-answer)
    :delete-question (partial delete-question)
    :delete-answer (partial delete-answer)
+   :load_search (partial load-search)
+   :search_questions (partial search-questions)
    })
 

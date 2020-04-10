@@ -27,15 +27,20 @@
   []
   (db/get-levels))
 
+(defn get-langs
+  "Data for populates the test form"
+  []
+  (db/get-langs))
+
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
   (let [uurlid      (sh/gen-uuid)
-        pre-params  (if (int? (:subject_id params)) params (sh/str-to-int params :subject_id :level_id))
+        pre-params  (if (int? (:subject_id params)) params (sh/str-to-int params :subject_id :level_id :lang_id))
         full-params (assoc pre-params :user_id user-id :uurlid uurlid)
         errors      (val-test/validate-test full-params)]
     (if (nil? errors)
       (db/create-minimal-test full-params)
-      {:error errors :ok false})))
+      (log/info (str ">> CREATE tests errors >> " errors)))))
 
 (defn- ^:private link-test-question!
   [question-id test-id]
@@ -53,7 +58,7 @@
   [params]
   (let [test         (get-one-test (:uurlid params))
         test-id      (:id test)
-        full-params  (assoc params :subject_id (:subject_id test) :level_id (:level_id test) :origin 0)
+        full-params  (assoc params :subject_id (:subject_id test) :level_id (:level_id test) :level_id (:level_id test) :origin 0)
         errors       (val-test/validate-question full-params)]
     (if (nil? errors)
       (insert-and-link-question full-params test-id)
@@ -78,7 +83,8 @@
 (defn clone-question [question uurlid]
   (let [test          (get-one-test uurlid)
         old-quest-id  (:id question)
-        qnew          (db/create-question! (assoc question :user_id (:user_id test) :origin old-quest-id))
+        params        (assoc question :user_id (:user_id test) :origin old-quest-id)
+        qnew          (db/create-question! params)
         _             (link-test-question! (:id qnew) (:id test))]
     (clone-answers old-quest-id (:id qnew))))
 
@@ -88,8 +94,9 @@
       (clone-question q uurlid))))
 
 (defn generate-test [params user-id]
-  (let [pre-params  (sh/str-to-int params :subject_id :level_id :limit)
+  (let [pre-params  (sh/str-to-int params :subject_id :level_id :lang_id :limit)
         full-params (assoc pre-params :title "Your new test" :tags "list of tags")
+        _ (log/info (str ">>> FULLLL PARAM >>>>> " full-params))
         test        (create-test! full-params user-id)
         _           (generate-questions pre-params (:uurlid test))]
     (:uurlid test)))
@@ -115,9 +122,9 @@
   (let [test          (db/get-one-test {:uurlid uurlid :archived archived})
         questions     (get-questions (:id test))
         subjects      (db/get-subjects)
-        subj-strs     (map #(update % :id str) subjects)]
+        levels        (db/get-levels)]
     (try
-      (assoc test :questions questions :subjects subj-strs)
+      (assoc test :questions questions :subjects subjects :levels levels)
       (catch Exception e (str "******** >>> Caught exception: " (.getMessage e)))
       (finally (assoc {} :error "function get-test-nodes in model error")))))
 
@@ -201,3 +208,17 @@
        (do (reorder-answer-rows answer-rows)
           (db/get-answers {:question_id question_id}))
        {:error "Not enough answer rows"})))
+
+;; SEARCH QUESTIONS
+
+(defn load-search [args]
+  (let [subjects (get-subjects)
+        levels   (get-levels)
+        langs    (get-langs)]
+    (assoc {} :uurlid "nope" :title "Foo" :subjects subjects :levels levels :langs langs)))
+
+
+(defn search-questions [args]
+  (let [pre-params  (sh/str-to-int args :subject_id :level_id :lang_id)
+        full-params (assoc pre-params :limit 20)]
+    (db/search-questions full-params)))

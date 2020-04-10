@@ -24,7 +24,7 @@
         [:div {:style "font-size:8pt;font-weight:bold;"} (str (:last_name comment) " wrote: ")]
         [:div {:class "font"} (:comment comment)]])
 
-(defn index [posts csrf-field subjects levels identity]
+(defn index [posts csrf-field subjects levels langs identity]
   (let [formatted-posts (doall (for [post posts]
                                  (format-post post)))]
     [:div {:id "cont"}
@@ -45,6 +45,12 @@
            (for [level levels]
              [:option {:value (:id level)} (:level level)])
            ]]
+         [:label {:for "lang_id"} "Lang:"]
+         [:div.div-separator
+          [:select.form-control.mr-sm-2 {:name "lang_id"}
+           (for [lang langs]
+             [:option {:value (:id lang)} (:lang lang)])
+           ]]
          [:label {:for "limit"} "Anzahl der Fragen:"]
          [:div.div-separator
            (f/drop-down {:class "form-control mr-sm-2"} "limit"
@@ -53,8 +59,9 @@
                         )]
          (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0"} "Go!")]])
 
-      [:div {:id "content"} formatted-posts]
-      [:nav {:class "blog-pagination"}
+     [:div {:id "content"} formatted-posts]
+     [:div (hv/html-paginator {:records 100 :per-page 10 :max-pages 10 :current 8 :biased :left})]
+     [:nav {:class "blog-pagination"}
         [:a {:class "btn btn-outline-primary" :href "#"} "Older"]
         [:a {:class "btn btn-outline-secondary disabled" :href "#"} "Newer"]]]))
 

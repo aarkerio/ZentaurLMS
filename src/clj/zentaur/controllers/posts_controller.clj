@@ -16,9 +16,10 @@
         csrf-field (:csrf-field base)
         subjects   (model-test/get-subjects)
         levels     (model-test/get-levels)
+        langs      (model-test/get-langs)
         identity   (:identity base)]
     (basec/parser
-     (layout/application (merge base {:title "List of Posts" :contents (posts-view/index posts csrf-field subjects levels identity)})))))
+     (layout/application (merge base {:title "List of Posts" :contents (posts-view/index posts csrf-field subjects levels langs identity)})))))
 
 (defn save-comment
   "POST /post/savecomment"
@@ -47,18 +48,22 @@
   "GET '/admin/posts/publish/:id/:published'"
   [{:keys [path-params]}]
   (model-post/toggle path-params)
-    (assoc (response/found "/admin/posts") :flash basec/msg-erfolg))
+  (assoc (response/found "/admin/posts/list/1") :flash basec/msg-erfolg ))
 
 ;;;;;;;;;;;;;;;;     ADMIN SECTION      ;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn admin-posts
-  "GET /admin/posts"
+  "GET /admin/posts/list/:page"
   [request]
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
-        posts    (model-post/admin-get-posts user-id)]
-    (basec/parser (layout/application
-                   (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts) })))))
+        pre-page (-> request :path-params :page)
+        page     (if (every? #(Character/isDigit %) pre-page) (Integer/parseInt pre-page) 1)
+        posts    (model-post/admin-get-posts user-id page)]
+    (if (empty? posts)
+      (assoc (response/found "/admin/posts/list/1") :flash basec/msg-fehler)
+      (basec/parser (layout/application
+                     (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts page)}))))))
 
 (defn save-post
   "POST /admin/posts"

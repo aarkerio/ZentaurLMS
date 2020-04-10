@@ -33,8 +33,9 @@
 
 (defn get-posts
   "Get all published posts"
-  []
-  (db/get-posts))
+  ([]      (get-posts 10))
+  ([limit] (get-posts 10 10))
+  ([limit offset] (db/get-posts {:limit limit :offset offset})))
 
 (defn get-post [id]
   (db/get-post {:id id}))
@@ -51,8 +52,9 @@
 ;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
 
 (defn admin-get-posts
-  [user-id]
-   (db/admin-get-posts {:user-id user-id}))
+  [user-id page]
+  (let [offset (* page 5)]
+      (db/admin-get-posts {:user-id user-id :offset offset :limit 5})))
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn save-post!

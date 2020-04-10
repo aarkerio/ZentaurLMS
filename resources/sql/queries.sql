@@ -16,41 +16,44 @@
 -- :name save-message! :<! :1
 -- :doc creates a new message record
 INSERT INTO comments
-(title, body, tags, published, discution, slug)
-VALUES (:title, :body, :tags, :published, :discution, :slug) RETURNING id
+(title, body, tags, published, discussion, slug)
+VALUES (:title, :body, :tags, :published, :discussion, :slug) RETURNING id
 
 -- :name get-posts :? :*
 -- :doc retrieve array posts given the id.
-SELECT p.id, p.title, p.body, p.tags, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uuid
+SELECT p.id, p.title, p.body, p.tags, p.published, p.discussion, p.user_id, p.created_at, p.slug, u.uuid, (SELECT COUNT(*) FROM posts WHERE published=true) AS total
 FROM posts p INNER JOIN users u
 ON p.user_id = u.id
-WHERE p.published = true
-ORDER BY p.id DESC LIMIT 10
+WHERE p.published = true ORDER BY p.id DESC OFFSET :offset LIMIT :limit
 
 -- :name get-post :? :1
 -- :doc retrieve a post given the id.
-SELECT p.id, p.title, p.tags, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uuid
+SELECT p.id, p.title, p.tags, p.body, p.published, p.discussion, p.user_id, p.created_at, p.slug, u.uuid
 FROM posts p INNER JOIN users u
 ON p.user_id = u.id
 WHERE p.published = true AND p.id = :id
-
--- :name get-levels :? :raw
--- :doc retrieves all levels.
-SELECT id, level FROM levels ORDER BY id ASC
 
 -- :name get-subjects :? :raw
 -- :doc retrieves all subjects.
 SELECT id, subject FROM subjects ORDER BY subject ASC
 
+-- :name get-levels :? :raw
+-- :doc retrieves all levels.
+SELECT id, level FROM levels ORDER BY id ASC
+
+-- :name get-langs :? :raw
+-- :doc retrieves all subjects.
+SELECT id, lang FROM langs ORDER BY id ASC
+
 -- :name save-post! :! :1
 -- :doc creates a new post record
-INSERT INTO posts (title, body, published, discution, tags, user_id, slug)
-VALUES (:title, :body, :published, :discution, :tags, :user_id, :slug) RETURNING id
+INSERT INTO posts (title, body, published, discussion, tags, user_id, slug)
+VALUES (:title, :body, :published, :discussion, :tags, :user_id, :slug) RETURNING id
 
 -- :name update-post! :! :1
 -- :doc update an existing post record
 UPDATE posts
-SET title = :title, body = :body, tags = :tags, published = :published, discution = :discution
+SET title = :title, body = :body, tags = :tags, published = :published, discussion = :discussion
 WHERE id = :id
 
 -- :name toggle-post! :! :n
@@ -75,13 +78,14 @@ WHERE c.post_id = :id AND u.id=c.user_id ORDER BY c.id
 -- :name admin-get-posts :? :*
 -- :doc retrieve array posts given the user id.
 SELECT
-    p.id, p.title, p.body, p.published, p.discution, p.user_id, p.created_at, p.slug, u.uuid
+    p.id, p.title, p.body, p.tags, p.published, p.discussion, p.user_id, p.created_at, p.slug, u.uuid,
+    (SELECT COUNT(*) FROM posts) AS total
 FROM
     posts p INNER JOIN users u
     ON p.user_id = u.id
 WHERE
     p.user_id = :user-id
-ORDER BY p.id DESC
+ORDER BY p.id DESC OFFSET :offset LIMIT :limit
 
 -- /*******************  USER FILES   ***/
 
@@ -125,19 +129,20 @@ SELECT id FROM uploads WHERE hashvar = :hashvar
 
 /**************   TESTS    ****/
 
--- :name create-test! :<!
+-- :name create-test! :<! :1
 -- :doc creates a new test record
 INSERT INTO tests (title, description, instructions, level, lang, tags, origin, user_id, subject_id, uurlid)
 VALUES (:title, :description, :instructions, :level, :lang, :tags, :origin, :user-id, :subject-id, :uurlid) RETURNING *
 
--- :name create-minimal-test :<! :n
+-- :name create-minimal-test :<! :1
 -- :doc creates a minimal test record
-INSERT INTO tests (title, tags, user_id, subject_id, level_id, uurlid) VALUES (:title, :tags, :user_id, :subject_id, :level_id, :uurlid) RETURNING *
+INSERT INTO tests (title, tags, user_id, subject_id, level_id, lang_id, uurlid)
+VALUES (:title, :tags, :user_id, :subject_id, :level_id, :lang_id, :uurlid) RETURNING *
 
 -- :name create-question! :<! :1
 -- :doc creates a new question record
-INSERT INTO questions (question, qtype, hint, explanation, user_id, points, subject_id, level_id, origin)
-VALUES (:question, :qtype, :hint, :explanation, :user_id, :points, :subject_id, :level_id, :origin) RETURNING id
+INSERT INTO questions (question, qtype, hint, explanation, user_id, points, subject_id, level_id, lang_id, origin)
+VALUES (:question, :qtype, :hint, :explanation, :user_id, :points, :subject_id, :level_id, :lang_id, :origin) RETURNING id
 
 -- :name create-question-test! :<! :n
 -- :doc creates a new question test record
@@ -151,8 +156,13 @@ WHERE id = :id RETURNING *
 
 -- :name random-questions :? :raw
 -- :select random questions
-SELECT id, question, qtype, hint, explanation, user_id, points, subject_id, level_id FROM questions
-WHERE subject_id = :subject_id AND level_id = :level_id ORDER BY RANDOM() LIMIT :limit
+SELECT id, question, qtype, hint, explanation, user_id, points, subject_id, level_id, lang_id FROM questions
+WHERE subject_id = :subject_id AND level_id = :level_id AND lang_id = :lang_id  ORDER BY RANDOM() LIMIT :limit
+
+-- :name search-questions :? :raw
+-- :select questions
+SELECT id, question, qtype, hint, explanation, user_id, points, subject_id, level_id, lang_id FROM questions
+WHERE subject_id = :subject_id AND level_id = :level_id AND lang_id = :lang_id  ORDER BY created_at DESC LIMIT :limit
 
 -- :name update-question-fulfill! :<! :1
 -- :doc updates the fulfill field in the question
@@ -164,8 +174,8 @@ UPDATE answers SET answer = :answer, correct = :correct WHERE id = :id RETURNING
 
 -- :name update-test! :<! :1
 -- :doc updates an answer record
-UPDATE tests SET title = :title, tags = :tags, description = :description, subject_id = :subject_id
-WHERE uurlid = :uurlid RETURNING *
+UPDATE tests SET title = :title, tags = :tags, description = :description, subject_id = :subject_id,
+level_id = :level_id, lang_id = :lang_id WHERE uurlid = :uurlid RETURNING *
 
 -- :name create-answer! :<! :1
 -- :doc creates a new answer record
@@ -173,17 +183,21 @@ INSERT INTO answers (question_id, answer, correct, ordnen) VALUES (:question_id,
 
 -- :name get-tests :? :*
 -- :doc retrieve a test given the id.
-SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t. uurlid, s.subject
-FROM tests t INNER JOIN subjects s
-ON t.subject_id = s.id
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t. uurlid, s.subject, l.level, la.lang
+FROM tests t
+INNER JOIN subjects s ON t.subject_id = s.id
+INNER JOIN levels l ON t.level_id = l.id
+INNER JOIN langs la ON t.lang_id = la.id
 WHERE t.user_id = :user-id AND t.archived = false
 ORDER BY t.id DESC
 
 -- :name get-one-test :? :1
 -- :doc retrieve a test given the uurlid.
-SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, t.level_id, t.uurlid, s.subject
-FROM tests t INNER JOIN subjects s
-ON t.subject_id = s.id
+SELECT t.id, t.title, t.tags, t.description, t.shared, t.user_id, t.created_at, t.origin, t.subject_id, t.level_id, t.uurlid, s.subject, l.level, la.lang
+FROM tests t
+INNER JOIN subjects s ON t.subject_id = s.id
+INNER JOIN levels l ON t.level_id = l.id
+INNER JOIN langs la ON t.lang_id = la.id
 WHERE t.archived = :archived AND t.uurlid = :uurlid
 ORDER BY t.id DESC
 

@@ -1,4 +1,4 @@
-(ns zentaur.seeder
+(ns luminus.seeder
   "Seed DB for dev and test environments"
   (:require [clojure.tools.logging :as log]
             [mount.core :as mount]
@@ -20,25 +20,32 @@
 (def corr [true false])
 
 (defn start []
-       (mount/start #'zentaur.config/env
-                    #'zentaur.handler/app-routes
-                    #'zentaur.db.core/*db*))
+  (mount/start #'zentaur.config/env
+               #'zentaur.db.core/*db*))
 
-(defn create [subject-id level-id]
+(def first-test (atom nil))
+
+(defn create [subject-id level-id lang-id]
   (let [question     (rand-nth question-txt)
         points       (rand-nth points-int)
         points       (rand-nth points-int)
-        pre-params   {:user_id 2 :question question :qtype 1 :hint "vestibulum sed arcu"
+        pre-params   {:user_id 1 :question question :qtype 1 :hint "vestibulum sed arcu"
                       :points points :origin 0 :explanation "" :fulfill "" :active true}
-        params       (assoc pre-params :level_id level-id :subject_id subject-id)
+        params       (assoc pre-params :subject_id subject-id :level_id level-id :lang_id lang-id)
         new-question (db/create-question! params)]
+        (log/info (str ">>> PARAM >>>>> " params  "   new-question >>> " new-question))
         (map (mt/create-answer! {:question_id (:id new-question) :answer (rand-nth question-txt) :correct (rand-nth corr)}) (range 4))))
 
 (defn main []
   (let [_        (start)
         subjects (mt/get-subjects)
-        levels   (mt/get-levels)]
-    (for [n (range 100)]
+        levels   (mt/get-levels)
+        langs    (mt/get-langs)
+        test     (mt/create-test! {:title "Some foo test name" :tags "one two" :subject_id 1 :level_id 1 :lang_id 1} 1)
+        _        (reset! first-test test)]
+    (for [n (range 50)]
         (for [subject subjects
-          level   levels]
-      (create (:id subject) (:id level))))))
+              level   levels
+              lang    langs]
+      (create (:id subject) (:id level) (:id lang))))))
+

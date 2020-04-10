@@ -1,19 +1,20 @@
 -- ;; lein migratus create create-tests-table
 -- ;; lein run migrate
+-- ;; lein with-profile test run migrate
 CREATE TABLE tests(
   id serial PRIMARY KEY,
   user_id int NOT NULL REFERENCES users(id),
   subject_id int NOT NULL REFERENCES subjects(id),
   level_id int NOT NULL REFERENCES levels(id),
+  lang_id int NOT NULL REFERENCES langs(id),
   title VARCHAR(200) NOT NULL,
   tags VARCHAR(200),
-  lang VARCHAR(2) NOT NULL DEFAULT 'en',
-  origin VARCHAR(150) UNIQUE,
+  origin VARCHAR(150),
   uurlid varchar(60) NOT NULL UNIQUE,
   from_test int,
   description VARCHAR(300),
   instructions VARCHAR(300),
-  level INT NOT NULL DEFAULT 1,
+  difficulty INT NOT NULL DEFAULT 1,
   active BOOLEAN NOT NULL DEFAULT true,
   archived BOOLEAN NOT NULL DEFAULT false,
   shared BOOLEAN NOT NULL DEFAULT true,
@@ -31,7 +32,7 @@ COMMENT on column tests.archived is 'Flag marks a test disposed bythe user';
 --;;
 COMMENT on column tests.from_test is 'Only used when the test is created from another test';
 --;;
-COMMENT on column tests.level is 'Diffcult leve, id est, how hard is the test';
+COMMENT on column tests.difficulty is 'Diffcult level, from 1 to 5 id est, how hard the test is';
 --;;
 CREATE TRIGGER trig_tests
 BEFORE UPDATE ON "tests"

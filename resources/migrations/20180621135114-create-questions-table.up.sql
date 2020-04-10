@@ -4,6 +4,7 @@ CREATE TABLE questions (
   id serial PRIMARY KEY,
   subject_id int NOT NULL REFERENCES subjects(id),
   level_id int NOT NULL REFERENCES levels(id),
+  lang_id int NOT NULL REFERENCES langs(id),
   user_id int NOT NULL REFERENCES users(id),
   question text NOT NULL,
   qtype smallint NOT NULL DEFAULT 1,
