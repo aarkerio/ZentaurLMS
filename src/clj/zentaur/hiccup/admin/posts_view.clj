@@ -42,7 +42,7 @@
           ;                   current page should either sit in left half of right half
           ; :link-tpl       : template to use for individual links
           ; :list-tpl       : tempate to use for entire list
-          (hv/html-paginator {:records total :per-page 5 :max-pages 5 :current page :biased :left :location "/admin/posts/list/"})
+          (hv/html-paginator {:records total :per-page 5 :max-pages 5 :current page :biased :left :location "/admin/posts/list"})
      ]))
 
 (defn image-icon []

@@ -90,14 +90,18 @@
 (defn paginate
   "Returns data required to render paginator."
   [{:keys [records per-page max-pages current biased] :or {per-page 10 max-pages 10 current 1 biased :left}}]
-  (let [total-pages (int (Math/ceil (/ records per-page)))
-        half (Math/floor (/ max-pages 2))
-        left-half  (int (if (= biased :left) (- half (if (odd? max-pages) 0 1)) half))
-        right-half (int (if (= biased :right) (- half (if (odd? max-pages) 0 1)) half))
-        virtual-start (- current left-half)  ;; can be a minus
-        virtual-end (+ current right-half)   ;; can be exceeding than available page limit
-        start (max 1 (- virtual-start (if (> virtual-end total-pages) (- virtual-end total-pages) 0)))
-        end (inc (min total-pages (+ current (+ right-half (if (< virtual-start 1) (Math/abs (dec virtual-start)) 0)))))]
+  (let [_             (log/info (str " >>> CUURREENTTT >>>>> " current  " >>>> records >> " records  "  per-page >>> " per-page "  max-pages >>> " max-pages))
+        total-pages   (int (Math/ceil (/ records per-page)))
+        _             (log/info (str " >>> total-pagestotal-pages  >>>>> " total-pages))
+        current       (if (> current total-pages) 1 current)
+        half          (Math/floor (/ max-pages 2))      ;; round off the number passed as a parameter to its nearest integer in Downward direction
+        _             (log/info (str " >>> HALF  >>>>> " half))
+        left-half     (int (if (= biased :left)  (- half (if (odd? max-pages) 0 1)) half))
+        right-half    (int (if (= biased :right) (- half (if (odd? max-pages) 0 1)) half))
+        virtual-start (- current left-half)    ;; can be a minus
+        virtual-end   (+ current right-half)   ;; can be exceeding than available page limit
+        start         (max 1 (- virtual-start (if (> virtual-end total-pages) (- virtual-end total-pages) 0)))
+        end           (min total-pages (+ current (+ right-half (if (< virtual-start 1) (Math/abs (dec virtual-start)) 0))))]
     {:current current :pages (range start end)}))
 
 ; todo: visible page number adjustment
@@ -111,12 +115,13 @@
 ; :first-text
 ; :last-text
 (defn html-paginator [{:keys [link-tpl list-tpl show-first? show-last? first-text last-text location]
-                       :or {link-tpl "<a class=\"btn btn-outline-primary-green\" href=\"{{location}}\">{{page-number}}</a>"
+                       :or {link-tpl "<a class=\"btn btn-outline-primary-green\" href=\"{{location}}/{{page-number}}\">{{page-number}}</a>"
                             list-tpl "<nav class=\"blog-pagination\">{{page-links}}</ul>"
                             show-first? true
                             show-last? true
                             first-text "&lt;&lt;"
-                            last-text "&gt;&gt;" location "/"} :as all}]
+                            last-text "&gt;&gt;"
+                            location "/"} :as all}]
   (let [located-tpl (cs/replace link-tpl "{{location}}" location)
         {:keys [current pages]} (paginate all)]
     (cs/replace list-tpl "{{page-links}}"

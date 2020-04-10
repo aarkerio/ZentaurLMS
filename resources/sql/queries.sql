@@ -78,8 +78,8 @@ WHERE c.post_id = :id AND u.id=c.user_id ORDER BY c.id
 -- :name admin-get-posts :? :*
 -- :doc retrieve array posts given the user id.
 SELECT
-    p.id, p.title, p.body, p.published, p.discussion, p.user_id, p.created_at, p.slug, u.uuid,
-    (SELECT COUNT(*) FROM posts WHERE published=true) AS total
+    p.id, p.title, p.body, p.tags, p.published, p.discussion, p.user_id, p.created_at, p.slug, u.uuid,
+    (SELECT COUNT(*) FROM posts) AS total
 FROM
     posts p INNER JOIN users u
     ON p.user_id = u.id

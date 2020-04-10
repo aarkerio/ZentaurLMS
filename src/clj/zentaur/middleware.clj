@@ -11,7 +11,6 @@
    [muuntaja.middleware :refer [wrap-format wrap-params]]
    [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
    [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
-   [ring.middleware.flash :refer [wrap-flash]]
    [ring-ttl-session.core :refer [ttl-memory-store]]
    [zentaur.config :refer [env]]
    [zentaur.controllers.company-controller :as ccon]
@@ -24,12 +23,9 @@
       (handler req)
       (catch Throwable t
         (log/error t (.getMessage t))
-        ;; (ccon/display-error
-         {:status 500
-                             :title "Something very bad has happened!"
-                             :message "We've dispatched a team of highly trained gnomes to take care of the problem."}
-      ;;   )
-      ))))
+        (ccon/display-error {:status 500
+                     :title "Something very bad has happened!"
+                             :message "We've dispatched a team of highly trained gnomes to take care of the problem."})))))
 
 (defn wrap-csrf
   "Cross-Site Request Forgery"
@@ -91,11 +87,11 @@
   (-> ((:middleware defaults) handler)  ;; from env/../dev_middleware.clj
       (wrap-access-rules {:rules rules :on-error on-error})
       wrap-auth
-      wrap-flash
-   (wrap-defaults
-        (-> site-defaults
-            (assoc-in [:security :anti-forgery] false)
-            (assoc-in [:session :store] (ttl-memory-store (* 60 30000)))
-            ))
-        ;;wrap-internal-error
+      (wrap-defaults
+       (-> site-defaults
+           (assoc-in [:security :anti-forgery] false)
+           (assoc-in [:session :store] (ttl-memory-store (* 60 30000)))
+           (assoc-in [:session :flash] true)
+           ))
+      ;;wrap-internal-error
       ))

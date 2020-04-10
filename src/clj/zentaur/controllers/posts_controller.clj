@@ -48,7 +48,7 @@
   "GET '/admin/posts/publish/:id/:published'"
   [{:keys [path-params]}]
   (model-post/toggle path-params)
-    (assoc (response/found "/admin/posts") :flash basec/msg-erfolg))
+  (assoc (response/found "/admin/posts/list/1") :flash basec/msg-erfolg ))
 
 ;;;;;;;;;;;;;;;;     ADMIN SECTION      ;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -57,10 +57,13 @@
   [request]
   (let [base     (basec/set-vars request)
         user-id  (-> request :identity :id)
-        page     (or (Integer/parseInt (-> request :path-params :page)) 1)
+        pre-page (-> request :path-params :page)
+        page     (if (every? #(Character/isDigit %) pre-page) (Integer/parseInt pre-page) 1)
         posts    (model-post/admin-get-posts user-id page)]
-    (basec/parser (layout/application
-                   (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts page)})))))
+    (if (empty? posts)
+      (assoc (response/found "/admin/posts/list/1") :flash basec/msg-fehler)
+      (basec/parser (layout/application
+                     (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts page)}))))))
 
 (defn save-post
   "POST /admin/posts"
