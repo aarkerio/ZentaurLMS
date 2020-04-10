@@ -104,6 +104,13 @@
         end           (min total-pages (+ current (+ right-half (if (< virtual-start 1) (Math/abs (dec virtual-start)) 0))))]
     {:current current :pages (range start end)}))
 
+(defn format-link
+  [located-tpl page current]
+  (log/info (str ">>> PAGE llllll >>>>> " page "  >>>> CURENT >>> " current))
+  (let  [link-1 (cs/replace located-tpl "{{page-number}}" (str page))
+         class (if (= page current) "btn-outline-primary-orange" "btn-outline-primary-green")]
+    (cs/replace link-1 "{{class}}" class)))
+
 ; todo: visible page number adjustment
 
 ; list template vars
@@ -115,7 +122,7 @@
 ; :first-text
 ; :last-text
 (defn html-paginator [{:keys [link-tpl list-tpl show-first? show-last? first-text last-text location]
-                       :or {link-tpl "<a class=\"btn btn-outline-primary-green\" href=\"{{location}}/{{page-number}}\">{{page-number}}</a>"
+                       :or {link-tpl "<a class=\"btn {{class}}\" href=\"{{location}}/{{page-number}}\">{{page-number}}</a>"
                             list-tpl "<nav class=\"blog-pagination\">{{page-links}}</ul>"
                             show-first? true
                             show-last? true
@@ -125,4 +132,4 @@
   (let [located-tpl (cs/replace link-tpl "{{location}}" location)
         {:keys [current pages]} (paginate all)]
     (cs/replace list-tpl "{{page-links}}"
-                    (reduce str (for [x pages] (cs/replace located-tpl "{{page-number}}" (str x)))))))
+                    (reduce str (for [x pages] (format-link located-tpl x (:current all)))))))
