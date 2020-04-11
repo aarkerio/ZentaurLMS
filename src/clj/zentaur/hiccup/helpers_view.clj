@@ -93,7 +93,8 @@
   (let [_             (log/info (str " >>> CUURREENTTT >>>>> " current  " >>>> records >> " records  "  per-page >>> " per-page "  max-pages >>> " max-pages))
         total-pages   (int (Math/ceil (/ records per-page)))  ;; total pages adjusted to the next up integer, Math/ceil returns a float
         _             (log/info (str " >>> total-pagestotal-pages  >>>>> " total-pages))
-        half          (Math/floor (/ max-pages 2))      ;; round off the number passed as a parameter to its nearest integer in Downward direction. 2.0 constant?
+        ;; relative to "virtual centre" starts
+        half          (Math/floor (/ max-pages 2))      ;; round off the number passed as a parameter to its nearest integer in Downward direction. 2.0 constant weil immer vier?
         left-half     (int (if (= biased :left)  (- half (if (odd? max-pages) 0 1)) half))  ;; one to the left
         right-half    (int (if (= biased :right) (- half (if (odd? max-pages) 0 1)) half))
         _             (log/info (str ">>> left-half >> " left-half "  >>> right-half >> " right-half))  ;; 2
