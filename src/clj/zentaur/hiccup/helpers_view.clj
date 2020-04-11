@@ -91,22 +91,20 @@
   "Returns data required to render paginator."
   [{:keys [records per-page max-pages current biased] :or {per-page 10 max-pages 10 current 1 biased :left}}]
   (let [_             (log/info (str " >>> CUURREENTTT >>>>> " current  " >>>> records >> " records  "  per-page >>> " per-page "  max-pages >>> " max-pages))
-        total-pages   (int (Math/ceil (/ records per-page)))
+        total-pages   (int (Math/ceil (/ records per-page)))  ;; total pages adjusted to the next up integer, Math/ceil returns a float
         _             (log/info (str " >>> total-pagestotal-pages  >>>>> " total-pages))
-        current       (if (> current total-pages) 1 current)
-        half          (Math/floor (/ max-pages 2))      ;; round off the number passed as a parameter to its nearest integer in Downward direction
-        _             (log/info (str " >>> HALF  >>>>> " half))
-        left-half     (int (if (= biased :left)  (- half (if (odd? max-pages) 0 1)) half))
+        half          (Math/floor (/ max-pages 2))      ;; round off the number passed as a parameter to its nearest integer in Downward direction. 2.0 constant?
+        left-half     (int (if (= biased :left)  (- half (if (odd? max-pages) 0 1)) half))  ;; one to the left
         right-half    (int (if (= biased :right) (- half (if (odd? max-pages) 0 1)) half))
-        virtual-start (- current left-half)    ;; can be a minus
-        virtual-end   (+ current right-half)   ;; can be exceeding than available page limit
-        start         (max 1 (- virtual-start (if (> virtual-end total-pages) (- virtual-end total-pages) 0)))
-        end           (min total-pages (+ current (+ right-half (if (< virtual-start 1) (Math/abs (dec virtual-start)) 0))))]
+        _             (log/info (str ">>> left-half >> " left-half "  >>> right-half >> " right-half))  ;; 2
+        virtual-start (- current left-half)    ;; can be a minus. The starting point to the left considering "current" and "max-pages"
+        virtual-end   (+ current right-half)   ;; can be exceeding than available page limit. The ending point to the right considering "current" and "max-pages"
+        start         (max 1 (- virtual-start (if (> virtual-end total-pages) (- virtual-end total-pages) 0)))  ;;;  ????
+        end           (inc (min total-pages (+ current right-half (if (< virtual-start 1) (Math/abs (dec virtual-start)) 0))))]
     {:current current :pages (range start end)}))
 
 (defn format-link
   [located-tpl page current]
-  (log/info (str ">>> PAGE llllll >>>>> " page "  >>>> CURENT >>> " current))
   (let  [link-1 (cs/replace located-tpl "{{page-number}}" (str page))
          class (if (= page current) "btn-outline-primary-orange" "btn-outline-primary-green")]
     (cs/replace link-1 "{{class}}" class)))

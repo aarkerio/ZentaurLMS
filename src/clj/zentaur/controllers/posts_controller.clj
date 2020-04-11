@@ -59,11 +59,12 @@
         user-id  (-> request :identity :id)
         pre-page (-> request :path-params :page)
         page     (if (every? #(Character/isDigit %) pre-page) (Integer/parseInt pre-page) 1)
-        posts    (model-post/admin-get-posts user-id page)]
+        per-page 3  ;; model and view need this
+        posts    (model-post/admin-get-posts user-id page per-page)]
     (if (empty? posts)
       (assoc (response/found "/admin/posts/list/1") :flash basec/msg-fehler)
       (basec/parser (layout/application
-                     (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts page)}))))))
+                     (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts page per-page)}))))))
 
 (defn save-post
   "POST /admin/posts"
@@ -71,7 +72,7 @@
   (let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))]
     (if (contains? errors :flash)
       (assoc (response/found "/admin/posts/new") :flash (basec/map-to-query-string errors))
-      (assoc (response/found "/admin/posts") :flash basec/msg-erfolg))))
+      (assoc (response/found "/admin/posts/list/1") :flash basec/msg-erfolg))))
 
 (defn show-post
   "GET. /admin/posts/:id"
@@ -89,7 +90,7 @@
   (let [errors (model-post/update-post! (dissoc params :__anti-forgery-token :button-save))]
     (if (contains? errors :flash)
       (assoc (response/found (str "/admin/posts/" (:id params))) :flash (basec/map-to-query-string errors))
-      (assoc (response/found "/admin/posts") :flash basec/msg-erfolg))))
+      (assoc (response/found "/admin/posts/list/1") :flash basec/msg-erfolg))))
 
 
 (defn admin-new
@@ -104,4 +105,4 @@
   [params]
   (let [id (params :id)]
     (model-post/destroy id)
-    (assoc (response/found "/admin/posts") :flash basec/msg-erfolg)))
+    (assoc (response/found "/admin/posts/list/1") :flash basec/msg-erfolg)))

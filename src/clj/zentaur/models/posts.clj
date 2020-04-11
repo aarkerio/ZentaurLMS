@@ -52,9 +52,9 @@
 ;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
 
 (defn admin-get-posts
-  [user-id page]
-  (let [offset (* page 5)]
-      (db/admin-get-posts {:user-id user-id :offset offset :limit 5})))
+  [user-id page per-page]
+  (let [offset (* (dec page) per-page)] ;; dec because we need pagination to starts at 0 and "page" starts at 1
+      (db/admin-get-posts {:user-id user-id :offset offset :limit per-page})))
 
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn save-post!
