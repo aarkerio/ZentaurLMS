@@ -17,7 +17,7 @@
 
 (defn index
   "Admin posts index"
-  [posts page]
+  [posts page items-per-page]
   (let [total           (:total (first posts))
         formatted-posts (doall (for [post posts]
                                  (formatted-post post)))]
@@ -34,16 +34,7 @@
               [:th "Created"]
               [:th "Delete"]]]
           [:tbody formatted-posts]]]
-          ; :records        : Total number of records
-          ; :per-page       : Items shown per page
-          ; :max-pages      : Maximum number of pagination links appear
-          ; :current        : Current page number
-          ; :biased         : :left or :right, if the number of pages shown is even,
-          ;                   current page should either sit in left half of right half
-          ; :link-tpl       : template to use for individual links
-          ; :list-tpl       : tempate to use for entire list
-          (hv/html-paginator {:records total :per-page 5 :max-pages 5 :current page :biased :left :location "/admin/posts/list"})
-     ]))
+          (hv/html-paginator {:records total :items-per-page items-per-page :max-links 3 :current page :biased :left :location "/admin/posts/list"})]))
 
 (defn image-icon []
   [:div {:style "text-align:right;padding:8px;float:right;width:30%;"}

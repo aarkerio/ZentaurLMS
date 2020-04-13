@@ -317,7 +317,7 @@ WHERE uuid = :uuid
 
 -- :name get-user :? :1
 -- :doc retrieve a user given the id.
-SELECT * FROM users WHERE id = :id
+SELECT * FROM users WHERE id = :id OR email = :email
 
 -- :name get-users :? :*
 -- :doc retrieve all users given the active column.

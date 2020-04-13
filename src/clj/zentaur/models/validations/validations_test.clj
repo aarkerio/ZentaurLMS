@@ -63,3 +63,24 @@
 (defn validate-answer [params]
   (first
     (st/validate params answer-schema)))
+
+;;;;;;;;;;;;;;;;;;;;;;
+;;    VALIDATIONS USER
+;;;;;;;;;;;;;;;;;;;;;
+
+(def user-schema
+  [[:fname   st/required st/string]
+   [:lname   st/required st/string]
+   [:uuid    st/required st/string]
+   [:email   st/required st/string]
+   [:admin   st/required st/boolean]
+   [:active  st/required st/boolean]
+   [:role_id st/required st/integer]
+   [:password st/required
+    st/string
+    {:password "message must contain at least 6 characters"
+     :validate #(> (count %) 6)}]])
+
+(defn validate-user [params]
+  (first
+    (st/validate params user-schema)))

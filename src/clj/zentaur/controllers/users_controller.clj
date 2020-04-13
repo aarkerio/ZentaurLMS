@@ -4,25 +4,27 @@
             [zentaur.controllers.base-controller :as basec]
             [zentaur.hiccup.admin.users-view :as users-view]
             [zentaur.hiccup.layouts.application-layout :as layout]
+            [zentaur.libs.models.shared :as sh]
             [zentaur.models.users :as model-user]))
 
 (defn admin-users
   "GET /admin/users/:archived"
   [request]
-  (let [archived  (-> request :path-params :archived)
-        base      (basec/set-vars request)
-        users     (model-user/get-users archived)
-        roles     (model-user/get-roles)]
+  (let [archived      (sh/truthy? (or (-> request :path-params :archived) "false"))
+        base          (basec/set-vars request)
+        users         (model-user/get-users archived)
+        roles         (model-user/get-roles)]
     (basec/parser
-     (layout/application (merge base {:contents (users-view/index base users roles)})))))
+     (layout/application (merge base {:contents (users-view/index base users roles archived)})))))
 
 (defn create-user
   "POST /admin/users"
   [request]
   (let [params       (:params request)
-        clean-params (dissoc params :__anti-forgery-token  :submit)]
-    (model-user/create clean-params)
-    (response/found "/admin/users")))
+        clean-params (dissoc params :__anti-forgery-token  :submit)
+        response     (model-user/create clean-params)
+        flash        (if (string? response) response basec/msg-erfolg)]
+        (assoc (response/found "/admin/users/true") :flash flash)))
 
 (defn login-page
   "GET /login"

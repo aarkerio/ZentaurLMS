@@ -10,18 +10,19 @@
             [zentaur.middleware :as middleware]))
 
 (def site-routes
-  [["/"                  {:get  cont-posts/get-posts}]
+  [["/"                  {:get  cont-posts/index}]
+   ["/posts/list/:page"  {:get  cont-posts/list}]
    ["/posts/savecomment" {:post cont-posts/save-comment}]
-   ["/posts/view/:id"    {:get  cont-posts/single-post}]
+   ["/posts/show/:id"    {:get  cont-posts/show}]
    ["/uploads/token"     {:post cont-uploads/token}]
    ["/page/:page"        {:get  cont-company/load-page}]
    ["/login"             {:get  cont-users/login-page :post cont-users/post-login}]
-   ["/notauthorized"     {:get  cont-posts/get-posts}]
+   ["/search"            {:post cont-posts/search}]
+   ["/notauthorized"     {:get  cont-posts/index}]
    ["/logout"            {:get  cont-users/clear-session!}]])
 
 (def vclass-routes
   ["/vclass"
-   ["/"                        {:get  cont-posts/get-posts}]
    ["/search"                  {:get  cont-tests/search}]
    ["/index"                   {:get  cont-vclass/index :post cont-vclass/create-vclass}]
    ["/show/:uurlid"            {:get  cont-vclass/show}]
