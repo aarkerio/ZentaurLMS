@@ -67,3 +67,9 @@
   "Replace sub-strings surrounded by asterisks for spaces"
   [text]
   (clojure.string/replace text #"\*(.*?)\*" #(clojure.string/join (take (count (% 1)) (repeat "_")))))
+
+(defn truthy?
+  "Check if the string is true"
+  [term]
+  (let [trimmed (cs/trim term)]
+    (if (= trimmed "true") true false)))

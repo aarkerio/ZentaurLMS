@@ -1,39 +1,37 @@
 (ns zentaur.models.users
-  (:require [zentaur.db.core :as db]
-            [zentaur.env :as env]
-            [struct.core :as st]
+  (:require [buddy.hashers :as hashers]
             [clojure.tools.logging :as log]
-            [buddy.hashers :as hashers]))
+            [struct.core :as st]
+            [zentaur.db.core :as db]
+            [zentaur.env :as env]
+            [zentaur.models.validations.validations-user :as vu]))
 
 (defn gen-uuid [] (java.util.UUID/randomUUID))
-
-;;;;;;;;;;;;;;;;;;;;;;
-;;    VALIDATIONS
-;;;;;;;;;;;;;;;;;;;;;
-
-(def user-schema
-  [[:title st/required st/string]
-   [:body
-    st/required
-    st/string
-    {:body "message must contain at least 10 characters"
-     :validate #(> (count %) 9)}]])
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;;    ACTIONS
 ;;;;;;;;;;;;;;;;;;;;;
 
-(defn create [user]
+(defn create-user [user]
   (let [prepassword  (:prepassword user)
         password     (hashers/derive prepassword env/secret-salt)
         uuid         (gen-uuid)
         role_id      (Integer/parseInt (:role_id user))
         admin        (contains? user :preadmin)
-        clean-user   (dissoc user :prepassword :preadmin)]
-    ;; (log/info (format ">>> Whole User data %s" (merge clean-user {:password password :admin admin :active true :role_id role_id})))
-    (-> clean-user
-        (assoc :password password :admin admin :active true :role_id role_id :uuid uuid)
-        (db/create-user!))))
+        clean-user   (dissoc user :prepassword :preadmin)
+        final-data   (assoc clean-user :password password :admin admin :active true :role_id role_id :uuid uuid)
+        validation   (vu/validate-user final-data)]
+    (if (nil? validation)
+      (db/create-user! final-data)
+      (str "Validation errors : " validation))))
+
+(defn create [user]
+  (let [email       (:email user)
+        chk-user    (db/get-user {:id 0 :email email})]
+     (log/info (str ">>> Whole User chk-userchk-user data:  %s " chk-user))
+     (if (nil? chk-user)
+       (create-user user)
+       (format "The email  %s already exists." email))))
 
 (defn get-user-by-email-and-password
   [email password]

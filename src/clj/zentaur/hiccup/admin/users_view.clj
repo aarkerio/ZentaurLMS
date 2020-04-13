@@ -25,7 +25,7 @@
        options          (roles-options roles)]
     [:div {:class "content"}
      [:h1 {:id "root-app"} "Users and admins"]
-     [:div  [:a {:href (str "/admin/users/" archived)} [:img {:src "/img/icon_archive.png" :alt "Archive file" :title "Archive file"}]]]
+     [:div  [:a {:href (str "/admin/users/false")} [:img {:src "/img/icon_archive.png" :alt "Archive file" :title "Archive file"}]]]
      [:div {:class "fooclass"} [:a {:href "#image"} [:img {:id "icon-add" :src "/img/icon_add.png" :alt "Add" :title "Add"}]]]
      [:div {:class "row"}
       [:div {:class "hidden-div" :id "divhide"}
