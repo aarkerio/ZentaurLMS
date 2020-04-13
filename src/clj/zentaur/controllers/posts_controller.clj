@@ -65,7 +65,8 @@
   [request]
   (let [base    (basec/set-vars request)
         terms   (-> request :params :terms)
-        results (model-post/search terms)]
+        lang    (or (-> request :params :lang) "en")
+        results (model-post/search terms lang)]
     (basec/parser
      (layout/application (merge base { :contents (posts-view/search base results)})))))
 

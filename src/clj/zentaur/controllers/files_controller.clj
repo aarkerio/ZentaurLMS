@@ -37,7 +37,7 @@
         uname     (:uname identity)
         result    (model-files/upload-file params user-id uname)
         message   (if (= result false) basec/msg-fehler basec/msg-erfolg)]
-    (assoc (response/found (str "/vclass/files/" type)) :flash  message)))
+    (assoc (response/found (str "/vclass/files/false" type)) :flash  message)))
 
 (defn download
   "GET. /vclass/files/download/:uurlid"

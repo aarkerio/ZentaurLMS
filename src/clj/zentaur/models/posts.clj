@@ -51,10 +51,9 @@
     (db/save-comment params)))
 
 (defn search
-  [terms]
+  [terms lang]
   (let [errors 1]
-    "(db/search terms)"
-    ))
+    "(db/search terms)"))
 
 ;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
 
