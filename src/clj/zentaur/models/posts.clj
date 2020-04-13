@@ -33,9 +33,11 @@
 
 (defn get-posts
   "Get all published posts"
-  ([]      (get-posts 10))
-  ([limit] (get-posts 10 10))
-  ([limit offset] (db/get-posts {:limit limit :offset offset})))
+  ([]      (get-posts 1))
+  ([page]  (get-posts 1 5))
+  ([page items-per-page]
+   (let [offset (* (dec page) items-per-page)]
+     (db/get-posts {:limit items-per-page :offset offset}))))
 
 (defn get-post [id]
   (db/get-post {:id id}))
@@ -44,10 +46,15 @@
   (db/get-comments {:id id}))
 
 (defn save-comment!
-  "POST. /posts/savecomment"
   [params]
   (if-let [errors (validate-post params)]
     (db/save-comment params)))
+
+(defn search
+  [terms]
+  (let [errors 1]
+    "(db/search terms)"
+    ))
 
 ;;;;;;;;;;;   ADMIN FUNCTIONS  ;;;;;;;;;
 

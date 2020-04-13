@@ -8,18 +8,28 @@
             [zentaur.models.posts :as model-post]
             [zentaur.models.tests :as model-test]))
 
-(defn get-posts
+(defn index
   "GET  /  (index site)"
   [request]
   (let [base       (basec/set-vars request)
-        posts      (model-post/get-posts)
         csrf-field (:csrf-field base)
         subjects   (model-test/get-subjects)
         levels     (model-test/get-levels)
         langs      (model-test/get-langs)
         identity   (:identity base)]
     (basec/parser
-     (layout/application (merge base {:title "List of Posts" :contents (posts-view/index posts csrf-field subjects levels langs identity)})))))
+     (layout/application (merge base {:title "Welcome" :contents (posts-view/index csrf-field subjects levels langs identity)})))))
+
+(defn list
+  "GET  /posts/list/:page"
+  [request]
+  (let [base           (basec/set-vars request)
+        items-per-page 5 ;; model and view need this
+        pre-page       (-> request :path-params :page)
+        page           (if (every? #(Character/isDigit %) pre-page) (Integer/parseInt pre-page) 1)
+        posts          (model-post/get-posts page items-per-page)]
+    (basec/parser
+     (layout/application (merge base {:title "List of Posts" :contents (posts-view/list posts page)})))))
 
 (defn save-comment
   "POST /post/savecomment"
@@ -33,8 +43,8 @@
      (assoc {} :post_id post_id :comment comment :user_id user_id))
     (basec/json-parser {:comment comment :last_name (:last_name identity)})))
 
-(defn single-post
-  "GET /posts/view/:id"
+(defn show
+  "GET /posts/show/:id"
   [request]
   (let [base     (basec/set-vars request)
         pre-id   (-> request :path-params :id)
@@ -49,6 +59,15 @@
   [{:keys [path-params]}]
   (model-post/toggle path-params)
   (assoc (response/found "/admin/posts/list/1") :flash basec/msg-erfolg ))
+
+(defn search
+  "POST /search"
+  [request]
+  (let [base    (basec/set-vars request)
+        terms   (-> request :params :terms)
+        results (model-post/search terms)]
+    (basec/parser
+     (layout/application (merge base { :contents (posts-view/search base results)})))))
 
 ;;;;;;;;;;;;;;;;     ADMIN SECTION      ;;;;;;;;;;;;;;;;;;;;;;;
 

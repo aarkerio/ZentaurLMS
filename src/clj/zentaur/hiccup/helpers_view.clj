@@ -88,22 +88,20 @@
 ; :list-tpl       : tempate to use for entire list
 
 (defn paginate
-  "Returns data required to render paginator."
+  "Returns data required to render paginator. Code from: https://github.com/manawardhana/paginator-clj"
   [{:keys [records items-per-page max-links current biased] :or {items-per-page 10 max-links 10 current 1 biased :left}}]
   (let [total-blocks    (int (Math/ceil (/ records items-per-page)))  ;; total pages adjusted to the next up integer, Math/ceil returns a float
         half            (Math/floor (/ max-links 2))      ;; round off the number passed as a parameter to its nearest integer in Downward direction. 2.0 constant weil immer vier?
         left-half       (int (if (= biased :left)  (- half (if (odd? max-links) 0 1)) half))
         right-half      (int (if (= biased :right) (- half (if (odd? max-links) 0 1)) half))
-        _               (log/info (str ">>> left-half >>>>> " left-half " >>> right-half >>>>> " right-half ))
         virtual-start   (- current left-half)    ;; can be a minus. The starting point to the left considering "current" and "max-links"
         virtual-end     (+ current right-half)   ;; can be exceeding than available page limit. The ending point to the right considering "current" and "max-links"
-        _               (log/info (str ">>> current >> " current " >>> virtual-start ** >>> " virtual-start " >>> virtual-end **** >>>>> " virtual-end))
         start           (max 1 (- virtual-start (if (> virtual-end total-blocks) (- virtual-end total-blocks) 0)))
         end             (inc (min total-blocks (+ current right-half (if (< virtual-start 1) (Math/abs (dec virtual-start)) 0))))
-        dis-first-arrow (>= current max-links)  ;; ;; display first arrow
-        no-last-arrow   (- total-blocks max-links) ;; defines no last arrow block
+        dis-first-arrow (>= current max-links)              ;; display first arrow
+        no-last-arrow   (- total-blocks max-links)          ;; defines no last arrow block
         dis-last-arrow  (< (- virtual-end no-last-arrow) max-links)  ;; display last arrow
-       _                (log/info (str ">>> no-last-arrow >> " no-last-arrow "  >>> right-half >> " right-half  "   START >>>" start " dis-last-arrow >> " dis-last-arrow "  end >> " end " LLTRACK>>"  (- total-blocks max-links)))]
+       ]
     {:current current :pages (range start end) :dis-last-arrow dis-last-arrow :dis-first-arrow dis-first-arrow :total-blocks total-blocks}))
 
 (defn format-link
