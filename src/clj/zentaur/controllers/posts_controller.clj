@@ -55,16 +55,16 @@
 (defn admin-posts
   "GET /admin/posts/list/:page"
   [request]
-  (let [base     (basec/set-vars request)
-        user-id  (-> request :identity :id)
-        pre-page (-> request :path-params :page)
-        page     (if (every? #(Character/isDigit %) pre-page) (Integer/parseInt pre-page) 1)
-        per-page 3  ;; model and view need this
-        posts    (model-post/admin-get-posts user-id page per-page)]
+  (let [base           (basec/set-vars request)
+        user-id        (-> request :identity :id)
+        pre-page       (-> request :path-params :page)
+        page           (if (every? #(Character/isDigit %) pre-page) (Integer/parseInt pre-page) 1)
+        items-per-page 3 ;; model and view need this
+        posts          (model-post/admin-get-posts user-id page items-per-page)]
     (if (empty? posts)
       (assoc (response/found "/admin/posts/list/1") :flash basec/msg-fehler)
       (basec/parser (layout/application
-                     (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts page per-page)}))))))
+                     (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts page items-per-page)}))))))
 
 (defn save-post
   "POST /admin/posts"
