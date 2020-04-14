@@ -76,6 +76,7 @@
           response  (assoc ((zh/app) (mock/request :post "http://localhost:3000/api/graphql" query))
                            :headers {:content-type "application/graphql"})
           body  (slurp (:body response))
+          _     (log/info (str ">>> response  >>>>> " response "  BODY >> " body))
           jso   (json/read-str body :key-fn keyword)
           title (-> jso :data :test_by_uurlid :title)]
       (is (> (count title) 5)))))

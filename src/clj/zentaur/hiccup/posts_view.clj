@@ -65,7 +65,7 @@
                           [(str n) n]) 5)]
          (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0"} "Go!")]])]))
 
-(defn list [posts page]
+(defn listing [posts page]
   (let [items-per-page  5
         max-links       5
         total           (:total (first posts))
@@ -74,7 +74,7 @@
     [:div {:id "cont"}
      [:div {:id "content"} formatted-posts]
      [:div (hv/html-paginator {:records total :items-per-page items-per-page :max-links max-links
-                               :current page :biased :left :location "/posts/list"})]]))
+                               :current page :biased :left :location "/posts/listing"})]]))
 
 (defn comment-form [base id]
   (when-let [email (-> base :identity :email)]

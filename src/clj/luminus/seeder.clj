@@ -36,7 +36,7 @@
         (log/info (str ">>> PARAM >>>>> " params  "   new-question >>> " new-question))
         (map (mt/create-answer! {:question_id (:id new-question) :answer (rand-nth question-txt) :correct (rand-nth corr)}) (range 4))))
 
-(defn main []
+(defn -main []
   (let [_        (start)
         subjects (mt/get-subjects)
         levels   (mt/get-levels)

@@ -32,6 +32,14 @@
   []
   (db/get-langs))
 
+(defn gral-data
+  "Data for populates the test form"
+  []
+  (let [subjects (db/get-subjects)
+        levels   (db/get-levels)
+        langs    (db/get-langs)]
+    (assoc {} :subjects subjects :levels levels :langs langs)))
+
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
   (let [uurlid      (sh/gen-uuid)

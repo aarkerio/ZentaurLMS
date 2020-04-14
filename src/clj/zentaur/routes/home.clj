@@ -10,16 +10,16 @@
             [zentaur.middleware :as middleware]))
 
 (def site-routes
-  [["/"                  {:get  cont-posts/index}]
-   ["/posts/list/:page"  {:get  cont-posts/list}]
-   ["/posts/savecomment" {:post cont-posts/save-comment}]
-   ["/posts/show/:id"    {:get  cont-posts/show}]
-   ["/uploads/token"     {:post cont-uploads/token}]
-   ["/page/:page"        {:get  cont-company/load-page}]
-   ["/login"             {:get  cont-users/login-page :post cont-users/post-login}]
-   ["/search"            {:post cont-posts/search}]
-   ["/notauthorized"     {:get  cont-posts/index}]
-   ["/logout"            {:get  cont-users/clear-session!}]])
+  [["/"                    {:get  cont-posts/index}]
+   ["/posts/listing/:page" {:get  cont-posts/listing}]
+   ["/posts/savecomment"   {:post cont-posts/save-comment}]
+   ["/posts/show/:id"      {:get  cont-posts/show}]
+   ["/uploads/token"       {:post cont-uploads/token}]
+   ["/page/:page"          {:get  cont-company/load-page}]
+   ["/login"               {:get  cont-users/login-page :post cont-users/post-login}]
+   ["/search"              {:post cont-posts/search}]
+   ["/notauthorized"       {:get  cont-posts/index}]
+   ["/logout"              {:get  cont-users/clear-session!}]])
 
 (def vclass-routes
   ["/vclass"
