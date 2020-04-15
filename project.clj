@@ -33,8 +33,8 @@
                  [org.immutant/web "2.1.10" :exclusions [joda-time]] ;; Serve web requests using Ring handlers, Servlets, or Undertow HttpHandlers
                  [org.odftoolkit/simple-odf "0.9.0-RC1"] ;; Open Document libraries
                  [org.postgresql/postgresql "42.2.12"]   ;; PostgreSQL rulez!
-                 [re-frame "0.11.0"]                     ;; A Reagent Framework For Writing SPAs, in Clojurescript.
-                 [reagent "0.9.1"]                       ;; Minimalistic React for ClojureScript
+                 [re-frame "0.12.0"]                     ;; A Reagent Framework For Writing SPAs, in Clojurescript.
+                 [reagent "0.10.0"]                       ;; Minimalistic React for ClojureScript
                  [re-graph "0.1.11" :exclusions [org.eclipse.jetty/jetty-http]] ;; A graphql client for clojurescript and clojure
                  [ring-webjars "0.2.0" :exclusions [joda-time clj-time]] ;; Web assets
                  [ring/ring-core "1.8.0"]                ;; A very thin HTTP abstraction
@@ -49,6 +49,7 @@
             "fig:dev" ["trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
             "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]
             "l:test" ["test" ":only" "zentaur.model.tests-test/create-test!"]
+            "l:nrepl" ["nrepl" ":middleware" "['cider.nrepl/cider-middleware]"]
             "l:bl" ["test" ":only" "business-logic"]
             "tree" ["deps" ":tree"]}
   :target-path "target/%s/"
@@ -70,6 +71,7 @@
 
             :project/dev  {:jvm-opts ["-Dconf=dev-config.edn" "--illegal-access=warn"]
                            :dependencies [[binaryage/devtools "0.9.11"]              ;; CLJS DevTools
+                                          [cider/piggieback "0.4.2"]                 ;; nREPL support for ClojureScript REPLs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
                                           [com.bhauman/figwheel-main "0.2.3" :exclusions [joda-time clj-time]]  ;; Hot Reload cljs
                                           [day8.re-frame/re-frame-10x "0.5.1"]       ;; Debugging re-frame applications.

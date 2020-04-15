@@ -24,7 +24,7 @@
 (defn get-session
   "Given a response, grab out just the key=value of the ring session"
   [resp]
-  (let [headers         (:headers resp)
+  (let  [headers         (:headers resp)
         cookies         (get headers "Set-Cookie")
         session-cookies (first (filter #(.startsWith % "ring-session") cookies))
         session-pair    (first (clojure.string/split session-cookies #";"))]
@@ -72,7 +72,7 @@
 
 (deftest ^:integration get-test-nodes
   (testing "JSON response for the API"
-    (let [query     (json/write-str  {:query "{ test_by_uurlid(uurlid: \"b4a98b64267d0c77be85\" archived: false) { uurlid title description } }" })
+    (let [query     (json/write-str  {:query "{ test_by_uurlid(uurlid: \"40caa40ab40593dacfbc\" archived: false) { uurlid title description } }" })
           response  (assoc ((zh/app) (mock/request :post "http://localhost:3000/api/graphql" query))
                            :headers {:content-type "application/graphql"})
           body  (slurp (:body response))
@@ -99,4 +99,4 @@
 ;;     (response/ok (ches/encode response non-ascii))))
 
 
-(run-tests)  ;; run tests in this NS
+;; (run-tests)  ;; run tests in this NS

@@ -69,4 +69,3 @@
     (basec/parser
      (layout/application (merge base {:title "Vclassrrooms" :contents (tests-view/edit base uurlid) })))))
 
-
