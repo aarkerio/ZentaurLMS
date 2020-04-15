@@ -74,11 +74,11 @@
 (defn show [post base]
   (let [formatted-post (format-post post false)
         user-id        (-> base :identity :id)
-        blog-id        (:id post)]
+        post-id        (:id post)]
     [:div {:id "cont"}
      [:div hv/back-button]
      [:div {:id "content"} formatted-post]
-     [:form (f/hidden-field {:value blog-id} "blog-id")
+     [:form (f/hidden-field {:value post-id} "post-id")
             (f/hidden-field {:value user-id} "user-id")]
      [:div#comments-root-app]]))
 

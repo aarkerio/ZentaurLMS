@@ -110,7 +110,7 @@
                               :resolve     :search_questions}
            :load_comments {:type        (non-null :comments)
                            :description "Access comments from blog entry id."
-                           :args        {:blog_id {:type (non-null Int)}}
+                           :args        {:post_id {:type (non-null Int)}}
                            :resolve     :load-comments}
            }
  :mutations {
@@ -192,8 +192,8 @@
                              :resolve :delete-answer}
              :create_comment {:type :comment
                               :description "Create new comment."
-                              :args {:blog_id     {:type (non-null Int)}
-                                     :comments    {:type (non-null String)}
+                              :args {:post_id     {:type (non-null Int)}
+                                     :comment     {:type (non-null String)}
                                      :user_id     {:type (non-null Int)}}
                                :resolve :create-comment}
              }

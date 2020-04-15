@@ -31,18 +31,6 @@
     (basec/parser
      (layout/application (merge base {:title "List of Posts" :contents (posts-view/listing posts page)})))))
 
-(defn save-comment
-  "POST /post/savecomment"
-  [request]
-  (let [body-params (:body-params request)
-        identity    (:identity request)
-        comment     (:comment body-params)
-        post_id     (Integer/parseInt (:post_id body-params))
-        user_id     (:id identity)]
-    (model-post/save-comment!
-     (assoc {} :post_id post_id :comment comment :user_id user_id))
-    (basec/json-parser {:comment comment :last_name (:last_name identity)})))
-
 (defn show
   "GET /posts/show/:id"
   [request]

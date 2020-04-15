@@ -26,5 +26,3 @@
   (first
     (st/validate params comment-schema)))
 
-
-

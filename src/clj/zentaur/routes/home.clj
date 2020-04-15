@@ -12,7 +12,6 @@
 (def site-routes
   [["/"                    {:get  cont-posts/index}]
    ["/posts/listing/:page" {:get  cont-posts/listing}]
-   ["/posts/savecomment"   {:post cont-posts/save-comment}]
    ["/posts/show/:id"      {:get  cont-posts/show}]
    ["/uploads/token"       {:post cont-uploads/token}]
    ["/page/:page"          {:get  cont-company/load-page}]

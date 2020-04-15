@@ -94,10 +94,10 @@
 (defn- ^:private load-comments
   [context args value]
   (log/info (str ">>> load-comments ARGS >>>>> " args))
-  (let [comments    (po/get-comments (:id args))
+  (let [comments    (po/get-comments args)
         comments-1  (map #(assoc % :username (str (:fname %) "_" (:lname %))) comments)
         comments-2  (map #(dissoc % :fname :lname) comments-1)]
-    (log/info (str ">>> comments-2 >>>>> " (prn-str comments-2)))
+    (log/info (str ">>> comments-2 >>>>> " (prn-str comments-2) " comment ORIGINAL >> " (prn-str comments) ))
     (assoc {} :comments comments-2)))
 
 (defn- ^:private create-comment

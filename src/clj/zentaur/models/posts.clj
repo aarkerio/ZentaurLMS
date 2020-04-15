@@ -5,10 +5,6 @@
             [zentaur.libs.models.shared :as sh]
             [zentaur.models.validations.validations-post :as vp]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;          ACTIONS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (defn get-posts
   "Get all published posts"
   ([]      (get-posts 1))
@@ -20,14 +16,18 @@
 (defn get-post [id]
   (db/get-post {:id id}))
 
-(defn get-comments [id]
-  (db/get-comments {:id id}))
+(defn get-comments [post-id]
+  (log/info (str ">>> PARAM get-comments >>>>> " post-id))
+  (db/get-comments post-id))
 
 (defn create-comment
   [params]
-  (if-let [errors (vp/validate-comment params)]
-    (log/info (str ">>> create-comment ERRORS: >>>>> " errors))
-    (db/save-comment params)))
+  (let [errors (vp/validate-comment params)]
+    (if (nil? errors)
+      (-> params
+          (db/save-comment)
+          (db/get-full-comment))
+      ((log/info (str ">>> ERRORS >>>>> " errors))))))
 
 (defn search
   [terms lang]

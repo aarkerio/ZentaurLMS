@@ -473,8 +473,10 @@
  :load-comments-response
   []
   (fn [db [_ {:keys [data errors]}]]
-    (let [comments  (:load_comments data)
-          _         (.log js/console (str ">>> comments RESPONSE >>>>> " comments))]
+    (let [pre-comments (:load_comments data)
+          _            (.log js/console (str ">>> comments PRE-RESPONSE >>>>> " data))
+          comments     (:comments pre-comments)
+          _            (.log js/console (str ">>> comments RESPONSE >>>>> " comments))]
          (assoc db :comments comments))))
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with GraphQL!)  ;;;;;;;;;;;;;;;;;;
@@ -483,9 +485,30 @@
   :load-comments
   (fn                      ;; <-- the handler function
     [cfx [_ updates]]     ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [blog-id (.-value (gdom/getElement "blog-id"))
-          query   (gstring/format "{load_comments(blog_id: %i) {comments {comment username created_at}}}"
-                                  blog-id)]
+    (let [post-id (.-value (gdom/getElement "post-id"))
+          query   (gstring/format "{load_comments(post_id: %i) {comments {comment username created_at}}}"
+                                  post-id)]
       (.log js/console (str ">>> QUEERY  >>>>> " query ))
       (re-frame/dispatch [::re-graph/query query {} [:load-comments-response]]))))
 
+
+(re-frame/reg-event-db
+ :process-save-blog-comment
+ (fn
+   [db [_ response]]            ;; destructure the response from the event vector
+   (let [comment     (:create_comment (second (first response)))
+         _           (.log js/console (str ">>> comment QQ >>>>> " comment))]
+         (update-in db [:comments] conj comment))))
+
+(re-frame/reg-event-fx
+  :save-blog-comment
+  (fn                    ;; <-- the handler function
+    [cfx _]            ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
+    (.log js/console (str ">>>  und ebenfalls _ " (second _)))
+    (let [updates (second _)
+          {:keys [post-id comment user-id]} updates
+          mutation    (gstring/format "mutation { create_comment( post_id: %i, comment: \"%s\", user_id: %i)
+                                      { username comment created_at }}"
+                                      post-id comment user-id)]
+      (.log js/console (str ">>> CREATE ANSWER MUTATION >>>>> " mutation ))
+      (re-frame/dispatch [::re-graph/mutate mutation {} [:process-save-blog-comment]]))))
