@@ -60,6 +60,7 @@
    :testform      false
    :subjects      (vector)
    :levels        (vector)
+   :comments      (vector)
    :selquestions  (sorted-map)  ;; selected questions
    })
 

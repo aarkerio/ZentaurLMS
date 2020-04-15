@@ -2,6 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [hiccup.form :as f]
             [hiccup.core :as c]
+            [zentaur.febe.pagination :as pag]
             [zentaur.hiccup.helpers-view :as hv]))
 
 (defn formatted-post [{:keys [title created_at tags discussion published id]}]
@@ -34,7 +35,7 @@
               [:th "Created"]
               [:th "Delete"]]]
           [:tbody formatted-posts]]]
-          (hv/html-paginator {:records total :items-per-page items-per-page :max-links 3 :current page :biased :left :location "/admin/posts/list"})]))
+          (pag/html-paginator {:records total :items-per-page items-per-page :max-links 3 :current page :biased :left :location "/admin/posts/listing"})]))
 
 (defn image-icon []
   [:div {:style "text-align:right;padding:8px;float:right;width:30%;"}

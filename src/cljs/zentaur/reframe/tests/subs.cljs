@@ -57,3 +57,7 @@
   (fn [test]
     (:user_id test)))
 
+(rf/reg-sub
+ :comments
+ (fn [db]
+   (get-in db [:comments])))

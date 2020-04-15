@@ -1,4 +1,4 @@
-(ns zentaur.shared
+(ns zentaur.febe.shared
   (:require [struct.core :as st]))
 
 (defn asterisks-to-spaces

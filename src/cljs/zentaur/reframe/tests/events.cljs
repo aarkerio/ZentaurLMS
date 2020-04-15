@@ -462,3 +462,30 @@
       (.log js/console (str ">>> QUERRRY  >>>>> " query ))
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query query {} [:search-question-response]]))))
+
+
+;;;;;;;;    BLOG COMMENTS  SECTION  ;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;  SEARCH SCREEN QUESTIONS  ;;;;;;;;;;;;;;;;
+
+(re-frame/reg-event-db
+ :load-comments-response
+  []
+  (fn [db [_ {:keys [data errors]}]]
+    (let [comments  (:load_comments data)
+          _         (.log js/console (str ">>> comments RESPONSE >>>>> " comments))]
+         (assoc db :comments comments))))
+
+;;;;;;;;    CO-EFFECT HANDLERS (with GraphQL!)  ;;;;;;;;;;;;;;;;;;
+;; reg-event-fx == event handler's coeffects, fx == effect
+(re-frame/reg-event-fx
+  :load-comments
+  (fn                      ;; <-- the handler function
+    [cfx [_ updates]]     ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
+    (let [blog-id (.-value (gdom/getElement "blog-id"))
+          query   (gstring/format "{load_comments(blog_id: %i) {comments {comment username created_at}}}"
+                                  blog-id)]
+      (.log js/console (str ">>> QUEERY  >>>>> " query ))
+      (re-frame/dispatch [::re-graph/query query {} [:load-comments-response]]))))
+

@@ -414,23 +414,24 @@
                  :on-click #(rf/dispatch [:search-questions {:subject_id @subject-id
                                                              :level_id @level-id
                                                              :lang_id @lang-id}])}]]])))
-
-
 (defn offered-questions []
   (let [subject-id  (r/atom 1)
         level-id    (r/atom 1)
         lang-id     (r/atom 1)]
-    [:table {:class "some-table-class"}
+    [:table.some-table-class
      [:thead
       [:tr
        [:th "Select"]
        [:th "Question"]
        [:th "Explanation"]]]
-     (for [q @(rf/subscribe [:questions])]
-       ^{:key (:id q)} [:tr
-                        [:td [:input {:type "checkbox" :title "Select" :on-change #(rf/dispatch [:add-question {:question_id (:id q)}])}]]
-                        [:td (:question q)]
-                        [:td (:explanation q)]])]))
+     [:tbody
+      (for [q @(rf/subscribe [:questions])]
+        ^{:key (:id q)} [:tr
+                         [:td [:input {:type "checkbox" :title "Select" :on-change #(rf/dispatch [:add-question {:question_id (:id q)}])}]]
+                         [:td (:question q)]
+                         [:td (:explanation q)]])]]
+
+    ))
 
 (defn search-app
   []

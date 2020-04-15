@@ -49,10 +49,9 @@
   (let [base     (basec/set-vars request)
         pre-id   (-> request :path-params :id)
         id       (Integer/parseInt pre-id)
-        post     (model-post/get-post id)
-        comments (model-post/get-comments id)]
+        post     (model-post/get-post id)]
     (basec/parser
-     (layout/application (merge base { :contents (posts-view/show post base comments) })))))
+     (layout/application (merge base { :contents (posts-view/show post base) })))))
 
 (defn toggle-published
   "GET '/admin/posts/publish/:id/:published'"

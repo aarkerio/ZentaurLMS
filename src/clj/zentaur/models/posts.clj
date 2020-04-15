@@ -2,30 +2,8 @@
   (:require [clojure.tools.logging :as log]
             [struct.core :as st]
             [zentaur.db.core :as db]
-            [zentaur.libs.models.shared :as sh]))
-
-;;;;;;;;;;;;;;;;;;;;;;
-;;    VALIDATIONS
-;;;;;;;;;;;;;;;;;;;;;
-(def post-schema
-  [[:title st/required st/string
-    {:title "title must contain at least 2 characters"
-     :validate #(> (count %) 1)}]
-   [:body st/required st/string
-    {:body "the body must contain at least 10 characters"
-     :validate #(> (count %) 9)}]])
-
-(defn validate-post [params]
-  (first
-    (st/validate params post-schema)))
-
-(def comment-schema
-  [[:comment st/required st/string]
-   [:post_id st/required st/integer]])
-
-(defn validate-comment [params]
-  (first
-    (st/validate params comment-schema)))
+            [zentaur.libs.models.shared :as sh]
+            [zentaur.models.validations.validations-post :as vp]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;          ACTIONS
@@ -45,9 +23,10 @@
 (defn get-comments [id]
   (db/get-comments {:id id}))
 
-(defn save-comment!
+(defn create-comment
   [params]
-  (if-let [errors (validate-post params)]
+  (if-let [errors (vp/validate-comment params)]
+    (log/info (str ">>> create-comment ERRORS: >>>>> " errors))
     (db/save-comment params)))
 
 (defn search
@@ -65,7 +44,7 @@
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn save-post!
   [{:keys [params identity]}]
-  (if-let [errors (validate-post params)]
+  (if-let [errors (vp/validate-post params)]
     {:flash errors}
     (let [slug      (sh/slugify (:title params))
           published (contains? params :published)

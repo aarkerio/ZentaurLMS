@@ -5,6 +5,7 @@
             [hiccup.form :as f]
             [hiccup.element :refer [link-to]]
             [markdown.core :as md]
+            [zentaur.febe.pagination :as pag]
             [zentaur.hiccup.helpers-view :as hv]))
 
 (defn format-post
@@ -17,12 +18,6 @@
                     [:div {:class "blog-body"} (md/md-to-html-string blog-text)]
                     [:div {:class "blog-tags"} "Tags: " (:tags post)]]]
      (if show (conj div-blog [:p [:a {:href (str "/posts/show/" (:id post))} "Read all"]]) div-blog))))
-
-(defn format-comment [comment]
-    [:div {:class "user_comments"}
-        [:div {:style "font-size:8pt;"} (:created_at comment)]
-        [:div {:style "font-size:8pt;font-weight:bold;"} (str (:last_name comment) " wrote: ")]
-        [:div {:class "font"} (:comment comment)]])
 
 (defn index [csrf-field subjects levels langs identity]
   (let [items-per-page 5]
@@ -73,33 +68,23 @@
                                  (format-post post)))]
     [:div {:id "cont"}
      [:div {:id "content"} formatted-posts]
-     [:div (hv/html-paginator {:records total :items-per-page items-per-page :max-links max-links
+     [:div (pag/html-paginator {:records total :items-per-page items-per-page :max-links max-links
                                :current page :biased :left :location "/posts/listing"})]]))
 
-(defn comment-form [base id]
-  (when-let [email (-> base :identity :email)]
-    [:div.div-simple-separator
-     [:p "Add a new comment:"]
-     [:form {:id "submit-comment-form" :action "/vclass/posts/comments" :method "post" :class "css-class-form"}
-      (f/hidden-field {:value (:csrf-field base)} "__anti-forgery-token")
-      (f/hidden-field {:value id} "post_id")
-      [:div (f/text-area {:cols 90 :rows 5} "comment-textarea")]
-      (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :id "button-save" :name "button-save"} "Speichern")]]))
-
-(defn show [post base comments]
+(defn show [post base]
   (let [formatted-post (format-post post false)
-        formatted-comments (for [comment comments]
-                             (format-comment comment))
-        comment-form (comment-form base (:id post))]
+        user-id        (-> base :identity :id)
+        blog-id        (:id post)]
     [:div {:id "cont"}
-     [:div [:a {:onclick "javascript:history.go(-1);"} [:img {:src "/img/icon_back.png":title "<< Go back" :alt "<< Go back"}]]]
+     [:div hv/back-button]
      [:div {:id "content"} formatted-post]
-     [:div {:id "comments"} formatted-comments]
-     [:div {:id "comment-form"} comment-form]]))
+     [:form (f/hidden-field {:value blog-id} "blog-id")
+            (f/hidden-field {:value user-id} "user-id")]
+     [:div#comments-root-app]]))
 
 (defn search [base results]
   (let [formatted-post "asdasdasd"]
     [:div {:id "cont"}
-     [:div [:a {:onclick "javascript:history.go(-1);"} [:img {:src "/img/icon_back.png":title "<< Go back" :alt "<< Go back"}]]]
+     [:div (hv/back-button)]
      [:div {:id "content"} formatted-post] ]))
 

@@ -66,14 +66,15 @@ DELETE FROM posts WHERE id = :id
 
 -- :name save-comment :! :1
 -- :doc creates a new message record
-INSERT INTO comments (comment, post_id, user_id, created_at)
-VALUES (:comment, :post_id, :user_id, :created_at) RETURNING *
+INSERT INTO comments (comment, post_id, user_id) VALUES (:comment, :post_id, :user_id) RETURNING *
 
 -- :name get-comments :? :*
 -- :doc retrieve comments from a post given the post id.
 SELECT u.id AS user_id, u.fname, u.lname, c.id, c.comment, c.created_at
-FROM users AS u, comments AS c
-WHERE c.post_id = :id AND u.id=c.user_id ORDER BY c.id
+FROM users AS u
+INNER JOIN comments AS c
+ON u.id = c.user_id
+WHERE c.post_id = :id ORDER BY c.id
 
 -- :name admin-get-posts :? :*
 -- :doc retrieve array posts given the user id.
