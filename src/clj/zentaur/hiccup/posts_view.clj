@@ -45,8 +45,6 @@
          [:div.div-separator
           [:select.form-control.mr-sm-2 {:name "level_id"}
            (for [level levels]
-              [:div [:input {:type "checkbox" :title "Select" :on-change zentaur.core( (:id level) )}]]
-
              [:option {:value (:id level)} (:level level)])
            ]]
          [:label {:for "lang_id"} "Lang:"]

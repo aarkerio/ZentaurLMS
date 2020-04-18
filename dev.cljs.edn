@@ -1,6 +1,6 @@
-^{:watch-dirs ["env/dev/cljs" "src/cljs"]}
+^{:watch-dirs ["env/dev/cljs" "src/cljs" "test"] :auto-testing {:namespaces [zentaur.test-runner]}}
 {
- :source-paths ["src/cljs" "env/dev/cljs"]
+ :source-paths ["src/cljs" "env/dev/cljs" "test/cljs"]
  :main zentaur.app
  :optimizations :none
  :source-map true

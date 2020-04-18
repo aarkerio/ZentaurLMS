@@ -73,20 +73,18 @@
                            :dependencies [[binaryage/devtools "0.9.11"]              ;; CLJS DevTools
                                           [cider/piggieback "0.4.2"]                 ;; nREPL support for ClojureScript REPLs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
-                                          [com.bhauman/figwheel-main "0.2.3" :exclusions [joda-time clj-time]]  ;; Hot Reload cljs
+                                          [com.bhauman/figwheel-main "0.2.4" :exclusions [joda-time clj-time]]  ;; Hot Reload cljs
                                           [day8.re-frame/re-frame-10x "0.5.1"]       ;; Debugging re-frame applications.
-                                          [doo "0.1.11"]                             ;; Library and lein plugin to run cljs.test on different JS environment
                                           [factory-time "0.1.2"]                     ;; Factory-bot like library for tests
                                           [prone "2019-07-08"]                       ;; Better exception reporting middleware for Ring.
                                           [ring/ring-devel "1.8.0"]                  ;; Ring dev default options
                                           [ring/ring-mock "0.4.0"]                   ;; Library to create mock Ring requests for unit tests
                                           ]
-                           :source-paths ["env/dev/clj" "target" "env/dev/cljs"]
+                           :source-paths ["env/dev/clj" "target" "env/dev/cljs" "test"]
                            :resource-paths ["env/dev/resources"]
                            :repl-options {:init-ns user :timeout 120000}}
              :project/test {:jvm-opts ["-Dconf=test-config.edn" "--illegal-access=warn"]
                             :dependencies [[com.jakemccrary/lein-test-refresh "0.24.1"]
-                                           [lein-autoexpect "1.9.0"]
                                            [nrepl "0.7.0"]
                                            [talltale "0.4.3"]]    ;; fake data for test
                             :resource-paths ["env/test/resources"]
