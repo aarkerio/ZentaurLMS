@@ -61,3 +61,8 @@
  :comments
  (fn [db]
    (get-in db [:comments])))
+
+(rf/reg-sub
+ :search-terms
+ (fn [db]
+   (get-in db [:search-terms])))

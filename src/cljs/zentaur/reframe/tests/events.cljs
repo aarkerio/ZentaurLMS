@@ -1,6 +1,7 @@
 (ns zentaur.reframe.tests.events
   (:require [ajax.core :as ajax]
             [cljs.spec.alpha :as s]
+            [clojure.string :as str]
             [day8.re-frame.http-fx]
             [goog.dom :as gdom]
             [goog.string :as gstring]
@@ -435,6 +436,19 @@
       (re-frame/dispatch [::re-graph/query query {} [:process-search-response]]))))
 
 (re-frame/reg-event-db
+ :add-search-elm
+  []
+  (fn [db [_ updates]]
+    (let [ksection  (first (first updates))  ;; key section
+          vsection  (get updates ksection)   ;; value section
+          elm       (str ksection "_" vsection)
+          checkbox  (gdom/getElement elm)
+          checked   (.. checkbox -checked)]
+   (if checked
+     (update-in db [:search-terms ksection] conj vsection)
+     (update-in db [:search-terms ksection] (fn [all] (remove #(when (= % vsection) %) all)))))))
+
+(re-frame/reg-event-db
  :search-question-response
   []
   (fn [db [_ {:keys [data errors]}]]
@@ -445,30 +459,26 @@
      (-> db
          (assoc :questions  questions)))))
 
-(re-frame/reg-event-db
- :add-search-elm
-  []
-  (fn [db [aa bb]]
-    (.log js/console (str ">>> DATA at add-search-elm  >>>>> aa " aa "  >>>> bb >>>> " bb))
-    (let [questions  (:fo aa)]
-     (-> db
-         (assoc :questions  questions)))))
-
 ;;;;;;;;    CO-EFFECT HANDLERS (with GraphQL!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
 (re-frame/reg-event-fx
   :search-questions
   (fn                      ;; <-- the handler function
     [cfx [_ updates]]     ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [{:keys [subject_id level_id lang_id]} updates
-          _  (.log js/console (str ">>> UPDATE SQQQQQ >>>>> " updates ))
-          query      (gstring/format "{search_questions(subject_id: %i, level_id: %i, lang_id: %i)
+    (.log js/console (str ">>> CTX >>>>> " cfx ))
+    (let [{:keys [search-text]} updates
+          search-terms (-> cfx :db :search-terms)
+          _ (.log js/console (str ">>> search-terms >>>>> " search-terms ))
+          subjects (str/join " " (get search-terms "subjects"))
+          levels   (str/join " " (get search-terms "levels"))
+          langs    (str/join " " (get search-terms "langs"))
+          _  (.log js/console (str ">>> SQQQQQ >>>>> " updates " >> " subjects " >>> levels >> " levels "  langs >> " langs))
+          query      (gstring/format "{search_questions(subjects: \"%s\", levels: \"%s\", langs: \"%s\", terms: \"%s\")
                                       { uurlid title questions { id question qtype }}}"
-                                     subject_id level_id lang_id)]
+                                     subjects levels langs search-text)]
       (.log js/console (str ">>> QUERRRY  >>>>> " query ))
           ;; perform a query, with the response sent to the callback event provided
           (re-frame/dispatch [::re-graph/query query {} [:search-question-response]]))))
-
 
 ;;;;;;;;    BLOG COMMENTS  SECTION  ;;;;;;;;
 

@@ -112,6 +112,13 @@
                            :description "Access comments from blog entry id."
                            :args        {:post_id {:type (non-null Int)}}
                            :resolve     :load-comments}
+           :search_fullq {:type        (non-null :test)
+                           :description "Search for questions."
+                          :args        {:subjects {:type String}
+                                        :levels   {:type String}
+                                        :lang     {:type String}
+                                        :terms    {:type String}}
+                           :resolve     :search-fullq}
            }
  :mutations {
              :create_question {:type :question

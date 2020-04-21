@@ -124,5 +124,6 @@
    :search_questions (partial search-questions)
    :load-comments (partial load-comments)
    :create-comment (partial create-comment)
+   :search-fullq (partial search-fullq)
    })
 
