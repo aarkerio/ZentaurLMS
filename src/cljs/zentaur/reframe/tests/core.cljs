@@ -8,10 +8,10 @@
             [reagent.dom :as rd]
             [re-frame.core :as re-frame]
             [re-graph.core :as re-graph]
-            [zentaur.reframe.tests.comments :as cviews]    ;; Comments view
+            [zentaur.reframe.tests.comment-views :as cviews]    ;; Comments view
             [zentaur.reframe.tests.events :as myevents]    ;; These two are only required to make the compiler
             [zentaur.reframe.tests.subs :as mysubs]        ;; my subscriptions
-            [zentaur.reframe.tests.views :as zviews])
+            [zentaur.reframe.tests.test-views :as tviews])
   (:require-macros [cljs.core.async.macros :as m :refer [go]])
   (:import [goog History]
            [goog.history EventType]))
@@ -39,10 +39,10 @@
   []
   (when-let [root-app (gdom/getElement "test-root-app")]
     (re-frame/dispatch-sync [:test-load])
-    (rd/render [zviews/test-app] root-app))
+    (rd/render [tviews/test-app] root-app))
   (when-let [search-root-app (gdom/getElement "search-root-app")]
     (re-frame/dispatch-sync [:load-search])
-    (rd/render  [zviews/search-app] search-root-app))
+    (rd/render  [tviews/search-app] search-root-app))
   (when-let [comments-root-app (gdom/getElement "comments-root-app")]
     (re-frame/dispatch-sync [:load-comments])
     (rd/render [cviews/comments-root-app] comments-root-app)))

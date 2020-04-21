@@ -1,4 +1,4 @@
-(ns zentaur.reframe.tests.views
+(ns zentaur.reframe.tests.test-views
   (:require [clojure.string :as str]
             [goog.dom :as gdom]
             [reagent.core  :as r]
@@ -379,41 +379,32 @@
 ;;;;   SEARCH APP   ;;;;;;;;
 
 (defn questions-selector []
-  (let [subject-id  (r/atom "1")
-        level-id    (r/atom "1")
-        lang-id     (r/atom "1")]
+  (let [search-text  (r/atom "")]
     (fn []
       [:div
        [:h2 "Select options"]
-       [:div.div-separator
-        [:label {:for "subject_id"} "Subject:"]
-        [:select.form-control.mr-sm-2 {:name      "subject-id"
-                                       :value     @subject-id
-                                       :on-change #(reset! subject-id (-> % .-target .-value))}
-         (for [row-subject @(rf/subscribe [:subjects])]
-           ^{:key (:id row-subject)} [:option {:value (:id row-subject)} (:subject row-subject)])
-         ]]
-       [:div.div-separator
-        [:label {:for "level_id"} "Level:"]
-        [:select.form-control.mr-sm-2 {:name      "level-id"
-                                       :value     @level-id
-                                       :on-change #(reset! level-id (-> % .-target .-value))}
-         (for [row-level @(rf/subscribe [:levels])]
-           ^{:key (:id row-level)} [:option {:value (:id row-level)} (:level row-level)])
-         ]]
-       [:div.div-separator
-        [:label {:for "lang_id"} "Language:"]
-        [:select.form-control.mr-sm-2 {:name      "lang-id"
-                                       :value     @lang-id
-                                       :on-change #(reset! lang-id (-> % .-target .-value))}
-         (for [row-lang @(rf/subscribe [:langs])]
-           ^{:key (:id row-lang)} [:option {:value (:id row-lang)} (:lang row-lang)])
-         ]]
-       [:div
-        [:input {:class "btn btn-outline-primary-green" :type "button" :value "Search"
-                 :on-click #(rf/dispatch [:search-questions {:subject_id @subject-id
-                                                             :level_id @level-id
-                                                             :lang_id @lang-id}])}]]])))
+       [:div.scheckbox-container
+       [:label {:for "subject_id"} " Select subject:"]
+        (for [row-subject @(rf/subscribe [:subjects])]
+          ^{:key (:id row-subject)} [:div.scheckbox (:subject row-subject) "  "  [:input {:type "checkbox" :title (:subject row-subject)
+                                                                                          :on-change #(rf/dispatch [:add-search-elm {:subject_id (:id row-subject) :type "subject"}])}]])]
+
+       [:div.scheckbox-container
+        [:label {:for "level_id"} " Select level:"]
+        (for [row-level @(rf/subscribe [:levels])]
+          ^{:key (:id row-level)} [:div.scheckbox (:level row-level) "  " [:input {:type "checkbox" :title (:level row-level)
+                                                                              :on-change #(rf/dispatch [:add-search-elm {:level_id (:id row-level) :type "level"}])}]])]
+
+       [:div.scheckbox-container
+        [:label {:for "lang_id"} " Select lang:"]
+        (for [row-lang @(rf/subscribe [:langs])]
+          ^{:key (:id row-lang)} [:div.scheckbox (:lang row-lang) "  " [:input {:type "checkbox" :title (:lang row-lang)
+                                                                                :on-change #(rf/dispatch [:add-search-elm {:lang_id (:id row-lang) :type "lang" }])}]])]
+       [:div "Terms: " [:br]
+        [:input {:type "text" :value @search-text :maxLength 180 :size 100 :on-change #(reset! search-text (-> % .-target .-value))}]
+       [:input.btn {:class "btn btn-outline-primary-green" :type "button" :value "Neue Frage speichern"
+                   :on-click #(rf/dispatch [:search-question {:search-text @search-text}])}]]])))
+
 (defn offered-questions []
   (let [subject-id  (r/atom 1)
         level-id    (r/atom 1)

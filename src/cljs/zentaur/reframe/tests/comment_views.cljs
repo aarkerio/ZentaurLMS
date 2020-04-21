@@ -1,4 +1,4 @@
-(ns zentaur.reframe.tests.comments
+(ns zentaur.reframe.tests.comment-views
   (:require [clojure.string :as str]
             [goog.dom :as gdom]
             [reagent.core  :as r]
@@ -39,7 +39,6 @@
 (defn comments-root-app
   []
   (let [user-id (.-value (gdom/getElement "user-id"))
-        _  (.log js/console (str ">>> user-id >>>>> " user-id " >>> empty " (empty? user-id)  ))
        comments (if (empty? user-id) "" [comment-form user-id])]
     [:div
      [display-comments]

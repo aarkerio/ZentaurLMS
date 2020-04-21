@@ -407,9 +407,7 @@
 
 
 
-
 ;;;;;;;;;;;;;;;;;;;  SEARCH SCREEN QUESTIONS  ;;;;;;;;;;;;;;;;
-
 (re-frame/reg-event-db
  :process-search-response
   []
@@ -434,7 +432,6 @@
   (fn                      ;; <-- the handler function
     [cfx [_ _]]     ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (let [query (gstring/format "{load_search {uurlid title subjects {id subject} levels {id level} langs {id lang}}}")]
-      (.log js/console (str ">>> QUEERY  >>>>> " query ))
       (re-frame/dispatch [::re-graph/query query {} [:process-search-response]]))))
 
 (re-frame/reg-event-db
@@ -445,6 +442,15 @@
     (let [questions     (-> data :search_questions :questions)
           _             (.log js/console (str ">>> questions >>>>> " questions))
           ]
+     (-> db
+         (assoc :questions  questions)))))
+
+(re-frame/reg-event-db
+ :add-search-elm
+  []
+  (fn [db [aa bb]]
+    (.log js/console (str ">>> DATA at add-search-elm  >>>>> aa " aa "  >>>> bb >>>> " bb))
+    (let [questions  (:fo aa)]
      (-> db
          (assoc :questions  questions)))))
 
@@ -465,9 +471,6 @@
 
 
 ;;;;;;;;    BLOG COMMENTS  SECTION  ;;;;;;;;
-
-
-;;;;;;;;;;;;;;;;;;;  SEARCH SCREEN QUESTIONS  ;;;;;;;;;;;;;;;;
 
 (re-frame/reg-event-db
  :load-comments-response
@@ -490,7 +493,6 @@
                                   post-id)]
       (.log js/console (str ">>> QUEERY  >>>>> " query ))
       (re-frame/dispatch [::re-graph/query query {} [:load-comments-response]]))))
-
 
 (re-frame/reg-event-db
  :process-save-blog-comment

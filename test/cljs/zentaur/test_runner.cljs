@@ -9,5 +9,5 @@
   ;; where "app" is the HTML node where you want to mount the tests
   (cljs.test/run-tests
     (cljs-test-display.core/init! "app") ;;<-- initialize cljs-test-display here
-    ;; 'example.foo-test
+    ;; 'zentaur.post-test
     'zentaur.core-test))

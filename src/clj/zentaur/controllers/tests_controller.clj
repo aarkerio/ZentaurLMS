@@ -31,9 +31,9 @@
 (defn search
   "GET /vclass/search. Html response."
   [request]
-  (let [base    (basec/set-vars request)]
+  (let [base (basec/set-vars request)]
     (basec/parser
-     (layout/application (merge base {:title "Search Questions" :contents (tests-view/search base) })))))
+     (layout/application (merge base {:title "Search Questions" :contents (tests-view/search base)})))))
 
 (defn create-test
   "POST /vclass/tests"

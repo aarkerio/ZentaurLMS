@@ -1048,3 +1048,32 @@ table.some-table-class {
     display: flex;
     justify-content: right;
 }
+
+.scheckbox-container {
+    width: 100%;
+    text-align: center;
+    display: flex; /* or inline-flex */
+    flex-direction: row;
+    margin: 3px;
+    padding: 3px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    border: 1px dotted gray;
+}
+
+.scheckbox {
+    width: 10%;
+    text-align: center;
+    margin: 3px;
+    padding: 3px;
+    justify-content: center;
+    border: 1px dotted gray;
+    order: 6;
+    flex-grow: 4;
+    &:hover {
+        opacity:1;
+        transition: 1s ease;
+        background-color: #eaeaea;
+   }
+}
