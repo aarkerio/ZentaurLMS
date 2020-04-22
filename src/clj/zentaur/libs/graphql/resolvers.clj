@@ -106,6 +106,12 @@
         new-comment-2 (assoc new-comment :username (str (:fname new-comment) "_" (:lname new-comment)))]
    (dissoc new-comment-2 :fname :lname)))
 
+(defn- ^:private search-fullq
+  [context args value]
+  (let [new-comment (mt/full-search)
+        new-comment-2 (assoc new-comment :username (str (:fname new-comment) "_" (:lname new-comment)))]
+   (dissoc new-comment-2 :fname :lname)))
+
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."
   []

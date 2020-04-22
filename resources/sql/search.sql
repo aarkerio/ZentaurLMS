@@ -21,3 +21,10 @@ ts_rank_cd(to_tsvector('zentaur_ :lang ', body), to_tsquery('zentaur_es',' :term
 FROM questions AS q, users AS u
 WHERE to_tsquery('zentaur_ :lang ',' :term') @@ to_tsvector('zentaur_ :lang ', q.question)
 AND u.id=q.user_id AND q.status = 1 ORDER BY rank DESC LIMIT 20) AS questions)
+
+
+-- :name search-all-queries :? :*
+-- :doc search through questions table.
+SELECT id, question, subject_id, level_id, lang_id FROM questions WHERE subject_id = :value:subjects.0.id AND level_id = :value:levels.0.id AND lang_id = :value:langs.0.id
+
+

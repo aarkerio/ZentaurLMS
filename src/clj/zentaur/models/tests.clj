@@ -226,7 +226,14 @@
     (assoc {} :uurlid "nope" :title "Foo" :subjects subjects :levels levels :langs langs)))
 
 
-(defn search-questions [args]
+(defn search-questions
+  "Used to build a random test"
+  [args]
+  (let [pre-params  (sh/str-to-int args :subject_id :level_id :lang_id)
+        full-params (assoc pre-params :limit 20)]
+    (db/search-questions full-params)))
+
+(defn full-search [args]
   (let [pre-params  (sh/str-to-int args :subject_id :level_id :lang_id)
         full-params (assoc pre-params :limit 20)]
     (db/search-questions full-params)))

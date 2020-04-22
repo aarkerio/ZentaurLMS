@@ -10,9 +10,11 @@
 (use-fixtures
   :once
   (fn [f]
+     (require '[mount.core :as mount])
     (mount/start #'zentaur.config/env
                  #'zentaur.handler/app-routes
                  #'zentaur.db.core/*db*)
+     (require '[zentaur.db.core :as db])
     (f)))
 
 (def first-user (atom nil))

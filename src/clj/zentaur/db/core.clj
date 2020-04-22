@@ -1,12 +1,11 @@
 (ns zentaur.db.core
-  (:require
-    [cheshire.core :refer [generate-string parse-string]]
-    [clojure.java.jdbc :as jdbc]
-    [clojure.tools.logging :as log]
-    [conman.core :as conman]
-    [java-time :as jt]
-    [mount.core :refer [defstate]]
-    [zentaur.config :refer [env]])
+  (:require [cheshire.core :refer [generate-string parse-string]]
+            [clojure.java.jdbc :as jdbc]
+            [clojure.tools.logging :as log]
+            [conman.core :as conman]
+            [java-time :as jt]
+            [mount.core :refer [defstate]]
+            [zentaur.config :refer [env]])
   (:import org.postgresql.util.PGobject
            java.sql.Array
            clojure.lang.IPersistentMap
@@ -28,8 +27,7 @@
              *db*))
   :stop (conman/disconnect! *db*))
 
-(conman/bind-connection *db* "sql/queries.sql")
-
+(conman/bind-connection *db* "sql/search.sql" "sql/queries.sql")
 
 (extend-protocol jdbc/IResultSetReadColumn  ;; I'm guesing this convert times in json and jsonb types
     java.sql.Timestamp

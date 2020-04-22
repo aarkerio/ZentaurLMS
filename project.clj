@@ -76,6 +76,7 @@
                                           [com.bhauman/figwheel-main "0.2.4" :exclusions [joda-time clj-time]]  ;; Hot Reload cljs
                                           [day8.re-frame/re-frame-10x "0.5.1"]       ;; Debugging re-frame applications.
                                           [factory-time "0.1.2"]                     ;; Factory-bot like library for tests
+                                          [nrepl "0.7.0"]
                                           [prone "2019-07-08"]                       ;; Better exception reporting middleware for Ring.
                                           [ring/ring-devel "1.8.0"]                  ;; Ring dev default options
                                           [ring/ring-mock "0.4.0"]                   ;; Library to create mock Ring requests for unit tests
@@ -85,7 +86,6 @@
                            :repl-options {:init-ns user :timeout 120000}}
              :project/test {:jvm-opts ["-Dconf=test-config.edn" "--illegal-access=warn"]
                             :dependencies [[com.jakemccrary/lein-test-refresh "0.24.1"]
-                                           [nrepl "0.7.0"]
                                            [talltale "0.4.3"]]    ;; fake data for test
                             :resource-paths ["env/test/resources"]
                             :source-paths ["env/test/clj" "test/clj"]
