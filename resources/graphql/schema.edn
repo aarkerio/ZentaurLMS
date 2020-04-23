@@ -113,12 +113,12 @@
                            :args        {:post_id {:type (non-null Int)}}
                            :resolve     :load-comments}
            :search_fullq {:type        (non-null :test)
-                           :description "Search for questions."
+                          :description "Search for questions."
                           :args        {:subjects {:type String}
                                         :levels   {:type String}
-                                        :lang     {:type String}
+                                        :langs    {:type String}
                                         :terms    {:type String}}
-                           :resolve     :search-fullq}
+                          :resolve     :search-fullq}
            }
  :mutations {
              :create_question {:type :question

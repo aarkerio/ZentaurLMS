@@ -403,7 +403,7 @@
                                                                                 :on-change #(rf/dispatch [:add-search-elm {"langs" (:id row-lang)}])}]])]
        [:div "Terms: " [:br]
         [:input {:type "text" :value @search-text :maxLength 180 :size 100 :on-change #(reset! search-text (-> % .-target .-value))}]
-       [:input.btn {:class "btn btn-outline-primary-green" :type "button" :value "Neue Frage speichern"
+       [:input.btn {:class "btn btn-outline-primary-green" :type "button" :value "Search"
                    :on-click #(rf/dispatch [:search-questions {:search-text @search-text}])}]]])))
 
 (defn offered-questions []

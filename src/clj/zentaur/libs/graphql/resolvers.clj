@@ -88,12 +88,10 @@
   [context args value]
   (let [questions    (mt/search-questions args)
         ques-updated (map #(update % :id str) questions)]
-    (log/info (str ">>> questions >>>>> " (prn-str ques-updated)))
-     (assoc {} :uurlid "uurlid" :title "title" :questions ques-updated)))
+    (assoc {} :uurlid "uurlid" :title "title" :questions ques-updated)))
 
 (defn- ^:private load-comments
   [context args value]
-  (log/info (str ">>> load-comments ARGS >>>>> " args))
   (let [comments    (po/get-comments args)
         comments-1  (map #(assoc % :username (str (:fname %) "_" (:lname %))) comments)
         comments-2  (map #(dissoc % :fname :lname) comments-1)]
@@ -108,6 +106,7 @@
 
 (defn- ^:private search-fullq
   [context args value]
+  (log/info (str ">>> ARGSSS search-fullq >>>>> " args))
   (let [new-comment (mt/full-search)
         new-comment-2 (assoc new-comment :username (str (:fname new-comment) "_" (:lname new-comment)))]
    (dissoc new-comment-2 :fname :lname)))

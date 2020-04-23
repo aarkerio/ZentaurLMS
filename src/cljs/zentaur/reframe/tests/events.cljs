@@ -473,7 +473,7 @@
           levels   (str/join " " (get search-terms "levels"))
           langs    (str/join " " (get search-terms "langs"))
           _  (.log js/console (str ">>> SQQQQQ >>>>> " updates " >> " subjects " >>> levels >> " levels "  langs >> " langs))
-          query      (gstring/format "{search_questions(subjects: \"%s\", levels: \"%s\", langs: \"%s\", terms: \"%s\")
+          query      (gstring/format "{search_fullq(subjects: \"%s\", levels: \"%s\", langs: \"%s\", terms: \"%s\")
                                       { uurlid title questions { id question qtype }}}"
                                      subjects levels langs search-text)]
       (.log js/console (str ">>> QUERRRY  >>>>> " query ))
