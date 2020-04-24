@@ -1,8 +1,6 @@
 (ns zentaur.reframe.tests.events
-  (:require [ajax.core :as ajax]
-            [cljs.spec.alpha :as s]
+  (:require [cljs.spec.alpha :as s]
             [clojure.string :as str]
-            [day8.re-frame.http-fx]
             [goog.dom :as gdom]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]

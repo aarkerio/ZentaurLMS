@@ -6,6 +6,7 @@ figwheel_server.log
 pom.xml
 *.jar
 *.class
+.nrepl-history
 /.lein-*
 profiles.clj
 /.env

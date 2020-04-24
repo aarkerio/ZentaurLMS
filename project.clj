@@ -9,12 +9,10 @@
                  [clj-pdf "2.4.0"]                       ;; PDF generation library
                  [clojure.java-time "0.3.2"]             ;; Java 8 Date-Time API for Clojure
                  [crypto-random "1.2.0"]                 ;; generating cryptographically secure random bytes and strings
-                 [com.cognitect/transit-clj "0.8.319"]   ;; Marshalling Transit data to/from Clojure
                  [com.novemberain/pantomime "2.11.0"]    ;; A tiny Clojure library that deals with MIME types
                  [com.walmartlabs/lacinia "0.36.0"]      ;; GraphQL implementation in pure Clojure
                  [conman "0.8.6"]                        ;; Luminus database connection management and SQL query generation library
                  [cprop "0.1.16"]                        ;; where all configuration properties converge
-                 [day8.re-frame/http-fx "v0.2.0"]        ;; A re-frame effects handler for performing Ajax tasks
                  [digest "1.4.9"]                        ;; Message digest library for Clojure.
                  [funcool/struct "1.4.0"]                ;; Structural validation library for Clojure(Script)
                  [hiccup "1.0.5"]                        ;; HTML templates
@@ -27,7 +25,7 @@
                  [metosin/ring-http-response "0.9.1" :exclusions [joda-time]]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.16"]                        ;; Managing Clojure and ClojureScript app state
                  [org.clojure/clojure "1.10.1"]          ;; The sweet core!!
-                 [org.clojure/clojurescript "1.10.597"]
+                 [org.clojure/clojurescript "1.10.741"]
                  [org.clojure/tools.cli "1.0.194"]       ;; parses command line arguments and stuff like that
                  [org.clojure/tools.logging "1.0.0"]     ;; Logs duh!
                  [org.immutant/web "2.1.10" :exclusions [joda-time]] ;; Serve web requests using Ring handlers, Servlets, or Undertow HttpHandlers
@@ -74,7 +72,6 @@
                                           [cider/piggieback "0.4.2"]                 ;; nREPL support for ClojureScript REPLs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
                                           [com.bhauman/figwheel-main "0.2.4" :exclusions [joda-time clj-time]]  ;; Hot Reload cljs
-                                          [day8.re-frame/re-frame-10x "0.5.1"]       ;; Debugging re-frame applications.
                                           [factory-time "0.1.2"]                     ;; Factory-bot like library for tests
                                           [nrepl "0.7.0"]
                                           [prone "2019-07-08"]                       ;; Better exception reporting middleware for Ring.
@@ -82,7 +79,7 @@
                                           [ring/ring-mock "0.4.0"]                   ;; Library to create mock Ring requests for unit tests
                                           ]
                            :source-paths ["env/dev/clj" "target" "env/dev/cljs" "test"]
-                           :resource-paths ["env/dev/resources"]
+                           :resource-paths ["env/dev/resources" "resources"]
                            :repl-options {:init-ns user :timeout 120000}}
              :project/test {:jvm-opts ["-Dconf=test-config.edn" "--illegal-access=warn"]
                             :dependencies [[com.jakemccrary/lein-test-refresh "0.24.1"]
