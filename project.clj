@@ -1,4 +1,4 @@
-(defproject zentaur "0.0.21"
+(defproject zentaur "0.0.26"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
@@ -25,7 +25,7 @@
                  [metosin/ring-http-response "0.9.1" :exclusions [joda-time]]    ;; Handling HTTP Statuses with Clojure(Script)
                  [mount "0.1.16"]                        ;; Managing Clojure and ClojureScript app state
                  [org.clojure/clojure "1.10.1"]          ;; The sweet core!!
-                 [org.clojure/clojurescript "1.10.741"]
+                 [org.clojure/clojurescript "1.10.597"]
                  [org.clojure/tools.cli "1.0.194"]       ;; parses command line arguments and stuff like that
                  [org.clojure/tools.logging "1.0.0"]     ;; Logs duh!
                  [org.immutant/web "2.1.10" :exclusions [joda-time]] ;; Serve web requests using Ring handlers, Servlets, or Undertow HttpHandlers
@@ -40,6 +40,7 @@
   :managed-dependencies [[org.clojure/core.rrb-vector "0.0.13"]]  ;; necessary for JDK 11
   :min-lein-version "2.9.0"    ;; current CIDER needs 2.9 or +
   :source-paths ["src/clj" "src/cljc" "src/cljs"]
+  :resource-paths ["resources"]
   :test-paths ["test/clj"]
   :paths ["src"]
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
@@ -61,7 +62,7 @@
                       :prep-tasks ["javac" "compile"]
                       :aot :all
                       :uberjar-name "zentaur.jar"
-                      :source-paths ["env/prod/clj" "env/prod/cljs"]
+                      :source-paths ["env/prod/clj" "env/prod/cljs" "test/cljs"]
                       :resource-paths ["env/prod/resources"]}
             :dev      [:project/dev :profiles/dev]
             :test     [:project/dev :project/test :profiles/test]
@@ -77,7 +78,7 @@
                                           [ring/ring-devel "1.8.0"]                  ;; Ring dev default options
                                           [ring/ring-mock "0.4.0"]                   ;; Library to create mock Ring requests for unit tests
                                           ]
-                           :source-paths ["env/dev/clj" "env/dev/cljs"]
+                           :source-paths ["env/dev/clj" "env/dev/cljs" "test/cljs"]
                            :resource-paths ["env/dev/resources"]
                            :repl-options {:init-ns user :timeout 120000}}
              :project/test {:jvm-opts ["-Dconf=test-config.edn" "--illegal-access=warn"]

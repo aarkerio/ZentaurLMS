@@ -5,11 +5,12 @@
             [goog.string :as gstr]
             [goog.events :as events]
             [zentaur.uploads :as uploads]
+            [zentaur.reframe.tests.core :as ctests]
             [zentaur.users :as users])
   (:import [goog.events EventType]))
 
 (defn error-handler
-  "Ajax error handler"
+  "Ajax error handler (deprecated)"
   [{:keys [status status-text]}]
   (.log js/console (str "Something bad happened: " status " " status-text)))
 
