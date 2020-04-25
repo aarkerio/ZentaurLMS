@@ -1,5 +1,5 @@
 (ns zentaur.core
-  (:require [ajax.core :refer [GET POST DELETE]]
+  (:require [ajax.core :refer [POST DELETE]]
             [clojure.string :as s]
             [goog.dom :as gdom]
             [goog.string :as gstr]

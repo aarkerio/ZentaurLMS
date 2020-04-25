@@ -39,10 +39,9 @@
                  [ring/ring-defaults "0.3.2" :exclusions [joda-time clj-time]]] ;; Ring middleware defaults: wrap-multipart-params, wrap-cookies, wrap-flash, etc.
   :managed-dependencies [[org.clojure/core.rrb-vector "0.0.13"]]  ;; necessary for JDK 11
   :min-lein-version "2.9.0"    ;; current CIDER needs 2.9 or +
-  :source-paths ["src/clj" "src/cljs" "src/cljc"]
+  :source-paths ["src/clj" "src/cljc" "src/cljs"]
   :test-paths ["test/clj"]
-  :resource-paths ["resources"]
-  :paths ["src" "resources"]
+  :paths ["src"]
   :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main"]
             "fig:dev" ["trampoline" "run" "-m" "figwheel.main" "--" "--build" "dev" "--repl"]
             "fig:deploy" ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]
@@ -78,8 +77,8 @@
                                           [ring/ring-devel "1.8.0"]                  ;; Ring dev default options
                                           [ring/ring-mock "0.4.0"]                   ;; Library to create mock Ring requests for unit tests
                                           ]
-                           :source-paths ["env/dev/clj" "target" "env/dev/cljs" "test"]
-                           :resource-paths ["env/dev/resources" "resources"]
+                           :source-paths ["env/dev/clj" "env/dev/cljs"]
+                           :resource-paths ["env/dev/resources"]
                            :repl-options {:init-ns user :timeout 120000}}
              :project/test {:jvm-opts ["-Dconf=test-config.edn" "--illegal-access=warn"]
                             :dependencies [[com.jakemccrary/lein-test-refresh "0.24.1"]
