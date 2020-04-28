@@ -29,7 +29,9 @@
     (when-let [test-form (.getElementById js/document "new-post-form")]
       (set! (.-onsubmit test-form) validate-new-post))))
 
-(defn ^:export flash-timeout []
+(defn ^:export flash-timeout
+  "Removes Ring middleware flash messages after four seconds"
+  []
   (when-let [flash-msg (gdom/getElement "flash-msg")]
     (js/setTimeout #(set! (.-className %) "goaway") 4000 flash-msg)))
 
