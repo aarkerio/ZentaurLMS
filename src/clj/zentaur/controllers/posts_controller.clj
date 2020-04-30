@@ -99,7 +99,6 @@
       (assoc (response/found (str "/admin/posts/" (:id params))) :flash (basec/map-to-query-string errors))
       (assoc (response/found "/admin/posts/listing/1") :flash basec/msg-erfolg))))
 
-
 (defn admin-new
   "GET /admin/posts/new"
   [request]
