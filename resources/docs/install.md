@@ -1,28 +1,49 @@
+******************************************
+      INSTALL  INSTRUCTIONS
+******************************************
 
+1) As PostgreSQL root user create a new user:
 
-1) Add a PostgreSQL user:
+ $ createuser zentaur --createdb --pwprompt
 
-CREATE DATABASE zentaur_test WITH ENCODING='UTF-8';
-CREATE DATABASE zentaur_dev WITH ENCODING='UTF-8';
-CREATE DATABASE zentaur_production WITH ENCODING='UTF-8';
+2) Add a line in the file /etc/postgresql/12/main/pg_hba.conf
 
-CREATE USER zentaur WITH PASSWORD 'yourpassword';
+local   all             zentaur                 password
 
-GRANT ALL PRIVILEGES ON DATABASE "zentaur_test" to zentaur;
-GRANT ALL PRIVILEGES ON DATABASE "zentaur_dev" to zentaur;
+3) Create the databases:
 
-2) Migrate
+ $ createdb zentaur_dev --encoding=UTF-8 -U zentaur
+ $ createdb zentaur_test --encoding=UTF-8 -U zentaur
 
-$ lein run migrate
+4) Copy and edit:
 
-3) Run:
+ $ cp dev-config.edn.example dev-config.edn
+ $ cp test-config.edn.example test-config.edn
 
-$ lein run
+5) Migrate
 
-4) In other console run figwheel:
+ $ lein with-profile dev run migrate
+
+ $ lein with-profile test run migrate
+
+6) Run the repl:
+
+$ lein with-profile dev repl
+
+7) Seed the DB:
+
+(require '[luminus.seeder :as se])
+(se/main)
+
+8) Run the webserver:
+
+ $ lein with-profile dev run
+
+In other console run figwheel:
 
 $ lein fig:dev
 
-5) Login in the browser.
+8) Login in the browser http://localhost:3000/
 
 admin@example.com/password
+

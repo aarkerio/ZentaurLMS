@@ -43,7 +43,7 @@
         langs    (mt/get-langs)
         test     (mt/create-test! {:title "Some foo test name" :tags "one two" :subject_id 1 :level_id 1 :lang_id 1} 1)
         _        (reset! first-test test)]
-    (for [n (range 50)]
+    (for [n (range 20)]
         (for [subject subjects
               level   levels
               lang    langs]
