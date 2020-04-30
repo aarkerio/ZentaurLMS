@@ -250,7 +250,7 @@ DELETE FROM answers WHERE question_id = :question_id AND id = :answer_id RETURNI
 -- :doc set test as archived
 UPDATE tests SET archived = true WHERE uurlid = :uurlid RETURNING TRUE
 
-/***** REORDER QUESTIONS STARTS ******/
+/***** REORDER QUESTIONS SECTION STARTS ******/
 
 -- :name question-order-up :? :*
 -- :doc get two records
