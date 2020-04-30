@@ -32,6 +32,14 @@
   []
   (db/get-langs))
 
+(defn gral-data
+  "Data for populates the test form"
+  []
+  (let [subjects (db/get-subjects)
+        levels   (db/get-levels)
+        langs    (db/get-langs)]
+    (assoc {} :subjects subjects :levels levels :langs langs)))
+
 ;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
   (let [uurlid      (sh/gen-uuid)
@@ -218,7 +226,14 @@
     (assoc {} :uurlid "nope" :title "Foo" :subjects subjects :levels levels :langs langs)))
 
 
-(defn search-questions [args]
+(defn search-questions
+  "Used to build a random test"
+  [args]
+  (let [pre-params  (sh/str-to-int args :subject_id :level_id :lang_id)
+        full-params (assoc pre-params :limit 20)]
+    (db/search-questions full-params)))
+
+(defn full-search [args]
   (let [pre-params  (sh/str-to-int args :subject_id :level_id :lang_id)
         full-params (assoc pre-params :limit 20)]
     (db/search-questions full-params)))

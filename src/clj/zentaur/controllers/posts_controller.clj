@@ -20,8 +20,8 @@
     (basec/parser
      (layout/application (merge base {:title "Welcome" :contents (posts-view/index csrf-field subjects levels langs identity)})))))
 
-(defn list
-  "GET  /posts/list/:page"
+(defn listing
+  "GET  /posts/listing/:page"
   [request]
   (let [base           (basec/set-vars request)
         items-per-page 5 ;; model and view need this
@@ -29,19 +29,7 @@
         page           (if (every? #(Character/isDigit %) pre-page) (Integer/parseInt pre-page) 1)
         posts          (model-post/get-posts page items-per-page)]
     (basec/parser
-     (layout/application (merge base {:title "List of Posts" :contents (posts-view/list posts page)})))))
-
-(defn save-comment
-  "POST /post/savecomment"
-  [request]
-  (let [body-params (:body-params request)
-        identity    (:identity request)
-        comment     (:comment body-params)
-        post_id     (Integer/parseInt (:post_id body-params))
-        user_id     (:id identity)]
-    (model-post/save-comment!
-     (assoc {} :post_id post_id :comment comment :user_id user_id))
-    (basec/json-parser {:comment comment :last_name (:last_name identity)})))
+     (layout/application (merge base {:title "List of Posts" :contents (posts-view/listing posts page)})))))
 
 (defn show
   "GET /posts/show/:id"
@@ -49,16 +37,15 @@
   (let [base     (basec/set-vars request)
         pre-id   (-> request :path-params :id)
         id       (Integer/parseInt pre-id)
-        post     (model-post/get-post id)
-        comments (model-post/get-comments id)]
+        post     (model-post/get-post id)]
     (basec/parser
-     (layout/application (merge base { :contents (posts-view/show post base comments) })))))
+     (layout/application (merge base { :contents (posts-view/show post base) })))))
 
 (defn toggle-published
   "GET '/admin/posts/publish/:id/:published'"
   [{:keys [path-params]}]
   (model-post/toggle path-params)
-  (assoc (response/found "/admin/posts/list/1") :flash basec/msg-erfolg ))
+  (assoc (response/found "/admin/posts/listing/1") :flash basec/msg-erfolg ))
 
 (defn search
   "POST /search"
@@ -73,16 +60,16 @@
 ;;;;;;;;;;;;;;;;     ADMIN SECTION      ;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn admin-posts
-  "GET /admin/posts/list/:page"
+  "GET /admin/posts/listing/:page"
   [request]
   (let [base           (basec/set-vars request)
         user-id        (-> request :identity :id)
         pre-page       (-> request :path-params :page)
         page           (if (every? #(Character/isDigit %) pre-page) (Integer/parseInt pre-page) 1)
-        items-per-page 3 ;; model and view need this
+        items-per-page 10 ;; model and view need this
         posts          (model-post/admin-get-posts user-id page items-per-page)]
     (if (empty? posts)
-      (assoc (response/found "/admin/posts/list/1") :flash basec/msg-fehler)
+      (assoc (response/found "/admin/posts/listing/1") :flash basec/msg-fehler)
       (basec/parser (layout/application
                      (merge base {:title "Admin Posts" :contents (admin-posts-view/index posts page items-per-page)}))))))
 
@@ -92,7 +79,7 @@
   (let [errors (model-post/save-post! (dissoc params :__anti-forgery-token :button-save))]
     (if (contains? errors :flash)
       (assoc (response/found "/admin/posts/new") :flash (basec/map-to-query-string errors))
-      (assoc (response/found "/admin/posts/list/1") :flash basec/msg-erfolg))))
+      (assoc (response/found "/admin/posts/listing/1") :flash basec/msg-erfolg))))
 
 (defn show-post
   "GET. /admin/posts/:id"
@@ -110,8 +97,7 @@
   (let [errors (model-post/update-post! (dissoc params :__anti-forgery-token :button-save))]
     (if (contains? errors :flash)
       (assoc (response/found (str "/admin/posts/" (:id params))) :flash (basec/map-to-query-string errors))
-      (assoc (response/found "/admin/posts/list/1") :flash basec/msg-erfolg))))
-
+      (assoc (response/found "/admin/posts/listing/1") :flash basec/msg-erfolg))))
 
 (defn admin-new
   "GET /admin/posts/new"
@@ -125,4 +111,4 @@
   [params]
   (let [id (params :id)]
     (model-post/destroy id)
-    (assoc (response/found "/admin/posts/list/1") :flash basec/msg-erfolg)))
+    (assoc (response/found "/admin/posts/listing/1") :flash basec/msg-erfolg)))

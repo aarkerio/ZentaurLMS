@@ -1,22 +1,17 @@
 (ns zentaur.core
-  (:require [ajax.core :refer [GET POST DELETE]]
-            [cljs.loader :as loader]
+  (:require [ajax.core :refer [POST DELETE]]
             [clojure.string :as s]
             [goog.dom :as gdom]
             [goog.string :as gstr]
             [goog.events :as events]
-            [goog.style :as style]
-            [zentaur.posts :as posts]
             [zentaur.uploads :as uploads]
-            [zentaur.users :as users]
-            [zentaur.reframe.tests.core :as ctests])
+            [zentaur.reframe.tests.core :as ctests]
+            [zentaur.users :as users])
   (:import [goog.events EventType]))
 
-;;  Ajax handlers
-(defn handler [response]
-  (.log js/console (str response)))
-
-(defn error-handler [{:keys [status status-text]}]
+(defn error-handler
+  "Ajax error handler (deprecated)"
+  [{:keys [status status-text]}]
   (.log js/console (str "Something bad happened: " status " " status-text)))
 
 (defn ^:export validate-new-post []
@@ -34,7 +29,9 @@
     (when-let [test-form (.getElementById js/document "new-post-form")]
       (set! (.-onsubmit test-form) validate-new-post))))
 
-(defn ^:export flash-timeout []
+(defn ^:export flash-timeout
+  "Removes Ring middleware flash messages after four seconds"
+  []
   (when-let [flash-msg (gdom/getElement "flash-msg")]
     (js/setTimeout #(set! (.-className %) "goaway") 4000 flash-msg)))
 
@@ -141,7 +138,7 @@
 
 (defn refresh-csrf []
   (when-let [csrf-field (gdom/getElement "__anti-forgery-token")]
-    (.log js/console (str ">>> !!!! VALUE csrf-field >>>>> " csrf-field ))
+    (.log js/console (str ">>> !!!! VALU   E csrf-field >>>>> " csrf-field ))
     (js/setTimeout (do (ask-csrf csrf-field)) 6000000)))
 
 (defn ^:export init []
@@ -152,7 +149,6 @@
     (cond
       (s/includes? current_url "admin/users")     (users/load-users)
       (s/includes? current_url "uploads/process") (uploads/mount)
-      (s/includes? current_url "admin/posts")     (posts/load-posts)
       (s/includes? current_url "/posts/view/")    (validate-comment-form)
       (= current_url "/admin/posts/new")          (new-post-validation)
       (= current_url "/vclass/tests")             (load-tests)

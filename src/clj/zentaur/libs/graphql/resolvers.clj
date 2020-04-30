@@ -4,6 +4,7 @@
             [clojure.tools.logging :as log]
             [com.walmartlabs.lacinia.resolve :refer [resolve-as]]
             [zentaur.db.core :as db]
+            [zentaur.models.posts :as po]
             [zentaur.models.tests :as mt]))
 
 (defn- ^:private id-to-string
@@ -87,8 +88,28 @@
   [context args value]
   (let [questions    (mt/search-questions args)
         ques-updated (map #(update % :id str) questions)]
-    (log/info (str ">>> questions >>>>> " (prn-str ques-updated)))
-     (assoc {} :uurlid "uurlid" :title "title" :questions ques-updated)))
+    (assoc {} :uurlid "uurlid" :title "title" :questions ques-updated)))
+
+(defn- ^:private load-comments
+  [context args value]
+  (let [comments    (po/get-comments args)
+        comments-1  (map #(assoc % :username (str (:fname %) "_" (:lname %))) comments)
+        comments-2  (map #(dissoc % :fname :lname) comments-1)]
+    (log/info (str ">>> comments-2 >>>>> " (prn-str comments-2) " comment ORIGINAL >> " (prn-str comments) ))
+    (assoc {} :comments comments-2)))
+
+(defn- ^:private create-comment
+  [context args value]
+  (let [new-comment (po/create-comment args)
+        new-comment-2 (assoc new-comment :username (str (:fname new-comment) "_" (:lname new-comment)))]
+   (dissoc new-comment-2 :fname :lname)))
+
+(defn- ^:private search-fullq
+  [context args value]
+  (log/info (str ">>> ARGSSS search-fullq >>>>> " args))
+  (let [new-comment (mt/full-search)
+        new-comment-2 (assoc new-comment :username (str (:fname new-comment) "_" (:lname new-comment)))]
+   (dissoc new-comment-2 :fname :lname)))
 
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."
@@ -106,5 +127,8 @@
    :delete-answer (partial delete-answer)
    :load_search (partial load-search)
    :search_questions (partial search-questions)
+   :load-comments (partial load-comments)
+   :create-comment (partial create-comment)
+   :search-fullq (partial search-fullq)
    })
 

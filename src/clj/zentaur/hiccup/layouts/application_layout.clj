@@ -36,7 +36,7 @@
                                     [:li navclass [:a {:href "/vclass/files/false" :class "nav-link"} "My Files"]]
                                     [:li navclass [:a {:href "/vclass/search" :class "nav-link"} "Search for questions"]]
                                     [:li navclass (str "Hallo " email "!")]
-                                    [:li navclass [:a {:href "/admin/posts/list/1" :class "nav-link"} "Blogeinträge"]]
+                                    [:li navclass [:a {:href "/admin/posts/listing/1" :class "nav-link"} "Blogeinträge"]]
                                     [:li navclass [:a {:href "/vclass/uploads" :class "nav-link"} "Test Factory"]]
                                     [:li navclass [:a {:href "/admin/users/true" :class "nav-link"} "Benutzer"]]
                                     [:li navclass [:a {:href "/logout" :class "nav-link"} "Logout"]])
@@ -54,7 +54,7 @@
              (helpers/top-links)]
             [:nav {:class "navbar navbar-expand-lg navbar-light bg-light"}   ;; Navigation bar starts
              [:a {:class "navbar-brand" :href "/"} "Home"]
-             [:a {:class "navbar-brand" :href "/posts/list/1"} "Blog"]
+             [:a {:class "navbar-brand" :href "/posts/listing/1"} "Blog"]
              [:button {:class "navbar-toggler navbar-toggler-right" :type "button" :data-toggle "collapse" :data-target "#navbarSupportedContent"
                        :aria-controls "navbarSupportedContent" :aria-expanded "false" :aria-label "Toggle navigation"}
               [:span {:class "navbar-toggler-icon"}]]

@@ -10,9 +10,11 @@
 (use-fixtures
   :once
   (fn [f]
+     (require '[mount.core :as mount])
     (mount/start #'zentaur.config/env
                  #'zentaur.handler/app-routes
                  #'zentaur.db.core/*db*)
+     (require '[zentaur.db.core :as db])
     (f)))
 
 (def first-user (atom nil))
@@ -30,7 +32,7 @@
 (deftest ^:business-logic create-test
   (testing "Creates a new test"
     (let [user-id (:id @first-user)
-          params  {:title "Test title" :hint "Some hint" :tags "tags" :user_id user-id :subject_id 3 :level_id 1}
+          params  {:title "Test title" :hint "Some hint" :tags "tags" :user_id user-id :subject_id 3 :level_id 1 :lang_id 1}
           test    (mt/create-test! params user-id)]
       (reset! first-test test)
       (is (not (nil? (:id @first-test)))))))
@@ -39,7 +41,7 @@
   (testing "Creates a new question"
     (let [test    (mt/get-tests (:id @first-test))
           uurlid  (:uurlid @first-test)
-          params  {:question "Some cool Question" :explanation "Explanation" :active true :points 2 :hint "Some hint" :qtype 2 :user_id 1 :uurlid uurlid :subject_id 3 :level_id 1}
+          params  {:question "Some cool Question" :explanation "Explanation" :active true :points 2 :hint "Some hint" :qtype 2 :user_id 1 :uurlid uurlid :subject_id 3 :level_id 1 :lang_id 1}
           question  (mt/create-question! params)]
       (reset! first-question question)
       (log/info (str ">>> @first-question >>>>> " @first-question))
@@ -60,4 +62,4 @@
       (is (not (nil? (:ordnen answer))))
       (is (= (:answer answer) "Some not so cool answer")))))
 
-
+(run-tests)

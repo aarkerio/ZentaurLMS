@@ -79,7 +79,19 @@
                                :answer      {:type (non-null String)}
                                :question_id {:type (non-null Int)}
                                :ordnen      {:type Int}
-                               :correct     {:type Boolean}}}}
+                               :correct     {:type Boolean}}}
+           :comments {
+                      :description "Comments collection schema."
+                      :fields {
+                               :comments    {:type (list :comment)}
+                               }}
+           :comment {
+                     :description "Comment type."
+                     :fields {:id            {:type Int}
+                              :comment       {:type (non-null String)}
+                              :created_at    {:type String}
+                              :username      {:type String}}}
+           }
  :queries {
            :test_by_uurlid {:type        (non-null :test)
                             :description "Access a test by its unique id, if it exists."
@@ -96,6 +108,17 @@
                                             :level_id   {:type (non-null ID)}
                                             :lang_id    {:type (non-null ID)}}
                               :resolve     :search_questions}
+           :load_comments {:type        (non-null :comments)
+                           :description "Access comments from blog entry id."
+                           :args        {:post_id {:type (non-null Int)}}
+                           :resolve     :load-comments}
+           :search_fullq {:type        (non-null :test)
+                          :description "Search for questions."
+                          :args        {:subjects {:type String}
+                                        :levels   {:type String}
+                                        :langs    {:type String}
+                                        :terms    {:type String}}
+                          :resolve     :search-fullq}
            }
  :mutations {
              :create_question {:type :question
@@ -174,5 +197,11 @@
                              :args {:answer_id    {:type (non-null Int)}
                                     :question_id  {:type (non-null Int)}}
                              :resolve :delete-answer}
+             :create_comment {:type :comment
+                              :description "Create new comment."
+                              :args {:post_id     {:type (non-null Int)}
+                                     :comment     {:type (non-null String)}
+                                     :user_id     {:type (non-null Int)}}
+                               :resolve :create-comment}
              }
  }

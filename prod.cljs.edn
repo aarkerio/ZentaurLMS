@@ -1,5 +1,5 @@
 ;; prod.cljs.edn
-{:main zentaur.app
+{
  :optimizations :advanced
  :pretty-print false
  :source-paths ["src/cljs" "env/prod/cljs"]
