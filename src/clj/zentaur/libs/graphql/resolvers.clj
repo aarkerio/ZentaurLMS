@@ -12,7 +12,7 @@
   (update my-map :id str))
 
 (defn create-test! [params user-id]
-  (let [full-params (assoc params :user-id user-id)]
+  (let [full-params  (assoc params :user-id user-id)]
     (mt/create-test! full-params user-id)))
 
 (defn- ^:private test-by-uurlid
@@ -64,14 +64,11 @@
 
 (defn- ^:private update-answer
   [context args value]
-  (log/info (str ">>> update-answer data ARGS >>>>> " args))
   (let [updated-answer (mt/update-answer! args)]
-    (log/info (str ">>> updated-answer AFTER update>>>>> " updated-answer))
     (update updated-answer :id str)))
 
 (defn- ^:private delete-question
   [context args value]
-  (log/info (str ">>> delete-question data ARGS >>>>> " args))
   (let [deleted-question (mt/remove-question args)]
     {:id (str (:question_id args))}))
 
@@ -95,7 +92,6 @@
   (let [comments    (po/get-comments args)
         comments-1  (map #(assoc % :username (str (:fname %) "_" (:lname %))) comments)
         comments-2  (map #(dissoc % :fname :lname) comments-1)]
-    (log/info (str ">>> comments-2 >>>>> " (prn-str comments-2) " comment ORIGINAL >> " (prn-str comments) ))
     (assoc {} :comments comments-2)))
 
 (defn- ^:private create-comment

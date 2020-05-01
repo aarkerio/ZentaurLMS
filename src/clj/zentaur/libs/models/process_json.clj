@@ -19,17 +19,13 @@
     (+ 5 6)))
 
 (defn- insert-answers [answers question-id]
-  (log/info (str ">>> 888888 INSERT ANSWERSSS > >>>>> " answers))
   (doseq [answer answers]
-    (log/info (str ">>> 999999 INSERT ANSWER > >>>>> " answer))
     (db/create-answer! (assoc (update answer :correct #(if (= % "true") true false)) :question-id question-id))))
 
 (defn insert-questions [questions {id :id}]
   (doseq [question questions]
-         (log/info (str ">>>  555555 pre-save > >>>>> " question))
          (let [_             (db/create-question! question)
                last-question (shar/get-last-id "questions")
-               _             (log/info  (str ">>> question  last-question-id >>>>> " (pr-str last-question)))
                question-id   (:id last-question)
                answers (:answers question)]
            (log/info (str ">>> ###  6666666   question-id  QQQQQ > >>>>> " question-id))
