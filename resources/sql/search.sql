@@ -12,16 +12,10 @@
     :raw = passthrough an untouched result (default)
 ***/
 
--- :name search-all :? :*
+-- :name search-english-questions :? :*
 -- :doc search through several tables.
-SELECT id, user_id, title, ts_headline('zentaur_"lang"', body, to_tsquery('zentaur_ :lang ','" :term "')) AS headline,
-rank, username FROM (
-SELECT DISTINCT "u"."username","q"."id","q"."user_id","q"."question", "q"."question",
-ts_rank_cd(to_tsvector('zentaur_ :lang ', body), to_tsquery('zentaur_es',' :term ')) AS rank
-FROM questions AS q, users AS u
-WHERE to_tsquery('zentaur_ :lang ',' :term') @@ to_tsvector('zentaur_ :lang ', q.question)
-AND u.id=q.user_id AND q.status = 1 ORDER BY rank DESC LIMIT 20) AS questions)
-
+SELECT id, question, hint FROM
+(SELECT id, question, hint, ts_rank(tsv_en, q) AS rank, q FROM questions, plainto_tsquery('lacinia morbi') AS q WHERE tsv_en @@ q ORDER BY rank DESC LIMIT 5) p ORDER BY rank DESC
 
 -- :name search-all-queries :? :*
 -- :doc search through questions table.
