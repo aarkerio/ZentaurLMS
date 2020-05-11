@@ -14,11 +14,27 @@
 
 -- :name search-english-questions :? :*
 -- :doc search through several tables.
-SELECT id, question, hint FROM
-(SELECT id, question, hint, ts_rank(tsv_en, q) AS rank, q FROM questions, plainto_tsquery('lacinia morbi') AS q WHERE tsv_en @@ q ORDER BY rank DESC LIMIT 5) p ORDER BY rank DESC
+SELECT id, question, hint, subject_id, lang_id, level_id FROM
+    (SELECT id, question, hint, subject_id, lang_id, level_id, ts_rank(tsv_en, q) AS rank, q FROM questions, plainto_tsquery('lacinia morbi') AS q
+    WHERE tsv_en @@ q
+    AND subject_id =  ANY (ARRAY[1, 2, 10, 14])
+    AND lang_id =  ANY (ARRAY[1, 2])
+    AND level_id =  ANY (ARRAY[1, 7, 9])
+    ORDER BY rank DESC LIMIT :limit)
+p ORDER BY rank DESC;
 
--- :name search-all-queries :? :*
--- :doc search through questions table.
-SELECT id, question, subject_id, level_id, lang_id FROM questions WHERE subject_id = :value:subjects.0.id AND level_id = :value:levels.0.id AND lang_id = :value:langs.0.id
+-- :name search-langs-questions :? :*
+-- :doc search through several tables.
+SELECT id, question, hint, subject_id, lang_id, level_id FROM
+    (SELECT id, question, hint, subject_id, lang_id, level_id, ts_rank(tsv_en, q) AS rank, q FROM questions, plainto_tsquery(:terms) AS q
+    WHERE tsv_en @@ q
+/*~
+(str "AND subject_id =  ANY (ARRAY[" (clojure.string/join ", " (:subjects params)) "])"
+     "AND level_id   =  ANY (ARRAY[" (clojure.string/join ", " (:levels   params)) "])"
+     "AND lang_id    =  ANY (ARRAY[" (clojure.string/join ", " (:langs    params)) "])")
+~*/
+ORDER BY rank DESC LIMIT 5)
+p ORDER BY rank DESC;
+
 
 
