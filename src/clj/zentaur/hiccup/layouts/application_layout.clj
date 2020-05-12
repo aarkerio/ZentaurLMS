@@ -37,6 +37,7 @@
                                     [:li navclass [:a {:href "/vclass/search" :class "nav-link"} "Search for questions"]]
                                     [:li navclass (str "Hallo " email "!")]
                                     [:li navclass [:a {:href "/admin/posts/listing/1" :class "nav-link"} "Blogeinträge"]]
+                                    [:li navclass [:a {:href "/admin/quotes" :class "nav-link"} "Berühmte Zitate"]]
                                     [:li navclass [:a {:href "/vclass/uploads" :class "nav-link"} "Test Factory"]]
                                     [:li navclass [:a {:href "/admin/users/true" :class "nav-link"} "Benutzer"]]
                                     [:li navclass [:a {:href "/logout" :class "nav-link"} "Logout"]])

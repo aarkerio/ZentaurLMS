@@ -352,6 +352,12 @@ TRUNCATE pages, composite_answers, roles, users, posts, question_tests, tests, u
 -- :doc retrieve a random quote.
 SELECT * FROM	quotes OFFSET floor(random() * (SELECT COUNT(*)	FROM quotes)) LIMIT 1
 
+-- :name get-quotes :? :*
+-- :doc retrieve array quotes.
+SELECT q.id, q.author, q.quote, (SELECT COUNT(*) FROM quotes) AS total
+FROM quotes AS q
+ORDER BY q.id DESC OFFSET :offset LIMIT :limit
+
 /********  VCLASSROOMS ***/
 
 -- :name get-vclassrooms :? :*
