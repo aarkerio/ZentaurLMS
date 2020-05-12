@@ -6,5 +6,5 @@
   []
   [:div
    [:h1 "Famous quotes"]
-   [:div {:id "quotes-root"}]])
+   [:div#quotes-root-app]])
 

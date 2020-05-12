@@ -61,6 +61,7 @@
    :subjects      (vector)
    :levels        (vector)
    :comments      (vector)
+   :quotes        (vector)
    :selquestions  (sorted-map)  ;; selected questions
    :search-terms  (sorted-map "levels" nil "subjects" nil "langs" nil)  ;; selected langs subjects and levels
    })

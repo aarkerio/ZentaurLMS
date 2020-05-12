@@ -20,7 +20,7 @@
 
 ;; We now create the interceptor chain shared by all event handlers which manipulate todos.
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
-(def todo-interceptors [check-spec-interceptor])
+(def test-interceptors [check-spec-interceptor])
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
@@ -54,22 +54,20 @@
 
 (def trim-event
   (re-frame.core/->interceptor
-    :id      :trim-event
-    :before  (fn [context]
-               (.log js/console (str ">>> CTX >>>>> " context ))
-               (let [trim-fn (fn [event] (-> event rest vec))]
-                 (update-in context [:coeffects :event] trim-fn)))))
+   :id      :trim-event
+   :before  (fn [context]
+              (let [trim-fn (fn [event] (-> event rest vec))]
+                (update-in context [:coeffects :event] trim-fn)))))
 
 (defn vector-to-ordered-idxmap
-  "Convert vector od maps to an indexed map"
+  "Convert vector of maps to an indexed map, exposing the makes the re-frame CRUD easier"
   [rows]
   (let [indexed (reduce #(assoc %1 (keyword (:id %2)) %2) {} rows)]
      (into (sorted-map-by (fn [key1 key2]
                             (compare
                              (get-in indexed [key1 :ordnen])
                              (get-in indexed [key2 :ordnen]))))
-      indexed)
-    ))
+      indexed)))
 
 (def reorder-questions
   (re-frame/->interceptor

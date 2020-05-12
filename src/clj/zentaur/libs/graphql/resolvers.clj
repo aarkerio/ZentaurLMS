@@ -4,7 +4,8 @@
             [clojure.tools.logging :as log]
             [com.walmartlabs.lacinia.resolve :refer [resolve-as]]
             [zentaur.db.core :as db]
-            [zentaur.models.posts :as po]
+            [zentaur.models.posts :as mp]
+            [zentaur.models.quotes :as mq]
             [zentaur.models.tests :as mt]))
 
 (defn- ^:private id-to-string
@@ -96,7 +97,7 @@
 
 (defn- ^:private create-comment
   [context args value]
-  (let [new-comment (po/create-comment args)
+  (let [new-comment (mp/create-comment args)
         new-comment-2 (assoc new-comment :username (str (:fname new-comment) "_" (:lname new-comment)))]
    (dissoc new-comment-2 :fname :lname)))
 
@@ -106,6 +107,11 @@
   (let [new-comment (mt/full-search)
         new-comment-2 (assoc new-comment :username (str (:fname new-comment) "_" (:lname new-comment)))]
    (dissoc new-comment-2 :fname :lname)))
+
+(defn- ^:private load-quotes
+  [context args value]
+  (let [quotes  (mq/get-quotes)]
+    (assoc {} :quotes quotes)))
 
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."
@@ -126,5 +132,6 @@
    :load-comments (partial load-comments)
    :create-comment (partial create-comment)
    :search-fullq (partial search-fullq)
+   :load-quotes (partial load-quotes)
    })
 
