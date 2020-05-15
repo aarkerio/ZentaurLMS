@@ -67,10 +67,10 @@
       (re-frame/dispatch [::re-graph/mutate mutation {} [:process-create-quote]]))))
 
 (re-frame/reg-event-db
- :process-after-update-answer
+ :process-after-update-quote
  []
  (fn [db [_ response]]
-   (let [answer           (-> response :data :update_answer)
+   (let [answer           (-> response :data :update_quote)
          answer-keyword   (keyword (:id answer))
          question-keyword (keyword (str (:question_id answer)))]
        (-> db
@@ -81,8 +81,8 @@
   :update-quote
   (fn
     [cofx [_ updates]]
-    (let [{:keys [answer correct answer_id]} updates
-          mutation  (gstring/format "mutation { update_answer( answer: \"%s\", correct: %s, id: %i)
+    (let [{:keys [id quote author]} updates
+          mutation  (gstring/format "mutation { update_quote( quote: %s, author: %s, id: %i)
                                     { id answer correct question_id }}"
                                   answer correct answer_id)]
        (.log js/console (str ">>> MUTATION UPDATE ANSWER >>>>> " mutation ))

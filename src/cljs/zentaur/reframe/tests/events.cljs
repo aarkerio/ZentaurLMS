@@ -299,7 +299,7 @@
                           [:process-after-update-fulfill]]))))
 
 (re-frame/reg-event-db
- :process-after-update-quote
+ :process-after-update-answer
  []
  (fn [db [_ response]]
    (let [answer           (-> response :data :update_quote)
@@ -310,10 +310,10 @@
           (update :loading? not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
-  :update-quote             ;; <-- the event id
+  :update-answer             ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ updates]]        ;; <-- 1st argument is coeffect, from which we extract db
-    (let [{:keys [id quote author]} updates
+    (let [{:keys [answer_id answer correct]} updates
           mutation  (gstring/format "mutation { update_answer( answer: \"%s\", correct: %s, id: %i)
                                     { id answer correct question_id }}"
                                   answer correct answer_id)]
@@ -321,7 +321,7 @@
        (re-frame/dispatch [::re-graph/mutate
                            mutation                                  ;; graphql query
                            {:some "Pumas campeón prros!! variable"}   ;; arguments map
-                           [:process-after-update-quote]]))))
+                           [:process-after-update-answer]]))))
 
 (re-frame/reg-event-db
  :process-after-update-test
