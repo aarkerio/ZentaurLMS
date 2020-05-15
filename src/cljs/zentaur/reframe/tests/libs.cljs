@@ -44,3 +44,13 @@
 
 (defn sanitize [string]
   (clojure.string/escape string {\< "&lt;", \> "&gt;", \& "&amp;", \( "&#40;", \) "&#41;", \" "&quot;"}))
+
+(defn vector-to-ordered-idxmap
+  "Convert vector of maps to an indexed map, exposing the makes the re-frame CRUD easier"
+  [rows]
+  (let [indexed (reduce #(assoc %1 (keyword (:id %2)) %2) {} rows)]
+     (into (sorted-map-by (fn [key1 key2]
+                            (compare
+                             (get-in indexed [key1 :ordnen])
+                             (get-in indexed [key2 :ordnen]))))
+      indexed)))

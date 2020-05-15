@@ -37,4 +37,26 @@ ORDER BY rank DESC LIMIT 5)
 p ORDER BY rank DESC;
 
 
+/******* QUOTES ****/
 
+-- :name get-one-random-quote :? :1
+-- :doc retrieve a random quote.
+SELECT * FROM	quotes OFFSET floor(random() * (SELECT COUNT(*)	FROM quotes)) LIMIT 1
+
+-- :name get-quotes :? :*
+-- :doc retrieve array quotes.
+SELECT q.id, q.author, q.quote, (SELECT COUNT(*) FROM quotes) AS total
+FROM quotes AS q
+ORDER BY q.id DESC OFFSET :offset LIMIT :limit
+
+-- :name create-quote :<! :1
+-- :doc creates a new quote record
+INSERT INTO quotes (author, quote) VALUES (:author, :quote) RETURNING *
+
+-- :name update-quote :<! :1
+-- :doc update an existing quote record
+UPDATE quotes SET quote = :quote, author = :author WHERE id = :id RETURNING *
+
+-- :name delete-quote :<! :1
+-- :doc delete a user given the id
+DELETE FROM quotes WHERE id = :id RETURNING TRUE

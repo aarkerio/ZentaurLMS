@@ -216,6 +216,21 @@
                               :args {:post_id     {:type (non-null Int)}
                                      :comment     {:type (non-null String)}
                                      :user_id     {:type (non-null Int)}}
-                               :resolve :create-comment}
+                              :resolve :create-comment}
+             :create_quote {:type :quote
+                            :description "Create a new quote."
+                            :args {:quote    {:type (non-null String)}
+                                   :author   {:type (non-null String)}}
+                            :resolve :create-quote}
+             :update_quote {:type :quote
+                            :description "Update a quote."
+                            :args {:quote       {:type (non-null String)}
+                                    :author      {:type (non-null String)}
+                                    :id           {:type (non-null Int)}}
+                            :resolve :update-quote}
+             :delete_quote {:type :quote
+                            :description "Remove quote."
+                            :args {:id    {:type (non-null Int)}}
+                            :resolve :delete-quote}
              }
  }

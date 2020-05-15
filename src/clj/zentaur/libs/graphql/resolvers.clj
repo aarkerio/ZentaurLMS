@@ -111,8 +111,26 @@
 (defn- ^:private load-quotes
   [context args value]
   (let [quotes  (mq/get-quotes)]
-    (log/info (str ">>> QUOTES >>>>> " quotes))
+    ;; (log/info (str ">>> QUOTES >>>>> " quotes))
     (assoc {} :quotes quotes)))
+
+(defn- ^:private create-quote
+  [context args value]
+  (let [new-quote (mq/create-quote args)]
+    (log/info (str ">>> PARAMS NEW QUOTE **** >>>>> " new-quote))
+    new-quote))
+
+(defn- ^:private update-quote
+  [context args value]
+  (log/info (str ">>>  UPDATE QUOTE ARGS **** >>>>> " args))
+  (let [updated-quote (mq/update-quote args)]
+    (log/info (str ">>>  UQ  update-quote **** >>>>> " (prn-str updated-quote) ))
+    updated-quote))
+
+(defn- ^:private delete-quote
+  [context args value]
+  (let [updated-quote (mq/delete-quote args)]
+    updated-quote))
 
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."
@@ -134,5 +152,8 @@
    :create-comment (partial create-comment)
    :search-fullq (partial search-fullq)
    :load-quotes (partial load-quotes)
+   :create-quote (partial create-quote)
+   :update-quote (partial update-quote)
+   :delete-quote (partial delete-quote)
    })
 

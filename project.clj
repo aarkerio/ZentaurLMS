@@ -8,6 +8,7 @@
                  [cljs-http "0.1.46"]                    ;; cljs-http returns core.async channels
                  [clj-pdf "2.4.0"]                       ;; PDF generation library
                  [clojure.java-time "0.3.2"]             ;; Java 8 Date-Time API for Clojure
+                 [com.rpl/specter "1.1.3"]               ;; Clojure(Script)'s missing piece
                  [crypto-random "1.2.0"]                 ;; generating cryptographically secure random bytes and strings
                  [com.novemberain/pantomime "2.11.0"]    ;; A tiny Clojure library that deals with MIME types
                  [com.walmartlabs/lacinia "0.36.0"]      ;; GraphQL implementation in pure Clojure

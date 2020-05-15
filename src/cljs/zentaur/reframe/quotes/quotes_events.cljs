@@ -1,13 +1,13 @@
 (ns zentaur.reframe.quotes.quotes-events
   (:require [cljs.spec.alpha :as s]
             [clojure.string :as str]
+            [com.rpl.specter :as spct]
             [goog.dom :as gdom]
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
             [re-graph.core :as re-graph]
             [zentaur.reframe.tests.db :as zdb]
             [zentaur.reframe.tests.libs :as libs]))
-
 
 ; -- First Interceptor ----
 (defn check-and-throw
@@ -21,19 +21,24 @@
 
 ;; We now create the interceptor chain shared by all event handlers which manipulate todos.
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
-(def test-interceptors [check-spec-interceptor])
+(def quote-interceptors [check-spec-interceptor])
 
-;;;;;;;;    BLOG COMMENTS  SECTION  ;;;;;;;;
+(defn to-map [coll]
+   (map #(assoc {} (keyword (str (:id %))) %) coll))
 
 (re-frame/reg-event-db
  :load-quotes-response
   []
   (fn [db [_ {:keys [data errors]}]]
     (let [pre-quotes (:load_quotes data)
-          _          (.log js/console (str ">>> comments PRE-RESPONSE >>>>> " pre-quotes))
-          quotes     (:quotes pre-quotes)
-          _          (.log js/console (str ">>> comments RESPONSE  QUOTES >>>>> " quotes))]
+          _          (.log js/console (str ">>> QUOTES PRE-RESPONSE >>>>> " pre-quotes))
+          quotes     (to-map (:quotes pre-quotes))
+          _          (.log js/console (str ">>> QUTES RESPONSE  QUOTES >>>>> " quotes))]
          (assoc db :quotes quotes))))
+
+({:6 {:id 6, :quote "The time you enjoy wasting is not wasted time", :author "B. Rusell"}}
+ {:5 {:id 5, :quote "There is much pleasure to be gained from useless knowledge.", :author "B. Rusell"}}
+ {:3 {:id 3, :quote "Seriousness is the only refuge of the shallow.", :author "Oscar Wilde"}})
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with GraphQL!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
@@ -41,7 +46,7 @@
   :load-quotes
   (fn                      ;; <-- the handler function
     [cfx [_ updates]]     ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [query  (gstring/format "{load_quotes {quotes {id quote author}}}")]
+    (let [query "{load_quotes {quotes {id quote author}}}"]
       (.log js/console (str ">>> QUEERY  >>>>> " query ))
       (re-frame/dispatch [::re-graph/query query {} [:load-quotes-response]]))))
 
@@ -49,9 +54,9 @@
  :process-create-quote
  (fn
    [db [_ response]]            ;; destructure the response from the event vector
-   (let [comment     (:create_quote (second (first response)))
-         _           (.log js/console (str ">>> comment QQ >>>>> " comment))]
-         (update-in db [:comments] conj comment))))
+   (let [pre-quote  (:create_quote (second (first response)))
+         quote      (assoc {} (keyword (str (:id pre-quote))) pre-quote)]
+         (update-in db [:quotes] conj quote))))
 
 (re-frame/reg-event-fx
   :create-quote
@@ -59,32 +64,34 @@
     [cfx _]            ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (.log js/console (str ">>>  und ebenfalls _ " (second _)))
     (let [updates (second _)
-          {:keys [post-id comment user-id]} updates
-          mutation    (gstring/format "mutation { create_comment( post_id: %i, comment: \"%s\", user_id: %i)
-                                      { username comment created_at }}"
-                                      post-id comment user-id)]
-      (.log js/console (str ">>> CREATE ANSWER MUTATION >>>>> " mutation ))
+          {:keys [author quote]} updates
+          mutation    (gstring/format "mutation { create_quote(author: \"%s\", quote: \"%s\")
+                                      { id quote author }}"
+                                      author quote)]
       (re-frame/dispatch [::re-graph/mutate mutation {} [:process-create-quote]]))))
 
 (re-frame/reg-event-db
  :process-after-update-quote
  []
  (fn [db [_ response]]
-   (let [answer           (-> response :data :update_quote)
-         answer-keyword   (keyword (:id answer))
-         question-keyword (keyword (str (:question_id answer)))]
-       (-> db
-          (update-in [:questions question-keyword :answers answer-keyword] conj answer)
-          (update :loading? not)))))
+   (.log js/console (str ">>> RESPONSE  >>>>> " response))
+   (let [pre-quote     (-> response :data :update_quote)
+         quote-keyword (keyword (str (:id pre-quote)))
+         quote         (assoc {} quote-keyword pre-quote)]
+     (.log js/console (str ">>> UQ ***** >>>>> " quote ))
+     (-> db
+         ;; (update :a (fn [v] (into (if v v []) [4 5])))
+         (update :quotes (fn [v] (let [f (into {} v)] (update f quote-keyword (fn [k] pre-quote)))))
+         (update :loading? not)))))
 
 (re-frame/reg-event-fx
   :update-quote
   (fn
     [cofx [_ updates]]
     (let [{:keys [id quote author]} updates
-          mutation  (gstring/format "mutation { update_quote( quote: %s, author: %s, id: %i)
-                                    { id answer correct question_id }}"
-                                  answer correct answer_id)]
+          mutation  (gstring/format "mutation { update_quote( quote: \"%s\", author: \"%s\", id: %i)
+                                    { id quote author }}"
+                                    quote author id)]
        (.log js/console (str ">>> MUTATION UPDATE ANSWER >>>>> " mutation ))
        (re-frame/dispatch [::re-graph/mutate
                            mutation                                  ;; graphql query
@@ -97,11 +104,10 @@
  (fn
    [db [_ data]]
    (.log js/console (str ">>> Data  VVV >>>>> " data ))
-   (let [question-id (-> data :data :delete_quote :id)] ;; Datein Komm zurück
-     (.log js/console (str ">>> QUESTION >>>>> " question-id ))
+   (let [quote-id (-> data :data :delete_quote :id)] ;; Datein Komm zurück
+     (.log js/console (str ">>> QUESTION >>>>> " quote-id))
      (-> db
-         (update-in [:questions] dissoc (keyword question-id))
-         (update :qcounter dec)
+         (update-in [:quotes] dissoc (keyword quote-id))
          (update  :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
@@ -109,7 +115,7 @@
  (fn                          ;; <-- the handler function
    [cofx [dispatch-id quote-id]]      ;; <-- 1st argument is coeffect, from which we extract db
    (.log js/console (str ">>> quote-id   OOO>>>>>  >>>> " quote-id))
-   (when (js/confirm "Frage löschen?")
+   (when (js/confirm "Delete Quote?")
      (let [mutation  (gstring/format "mutation { delete_question( question_id: %i ) { id }}"
                                      quote-id)]
        (re-frame/dispatch [::re-graph/mutate mutation {} [:process-delete-quote]])))))
