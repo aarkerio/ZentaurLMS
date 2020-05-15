@@ -90,7 +90,7 @@
 
 (defn- ^:private load-comments
   [context args value]
-  (let [comments    (po/get-comments args)
+  (let [comments    (mp/get-comments args)
         comments-1  (map #(assoc % :username (str (:fname %) "_" (:lname %))) comments)
         comments-2  (map #(dissoc % :fname :lname) comments-1)]
     (assoc {} :comments comments-2)))
@@ -111,6 +111,7 @@
 (defn- ^:private load-quotes
   [context args value]
   (let [quotes  (mq/get-quotes)]
+    (log/info (str ">>> QUOTES >>>>> " quotes))
     (assoc {} :quotes quotes)))
 
 (defn resolver-map

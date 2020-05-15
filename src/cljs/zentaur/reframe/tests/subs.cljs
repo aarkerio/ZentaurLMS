@@ -66,3 +66,9 @@
  :search-terms
  (fn [db]
    (get-in db [:search-terms])))
+
+;; Quotes part
+(rf/reg-sub
+ :quotes
+ (fn [db]
+   (get-in db [:quotes])))

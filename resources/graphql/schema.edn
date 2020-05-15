@@ -131,7 +131,7 @@
                                         :terms    {:type String}}
                           :resolve     :search-fullq}
            :load_quotes {:type        (non-null :quotes)
-                         :description "Send quotes info."
+                         :description "Send quotes data."
                          :resolve     :load-quotes}
            }
  :mutations {
