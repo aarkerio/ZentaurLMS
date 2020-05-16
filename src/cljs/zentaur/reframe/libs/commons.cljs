@@ -1,4 +1,4 @@
-(ns zentaur.reframe.tests.libs
+(ns zentaur.reframe.libs.commons
   (:require [cljs.spec.alpha :as s]
             [re-frame.core :as re-frame]))
 

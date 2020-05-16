@@ -3,8 +3,8 @@
             [goog.dom :as gdom]
             [reagent.core  :as r]
             [re-frame.core :as rf]
-            [zentaur.reframe.tests.forms.blocks :as blk]
-            [zentaur.reframe.tests.libs :as zlib]))
+            [zentaur.reframe.libs.commons :as cms]
+            [zentaur.reframe.tests.forms.blocks :as blk]))
 
 (defn edit-question [{:keys [id question hint explanation qtype points]}]
   (let [aquestion     (r/atom question)
@@ -142,7 +142,7 @@
   [question]
   (let [afulfill  (r/atom (:fulfill question))
         id        (:id question)
-        ats       (fnil zlib/asterisks-to-spaces "")]
+        ats       (fnil cms/asterisks-to-spaces "")]
     (fn []
       [:div
        [:div.div-separator "Preview:" [:br] (ats @afulfill)]
@@ -226,7 +226,7 @@
   (let [questions (rf/subscribe [:questions])]
     (fn [uurlid question-count]
       [:div
-       (doall (for [{:keys [idx question]} (zlib/indexado @questions)]
+       (doall (for [{:keys [idx question]} (cms/indexado @questions)]
                 ^{:key (hash question)}
                 [question-item (assoc question :counter idx :uurlid uurlid :qcount question-count)]))])))
 

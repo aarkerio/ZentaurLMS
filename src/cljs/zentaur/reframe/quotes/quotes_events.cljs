@@ -6,8 +6,8 @@
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
             [re-graph.core :as re-graph]
-            [zentaur.reframe.tests.db :as zdb]
-            [zentaur.reframe.tests.libs :as libs]))
+            [zentaur.reframe.libs.commons :as cms]
+            [zentaur.reframe.tests.db :as zdb]))
 
 ; -- First Interceptor ----
 (defn check-and-throw
@@ -23,16 +23,13 @@
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
 (def quote-interceptors [check-spec-interceptor])
 
-(defn to-map [coll]
-   (map #(assoc {} (keyword (str (:id %))) %) coll))
-
 (re-frame/reg-event-db
  :load-quotes-response
   []
   (fn [db [_ {:keys [data errors]}]]
     (let [pre-quotes (:load_quotes data)
           _          (.log js/console (str ">>> QUOTES PRE-RESPONSE >>>>> " pre-quotes))
-          quotes     (to-map (:quotes pre-quotes))
+          quotes     (cms/vector-to-ordered-idxmap (:quotes pre-quotes))
           _          (.log js/console (str ">>> QUTES RESPONSE  QUOTES >>>>> " quotes))]
          (assoc db :quotes quotes))))
 

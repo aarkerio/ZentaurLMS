@@ -5,8 +5,8 @@
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
             [re-graph.core :as re-graph]
-            [zentaur.reframe.tests.db :as zdb]
-            [zentaur.reframe.tests.libs :as libs]))
+            [zentaur.reframe.libs.commons :as cms]
+            [zentaur.reframe.tests.db :as zdb]))
 
 ;; -- Check Interceptor (edit for subway)  ----------
 (defn check-and-throw
@@ -65,7 +65,7 @@
    :after   (fn [context]
               (let [app-db    (-> context :effects :db)
                     questions (:questions app-db)
-                    qordered  (libs/vector-to-ordered-idxmap questions)]
+                    qordered  (cms/vector-to-ordered-idxmap questions)]
                 (assoc-in context [:effects :db :questions] qordered)))))
 
 (def reorder-after-questions-interceptor (re-frame/after (partial reorder-questions)))
@@ -77,8 +77,8 @@
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
     (let [test          (:test_by_uurlid data)
           questions     (:questions test)
-          ques-answers  (map #(update % :answers libs/vector-to-ordered-idxmap) questions)
-          questions-idx (libs/vector-to-ordered-idxmap ques-answers)
+          ques-answers  (map #(update % :answers cms/vector-to-ordered-idxmap) questions)
+          questions-idx (cms/vector-to-ordered-idxmap ques-answers)
           subjects      (update-ids (:subjects test))
           levels        (update-ids (:levels test))
           only-test     (dissoc test :subjects :levels :questions)
@@ -141,7 +141,7 @@
     [cfx _]             ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (.log js/console (str ">>>  und ebenfalls _ " (second _)))
     ;; question hint explanation qtype test-id user-id active
-    (let [values        (libs/str-to-int (second _) :qtype :test-id :user-id)
+    (let [values        (cms/str-to-int (second _) :qtype :test-id :user-id)
           _             (.log js/console (str ">>> VALUES AFTER  >>>>> " values ))
           {:keys [question hint explanation qtype points uurlid user-id]} values
           mutation      (gstring/format "mutation { create_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
@@ -345,8 +345,8 @@
  []
  (fn [db [_ response]]
    (let [questions     (-> response :data :reorder_question :questions)
-         ques-answers  (map #(update % :answers libs/vector-to-ordered-idxmap) questions)
-         idx-questions (libs/vector-to-ordered-idxmap ques-answers)]
+         ques-answers  (map #(update % :answers cms/vector-to-ordered-idxmap) questions)
+         idx-questions (cms/vector-to-ordered-idxmap ques-answers)]
    (-> db
        (assoc-in [:questions] idx-questions)
        (update :loading? not)))))
@@ -373,7 +373,7 @@
  []
  (fn [db [_ response]]
    (let [data      (-> response :data :reorder_answer)
-         answers   (libs/vector-to-ordered-idxmap (:answers data))
+         answers   (cms/vector-to-ordered-idxmap (:answers data))
          q-keyword (keyword (:id data))]
    (-> db
        (assoc-in [:questions q-keyword :answers] answers)
