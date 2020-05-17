@@ -1,7 +1,7 @@
 (ns zentaur.core-test
   (:require [cljs.test :refer-macros [is are deftest testing use-fixtures run-tests]]
             [zentaur.core :as rc]
-            [zentaur.reframe.tests.libs :as lib]))
+            [zentaur.reframe.libs.commons :as cms]))
 
 (enable-console-print!)
 
@@ -32,7 +32,7 @@
 ;;         (done)))))
 
 ;; (deftest test-index-by-qid
-;;   (let [index (libs/index-by-qid questions 2)]
+;;   (let [index (cms/index-by-qid questions 2)]
 ;;     (is (= index 1))))
 
 (run-tests)

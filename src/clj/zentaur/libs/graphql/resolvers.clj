@@ -122,15 +122,14 @@
 
 (defn- ^:private update-quote
   [context args value]
-  (log/info (str ">>>  UPDATE QUOTE ARGS **** >>>>> " args))
   (let [updated-quote (mq/update-quote args)]
-    (log/info (str ">>>  UQ  update-quote **** >>>>> " (prn-str updated-quote) ))
     updated-quote))
 
 (defn- ^:private delete-quote
   [context args value]
-  (let [updated-quote (mq/delete-quote args)]
-    updated-quote))
+  (log/info (str ">>>  DELETE QUOTE ARGS **** >>>>> " args))
+  (let [deleted-quote (mq/delete-quote args)]
+    deleted-quote))
 
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."

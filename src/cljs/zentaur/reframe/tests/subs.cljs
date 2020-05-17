@@ -1,4 +1,4 @@
-(ns zentaur.reframe.tests.subs ^{:doc "Re-frame Subscriptions"}
+(ns zentaur.reframe.tests.subs ^{:doc "Zentaur Re-frame Subscriptions"}
   (:require [re-frame.core :as rf]))
 
 (rf/reg-sub

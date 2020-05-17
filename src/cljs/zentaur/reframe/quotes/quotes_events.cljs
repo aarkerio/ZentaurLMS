@@ -23,19 +23,32 @@
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
 (def quote-interceptors [check-spec-interceptor])
 
+(defn vector-to-ordered-illldxmap
+  "Convert vector of maps to an indexed map, exposing the makes the re-frame CRUD easier"
+  [rows]
+  (let [indexed (reduce #(assoc %1 (keyword (str (:id %2))) %2) {} rows)]
+    (apply hash-map indexed)))
+
+(defn vector-to-ordered-idxmap
+  "Convert vector of maps to an indexed map, exposing the makes the re-frame CRUD easier"
+  [rows]
+  (let [indexed (reduce #(assoc %1 (keyword (str (:id %2))) %2) {} rows)]
+    (into (sorted-map-by (fn [key1 key2]
+                           (compare
+                            (get-in indexed [key1 :id])
+                            (get-in indexed [key2 :id]))))
+          indexed)))
+
 (re-frame/reg-event-db
  :load-quotes-response
   []
   (fn [db [_ {:keys [data errors]}]]
     (let [pre-quotes (:load_quotes data)
-          _          (.log js/console (str ">>> QUOTES PRE-RESPONSE >>>>> " pre-quotes))
-          quotes     (cms/vector-to-ordered-idxmap (:quotes pre-quotes))
-          _          (.log js/console (str ">>> QUTES RESPONSE  QUOTES >>>>> " quotes))]
+          _          (.log js/console (str ">>> QUOTES  PRE-RESPONSE >>>>> " pre-quotes))
+          ;; quotes     (map #(assoc {} (keyword (str (:id %))) %) (:quotes pre-quotes))
+          quotes     (vector-to-ordered-idxmap (:quotes pre-quotes))
+          _          (.log js/console (str ">>> QUOTES AFTER PROCESSED >>>>> " quotes))]
          (assoc db :quotes quotes))))
-
-({:6 {:id 6, :quote "The time you enjoy wasting is not wasted time", :author "B. Rusell"}}
- {:5 {:id 5, :quote "There is much pleasure to be gained from useless knowledge.", :author "B. Rusell"}}
- {:3 {:id 3, :quote "Seriousness is the only refuge of the shallow.", :author "Oscar Wilde"}})
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with GraphQL!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
@@ -62,23 +75,26 @@
     (.log js/console (str ">>>  und ebenfalls _ " (second _)))
     (let [updates (second _)
           {:keys [author quote]} updates
-          mutation    (gstring/format "mutation { create_quote(author: \"%s\", quote: \"%s\")
+          mutation (gstring/format "mutation { create_quote(author: \"%s\", quote: \"%s\")
                                       { id quote author }}"
-                                      author quote)]
+                                   author quote)]
       (re-frame/dispatch [::re-graph/mutate mutation {} [:process-create-quote]]))))
+
+(defn update-shit [keyword quote itm]
+   (if (= keyword (first (first itm))) (hash-map keyword quote) itm))
 
 (re-frame/reg-event-db
  :process-after-update-quote
  []
  (fn [db [_ response]]
-   (.log js/console (str ">>> RESPONSE  >>>>> " response))
+   (.log js/console (str ">>> RESPONSE  >>>>> " response ))
    (let [pre-quote     (-> response :data :update_quote)
          quote-keyword (keyword (str (:id pre-quote)))
-         quote         (assoc {} quote-keyword pre-quote)]
-     (.log js/console (str ">>> UQ ***** >>>>> " quote ))
+         new-quotes    (map (partial update-shit quote-keyword pre-quote) (:quotes db))]
+     (.log js/console  (str ">>> UQ ***** >>>>> " pre-quote ))
+     (.log js/console  (str ">>> NEW QUOTES ***** >>>>> " new-quotes ))
      (-> db
-         ;; (update :a (fn [v] (into (if v v []) [4 5])))
-         (update :quotes (fn [v] (let [f (into {} v)] (update f quote-keyword (fn [k] pre-quote)))))
+         (assoc :quotes new-quotes)
          (update :loading? not)))))
 
 (re-frame/reg-event-fx
@@ -101,18 +117,18 @@
  (fn
    [db [_ data]]
    (.log js/console (str ">>> Data  VVV >>>>> " data ))
-   (let [quote-id (-> data :data :delete_quote :id)] ;; Datein Komm zurück
-     (.log js/console (str ">>> QUESTION >>>>> " quote-id))
+   (let [quote-id (-> data :data :delete_quote :id)
+         kquo-id  (keyword (str quote-id))]
+     (.log js/console (str ">>> QUESTION >>>>> " quote-id " KEYWORD >>> " kquo-id))
      (-> db
-         (update-in [:quotes] dissoc (keyword quote-id))
+         (update-in [:quotes] dissoc kquo-id)
          (update  :loading?  not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
  :delete-quote            ;; <-- the event id
  (fn                          ;; <-- the handler function
    [cofx [dispatch-id quote-id]]      ;; <-- 1st argument is coeffect, from which we extract db
-   (.log js/console (str ">>> quote-id   OOO>>>>>  >>>> " quote-id))
    (when (js/confirm "Delete Quote?")
-     (let [mutation  (gstring/format "mutation { delete_question( question_id: %i ) { id }}"
+     (let [mutation (gstring/format "mutation { delete_quote( id: %i ) { id }}"
                                      quote-id)]
        (re-frame/dispatch [::re-graph/mutate mutation {} [:process-delete-quote]])))))

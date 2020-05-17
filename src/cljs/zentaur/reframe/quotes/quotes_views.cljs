@@ -5,7 +5,7 @@
             [re-frame.core :as rf]
             [zentaur.febe.pagination :as pag]
             [zentaur.reframe.tests.forms.blocks :as blk]
-            [zentaur.reframe.tests.libs :as zlib]))
+            [zentaur.reframe.libs.commons :as cms]))
 
 (defn new-quote
   []
@@ -90,9 +90,8 @@
          [:th "Author"]
          [:th "Delete"]]]
          [:tbody
-          (doall (for [q @quotes]
-                   ^{:key (hash q)}
-                   [quote-item (second (first q))]))]])))
+          (for [q @quotes]
+            ^{:key (hash q)}[quote-item (second q)])]])))
 
 (defn pagination
   ""
@@ -101,8 +100,7 @@
         items-per-page 5
         max-links      3
         page           1]
-  [:div
-   (pag/html-paginator {:records total :items-per-page items-per-page :max-links max-links :current page :biased :left :location "/admin/quotes"})]) )
+  [:div {:dangerouslySetInnerHTML {:__html (pag/html-paginator {:records total :items-per-page items-per-page :max-links max-links :current page :biased :left :location "/admin/quotes"}) }} ]) )
 
 (defn quotes-app
   []

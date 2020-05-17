@@ -33,6 +33,6 @@
       (db/update-quote params)
       (log/info (str ">>> ERRORS >>>>> " errors)))))
 
-(defn delete-quote [id]
-  (let [int-id (Integer/parseInt id)]
-    (db/delete-quote {:id int-id})))
+(defn delete-quote
+  [id]
+  (db/delete-quote id))
