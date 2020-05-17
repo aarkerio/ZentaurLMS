@@ -49,9 +49,14 @@ SELECT q.id, q.author, q.quote, (SELECT COUNT(*) FROM quotes) AS total
 FROM quotes AS q
 ORDER BY q.id DESC OFFSET :offset LIMIT :limit
 
+-- :name get-quote :? :1
+-- :doc retrieve one quote by its id.
+SELECT q.id, q.author, q.quote, (SELECT COUNT(*) FROM quotes) AS total
+FROM quotes AS q WHERE q.id = :id
+
 -- :name create-quote :<! :1
 -- :doc creates a new quote record
-INSERT INTO quotes (author, quote) VALUES (:author, :quote) RETURNING *
+INSERT INTO quotes (author, quote) VALUES (:author, :quote) RETURNING id
 
 -- :name update-quote :<! :1
 -- :doc update an existing quote record

@@ -9,28 +9,39 @@
 
 (defn new-quote
   []
-  (let [quote    (r/atom "")
+  (let [hidde-form (r/atom true)
+        quote    (r/atom "")
         author   (r/atom "")]
     (fn []
-      [:div {:id "hidden-form"}
-       [:input {:type        "text"
-                :maxLength   179
-                :size        90
-                :placeholder "Quote"
-                :value       @quote
-                :on-change   #(reset! quote (-> % .-target .-value))}]
-       [:input {:type        "text"
-                :maxLength   80
-                :size        60
-                :placeholder "Author"
-                :value       @author
-                :on-change   #(reset! author (-> % .-target .-value))}]
-       [:br]
-       [:input.btn {:type "button" :class "btn btn btn-outline-primary-green" :value "Zitate hinzufügen"
-                    :on-click #(do (rf/dispatch [:create-quote {:author @author
-                                                                :quote @quote}])
-                                   (reset! quote "")
-                                   (reset! author ""))}]])))
+      (if @hidde-form
+        [:img {:title    "Zite abbrechen"
+                               :alt      "Zite abbrechen"
+                               :src      "/img/icon_add.png"
+                               :on-click #(swap! hidde-form not)}]
+        [:div {:id "hidden-form"}
+         [:img.img-float-right {:title    "Zite bearbeiten"
+                                :alt      "Zita bearbeiten"
+                                :src      "/img/icon_cancel.png"
+                                :on-click #(swap! hidde-form not)}]
+         [:input {:type        "text"
+                  :maxLength   179
+                  :size        90
+                  :placeholder "Quote"
+                  :value       @quote
+                  :on-change   #(reset! quote (-> % .-target .-value))}]
+         [:input {:type        "text"
+                  :maxLength   80
+                  :size        60
+                  :placeholder "Author"
+                  :value       @author
+                  :on-change   #(reset! author (-> % .-target .-value))}]
+         [:br]
+         [:input.btn {:type "button" :class "btn btn btn-outline-primary-green" :value "Zitate hinzufügen"
+                      :on-click #(do (rf/dispatch [:create-quote {:author @author
+                                                                  :quote @quote}])
+                                     (reset! quote "")
+                                     (reset! hidde-form true)
+                                     (reset! author ""))}]]))))
 
 (defn edit-quote [{:keys [id quote author]}]
   (let [aquote   (r/atom quote)
@@ -54,7 +65,6 @@
 (defn quote-item
   "Display any type of question"
   [{:keys [id author quote] :as q}]
-  (.log js/console (str ">>> VALUE qqqqqq>>>>> " q ))
   (let [editing-quote (r/atom false)]
     (fn []
       [:tr
@@ -90,7 +100,7 @@
          [:th "Author"]
          [:th "Delete"]]]
          [:tbody
-          (for [q @quotes]
+          (for [q (cms/order-map @quotes)]
             ^{:key (hash q)}[quote-item (second q)])]])))
 
 (defn pagination

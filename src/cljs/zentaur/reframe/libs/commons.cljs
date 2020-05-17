@@ -54,3 +54,10 @@
                             (get-in indexed [key1 :ordnen])
                             (get-in indexed [key2 :ordnen]))))
           indexed)))
+
+(defn order-map [rows]
+  (into (sorted-map-by (fn [key1 key2]
+                         (compare
+                          (get-in rows [key2 :id])
+                          (get-in rows [key1 :id]))))
+        rows))

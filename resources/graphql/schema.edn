@@ -68,7 +68,6 @@
                                :total       {:type (non-null Int)}
                                :author      {:type (non-null String)}
                                :quote       {:type (non-null String)}}}
-
            :subject {
                       :description "Subject type."
                       :fields {

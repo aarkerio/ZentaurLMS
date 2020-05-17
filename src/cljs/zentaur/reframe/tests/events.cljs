@@ -127,7 +127,7 @@
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
    (let [question       (-> response :data :create_question)
-         qkeyword       (keyword (:id question))
+         qkeyword       (keyword (str (:id question)))
          ques-answers   (assoc question :answers {})
          final-question (assoc {} qkeyword ques-answers)]
      (-> db

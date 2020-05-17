@@ -5,21 +5,29 @@
             [zentaur.db.core :as db]
             [zentaur.models.validations.validations-quote :as vq]))
 
-(defn one-quote
+(defn one-random-quote
    "Get one random quote"
    []
    (db/get-one-random-quote))
 
+(defn insert-and-get
+   "Get one quote"
+  [params]
+  (let [quote-id (db/create-quote params)]
+    (db/get-quote quote-id)))
+
 (defn get-quotes
   "Get all published quotes"
-  [{:keys [limit offset]}]
-  (db/get-quotes {:limit limit :offset offset}))
+  [args]
+  (let [limit  (Integer/parseInt (:limit args))
+        offset (Integer/parseInt (:offset args))]
+      (db/get-quotes {:limit limit :offset offset})))
 
 (defn create-quote
   [params]
   (let [errors (vq/validate-quote params)]
     (if (nil? errors)
-      (db/create-quote params)
+      (insert-and-get params)
       (log/info (str ">>> ERRORS >>>>> " errors)))))
 
 (defn update-quote
