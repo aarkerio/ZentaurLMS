@@ -79,7 +79,9 @@
           mutation (gstring/format "mutation { create_quote(author: \"%s\", quote: \"%s\")
                                       { id quote author total }}"
                                    author quote)]
-      (rf/dispatch [::re-graph/mutate mutation {} [:process-create-quote]]))))
+      (if (and (> (count author) 6 ) (> (count quote) 6))
+        (rf/dispatch [::re-graph/mutate mutation {} [:process-create-quote]])
+        (js/alert "Ooooops! One field is too short")))))
 
 (defn update-shit [keyword quote itm]
    (if (= keyword (first (first itm))) (hash-map keyword quote) itm))
@@ -88,7 +90,6 @@
  :process-after-update-quote
  []
  (fn [db [_ response]]
-   (.log js/console (str ">>> RESPONSE  >>>>> " response ))
    (let [pre-quote     (-> response :data :update_quote)
          _             (.log js/console (str ">>> PRE quote >>>>> " pre-quote))
          quote-keyword (keyword (str (:id pre-quote)))]
@@ -104,11 +105,10 @@
           mutation  (gstring/format "mutation { update_quote( quote: \"%s\", author: \"%s\", id: %i)
                                     { id quote author }}"
                                     quote author id)]
-       (.log js/console (str ">>> MUTATION UPDATE ANSWER >>>>> " mutation ))
-       (rf/dispatch [::re-graph/mutate
-                           mutation                                  ;; graphql query
-                           {:some "Pumas campeón prros!! variable"}   ;; arguments map
-                           [:process-after-update-quote]]))))
+      (if (and (> (count author) 6 ) (> (count quote) 6))
+       (rf/dispatch [::re-graph/mutate mutation {} [:process-after-update-quote]])
+       (js/alert "Ooooops! One field is too short")))))
+
 (rf/reg-event-db
  :process-delete-quote
  []

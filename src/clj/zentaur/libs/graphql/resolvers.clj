@@ -104,21 +104,18 @@
 (defn- ^:private search-fullq
   [context args value]
   (log/info (str ">>> ARGSSS search-fullq >>>>> " args))
-  (let [new-comment (mt/full-search)
+  (let [new-comment (mt/full-search args)
         new-comment-2 (assoc new-comment :username (str (:fname new-comment) "_" (:lname new-comment)))]
    (dissoc new-comment-2 :fname :lname)))
 
 (defn- ^:private load-quotes
   [context args value]
-  (log/info (str ">>> args >>>>> " args))
   (let [quotes  (mq/get-quotes args)]
-    ;; (log/info (str ">>> QUOTES >>>>> " quotes))
     (assoc {} :quotes quotes)))
 
 (defn- ^:private create-quote
   [context args value]
   (let [new-quote (mq/create-quote args)]
-    (log/info (str ">>> PARAMS NEW QUOTE **** >>>>> " new-quote))
     new-quote))
 
 (defn- ^:private update-quote
@@ -129,8 +126,7 @@
 (defn- ^:private delete-quote
   [context args value]
   (log/info (str ">>>  DELETE QUOTE ARGS **** >>>>> " args))
-  (let [deleted-quote (mq/delete-quote args)]
-    deleted-quote))
+  (mq/delete-quote args))
 
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."

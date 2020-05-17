@@ -64,4 +64,4 @@ UPDATE quotes SET quote = :quote, author = :author WHERE id = :id RETURNING *
 
 -- :name delete-quote :<! :1
 -- :doc delete a user given the id
-DELETE FROM quotes WHERE id = :id RETURNING TRUE
+DELETE FROM quotes WHERE id = :id RETURNING id

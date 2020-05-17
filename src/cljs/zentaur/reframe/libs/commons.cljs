@@ -56,8 +56,10 @@
           indexed)))
 
 (defn order-map [rows]
-  (into (sorted-map-by (fn [key1 key2]
+  (if rows
+    (into (sorted-map-by (fn [key1 key2]
                          (compare
                           (get-in rows [key2 :id])
                           (get-in rows [key1 :id]))))
-        rows))
+          rows)
+    {}))
