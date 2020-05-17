@@ -39,7 +39,7 @@
                                :langs        {:type (list :lang)}
                                }}
            :question {
-                      :description "Question schema."
+                      :description "Question type."
                       :fields {
                                :id            {:type (non-null ID)}
                                :question      {:type (non-null String)}
@@ -57,6 +57,17 @@
                                :reviewed_lang {:type Boolean}
                                :created_at    {:type String}
                                :answers       {:type (list :answer)}}}
+            :quotes {
+                     :description "Quotes type."
+                     :fields {
+                              :quotes       {:type (list :quote)}}}
+           :quote {
+                      :description "Quote type."
+                      :fields {
+                               :id          {:type (non-null Int)}
+                               :total       {:type (non-null Int)}
+                               :author      {:type (non-null String)}
+                               :quote       {:type (non-null String)}}}
            :subject {
                       :description "Subject type."
                       :fields {
@@ -119,6 +130,11 @@
                                         :langs    {:type String}
                                         :terms    {:type String}}
                           :resolve     :search-fullq}
+           :load_quotes {:type        (non-null :quotes)
+                         :description "Send quotes data."
+                         :args        {:offset {:type (non-null ID)}
+                                       :limit  {:type (non-null ID)}}
+                         :resolve     :load-quotes}
            }
  :mutations {
              :create_question {:type :question
@@ -202,6 +218,21 @@
                               :args {:post_id     {:type (non-null Int)}
                                      :comment     {:type (non-null String)}
                                      :user_id     {:type (non-null Int)}}
-                               :resolve :create-comment}
+                              :resolve :create-comment}
+             :create_quote {:type :quote
+                            :description "Create a new quote."
+                            :args {:quote    {:type (non-null String)}
+                                   :author   {:type (non-null String)}}
+                            :resolve :create-quote}
+             :update_quote {:type :quote
+                            :description "Update a quote."
+                            :args {:quote       {:type (non-null String)}
+                                    :author      {:type (non-null String)}
+                                    :id           {:type (non-null Int)}}
+                            :resolve :update-quote}
+             :delete_quote {:type :quote
+                            :description "Remove quote."
+                            :args {:id    {:type (non-null Int)}}
+                            :resolve :delete-quote}
              }
  }

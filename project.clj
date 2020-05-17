@@ -1,4 +1,4 @@
-(defproject zentaur "0.0.26"
+(defproject zentaur "0.0.31"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
@@ -8,6 +8,7 @@
                  [cljs-http "0.1.46"]                    ;; cljs-http returns core.async channels
                  [clj-pdf "2.4.0"]                       ;; PDF generation library
                  [clojure.java-time "0.3.2"]             ;; Java 8 Date-Time API for Clojure
+                 [com.rpl/specter "1.1.3"]               ;; Clojure(Script)'s missing piece
                  [crypto-random "1.2.0"]                 ;; generating cryptographically secure random bytes and strings
                  [com.novemberain/pantomime "2.11.0"]    ;; A tiny Clojure library that deals with MIME types
                  [com.walmartlabs/lacinia "0.36.0"]      ;; GraphQL implementation in pure Clojure
@@ -72,6 +73,7 @@
                                           [cider/piggieback "0.4.2"]                 ;; nREPL support for ClojureScript REPLs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
                                           [com.bhauman/figwheel-main "0.2.4" :exclusions [joda-time clj-time]]  ;; Hot Reload cljs
+                                          [day8.re-frame/re-frame-10x "0.6.5"]       ;; debugging re-frame applications.
                                           [factory-time "0.1.2"]                     ;; Factory-bot like library for tests
                                           [nrepl "0.7.0"]
                                           [prone "2019-07-08"]                       ;; Better exception reporting middleware for Ring.
@@ -80,7 +82,7 @@
                                           ]
                            :source-paths ["env/dev/clj" "env/dev/cljs" "test/cljs"]
                            :resource-paths ["env/dev/resources"]
-                           :repl-options {:init-ns user :timeout 120000}}
+                           :repl-options {:init-ns zentaur.core :timeout 120000}}
              :project/test {:jvm-opts ["-Dconf=test-config.edn" "--illegal-access=warn"]
                             :dependencies [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                            [talltale "0.4.3"]]    ;; fake data for test

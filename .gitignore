@@ -26,3 +26,4 @@ resources/public/css
 .shadow-cljs/
 resources/public/files/
 .cider-repl-history
+.lsp

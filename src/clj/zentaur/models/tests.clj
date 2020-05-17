@@ -15,7 +15,9 @@
 (defn get-tests
   "Get the list of test by user"
   [user-id]
-  (db/get-tests {:user-id user-id}))
+  (let [results (db/search-langs-questions {:terms "lacinia morbi" :subjects [1 2] :langs [1 2] :levels [4 5 6] :limit 10})
+        _       (log/info (str ">>> RESULD FULL SEARCH  >>>>> " results))]
+        (db/get-tests {:user-id user-id})))
 
 (defn get-subjects
   "Data for populates the test form"
@@ -225,7 +227,6 @@
         langs    (get-langs)]
     (assoc {} :uurlid "nope" :title "Foo" :subjects subjects :levels levels :langs langs)))
 
-
 (defn search-questions
   "Used to build a random test"
   [args]
@@ -234,6 +235,8 @@
     (db/search-questions full-params)))
 
 (defn full-search [args]
-  (let [pre-params  (sh/str-to-int args :subject_id :level_id :lang_id)
+  (let [results (db/search-langs-questions {:terms "lacinia morbi" :subjects [1 2] :langs [1 2] :levels [4 5 6]})
+        _    (log/info (str ">>> RESULD FULL SEARCH  >>>>> " results))
+        pre-params  (sh/str-to-int args :subject_id :level_id :lang_id)
         full-params (assoc pre-params :limit 20)]
     (db/search-questions full-params)))

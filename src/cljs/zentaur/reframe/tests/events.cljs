@@ -5,8 +5,8 @@
             [goog.string :as gstring]
             [re-frame.core :as re-frame]
             [re-graph.core :as re-graph]
-            [zentaur.reframe.tests.db :as zdb]
-            [zentaur.reframe.tests.libs :as libs]))
+            [zentaur.reframe.libs.commons :as cms]
+            [zentaur.reframe.tests.db :as zdb]))
 
 ;; -- Check Interceptor (edit for subway)  ----------
 (defn check-and-throw
@@ -20,7 +20,7 @@
 
 ;; We now create the interceptor chain shared by all event handlers which manipulate todos.
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
-(def todo-interceptors [check-spec-interceptor])
+(def test-interceptors [check-spec-interceptor])
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with Ajax!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
@@ -54,22 +54,10 @@
 
 (def trim-event
   (re-frame.core/->interceptor
-    :id      :trim-event
-    :before  (fn [context]
-               (.log js/console (str ">>> CTX >>>>> " context ))
-               (let [trim-fn (fn [event] (-> event rest vec))]
-                 (update-in context [:coeffects :event] trim-fn)))))
-
-(defn vector-to-ordered-idxmap
-  "Convert vector od maps to an indexed map"
-  [rows]
-  (let [indexed (reduce #(assoc %1 (keyword (:id %2)) %2) {} rows)]
-     (into (sorted-map-by (fn [key1 key2]
-                            (compare
-                             (get-in indexed [key1 :ordnen])
-                             (get-in indexed [key2 :ordnen]))))
-      indexed)
-    ))
+   :id      :trim-event
+   :before  (fn [context]
+              (let [trim-fn (fn [event] (-> event rest vec))]
+                (update-in context [:coeffects :event] trim-fn)))))
 
 (def reorder-questions
   (re-frame/->interceptor
@@ -77,7 +65,7 @@
    :after   (fn [context]
               (let [app-db    (-> context :effects :db)
                     questions (:questions app-db)
-                    qordered  (vector-to-ordered-idxmap questions)]
+                    qordered  (cms/vector-to-ordered-idxmap questions)]
                 (assoc-in context [:effects :db :questions] qordered)))))
 
 (def reorder-after-questions-interceptor (re-frame/after (partial reorder-questions)))
@@ -89,8 +77,8 @@
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
     (let [test          (:test_by_uurlid data)
           questions     (:questions test)
-          ques-answers  (map #(update % :answers vector-to-ordered-idxmap) questions)
-          questions-idx (vector-to-ordered-idxmap ques-answers)
+          ques-answers  (map #(update % :answers cms/vector-to-ordered-idxmap) questions)
+          questions-idx (cms/vector-to-ordered-idxmap ques-answers)
           subjects      (update-ids (:subjects test))
           levels        (update-ids (:levels test))
           only-test     (dissoc test :subjects :levels :questions)
@@ -139,7 +127,7 @@
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
    (let [question       (-> response :data :create_question)
-         qkeyword       (keyword (:id question))
+         qkeyword       (keyword (str (:id question)))
          ques-answers   (assoc question :answers {})
          final-question (assoc {} qkeyword ques-answers)]
      (-> db
@@ -153,7 +141,7 @@
     [cfx _]             ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
     (.log js/console (str ">>>  und ebenfalls _ " (second _)))
     ;; question hint explanation qtype test-id user-id active
-    (let [values        (libs/str-to-int (second _) :qtype :test-id :user-id)
+    (let [values        (cms/str-to-int (second _) :qtype :test-id :user-id)
           _             (.log js/console (str ">>> VALUES AFTER  >>>>> " values ))
           {:keys [question hint explanation qtype points uurlid user-id]} values
           mutation      (gstring/format "mutation { create_question(question: \"%s\", hint: \"%s\", explanation: \"%s\",
@@ -304,7 +292,7 @@
  :process-after-update-answer
  []
  (fn [db [_ response]]
-   (let [answer           (-> response :data :update_answer)
+   (let [answer           (-> response :data :update_quote)
          answer-keyword   (keyword (:id answer))
          question-keyword (keyword (str (:question_id answer)))]
        (-> db
@@ -315,7 +303,7 @@
   :update-answer             ;; <-- the event id
   (fn                         ;; <-- the handler function
     [cofx [_ updates]]        ;; <-- 1st argument is coeffect, from which we extract db
-    (let [{:keys [answer correct answer_id]} updates
+    (let [{:keys [answer_id answer correct]} updates
           mutation  (gstring/format "mutation { update_answer( answer: \"%s\", correct: %s, id: %i)
                                     { id answer correct question_id }}"
                                   answer correct answer_id)]
@@ -357,8 +345,8 @@
  []
  (fn [db [_ response]]
    (let [questions     (-> response :data :reorder_question :questions)
-         ques-answers  (map #(update % :answers vector-to-ordered-idxmap) questions)
-         idx-questions (vector-to-ordered-idxmap ques-answers)]
+         ques-answers  (map #(update % :answers cms/vector-to-ordered-idxmap) questions)
+         idx-questions (cms/vector-to-ordered-idxmap ques-answers)]
    (-> db
        (assoc-in [:questions] idx-questions)
        (update :loading? not)))))
@@ -385,7 +373,7 @@
  []
  (fn [db [_ response]]
    (let [data      (-> response :data :reorder_answer)
-         answers   (vector-to-ordered-idxmap (:answers data))
+         answers   (cms/vector-to-ordered-idxmap (:answers data))
          q-keyword (keyword (:id data))]
    (-> db
        (assoc-in [:questions q-keyword :answers] answers)

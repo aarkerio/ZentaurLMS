@@ -338,19 +338,13 @@ SELECT id, fname, lname, uuid, email, admin FROM users
 WHERE email = :email AND password = :password
 
 -- :name delete-user! :<! :n
--- :doc delete a user given the id
-DELETE FROM users WHERE id = :id  RETURNING TRUE
+-- :doc delete=inactive a user given the id
+UPDATE users SET active = false WHERE id = :id  RETURNING TRUE
 
 -- :name delete-all-tables! :! :n
 -- :doc delete all contest ONLY in TEST env
 DROP RULE test_del_protect ON tests;
 TRUNCATE pages, composite_answers, roles, users, posts, question_tests, tests, uploads, questions, answers, comments
-
-/******* QUOTES ****/
-
--- :name get-one-quote :? :1
--- :doc retrieve a random quote.
-SELECT * FROM	quotes OFFSET floor(random() * (SELECT COUNT(*)	FROM quotes)) LIMIT 1
 
 /********  VCLASSROOMS ***/
 

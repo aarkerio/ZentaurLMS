@@ -4,5 +4,5 @@
 
 {:port 3000
  ; set your test database connection URL here
- ; :database-url "postgresql://localhost/zentaur_test?user=db_user_name_here&password=db_user_password_here"
+ ; :database-url "postgresql://localhost/zentaur_test?user=zentaur&password=db_user_password_here"
 }

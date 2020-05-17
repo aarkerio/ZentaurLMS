@@ -8,6 +8,8 @@
             [reagent.dom :as rd]
             [re-frame.core :as re-frame]
             [re-graph.core :as re-graph]
+            [zentaur.reframe.quotes.quotes-events :as qevents]    ;; These two are only required to make the compiler
+            [zentaur.reframe.quotes.quotes-views :as qviews]
             [zentaur.reframe.tests.comment-views :as cviews]    ;; Comments view
             [zentaur.reframe.tests.events :as myevents]    ;; These two are only required to make the compiler
             [zentaur.reframe.tests.subs :as mysubs]        ;; my subscriptions
@@ -40,6 +42,9 @@
   (when-let [root-app (gdom/getElement "test-root-app")]
     (re-frame/dispatch-sync [:test-load])
     (rd/render [tviews/test-app] root-app))
+  (when-let [quotes-root-app (gdom/getElement "quotes-root-app")]
+    (re-frame/dispatch-sync [:load-quotes])
+    (rd/render [qviews/quotes-app] quotes-root-app))
   (when-let [search-root-app (gdom/getElement "search-root-app")]
     (re-frame/dispatch-sync [:load-search])
     (rd/render  [tviews/search-app] search-root-app))

@@ -1,6 +1,6 @@
 (ns zentaur.febe.pagination
-  (:require [clojure.string :as cs]
-            [clojure.tools.logging :as log]))
+  (:require #?(:clj [clojure.tools.logging :as log])
+            [clojure.string :as cs]))
 
 ;;; PAGINATION
 

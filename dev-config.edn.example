@@ -8,5 +8,5 @@
  :nrepl-port 7000
 
  ; set your dev database connection URL here
- ; :database-url "postgresql://localhost/zentaur_dev?user=db_user_name_here&password=db_user_password_here"
+ ; :database-url "postgresql://localhost/zentaur_dev?user=zentaur&password=db_user_password_here"
 }

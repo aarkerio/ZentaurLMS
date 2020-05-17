@@ -2,8 +2,8 @@
 -- ;; lein run migrate
 CREATE TABLE quotes (
     id serial PRIMARY KEY,
-    quote varchar(150) NOT NULL,
-    author varchar(50) NOT NULL
+    quote varchar(180) NOT NULL,
+    author varchar(80) NOT NULL
 );
 --;;
 INSERT INTO quotes (quote, author) VALUES ('Always forgive your enemies; nothing annoys them so much.', 'Oscar Wilde');

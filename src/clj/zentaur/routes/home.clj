@@ -3,6 +3,7 @@
             [zentaur.controllers.export-controller  :as cont-export]
             [zentaur.controllers.files-controller   :as cont-files]
             [zentaur.controllers.posts-controller   :as cont-posts]
+            [zentaur.controllers.quotes-controller  :as cont-quotes]
             [zentaur.controllers.tests-controller   :as cont-tests]
             [zentaur.controllers.uploads-controller :as cont-uploads]
             [zentaur.controllers.users-controller   :as cont-users]
@@ -58,6 +59,7 @@
    ["/posts/update"            {:post cont-posts/update-post}]
    ["/posts/published/:id/:published" {:get cont-posts/toggle-published}]
    ["/posts/new"               {:get cont-posts/admin-new}]
+   ["/quotes"                  {:get cont-quotes/admin-listing}]
    ["/users/:archived"         {:get cont-users/admin-users}]
    ["/users"                   {:post cont-users/create-user}]])
 

@@ -4,7 +4,8 @@
             [clojure.tools.logging :as log]
             [com.walmartlabs.lacinia.resolve :refer [resolve-as]]
             [zentaur.db.core :as db]
-            [zentaur.models.posts :as po]
+            [zentaur.models.posts :as mp]
+            [zentaur.models.quotes :as mq]
             [zentaur.models.tests :as mt]))
 
 (defn- ^:private id-to-string
@@ -12,7 +13,7 @@
   (update my-map :id str))
 
 (defn create-test! [params user-id]
-  (let [full-params (assoc params :user-id user-id)]
+  (let [full-params  (assoc params :user-id user-id)]
     (mt/create-test! full-params user-id)))
 
 (defn- ^:private test-by-uurlid
@@ -64,14 +65,11 @@
 
 (defn- ^:private update-answer
   [context args value]
-  (log/info (str ">>> update-answer data ARGS >>>>> " args))
   (let [updated-answer (mt/update-answer! args)]
-    (log/info (str ">>> updated-answer AFTER update>>>>> " updated-answer))
     (update updated-answer :id str)))
 
 (defn- ^:private delete-question
   [context args value]
-  (log/info (str ">>> delete-question data ARGS >>>>> " args))
   (let [deleted-question (mt/remove-question args)]
     {:id (str (:question_id args))}))
 
@@ -92,24 +90,43 @@
 
 (defn- ^:private load-comments
   [context args value]
-  (let [comments    (po/get-comments args)
+  (let [comments    (mp/get-comments args)
         comments-1  (map #(assoc % :username (str (:fname %) "_" (:lname %))) comments)
         comments-2  (map #(dissoc % :fname :lname) comments-1)]
-    (log/info (str ">>> comments-2 >>>>> " (prn-str comments-2) " comment ORIGINAL >> " (prn-str comments) ))
     (assoc {} :comments comments-2)))
 
 (defn- ^:private create-comment
   [context args value]
-  (let [new-comment (po/create-comment args)
+  (let [new-comment (mp/create-comment args)
         new-comment-2 (assoc new-comment :username (str (:fname new-comment) "_" (:lname new-comment)))]
    (dissoc new-comment-2 :fname :lname)))
 
 (defn- ^:private search-fullq
   [context args value]
   (log/info (str ">>> ARGSSS search-fullq >>>>> " args))
-  (let [new-comment (mt/full-search)
+  (let [new-comment (mt/full-search args)
         new-comment-2 (assoc new-comment :username (str (:fname new-comment) "_" (:lname new-comment)))]
    (dissoc new-comment-2 :fname :lname)))
+
+(defn- ^:private load-quotes
+  [context args value]
+  (let [quotes  (mq/get-quotes args)]
+    (assoc {} :quotes quotes)))
+
+(defn- ^:private create-quote
+  [context args value]
+  (let [new-quote (mq/create-quote args)]
+    new-quote))
+
+(defn- ^:private update-quote
+  [context args value]
+  (let [updated-quote (mq/update-quote args)]
+    updated-quote))
+
+(defn- ^:private delete-quote
+  [context args value]
+  (log/info (str ">>>  DELETE QUOTE ARGS **** >>>>> " args))
+  (mq/delete-quote args))
 
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."
@@ -130,5 +147,9 @@
    :load-comments (partial load-comments)
    :create-comment (partial create-comment)
    :search-fullq (partial search-fullq)
+   :load-quotes (partial load-quotes)
+   :create-quote (partial create-quote)
+   :update-quote (partial update-quote)
+   :delete-quote (partial delete-quote)
    })
 

@@ -12,19 +12,56 @@
     :raw = passthrough an untouched result (default)
 ***/
 
--- :name search-all :? :*
+-- :name search-english-questions :? :*
 -- :doc search through several tables.
-SELECT id, user_id, title, ts_headline('zentaur_"lang"', body, to_tsquery('zentaur_ :lang ','" :term "')) AS headline,
-rank, username FROM (
-SELECT DISTINCT "u"."username","q"."id","q"."user_id","q"."question", "q"."question",
-ts_rank_cd(to_tsvector('zentaur_ :lang ', body), to_tsquery('zentaur_es',' :term ')) AS rank
-FROM questions AS q, users AS u
-WHERE to_tsquery('zentaur_ :lang ',' :term') @@ to_tsvector('zentaur_ :lang ', q.question)
-AND u.id=q.user_id AND q.status = 1 ORDER BY rank DESC LIMIT 20) AS questions)
+SELECT id, question, hint, subject_id, lang_id, level_id FROM
+    (SELECT id, question, hint, subject_id, lang_id, level_id, ts_rank(tsv_en, q) AS rank, q FROM questions, plainto_tsquery('lacinia morbi') AS q
+    WHERE tsv_en @@ q
+    AND subject_id =  ANY (ARRAY[1, 2, 10, 14])
+    AND lang_id =  ANY (ARRAY[1, 2])
+    AND level_id =  ANY (ARRAY[1, 7, 9])
+    ORDER BY rank DESC LIMIT :limit)
+p ORDER BY rank DESC;
+
+-- :name search-langs-questions :? :*
+-- :doc search through several tables.
+SELECT id, question, hint, subject_id, lang_id, level_id FROM
+    (SELECT id, question, hint, subject_id, lang_id, level_id, ts_rank(tsv_en, q) AS rank, q FROM questions, plainto_tsquery(:terms) AS q
+    WHERE tsv_en @@ q
+/*~
+(str "AND subject_id =  ANY (ARRAY[" (clojure.string/join ", " (:subjects params)) "])"
+     "AND level_id   =  ANY (ARRAY[" (clojure.string/join ", " (:levels   params)) "])"
+     "AND lang_id    =  ANY (ARRAY[" (clojure.string/join ", " (:langs    params)) "])")
+~*/
+ORDER BY rank DESC LIMIT 5)
+p ORDER BY rank DESC;
 
 
--- :name search-all-queries :? :*
--- :doc search through questions table.
-SELECT id, question, subject_id, level_id, lang_id FROM questions WHERE subject_id = :value:subjects.0.id AND level_id = :value:levels.0.id AND lang_id = :value:langs.0.id
+/******* QUOTES ****/
 
+-- :name get-one-random-quote :? :1
+-- :doc retrieve a random quote.
+SELECT * FROM	quotes OFFSET floor(random() * (SELECT COUNT(*)	FROM quotes)) LIMIT 1
 
+-- :name get-quotes :? :*
+-- :doc retrieve array quotes.
+SELECT q.id, q.author, q.quote, (SELECT COUNT(*) FROM quotes) AS total
+FROM quotes AS q
+ORDER BY q.id DESC OFFSET :offset LIMIT :limit
+
+-- :name get-quote :? :1
+-- :doc retrieve one quote by its id.
+SELECT q.id, q.author, q.quote, (SELECT COUNT(*) FROM quotes) AS total
+FROM quotes AS q WHERE q.id = :id
+
+-- :name create-quote :<! :1
+-- :doc creates a new quote record
+INSERT INTO quotes (author, quote) VALUES (:author, :quote) RETURNING id
+
+-- :name update-quote :<! :1
+-- :doc update an existing quote record
+UPDATE quotes SET quote = :quote, author = :author WHERE id = :id RETURNING *
+
+-- :name delete-quote :<! :1
+-- :doc delete a user given the id
+DELETE FROM quotes WHERE id = :id RETURNING id
