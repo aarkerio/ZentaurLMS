@@ -110,7 +110,8 @@
 
 (defn- ^:private load-quotes
   [context args value]
-  (let [quotes  (mq/get-quotes)]
+  (log/info (str ">>> args >>>>> " args))
+  (let [quotes  (mq/get-quotes args)]
     ;; (log/info (str ">>> QUOTES >>>>> " quotes))
     (assoc {} :quotes quotes)))
 

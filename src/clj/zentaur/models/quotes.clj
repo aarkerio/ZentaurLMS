@@ -12,12 +12,8 @@
 
 (defn get-quotes
   "Get all published quotes"
-  ([]      (get-quotes 1))
-  ([page]  (get-quotes 1 8))
-  ([page items-per-page]
-   (let [offset (* (dec page) items-per-page)]
-     (db/get-quotes {:limit items-per-page :offset offset}))))
-
+  [{:keys [limit offset]}]
+  (db/get-quotes {:limit limit :offset offset}))
 
 (defn create-quote
   [params]

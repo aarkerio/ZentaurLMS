@@ -56,8 +56,7 @@
   :load-quotes
   (fn                      ;; <-- the handler function
     [cfx [_ updates]]     ;; <-- 1st argument is coeffect, from which we extract db, "_" = event
-    (let [query "{load_quotes {quotes {id quote author}}}"]
-      (.log js/console (str ">>> QUEERY  >>>>> " query ))
+    (let [query "{load_quotes(offset: 10, limit: 10) {quotes {id quote author}}}"]
       (re-frame/dispatch [::re-graph/query query {} [:load-quotes-response]]))))
 
 (re-frame/reg-event-db

@@ -58,13 +58,14 @@
                                :created_at    {:type String}
                                :answers       {:type (list :answer)}}}
             :quotes {
-                      :description "Quotes type."
-                      :fields {
-                               :quotes       {:type (list :quote)}}}
+                     :description "Quotes type."
+                     :fields {
+                              :quotes       {:type (list :quote)}}}
            :quote {
                       :description "Quote type."
                       :fields {
                                :id          {:type (non-null Int)}
+                               :total       {:type (non-null Int)}
                                :author      {:type (non-null String)}
                                :quote       {:type (non-null String)}}}
 
@@ -132,6 +133,8 @@
                           :resolve     :search-fullq}
            :load_quotes {:type        (non-null :quotes)
                          :description "Send quotes data."
+                         :args        {:offset {:type (non-null ID)}
+                                       :limit  {:type (non-null ID)}}
                          :resolve     :load-quotes}
            }
  :mutations {
