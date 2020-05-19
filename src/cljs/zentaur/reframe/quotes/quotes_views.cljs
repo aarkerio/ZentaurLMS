@@ -118,4 +118,3 @@
    [new-quote]
    [display-quotes-list]
    [pagination]])
-

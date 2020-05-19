@@ -23,7 +23,7 @@
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
 (def quote-interceptors [check-spec-interceptor])
 
-
+;; DEPRECATED
 (def interceptor-reorder-after-quotes
   (rf/->interceptor
    :id      :reorder-after-quotes
