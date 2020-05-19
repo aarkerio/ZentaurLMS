@@ -17,11 +17,11 @@
     (throw (ex-info (str "Die Spezifikationsprüfung ist fehlgeschlagen: " (s/explain-str a-spec db)) {}))))
 
 ;; now we create an interceptor using `after`
-(def check-spec-interceptor (rf/after (partial check-and-throw :zentaur.reframe.tests.db/db)))  ;; PARTIAL: a way to currying
+(def check-spec-interceptor (rf/after (partial check-and-throw :zentaur.reframe.tests.db/db))) ;; PARTIAL: a potential way to currying
 
-;; We now create the interceptor chain shared by all event handlers which manipulate todos.
+;; We now create the interceptor chain shared by all event handlers which check the db.
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.
-(def quote-interceptors [check-spec-interceptor])
+(def reframe-chain-interceptors [check-spec-interceptor])
 
 ;; DEPRECATED
 (def interceptor-reorder-after-quotes
@@ -39,11 +39,11 @@
 
 (rf/reg-event-db
  :load-quotes-response
-  []
+  [reframe-chain-interceptors]
   (fn [db [_ {:keys [data errors]}]]
     (let [pre-quotes (:load_quotes data)
           _          (.log js/console (str ">>> QUOTES  PRE-RESPONSE >>>>> " pre-quotes))
-          quotes     (reduce #(assoc %1 (keyword (str (:id %2))) %2) {} (:quotes pre-quotes))
+          quotes     (reduce #(assoc %1 (:id %2) %2) {} (:quotes pre-quotes))
           _          (.log js/console (str ">>> QUOTES AFTER PROCESSED >>>>> " quotes))]
          (assoc db :quotes quotes))))
 
@@ -61,11 +61,11 @@
 
 (rf/reg-event-db
  :process-create-quote
- []
+ [reframe-chain-interceptors]
  (fn
    [db [_ response]]            ;; destructure the response from the event vector
    (let [pre-quote  (:create_quote (second (first response)))
-         qkey       (keyword (str (:id pre-quote)))
+         qkey       (:id pre-quote)
          quote      (assoc {} qkey pre-quote)]
      (.log js/console (str ">>> QUOTE PCQ   >>>>> " quote))
      (assoc-in db [:quotes qkey] pre-quote))))
@@ -88,11 +88,11 @@
 
 (rf/reg-event-db
  :process-after-update-quote
- []
+ [reframe-chain-interceptors]
  (fn [db [_ response]]
    (let [pre-quote     (-> response :data :update_quote)
          _             (.log js/console (str ">>> PRE quote >>>>> " pre-quote))
-         quote-keyword (keyword (str (:id pre-quote)))]
+         quote-keyword (:id pre-quote)]
      (-> db
          (update-in [:quotes quote-keyword] conj pre-quote)
          (update :loading? not)))))
@@ -111,15 +111,14 @@
 
 (rf/reg-event-db
  :process-delete-quote
- []
+ [reframe-chain-interceptors]
  (fn
    [db [_ data]]
    (.log js/console (str ">>> Data  delete quote >>>>> " data ))
-   (let [quote-id (-> data :data :delete_quote :id)
-         kquo-id  (keyword (str quote-id))]
-     (.log js/console (str ">>> QUESTION >>>>> " quote-id " KEYWORD >>> " kquo-id))
+   (let [quote-id (-> data :data :delete_quote :id)]
+     (.log js/console (str ">>> QUESTION >>>>> quote-id >> " quote-id))
      (-> db
-         (update-in [:quotes] dissoc kquo-id)
+         (update-in [:quotes] dissoc quote-id)
          (update  :loading?  not)))))
 
 (rf/reg-event-fx       ;; <-- note the `-fx` extension

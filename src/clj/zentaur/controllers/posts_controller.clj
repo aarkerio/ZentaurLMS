@@ -11,6 +11,7 @@
 (defn index
   "GET  /  (index site)"
   [request]
+  (log/info (str ">>> REQUEST >>>>> " request))
   (let [base       (basec/set-vars request)
         csrf-field (:csrf-field base)
         subjects   (model-test/get-subjects)

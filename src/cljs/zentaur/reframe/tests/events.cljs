@@ -46,44 +46,18 @@
  (fn [db _]
    (update db :testform not)))
 
-;;; ###########################################
-(defn update-ids
-  "Convert ids to integers"
-  [data]
-  (map #(update % :id (fn [k] (js/parseInt k))) data))
-
-(def trim-event
-  (re-frame.core/->interceptor
-   :id      :trim-event
-   :before  (fn [context]
-              (let [trim-fn (fn [event] (-> event rest vec))]
-                (update-in context [:coeffects :event] trim-fn)))))
-
-(def reorder-questions
-  (re-frame/->interceptor
-   :id      :reorder-questions
-   :after   (fn [context]
-              (let [app-db    (-> context :effects :db)
-                    questions (:questions app-db)
-                    qordered  (cms/vector-to-ordered-idxmap questions)]
-                (assoc-in context [:effects :db :questions] qordered)))))
-
-(def reorder-after-questions-interceptor (re-frame/after (partial reorder-questions)))
-
 (re-frame/reg-event-db
- :process-test-response
-  [trim-event]
+ :test-load-process
+  []
   (fn [db [{:keys [data errors]}]]
     (.log js/console (str ">>> DATA process-test-response  >>>>> " data ))
     (let [test          (:test_by_uurlid data)
           questions     (:questions test)
-          ques-answers  (map #(update % :answers cms/vector-to-ordered-idxmap) questions)
-          questions-idx (cms/vector-to-ordered-idxmap ques-answers)
-          subjects      (update-ids (:subjects test))
-          levels        (update-ids (:levels test))
+          subjects      (:subjects test)
+          levels        (:levels test)
           only-test     (dissoc test :subjects :levels :questions)
           _             (.log js/console (str ">>> LEVELS >>>>> " levels))
-          _             (.log js/console (str ">>> questions >>>>> " questions-idx))
+          _             (.log js/console (str ">>> questions >>>>> " questions))
           _             (.log js/console (str ">>> TEST >>>>> " only-test))
           ]
      (-> db
@@ -91,7 +65,7 @@
          (assoc :test      only-test)
          (assoc :subjects  subjects)
          (assoc :levels    levels)
-         (assoc :questions questions-idx)))))
+         (assoc :questions questions)))))
 
 ;;;;;;;;    CO-EFFECT HANDLERS (with GraphQL!)  ;;;;;;;;;;;;;;;;;;
 ;; reg-event-fx == event handler's coeffects, fx == effect
@@ -106,7 +80,7 @@
                                   uurlid)]
       (.log js/console (str ">>> QUERRRY  >>>>> " query ))
           ;; perform a query, with the response sent to the callback event provided
-          (re-frame/dispatch [::re-graph/query query {} [:process-test-response]]))))
+          (re-frame/dispatch [::re-graph/query query {} [:test-load-process]]))))
 
 (def reorder-after-questions
   (re-frame/->interceptor
@@ -127,7 +101,7 @@
  (fn
    [db [_ response]]                 ;; destructure the response from the event vector
    (let [question       (-> response :data :create_question)
-         qkeyword       (keyword (str (:id question)))
+         qkeyword       (:id question)
          ques-answers   (assoc question :answers {})
          final-question (assoc {} qkeyword ques-answers)]
      (-> db
@@ -160,8 +134,8 @@
    [db [_ response]]            ;; destructure the response from the event vector
    (let [answer      (:create_answer (second (first response)))
          _           (.log js/console (str ">>> ANSWER QQ >>>>> " answer))
-         question-id (keyword (str (:question_id answer)))
-         post-resp   (assoc {} (keyword (:id answer)) answer)
+         question-id (:question_id answer)
+         post-resp   (assoc {} (:id answer) answer)
          _           (.log js/console (str ">>> QUESTION ID >>>>>  post-resp: " post-resp "  >>>> question-id: " question-id))]
      (-> db
          (assoc :loading?  false)     ;; take away that "Loading ..." UI
@@ -189,7 +163,7 @@
    (let [question-id (-> data :data :delete_question :id)] ;; Datein Komm zurück
      (.log js/console (str ">>> QUESTION >>>>> " question-id ))
      (-> db
-         (update-in [:questions] dissoc (keyword question-id))
+         (update-in [:questions] dissoc question-id)
          (update :qcounter dec)
          (update  :loading?  not)))))
 
@@ -214,8 +188,8 @@
    [db [_ response]]
    (let [_           (.log js/console (str ">>> RESPONSE AFTER DELETE ANSWER  >>>>> " response ))
          answer      (-> response :data :delete_answer)
-         question-id (keyword (str (:question_id answer)))
-         answer-id   (keyword (:id answer))]
+         question-id (:question_id answer)
+         answer-id   (:id answer)]
      (.log js/console (str ">>> answer-id >>>>> " answer-id " >>>> question-id  >>>" question-id))
      (-> db
          (update-in [:questions question-id :answers] dissoc answer-id)
@@ -242,7 +216,7 @@
    [db [_ response]]
    (.log js/console (str ">>> UPP XXXXX response response >>>>> " response))
    (let [question     (-> response :data :update_question)
-         qkeyword     (keyword (:id question))
+         qkeyword     (:id question)
          _            (.log js/console (str ">>> question UPDATED >>>>> " question " >> >  >  " qkeyword))]
        (-> db
            (update-in [:questions qkeyword] conj question)
@@ -268,7 +242,7 @@
  (fn
    [db [_ response]]
    (let [question  (-> response :data :update_fulfill)
-         qkeyword  (keyword (:id question))
+         qkeyword  (:id question)
          fulfill   (:fulfill question)]
      (-> db
          (assoc-in [:questions qkeyword :fulfill] fulfill)
@@ -293,8 +267,8 @@
  []
  (fn [db [_ response]]
    (let [answer           (-> response :data :update_quote)
-         answer-keyword   (keyword (:id answer))
-         question-keyword (keyword (str (:question_id answer)))]
+         answer-keyword   (:id answer)
+         question-keyword (:question_id answer)]
        (-> db
           (update-in [:questions question-keyword :answers answer-keyword] conj answer)
           (update :loading? not)))))
@@ -345,10 +319,9 @@
  []
  (fn [db [_ response]]
    (let [questions     (-> response :data :reorder_question :questions)
-         ques-answers  (map #(update % :answers cms/vector-to-ordered-idxmap) questions)
-         idx-questions (cms/vector-to-ordered-idxmap ques-answers)]
+         ques-answers  (map #(update % :answers cms/vector-to-ordered-idxmap) questions)]
    (-> db
-       (assoc-in [:questions] idx-questions)
+       (assoc-in [:questions] ques-answers)
        (update :loading? not)))))
 
 (re-frame/reg-event-fx       ;; <-- note the `-fx` extension
@@ -374,7 +347,7 @@
  (fn [db [_ response]]
    (let [data      (-> response :data :reorder_answer)
          answers   (cms/vector-to-ordered-idxmap (:answers data))
-         q-keyword (keyword (:id data))]
+         q-keyword (:id data)]
    (-> db
        (assoc-in [:questions q-keyword :answers] answers)
        (update :loading? not)))))

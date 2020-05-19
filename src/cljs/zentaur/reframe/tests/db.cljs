@@ -27,20 +27,39 @@
 ;; None of this is strictly necessary. It could be omitted. But we find it
 ;; good practice.
 
-;; My spec
+;; spec for question type
+(s/def ::mapkey int?)
 (s/def ::id int?)
 (s/def ::question string?)
+(s/def ::hint string?)
+(s/def ::explanation string?)
 (s/def ::qtype int?)
-(s/def ::questions (s/keys :req-un [::id ::question ::qtype]))  ;; :req-un and :opt-un for "required" and "optional" unqualified keys
-(s/def ::question-counter int?)
+(s/def ::points int?)
 (s/def ::qform boolean?)
+
+(s/def ::questions (s/map-of ::mapkey (s/keys :req-un [::id ::question ::qtype ::points]
+                                              :opt-un [::hint ::explanation])))  ;; :req-un and :opt-un for "required" and "optional" unqualified keys
 
 (s/def ::test (s/and                                        ;; should use the :kind kw to s/map-of (not supported yet)
                  (s/map-of ::id ::question)                 ;; in this map, each todo is keyed by its :id
                  #(instance? PersistentTreeMap %)           ;; is a sorted-map (not just a map)
                  ))
 
-(s/def ::db (s/keys :req-un [::questions]))
+;; spec for Quote type
+(s/def ::id     (s/and int? pos?))
+(s/def ::quote  (s/and string? #(>= (count %) 8)))
+(s/def ::author (s/and string? #(>= (count %) 6)))
+(s/def ::total  (s/and int? pos?))
+(s/def ::quotes (s/and
+                 (s/map-of ::mapkey (s/keys :req-un [::id
+                                                     ::quote
+                                                     ::author
+                                                     ::total]))
+                  #(instance? cljs.core/PersistentHashMap %)))
+
+;; search-terms type
+
+(s/def ::db (s/keys :req-un [::quotes ::questions]))
 
 ;; -- Default app-db Value  ---------------------------------------------------
 ;;
@@ -52,8 +71,8 @@
 ;;
 
 (def default-db             ;; what gets put into app-db in the initial load.
-  {:test          (sorted-map)
-   :questions     (sorted-map)
+  {:test          (hash-map)
+   :questions     (hash-map)
    :loading?      false
    :qform         false
    :qcounter      0
@@ -62,8 +81,8 @@
    :levels        (vector)
    :comments      (vector)
    :quotes        (hash-map)
-   :selquestions  (sorted-map)  ;; selected questions
-   :search-terms  (sorted-map "levels" nil "subjects" nil "langs" nil)  ;; selected langs subjects and levels
+   :selquestions  (hash-map)    ;; selected questions in the search screen
+   :search-terms  (hash-map)  ;; selected langs subjects and levels
    })
 
 ;; -- cofx Registrations  -----------------------------------------------------

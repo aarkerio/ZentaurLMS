@@ -100,7 +100,7 @@
          [:th "Author"]
          [:th "Delete"]]]
          [:tbody
-          (for [q (cms/order-map @quotes)]
+          (for [q @quotes]
             ^{:key (hash q)}[quote-item (second q)])]])))
 
 (defn pagination
