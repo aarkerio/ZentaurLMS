@@ -44,8 +44,10 @@
         csrf-field (:csrf-field base)
         user-id    (-> base :identity :id)
         vclass     (model-vclass/get-vclass uurlid user-id)]
-    (basec/parser
-     (layout/application (merge base {:title (:name vclass) :contents (vclass-view/show vclass csrf-field) })))))
+    (if (nil? vclass)
+      (basec/redirect-to "/posts/listing/1" "404. Page not found")
+      (basec/parser
+       (layout/application (merge base {:title (:name vclass) :contents (vclass-view/show vclass csrf-field) }))))))
 
 (defn toggle-published
   "GET /vclass/toggle/:uurlid/:draft"

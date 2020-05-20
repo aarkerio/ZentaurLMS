@@ -14,10 +14,6 @@
   (let [formatter (java.text.SimpleDateFormat. "MM/dd/yyyy")]
     (.format formatter date)))
 
-(defn index []
-  [:div {:id "content"}
-   [:h1 {:class "text-success"} "Hello Hiccup"]])
-
 (defn top-links []
   [:div {:class "div_inline_list"}
    [:ul {:class "inline_list"}

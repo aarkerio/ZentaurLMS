@@ -1,5 +1,4 @@
 (ns zentaur.controllers.tests-controller-test
-  "Integration tests with HTTP calls"
   (:require [clojure.data.json :as json]
             [clojure.java.io :as io]
             [clojure.test :refer :all]
@@ -99,4 +98,4 @@
 ;;     (response/ok (ches/encode response non-ascii))))
 
 
-;; (run-tests)  ;; run tests in this NS
+(run-tests)  ;; run tests in this NS
