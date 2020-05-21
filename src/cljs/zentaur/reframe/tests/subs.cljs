@@ -1,15 +1,19 @@
 (ns zentaur.reframe.tests.subs ^{:doc "Zentaur Re-frame Subscriptions"}
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [zentaur.reframe.libs.commons :as cms]))
 
 (rf/reg-sub
  :test
  (fn [db]
    (:test db)))
 
+;; In the bussines logic the questions and nestes answers doesn't matter
+;; but in the view they must be ordered using the ":ordnen" keyword
 (rf/reg-sub
  :questions
  (fn [db]
-   (get-in db [:questions])))
+   (let [questions (cms/vector-to-ordered-idxmap (get-in db [:questions]))]
+     (map #(update % :answers cms/vector-to-ordered-idxmap) questions))))
 
 (rf/reg-sub
  :subjects
@@ -67,8 +71,8 @@
  (fn [db]
    (get-in db [:search-terms])))
 
-;; Quotes part
+;; Quotes section
 (rf/reg-sub
  :quotes
  (fn [db]
-   (get-in db [:quotes])))
+   (cms/order-map (get-in db [:quotes]))))

@@ -7,7 +7,7 @@ CREATE TABLE questions (
   lang_id int NOT NULL REFERENCES langs(id),
   user_id int NOT NULL REFERENCES users(id),
   question text NOT NULL,
-  qtype smallint NOT NULL DEFAULT 1 CHECK (IN (1,2,3,4)),
+  qtype smallint NOT NULL DEFAULT 1 CHECK (qtype IN (1,2,3,4)),
   hint varchar(300),
   points smallint NOT NULL DEFAULT 1,
   origin INT NOT NULL DEFAULT 0,
@@ -17,7 +17,7 @@ CREATE TABLE questions (
   reviewed_fact BOOLEAN NOT NULL DEFAULT false,
   reviewed_cr BOOLEAN NOT NULL DEFAULT false,    -- reviewed copyright
   tsv_en tsvector GENERATED ALWAYS AS (to_tsvector('english', question || ' ' || hint || ' ' || explanation)) STORED,
-  tsv_es tsvector GENERATED ALWAYS AS (to_tsvector('spanish', question || ' ' || hint || ' ' || explanation)) STORED
+  tsv_es tsvector GENERATED ALWAYS AS (to_tsvector('spanish', question || ' ' || hint || ' ' || explanation)) STORED,
   created_at timestamp(0) with time zone NOT NULL DEFAULT now(),
   updated_at timestamp(0) with time zone NOT NULL DEFAULT now()
  );

@@ -29,3 +29,7 @@
   [content]
   (response/content-type (response/ok content) "text/html; charset=utf-8"))
 
+(defn redirect-to
+  "Redirect with flash message"
+  [url flash-txt]
+  (assoc (response/found url) :flash flash-txt))
