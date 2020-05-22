@@ -43,9 +43,8 @@
                  multipart/multipart-middleware
                  ]}
 
-   ["/graphql" {:post graphql-call
-                :middleware [;; query-params & form-params
-                             parameters/parameters-middleware]}]
+   ["/graphql" {:post graphql-call}]
+
    ;; swagger documentation
    ["" {:no-doc true
         :swagger {:info {:title "Zentaur API"
