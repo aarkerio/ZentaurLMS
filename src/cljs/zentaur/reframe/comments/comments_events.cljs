@@ -1,5 +1,6 @@
 (ns zentaur.reframe.comments.comments_events
-  (:require [goog.dom :as gdom]
+  (:require [cljs.spec.alpha :as s]
+            [goog.dom :as gdom]
             [goog.string :as gstring]
             [re-frame.core :as rf]
             [re-graph.core :as re-graph]))

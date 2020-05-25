@@ -23,7 +23,7 @@ SELECT id, question, hint, subject_id, lang_id, level_id FROM
     ORDER BY rank DESC LIMIT :limit)
 p ORDER BY rank DESC;
 
--- :name search-langs-questions :? :*
+-- :name full-search-questions :? :*
 -- :doc search through several tables.
 SELECT id, question, hint, subject_id, lang_id, level_id FROM
     (SELECT id, question, hint, subject_id, lang_id, level_id, ts_rank(tsv_en, q) AS rank, q FROM questions, plainto_tsquery(:terms) AS q
@@ -34,7 +34,7 @@ SELECT id, question, hint, subject_id, lang_id, level_id FROM
      "AND lang_id    =  ANY (ARRAY[" (clojure.string/join ", " (:langs    params)) "])")
 ~*/
 ORDER BY rank DESC LIMIT 5)
-p ORDER BY rank DESC;
+p ORDER BY rank DESC  OFFSET :offset LIMIT :limit
 
 
 /******* QUOTES ****/

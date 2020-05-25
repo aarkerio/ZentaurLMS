@@ -1,10 +1,8 @@
 (ns zentaur.reframe.tests.test-views
-  (:require [clojure.string :as str]
-            [goog.dom :as gdom]
+  (:require [goog.dom :as gdom]
             [reagent.core  :as r]
             [re-frame.core :as rf]
-            [zentaur.reframe.libs.commons :as cms]
-            [zentaur.reframe.tests.forms.blocks :as blk]))
+            [zentaur.reframe.libs.commons :as cms]))
 
 (defn edit-question [{:keys [id question hint explanation qtype points]}]
   (let [aquestion     (r/atom question)
@@ -226,9 +224,9 @@
   (let [questions (rf/subscribe [:questions])]
     (fn [uurlid question-count]
       [:div
-       (doall (for [{:keys [idx question]} (cms/indexado @questions)]
-                ^{:key (hash question)}
-                [question-item (assoc question :counter idx :uurlid uurlid :qcount question-count)]))])))
+       (for [{:keys [idx question]} (cms/indexado @questions)]
+         ^{:key (hash question)}
+         [question-item (assoc question :counter idx :uurlid uurlid :qcount question-count)])])))
 
 (defn test-editor-form [test title description tags subject-id level-id]
     [:div {:id "test-whole-display"}

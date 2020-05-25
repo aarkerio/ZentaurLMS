@@ -46,16 +46,17 @@
 ;;
 
 (def default-db             ;; what gets put into app-db in the initial load.
-  {:test          (hash-map)
-   :questions     (hash-map)
-   :loading?      false
-   :qform         false
-   :qcounter      0
-   :testform      false
-   :subjects      (vector)
-   :levels        (vector)
-   :comments      (vector)
-   :quotes        (hash-map)
-   :selquestions  (hash-map)    ;; selected questions in the search screen
-   :search-terms  (hash-map)  ;; selected langs subjects and levels
+  {:test            (hash-map)
+   :questions       (hash-map)
+   :loading?        false
+   :qform           false
+   :qcounter        0
+   :testform        false
+   :subjects        (vector)
+   :levels          (vector)
+   :comments        (vector)
+   :quotes          (hash-map)
+   :selquestions    (hash-map)    ;; selected questions in the search screen
+   :search-fields   (hash-map)    ;; loaded data: langs subjects and levels
+   :selected-fields (hash-map)    ;; selected elements to do the search
    })

@@ -1,5 +1,6 @@
 (ns zentaur.reframe.quotes.quotes-events
-  (:require [goog.string :as gstring]
+  (:require [cljs.spec.alpha :as s]
+            [goog.string :as gstring]
             [re-frame.core :as rf]
             [re-graph.core :as re-graph]))
 

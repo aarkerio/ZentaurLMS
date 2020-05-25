@@ -104,9 +104,8 @@
 (defn- ^:private search-fullq
   [context args value]
   (log/info (str ">>> ARGSSS search-fullq >>>>> " args))
-  (let [new-comment (mt/full-search args)
-        new-comment-2 (assoc new-comment :username (str (:fname new-comment) "_" (:lname new-comment)))]
-   (dissoc new-comment-2 :fname :lname)))
+  (let [questions (mt/full-search args)]
+        (assoc {} :title "foo" :questions questions)))
 
 (defn- ^:private load-quotes
   [context args value]

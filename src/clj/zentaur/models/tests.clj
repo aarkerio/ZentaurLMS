@@ -15,9 +15,7 @@
 (defn get-tests
   "Get the list of test by user"
   [user-id]
-  (let [results (db/search-langs-questions {:terms "lacinia morbi" :subjects [1 2] :langs [1 2] :levels [4 5 6] :limit 10})
-        _       (log/info (str ">>> RESULD FULL SEARCH  >>>>> " results))]
-        (db/get-tests {:user-id user-id})))
+  (db/get-tests {:user-id user-id}))
 
 (defn get-subjects
   "Data for populates the test form"
@@ -220,7 +218,6 @@
        {:error "Not enough answer rows"})))
 
 ;; SEARCH QUESTIONS
-
 (defn load-search [args]
   (let [subjects (get-subjects)
         levels   (get-levels)
@@ -234,9 +231,12 @@
         full-params (assoc pre-params :limit 20)]
     (db/search-questions full-params)))
 
-(defn full-search [args]
-  (let [results (db/search-langs-questions {:terms "lacinia morbi" :subjects [1 2] :langs [1 2] :levels [4 5 6]})
-        _    (log/info (str ">>> RESULD FULL SEARCH  >>>>> " results))
-        pre-params  (sh/str-to-int args :subject_id :level_id :lang_id)
-        full-params (assoc pre-params :limit 20)]
-    (db/search-questions full-params)))
+;; {:subjects "2 16 15 10 11 4 13 14 6 8 5", :levels "2 3 11 5", :langs "1 2", :terms "elementum  placerat"}
+(defn full-search [{:keys [subjects levels langs terms offset limit] :or {offset 0 limit 10}}]
+  (let [vsubj   (clojure.string/split subjects #" ")
+        vleve   (clojure.string/split levels #" ")
+        vlang   (clojure.string/split langs #" ")
+        results (db/full-search-questions { :subjects vsubj :levels vleve :langs vlang  :terms terms :offset offset :limit limit})
+        _       (log/info (str ">>> RESULD FULL SEARCH  >>>>> " results))]
+    results
+    ))

@@ -1,4 +1,4 @@
-;; /**********   UNDERSCORES IN NAMES PLEASE!!!!    ********/
+;; /**********   UNDERSCORES IN NAMES PLEASE!    ********/
 {:enums {
          :question_origin {:description "Question edited from a previous one"
                    :values [:ORIGINAL :DERIVED]}
@@ -128,7 +128,9 @@
                           :args        {:subjects {:type String}
                                         :levels   {:type String}
                                         :langs    {:type String}
-                                        :terms    {:type String}}
+                                        :terms    {:type String}
+                                        :offset   {:type (non-null ID)}
+                                        :limit    {:type (non-null ID)}}
                           :resolve     :search-fullq}
            :load_quotes {:type        (non-null :quotes)
                          :description "Send quotes data."
