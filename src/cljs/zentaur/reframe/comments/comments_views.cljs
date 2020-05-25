@@ -1,4 +1,4 @@
-(ns zentaur.reframe.tests.comment-views
+(ns zentaur.reframe.comments.comments-views
   (:require [clojure.string :as str]
             [goog.dom :as gdom]
             [reagent.core  :as r]

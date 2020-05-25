@@ -5,7 +5,7 @@
             [goog.string :as gstr]
             [goog.events :as events]
             [zentaur.uploads :as uploads]
-            [zentaur.reframe.tests.core :as ctests]
+            [zentaur.reframe.core :as rfcore]
             [zentaur.users :as users])
   (:import [goog.events EventType]))
 
@@ -138,7 +138,6 @@
 
 (defn refresh-csrf []
   (when-let [csrf-field (gdom/getElement "__anti-forgery-token")]
-    (.log js/console (str ">>> !!!! VALU   E csrf-field >>>>> " csrf-field ))
     (js/setTimeout (do (ask-csrf csrf-field)) 6000000)))
 
 (defn ^:export init []

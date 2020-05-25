@@ -1,4 +1,4 @@
-(ns zentaur.reframe.tests.subs ^{:doc "Zentaur Re-frame Subscriptions"}
+(ns zentaur.reframe.libs.subs ^{:doc "Zentaur Re-frame Subscriptions"}
   (:require [re-frame.core :as rf]
             [zentaur.reframe.libs.commons :as cms]))
 

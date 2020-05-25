@@ -1,13 +1,7 @@
 (ns zentaur.reframe.quotes.quotes-events
-  (:require [cljs.spec.alpha :as s]
-            [clojure.string :as str]
-            [com.rpl.specter :as spct]
-            [goog.dom :as gdom]
-            [goog.string :as gstring]
+  (:require [goog.string :as gstring]
             [re-frame.core :as rf]
-            [re-graph.core :as re-graph]
-            [zentaur.reframe.libs.commons :as cms]
-            [zentaur.reframe.tests.db :as zdb]))
+            [re-graph.core :as re-graph]))
 
 ; -- First Interceptor ----
 (defn check-and-throw
