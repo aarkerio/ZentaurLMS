@@ -48,7 +48,7 @@
   (let [selected-qstios (rf/subscribe [:selected-qstios])]
     (fn []
       (when (> (count @selected-qstios) 0)
-        [:div {:style "padding:20 px; margin:15px; border: 1px dotted gray;"} (str "You have selected: " (count @selected-qstios) " questions.") [:br]
+        [:div {:class "div-create-test"} (str "You have selected: " (count @selected-qstios) " questions.") [:br]
          [:form {:action "/vclass/tests/build" :method "post" :class "css-class-form"}
           [:input.btn {:class "btn btn-outline-primary-green" :type "submit" :value "Create Test"}]]]))))
 
