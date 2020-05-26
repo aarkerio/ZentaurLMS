@@ -231,12 +231,16 @@
         full-params (assoc pre-params :limit 20)]
     (db/search-questions full-params)))
 
+(defn str-to-v [string]
+  (let [first-v (clojure.string/split string  #" ")]
+    (mapv #(Integer/parseInt % ) first-v)))
+
 ;; {:subjects "2 16 15 10 11 4 13 14 6 8 5", :levels "2 3 11 5", :langs "1 2", :terms "elementum  placerat"}
 (defn full-search [{:keys [subjects levels langs terms offset limit] :or {offset 0 limit 10}}]
-  (let [vsubj   (clojure.string/split subjects #" ")
-        vleve   (clojure.string/split levels #" ")
-        vlang   (clojure.string/split langs #" ")
-        results (db/full-search-questions { :subjects vsubj :levels vleve :langs vlang  :terms terms :offset offset :limit limit})
-        _       (log/info (str ">>> RESULD FULL SEARCH  >>>>> " results))]
+  (let [isubjects (str-to-v subjects)
+        ilevels   (str-to-v levels)
+        ilangs    (str-to-v langs)
+        results   (db/full-search-questions { :subjects isubjects :levels ilevels :langs ilangs  :terms terms :offset offset :limit limit})
+        _         (log/info (str ">>> RESULT FULL SEARCH  >>>>> " results))]
     results
     ))

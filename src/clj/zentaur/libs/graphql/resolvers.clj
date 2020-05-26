@@ -105,7 +105,7 @@
   [context args value]
   (log/info (str ">>> ARGSSS search-fullq >>>>> " args))
   (let [questions (mt/full-search args)]
-        (assoc {} :title "foo" :questions questions)))
+        (assoc {} :uurlid "foobar" :title "foo" :questions questions)))
 
 (defn- ^:private load-quotes
   [context args value]

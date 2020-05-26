@@ -57,9 +57,9 @@
     (let [{:keys [search-text offset limit]} updates
           selected-fields (-> cfx :db :selected-fields)
           _            (.log js/console (str ">>> selected-fields >>>>> " selected-fields ))
-          subjects     (str/join ", " (get selected-fields "subjects"))
-          levels       (str/join ", " (get selected-fields "levels"))
-          langs        (str/join ", " (get selected-fields "langs"))
+          subjects     (str/join " " (get selected-fields "subjects"))
+          levels       (str/join " " (get selected-fields "levels"))
+          langs        (str/join " " (get selected-fields "langs"))
           _            (.log js/console (str ">>> SQQQQQ >>>>> " updates " >> " subjects " >>> levels >> " levels "  langs >> " langs))
           query        (gstring/format "{search_fullq(subjects: \"%s\", levels: \"%s\", langs: \"%s\", terms: \"%s\", offset: %i, limit: %i)
                                         { uurlid title questions { id question qtype }}}"
