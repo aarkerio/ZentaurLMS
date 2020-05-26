@@ -44,6 +44,14 @@
                                                                :offset 0
                                                                :limit 50}])}]])))
 
+(defn show-selected-questions []
+  (let [selected-qstios (rf/subscribe [:selected-qstios])]
+    (fn []
+      (when (> (count @selected-qstios) 0)
+        [:div {:style "padding:20 px; margin:15px; border: 1px dotted gray;"} (str "You have selected: " (count @selected-qstios) " questions.") [:br]
+         [:form {:action "/vclass/tests/build" :method "post" :class "css-class-form"}
+          [:input.btn {:class "btn btn-outline-primary-green" :type "submit" :value "Create Test"}]]]))))
+
 (defn offered-questions []
   (let [subject-id  (r/atom 1)
         level-id    (r/atom 1)
@@ -53,18 +61,18 @@
       [:tr
        [:th "Select"]
        [:th "Question"]
-       [:th "Explanation"]]]
+       [:th "Type"]]]
      [:tbody
-      (for [q @(rf/subscribe [:questions])]
-        ^{:key (:id q)} [:tr
-                         [:td [:input {:type "checkbox" :title "Select" :on-change #(rf/dispatch [:add-question {:question_id (:id q)}])}]]
+      (for [q @(rf/subscribe [:searched-qstios])]
+        ^{:key (hash (:id q))} [:tr
+                         [:td [:input {:type "checkbox" :title "Select" :id (str "qst_" (:id q)) :on-change #(rf/dispatch [:add-question {:question_id (:id q)}])}]]
                          [:td (:question q)]
-                         [:td (:explanation q)]])]]))
+                         [:td (:qtype q)]])]]))
 
 (defn search-app
   []
     [:div
      [questions-selector]
-     [offered-questions]
-     [terms-input-text] 
-     [:p "Ziehen Sie."]])
+     [terms-input-text]
+     [show-selected-questions]
+     [offered-questions]])

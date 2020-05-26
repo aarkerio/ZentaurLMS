@@ -46,10 +46,10 @@
 
 (rf/reg-event-db
  :search-question-response
-  []
+ []
   (fn [db [_ {:keys [data errors]}]]
-    (let [questions     (-> data :search_questions :questions)]
-         (assoc db :questions  questions))))
+    (let [questions     (-> data :search_fullq :questions)]
+         (assoc db :searched-qstios questions))))
 
 (rf/reg-event-fx
   :search-questions
@@ -62,7 +62,20 @@
           langs        (str/join " " (get selected-fields "langs"))
           _            (.log js/console (str ">>> SQQQQQ >>>>> " updates " >> " subjects " >>> levels >> " levels "  langs >> " langs))
           query        (gstring/format "{search_fullq(subjects: \"%s\", levels: \"%s\", langs: \"%s\", terms: \"%s\", offset: %i, limit: %i)
-                                        { uurlid title questions { id question qtype }}}"
+                                        { questions { id question qtype }}}"
                                        subjects levels langs search-text offset limit)]
       (.log js/console (str ">>> QUERRRY  >>>>> " query ))
       (rf/dispatch [::re-graph/query query {} [:search-question-response]]))))
+
+
+(rf/reg-event-db
+ :add-question
+  []
+  (fn [db [_ question]]
+    (.log js/console (str " >>>>> DB selected-qstios >>> "  (:selected-qstios db) " >>> QUESTION *** >>>>> " question ))
+    (let [qid (:question_id question)
+          checkbox  (gdom/getElement (str "qst_" qid))
+          checked   (.. checkbox -checked)]
+      (if checked
+        (assoc-in  db [:selected-qstios qid] question)
+        (update-in db [:selected-qstios] dissoc qid)))))

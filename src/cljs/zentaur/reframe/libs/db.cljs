@@ -56,7 +56,8 @@
    :levels          (vector)
    :comments        (vector)
    :quotes          (hash-map)
-   :selquestions    (hash-map)    ;; selected questions in the search screen
-   :search-fields   (hash-map)    ;; loaded data: langs subjects and levels
-   :selected-fields (hash-map)    ;; selected elements to do the search
+   :search-fields   (hash-map)    ;; initial loaded data: langs subjects and levels
+   :selected-fields (hash-map)    ;; langs subjects and levels choosed by the user
+   :searched-qstios (vector)      ;; Questions that matched the search options
+   :selected-qstios (hash-map)    ;; selected elements to create the tests
    })

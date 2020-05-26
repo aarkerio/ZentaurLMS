@@ -38,10 +38,14 @@
                                :levels       {:type (list :level)}
                                :langs        {:type (list :lang)}
                                }}
+           :questions {
+                       :description "Questions collection schema."
+                       :fields {
+                                :questions  {:type (list :question)}}}
            :question {
-                      :description "Question type."
+                      :description "Question One type."
                       :fields {
-                               :id            {:type (non-null ID)}
+                               :id            {:type (non-null Int)}
                                :question      {:type (non-null String)}
                                :subject_id    {:type Int}
                                :level_id      {:type Int}
@@ -58,11 +62,11 @@
                                :created_at    {:type String}
                                :answers       {:type (list :answer)}}}
             :quotes {
-                     :description "Quotes type."
+                     :description "Quotes List type."
                      :fields {
                               :quotes       {:type (list :quote)}}}
            :quote {
-                      :description "Quote type."
+                      :description "Quote One type."
                       :fields {
                                :id          {:type (non-null Int)}
                                :total       {:type (non-null Int)}
@@ -123,14 +127,14 @@
                            :description "Access comments from blog entry id."
                            :args        {:post_id {:type (non-null Int)}}
                            :resolve     :load-comments}
-           :search_fullq {:type        (non-null :test)
-                          :description "Search for questions."
-                          :args        {:subjects {:type String}
-                                        :levels   {:type String}
-                                        :langs    {:type String}
+           :search_fullq {:type        (non-null :questions)
+                          :description "Full text search for questions."
+                          :args        {:subjects {:type (non-null String)}
+                                        :levels   {:type (non-null String)}
+                                        :langs    {:type (non-null String)}
                                         :terms    {:type String}
-                                        :offset   {:type (non-null ID)}
-                                        :limit    {:type (non-null ID)}}
+                                        :offset   {:type (non-null Int)}
+                                        :limit    {:type (non-null Int)}}
                           :resolve     :search-fullq}
            :load_quotes {:type        (non-null :quotes)
                          :description "Send quotes data."

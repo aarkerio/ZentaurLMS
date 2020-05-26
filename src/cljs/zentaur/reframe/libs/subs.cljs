@@ -73,9 +73,19 @@
    (get-in db [:selected-fields])))
 
 (rf/reg-sub
+ :searched-qstios
+ (fn [db]
+   (get-in db [:searched-qstios])))
+
+(rf/reg-sub
  :search-fields
  (fn [db]
    (get-in db [:search-fields])))
+
+(rf/reg-sub
+ :selected-qstios
+ (fn [db]
+   (get-in db [:selected-qstios])))
 
 (rf/reg-sub
   :loaded-subjects
@@ -97,6 +107,8 @@
     (rf/subscribe [:search-fields]))
   (fn [search-fields]
     (:langs search-fields)))
+
+;; Search section ends
 
 ;; Quotes section
 (rf/reg-sub
