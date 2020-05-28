@@ -2,7 +2,8 @@
   (:require [clojure.tools.logging :as log]
             [ring.util.http-response :as response]
             [zentaur.controllers.base-controller :as basec]
-            [zentaur.hiccup.admin.users-view :as users-view]
+            [zentaur.hiccup.admin.users-view :as admin-users-view]
+            [zentaur.hiccup.users-view :as users-view]
             [zentaur.hiccup.layouts.application-layout :as layout]
             [zentaur.libs.models.shared :as sh]
             [zentaur.models.users :as model-user]))
@@ -15,7 +16,7 @@
         users         (model-user/get-users archived)
         roles         (model-user/get-roles)]
     (basec/parser
-     (layout/application (merge base {:contents (users-view/index base users roles archived)})))))
+     (layout/application (merge base {:contents (admin-users-view/index base users roles archived)})))))
 
 (defn create-user
   "POST /admin/users"
@@ -24,7 +25,7 @@
         clean-params (dissoc params :__anti-forgery-token  :submit)
         response     (model-user/create clean-params)
         flash        (if (string? response) response basec/msg-erfolg)]
-        (assoc (response/found "/admin/users/true") :flash flash)))
+    (assoc (response/found "/admin/users/true") :flash flash)))
 
 (defn login-page
   "GET /login"
