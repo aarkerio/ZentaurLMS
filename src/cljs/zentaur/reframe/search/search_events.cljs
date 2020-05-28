@@ -79,3 +79,14 @@
       (if checked
         (assoc-in  db [:selected-qstios qid] question)
         (update-in db [:selected-qstios] dissoc qid)))))
+
+(rf/reg-event-fx
+ :create-test
+ (fn [cfx [_ updates]]
+   (.log js/console (str " >>>>> DB selected-qstios >>> "  (:selected-qstios db) " >>> QUESTION *** >>>>> " question ))
+   (let [qid (:question_id question)
+         checkbox  (gdom/getElement (str "qst_" qid))
+         checked   (.. checkbox -checked)]
+      (if checked
+        (assoc-in  db [:selected-qstios qid] question)
+        (update-in db [:selected-qstios] dissoc qid)))))
