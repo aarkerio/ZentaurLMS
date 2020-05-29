@@ -34,7 +34,7 @@
                   (f/text-field  { :class "form-control mr-sm-2" :placeholder "Last name" } :lname)
                   (f/text-field  { :class "form-control mr-sm-2" :placeholder "email" } :email)
                   (f/text-field  { :class "form-control mr-sm-2" :placeholder "prepassword" } :prepassword)
-                  [:div (c/html [:select {:class "form-control mr-sm-2" :name "role_id"}
+ [:div (c/html [:select {:class "form-control mr-sm-2" :name "role_id"}
                                  options])]
                   [:div (f/label "Admin" "Admin") (f/check-box {:title "Admin user" :value "1"} "preadmin")]
                   (f/submit-button {:class "btn btn-outline-success my-2 my-sm-0" :name "submit"} "Einrechen"))]]
