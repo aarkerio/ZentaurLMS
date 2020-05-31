@@ -65,9 +65,12 @@
      [:tbody
       (for [q @(rf/subscribe [:searched-qstios])]
         ^{:key (hash (:id q))} [:tr
-                         [:td [:input {:type "checkbox" :title "Select" :id (str "qst_" (:id q)) :on-change #(rf/dispatch [:add-question {:question_id (:id q)}])}]]
-                         [:td (:question q)]
-                         [:td (:qtype q)]])]]))
+                                [:td [:input {:type "checkbox"
+                                              :title "Select"
+                                              :id (str "qst_" (:id q))
+                                              :on-change #(rf/dispatch [:add-question {:question_id (:id q)}])}]]
+                                [:td (:question q)]
+                                [:td (:qtype q)]])]]))
 
 (defn search-app
   []

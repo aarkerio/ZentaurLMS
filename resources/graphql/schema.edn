@@ -41,7 +41,8 @@
            :questions {
                        :description "Questions collection schema."
                        :fields {
-                                :questions  {:type (list :question)}}}
+                                :user_uurlid {:type String}
+                                :questions   {:type (list :question)}}}
            :question {
                       :description "Question One type."
                       :fields {
@@ -240,5 +241,10 @@
                             :description "Remove quote."
                             :args {:id    {:type (non-null Int)}}
                             :resolve :delete-quote}
+             :holds_question {:type :question
+                              :description "Save a selected question"
+                              :args {:question_id  {:type (non-null Int)}
+                                     :user_uurlid  {:type (non-null String)}}
+                              :resolve :holds-question}
              }
  }

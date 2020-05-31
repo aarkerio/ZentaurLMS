@@ -1,0 +1,32 @@
+;; /**********   UNDERSCORES IN NAMES PLEASE!    ********/
+{
+ :objects {
+           :camments {
+                      :description "Camments collection schema."
+                      :fields {
+                               :camments    {:type (list :camment)}}}
+           :camment {
+                     :description "Camment type."
+                     :fields {:id            {:type Int}
+                              :comment       {:type (non-null String)}
+                              :username      {:type String}}}
+           }
+ :queries {
+           :lood_comments {:type        (non-null :camments)
+                           :description "Access comments from blog entry id."
+                           :args        {:post_id {:type (non-null Int)}}
+                           :resolve     :load-comments}
+           }
+ :mutations {
+             :create_camment {:type :camment
+                              :description "Create new comment."
+                              :args {:post_id     {:type (non-null Int)}
+                                     :user_id     {:type (non-null Int)}}
+                              :resolve :create-comment}
+             :create_quate {:type :camment
+                            :description "Create a new quote."
+                            :args {:quote    {:type (non-null String)}
+                                   :author   {:type (non-null String)}}
+                            :resolve :create-quote}
+             }
+ }

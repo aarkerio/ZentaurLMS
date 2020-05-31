@@ -67,9 +67,8 @@
       (.log js/console (str ">>> QUERRRY  >>>>> " query ))
       (rf/dispatch [::re-graph/query query {} [:search-question-response]]))))
 
-
 (rf/reg-event-db
- :add-question
+ :add-question-response
   []
   (fn [db [_ question]]
     (.log js/console (str " >>>>> DB selected-qstios >>> "  (:selected-qstios db) " >>> QUESTION *** >>>>> " question ))
@@ -79,6 +78,18 @@
       (if checked
         (assoc-in  db [:selected-qstios qid] question)
         (update-in db [:selected-qstios] dissoc qid)))))
+
+
+(rf/reg-event-fx
+  :add-question
+  (fn [cfx [_ updates]]
+    (let [{:keys [question-id]} updates
+          _         (.log js/console (str ">>> UPDATES >>>>> " updates ))
+          mutation  (gstring/format "{hold_question(user-uurlid: \"%s\", question_id: %i)
+                                        { questions { id question }}}"
+                                    user-uurlid question-id)]
+      (.log js/console (str ">>> QUERRRY  >>>>> " query ))
+      (rf/dispatch [::re-graph/mutate mutation {} [:add-question-response]])
 
 (rf/reg-event-fx
  :create-test
