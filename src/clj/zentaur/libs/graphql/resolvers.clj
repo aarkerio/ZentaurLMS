@@ -124,7 +124,11 @@
 
 (defn- ^:private delete-quote
   [context args value]
-  (log/info (str ">>>  DELETE QUOTE ARGS **** >>>>> " args))
+  (mq/delete-quote args))
+
+(defn- ^:private hold-question
+  [context args value]
+  (log/info (str ">>>  HOLD question ARGS **** >>>>> " args))
   (mq/delete-quote args))
 
 (defn resolver-map
@@ -150,5 +154,6 @@
    :create-quote (partial create-quote)
    :update-quote (partial update-quote)
    :delete-quote (partial delete-quote)
+   :hold-question (partial hold-question)
    })
 
