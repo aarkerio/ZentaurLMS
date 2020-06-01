@@ -53,6 +53,15 @@
         msg          (if (nil? new-uurlid) "Etwas ging schief ;-(" "Test hinzufügen!! ;-)")]
     (assoc (response/found (str "/vclass/tests/edit/" new-uurlid)) :flash msg)))
 
+(defn build-test
+  "POST /vclass/tests/build"
+  [{:keys [params session identity]}]
+  (let [clean-params (dissoc params :__anti-forgery-token :submit :button-save)
+        user-id      (:id identity)
+        new-uurlid   (model-test/build-test user-id)
+        msg          (if (nil? new-uurlid) "Etwas ging schief ;-(" "Test hinzufügen!! ;-)")]
+    (assoc (response/found (str "/vclass/tests/edit/" new-uurlid)) :flash msg)))
+
 (defn delete-test
   "DELETE /vclass/tests/delete. Not really a delete."
   [{:keys [params]}]

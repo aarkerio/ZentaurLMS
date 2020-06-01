@@ -109,6 +109,17 @@
         _           (generate-questions pre-params (:uurlid test))]
     (:uurlid test)))
 
+(defn link-test-questions [params uurlid]
+  (let [questions (db/random-questions params)]
+    (doseq [q questions]
+      (clone-question q uurlid))))
+
+(defn build-test [user-id]
+  (let [full-params (assoc {} :subject_id 1 :title "Your new test" :tags "list of tags")
+        new-test    (create-test! full-params user-id)
+        uurlid      (:uurlid new-test)]
+    (link-test-questions uurlid user-id)))
+
 ;;;;; TEST BUILD SECTION STARTS
 
 (defn- ^:private get-answers [{:keys [id] :as question}]
