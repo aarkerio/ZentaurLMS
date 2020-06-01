@@ -4,7 +4,6 @@
             [reagent.core  :as r]
             [re-frame.core :as rf]
             [zentaur.febe.pagination :as pag]
-            [zentaur.reframe.tests.forms.blocks :as blk]
             [zentaur.reframe.libs.commons :as cms]))
 
 (defn new-quote

@@ -8,12 +8,27 @@
             [mount.core :refer [defstate]]
             [zentaur.libs.graphql.resolvers :as resolvers]))
 
+(defn deep-merge
+  "Deep merge two maps"
+  [& values]
+  (if (every? map? values)
+    (apply merge-with deep-merge values)
+    (last values)))
+
+(defn load-config
+  [& filenames]
+  (reduce deep-merge (map (comp edn/read-string
+                                slurp
+                                io/resource)
+                          filenames)))
+
+(def schemas (load-config "graphql/schema.edn" "graphql/questions.edn"))
+
+;; (def schemas (load-config (io/resource "graphql/schema.edn") (io/resource "graphql/questions.edn")))
+
 (defstate compiled-schema
   :start
-  (-> "graphql/schema.edn"
-      io/resource
-      slurp
-      edn/read-string
+  (-> schemas
       (attach-resolvers (resolvers/resolver-map))
       schema/compile))
 

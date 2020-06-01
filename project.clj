@@ -1,4 +1,4 @@
-(defproject zentaur "0.0.34"
+(defproject zentaur "0.0.36"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
@@ -59,9 +59,11 @@
   :clean-targets ^{:protect false}
   [:target-path [:builds :app :compiler :output-to]]
   :profiles {
-            :uberjar {:omit-source true
-                      :prep-tasks ["javac" "compile"]
+            :uberjar {:global-vars {*assert* false}
+                      :jvm-opts ["-Dclojure.compiler.direct-linking=true" "-Dclojure.spec.skip-macros=true"]
                       :aot :all
+                      :omit-source true
+                      :prep-tasks ["javac" "compile"]
                       :uberjar-name "zentaur.jar"
                       :source-paths ["env/prod/clj" "env/prod/cljs" "test/cljs"]
                       :resource-paths ["env/prod/resources"]}

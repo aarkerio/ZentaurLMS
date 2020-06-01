@@ -47,5 +47,6 @@
   (db/get-roles))
 
 (defn destroy [id]
+  "Not a real delete, just set it to inactive "
   (let [int-id (Integer/parseInt id)]
     (db/delete-user! {:id int-id})))

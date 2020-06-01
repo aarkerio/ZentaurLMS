@@ -31,6 +31,7 @@
    ["/delete/:uurlid"          {:delete cont-vclass/delete-vclass}]
    ["/tests"                   {:get  cont-tests/index :post cont-tests/create-test}]
    ["/tests/generate"          {:post cont-tests/generate-test}]
+   ["/tests/build"             {:post cont-tests/build-test}]
    ["/tests/edit/:uurlid"      {:get  cont-tests/edit}]
    ["/tests/exportpdf/:uurlid" {:get  cont-export/export-test-pdf}]
    ["/tests/exportodt/:uurlid" {:get  cont-export/export-test-odt}]

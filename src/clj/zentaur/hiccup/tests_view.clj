@@ -82,7 +82,10 @@
      [:div {:id "test-root-app"}]]))
 
 (defn search [base]
-  (let [csrf-field (:csrf-field base)]
+  (log/info (str ">>> BASEE >>>>> " base))
+  (let [csrf-field  (:csrf-field base)
+        user-uuid (-> base :identity :uuid)]
     [:div
-     [:h1 "Browse and select Questions"]
-     [:div {:id "search-root-app"}]]))
+     [:h1 "Search and select Questions to create a new test"]
+     [:div {:id "search-root-app"}]
+     [:div.hidden-div {:id "user-uuid"} user-uuid]]))

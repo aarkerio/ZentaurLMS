@@ -23,8 +23,8 @@
   (let [items-per-page 5]
     [:div {:id "cont"}
      [:div
-      [:h1 "Welcome to t-by-t!"]
-      [:p "We are a developing Edu tech tools in the hope they will your daily tasks easier and faster."]]
+      [:h1 "Welcome to Cooperative Learning!"]
+      [:p "In CL we are a developing Edu tech tools in the hope they will your daily tasks easier."]]
      [:div.div-simple-separator
       [:form {:id "submit-comment-form" :action "/search" :method "post" :class "css-class-form"}
        (f/hidden-field {:value csrf-field} "__anti-forgery-token")

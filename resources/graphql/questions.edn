@@ -1,0 +1,192 @@
+;; /********** STUFF RELATED TO THE TESTS MODEL.   >>>> UNDERSCORES IN NAMES PLEASE!    ********/
+{:objects {
+           :fulltest  {
+                        :description "List of Tests schema."
+                        :fields {
+                                 :tests {:type (list :test)}}}
+           :test     {
+                      :description "Tests schema."
+                      :fields {
+                               :uurlid       {:type (non-null ID)}
+                               :title        {:type (non-null String)}
+                               :user_id      {:type Int}
+                               :description  {:type String}
+                               :instructions {:type String}
+                               :subject      {:type String}
+                               :subject_id   {:type Int}
+                               :level        {:type String}
+                               :level_id     {:type Int}
+                               :lang         {:type String}
+                               :lang_id      {:type Int}
+                               :tags         {:type String}
+                               :active       {:type Boolean}
+                               :shared       {:type Boolean}
+                               :created_at   {:type String}
+                               :questions    {:type (list :question)}
+                               :subjects     {:type (list :subject)}
+                               :levels       {:type (list :level)}
+                               :langs        {:type (list :lang)}
+                               }}
+           :questions {
+                       :description "Questions collection schema."
+                       :fields {
+                                :user_uurlid {:type String}
+                                :questions   {:type (list :question)}}}
+           :question {
+                      :description "Question One type."
+                      :fields {
+                               :id            {:type (non-null Int)}
+                               :question      {:type (non-null String)}
+                               :subject_id    {:type Int}
+                               :level_id      {:type Int}
+                               :lang_id       {:type Int}
+                               :qtype         {:type Int}
+                               :hint          {:type String}
+                               :explanation   {:type String}
+                               :fulfill       {:type String}
+                               :ordnen        {:type Int}
+                               :points        {:type Int}
+                               :user_id       {:type Int}
+                               :reviewed_fact {:type Boolean}
+                               :reviewed_lang {:type Boolean}
+                               :created_at    {:type String}
+                               :answers       {:type (list :answer)}}}
+           :answer {
+                    :description "Answer type."
+                    :fields {
+                             :id          {:type (non-null ID)}
+                             :answer      {:type (non-null String)}
+                             :question_id {:type (non-null Int)}
+                             :ordnen      {:type Int}
+                             :correct     {:type Boolean}}}
+           :subject {
+                      :description "Subject type."
+                      :fields {
+                               :id            {:type (non-null Int)}
+                               :subject       {:type (non-null String)}}}
+           :level {
+                     :description "Level type."
+                     :fields {
+                              :id            {:type (non-null Int)}
+                              :level         {:type (non-null String)}}}
+           :lang {
+                     :description "Language type."
+                     :fields {
+                              :id            {:type (non-null Int)}
+                              :lang          {:type (non-null String)}}}
+           }
+ :queries {
+           :test_by_uurlid {:type        (non-null :test)
+                            :description "Access a test by its unique id, if it exists."
+                            :args        {:uurlid   {:type ID}
+                                          :archived {:type Boolean}}
+                            :resolve     :test-by-uurlid}
+           :load_search {:type        (non-null :test)
+                         :description "Search questions"
+                         :args        {}
+                         :resolve     :load_search}
+           :search_questions {:type        (non-null :test)
+                              :description "Search questions"
+                              :args        {:subject_id {:type (non-null ID)}
+                                            :level_id   {:type (non-null ID)}
+                                            :lang_id    {:type (non-null ID)}}
+                              :resolve     :search_questions}
+           :search_fullq {:type        (non-null :questions)
+                          :description "Full text search for questions."
+                          :args        {:subjects {:type (non-null String)}
+                                        :levels   {:type (non-null String)}
+                                        :langs    {:type (non-null String)}
+                                        :terms    {:type String}
+                                        :offset   {:type (non-null Int)}
+                                        :limit    {:type (non-null Int)}}
+                          :resolve     :search-fullq}
+           }
+ :mutations {
+             :create_question {:type :question
+                               :description "Create new question."
+                               :args {:uurlid      {:type (non-null ID)}
+                                      :question    {:type (non-null String)}
+                                      :hint        {:type String}
+                                      :explanation {:type String}
+                                      :fulfill     {:type String}
+                                      :qtype       {:type (non-null Int)
+                                                    :description "Type of question"}
+                                      :points      {:type (non-null Int)}
+                                      :user_id     {:type (non-null Int)}}
+                               :resolve :create-question}
+             :create_answer {:type :answer
+                             :description "Create a new answer."
+                             :args {:answer       {:type (non-null String)}
+                                    :correct      {:type (non-null Boolean)}
+                                    :question_id  {:type (non-null Int)}}
+                             :resolve :create-answer}
+             :update_test {:type :test
+                           :description "Update test."
+                           :args {
+                                  :uurlid      {:type (non-null ID)}
+                                  :title       {:type (non-null String)}
+                                  :description {:type String}
+                                  :tags        {:type String}
+                                  :subject_id  {:type (non-null Int)}
+                                  :level_id    {:type (non-null Int)}}
+                             :resolve :update-test}
+             :update_question {:type :question
+                               :description "Update a question."
+                               :args {
+                                      :id           {:type (non-null Int)}
+                                      :question     {:type (non-null String)}
+                                      :uurlid       {:type (non-null String)}
+                                      :explanation  {:type String}
+                                      :hint         {:type String}
+                                      :quest_update {:type (non-null Boolean)}
+                                      :qtype        {:type (non-null Int)}
+                                      :points       {:type (non-null Int)}}
+                               :resolve :update-question}
+             :reorder_question {:type :test
+                                :description "Reorder question."
+                                :args {
+                                       :uurlid      {:type (non-null ID)}
+                                       :ordnen      {:type (non-null Int)}
+                                       :direction   {:type (non-null String)}}
+                                :resolve :reorder-question}
+             :reorder_answer {:type :question
+                              :description "Reorder answer."
+                              :args {
+                                     :ordnen      {:type (non-null Int)}
+                                     :question_id {:type (non-null Int)}
+                                     :direction   {:type (non-null String)}}
+                              :resolve :reorder-answer}
+             :update_fulfill {:type :question
+                               :description "Update the fulfill field."
+                               :args {
+                                      :id          {:type (non-null Int)}
+                                      :fulfill     {:type (non-null String)}}
+                             :resolve :update-fulfill}
+             :update_answer {:type :answer
+                             :description "Update an answer."
+                             :args {:answer       {:type (non-null String)}
+                                    :correct      {:type (non-null Boolean)}
+                                    :id           {:type (non-null Int)}}
+                             :resolve :update-answer}
+             :delete_question {:type :question
+                               :description "Unlink question."
+                               :args {:uurlid      {:type (non-null ID)}
+                                      :question_id {:type (non-null Int)}}
+                               :resolve :delete-question}
+             :delete_answer {:type :answer
+                             :description "Remove answer."
+                             :args {:answer_id    {:type (non-null Int)}
+                                    :question_id  {:type (non-null Int)}}
+                             :resolve :delete-answer}
+             :hold_question {:type :question
+                             :description "Save a selected question"
+                             :args {:question_id {:type (non-null Int)}
+                                    :user_uuid   {:type (non-null String)}}
+                             :resolve :hold-question}
+             :remove_hold_question {:type :question
+                                    :description "Save a selected question"
+                                    :args {:question_id {:type (non-null Int)}
+                                           :user_uuid   {:type (non-null String)}}
+                                    :resolve :remove-hold-question}
+             }
+}

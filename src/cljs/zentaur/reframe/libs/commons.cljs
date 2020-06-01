@@ -1,6 +1,5 @@
 (ns zentaur.reframe.libs.commons
-  (:require [cljs.spec.alpha :as s]
-            [re-frame.core :as re-frame]))
+  (:require [cljs.spec.alpha :as s]))
 
 (defn index-by-qid
   "Define index in a single Test data structure"

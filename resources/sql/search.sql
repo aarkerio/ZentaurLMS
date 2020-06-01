@@ -15,7 +15,7 @@
 -- :name search-english-questions :? :*
 -- :doc search through several tables.
 SELECT id, question, hint, subject_id, lang_id, level_id FROM
-    (SELECT id, question, hint, subject_id, lang_id, level_id, ts_rank(tsv_en, q) AS rank, q FROM questions, plainto_tsquery('lacinia morbi') AS q
+    (SELECT id, question, hint, qtype, subject_id, lang_id, level_id, ts_rank(tsv_en, q) AS rank, q FROM questions, plainto_tsquery('lacinia morbi') AS q
     WHERE tsv_en @@ q
     AND subject_id =  ANY (ARRAY[1, 2, 10, 14])
     AND lang_id =  ANY (ARRAY[1, 2])
@@ -23,18 +23,18 @@ SELECT id, question, hint, subject_id, lang_id, level_id FROM
     ORDER BY rank DESC LIMIT :limit)
 p ORDER BY rank DESC;
 
--- :name search-langs-questions :? :*
+-- :name full-search-questions :? :*
 -- :doc search through several tables.
-SELECT id, question, hint, subject_id, lang_id, level_id FROM
-    (SELECT id, question, hint, subject_id, lang_id, level_id, ts_rank(tsv_en, q) AS rank, q FROM questions, plainto_tsquery(:terms) AS q
+SELECT id, question, hint, qtype, subject_id, lang_id, level_id FROM
+    (SELECT id, question, qtype, hint, subject_id, lang_id, level_id, ts_rank(tsv_en, q) AS rank, q FROM questions, plainto_tsquery(:terms) AS q
     WHERE tsv_en @@ q
 /*~
-(str "AND subject_id =  ANY (ARRAY[" (clojure.string/join ", " (:subjects params)) "])"
-     "AND level_id   =  ANY (ARRAY[" (clojure.string/join ", " (:levels   params)) "])"
-     "AND lang_id    =  ANY (ARRAY[" (clojure.string/join ", " (:langs    params)) "])")
+(str " OR subject_id =  ANY (ARRAY[" (clojure.string/join ", " (:subjects params)) "])"
+     " OR level_id   =  ANY (ARRAY[" (clojure.string/join ", " (:levels   params)) "])"
+     " OR lang_id    =  ANY (ARRAY[" (clojure.string/join ", " (:langs    params)) "])")
 ~*/
-ORDER BY rank DESC LIMIT 5)
-p ORDER BY rank DESC;
+ORDER BY rank DESC)
+p ORDER BY rank DESC  OFFSET :offset LIMIT :limit
 
 
 /******* QUOTES ****/
@@ -65,3 +65,11 @@ UPDATE quotes SET quote = :quote, author = :author WHERE id = :id RETURNING *
 -- :name delete-quote :<! :1
 -- :doc delete a user given the id
 DELETE FROM quotes WHERE id = :id RETURNING id
+
+-- :name create-keep-question :<! :1
+-- :doc creates a new keep_question record
+INSERT INTO keep_questions (question_id, user_id) VALUES (:question_id, :user_id) RETURNING question_id
+
+-- :name remove-keep-question :<! :1
+-- :doc removes a new keep_question record
+DELETE FROM keep_questions WHERE question_id = :question_id AND user_id = :user_id RETURNING question_id

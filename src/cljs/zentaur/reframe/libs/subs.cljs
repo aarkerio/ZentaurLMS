@@ -1,4 +1,4 @@
-(ns zentaur.reframe.tests.subs ^{:doc "Zentaur Re-frame Subscriptions"}
+(ns zentaur.reframe.libs.subs ^{:doc "Zentaur Re-frame Subscriptions"}
   (:require [re-frame.core :as rf]
             [zentaur.reframe.libs.commons :as cms]))
 
@@ -66,10 +66,49 @@
  (fn [db]
    (get-in db [:comments])))
 
+;; Search section
 (rf/reg-sub
- :search-terms
+ :selected-fields
  (fn [db]
-   (get-in db [:search-terms])))
+   (get-in db [:selected-fields])))
+
+(rf/reg-sub
+ :searched-qstios
+ (fn [db]
+   (get-in db [:searched-qstios])))
+
+(rf/reg-sub
+ :search-fields
+ (fn [db]
+   (get-in db [:search-fields])))
+
+(rf/reg-sub
+ :selected-qstios
+ (fn [db]
+   (get-in db [:selected-qstios])))
+
+(rf/reg-sub
+  :loaded-subjects
+  (fn [_]
+    (rf/subscribe [:search-fields]))
+  (fn [search-fields]
+    (:subjects search-fields)))
+
+(rf/reg-sub
+  :loaded-levels
+  (fn [_]
+    (rf/subscribe [:search-fields]))
+  (fn [search-fields]
+    (:levels search-fields)))
+
+(rf/reg-sub
+  :loaded-langs
+  (fn [_]
+    (rf/subscribe [:search-fields]))
+  (fn [search-fields]
+    (:langs search-fields)))
+
+;; Search section ends
 
 ;; Quotes section
 (rf/reg-sub
