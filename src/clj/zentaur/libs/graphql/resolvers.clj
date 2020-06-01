@@ -128,8 +128,15 @@
 
 (defn- ^:private hold-question
   [context args value]
-  (log/info (str ">>>  HOLD question ARGS **** >>>>> " args))
-  (mq/delete-quote args))
+  (let [returned    (mt/hold-question args)
+        question_id (:question_id returned)]
+    {:id question_id :question "foo"}))
+
+(defn- ^:private remove-hold-question
+  [context args value]
+  (let [returned    (mt/remove-hold-question args)
+        question_id (:question_id returned)]
+    {:id question_id :question "foo"}))
 
 (defn resolver-map
   "Public. Matches resolvers in schema.edn file."
@@ -155,5 +162,6 @@
    :update-quote (partial update-quote)
    :delete-quote (partial delete-quote)
    :hold-question (partial hold-question)
+   :remove-hold-question (partial remove-hold-question)
    })
 

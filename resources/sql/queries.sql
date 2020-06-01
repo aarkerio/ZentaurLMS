@@ -324,8 +324,9 @@ SET fname = :fname, lname = :lname, email = :email
 WHERE uuid = :uuid
 
 -- :name get-user :? :1
--- :doc retrieve a user given the id.
-SELECT * FROM users WHERE id = :id OR email = :email
+-- :doc retrieve a user given the id, email or uuid.
+SELECT id, fname, lname, uuid, email, admin, active, role_id, created_at
+FROM users WHERE id = :id OR email = :email OR uuid = :uuid
 
 -- :name get-users :? :*
 -- :doc retrieve all users given the active column.

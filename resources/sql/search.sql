@@ -65,3 +65,11 @@ UPDATE quotes SET quote = :quote, author = :author WHERE id = :id RETURNING *
 -- :name delete-quote :<! :1
 -- :doc delete a user given the id
 DELETE FROM quotes WHERE id = :id RETURNING id
+
+-- :name create-keep-question :<! :1
+-- :doc creates a new keep_question record
+INSERT INTO keep_questions (question_id, user_id) VALUES (:question_id, :user_id) RETURNING question_id
+
+-- :name remove-keep-question :<! :1
+-- :doc removes a new keep_question record
+DELETE FROM keep_questions WHERE question_id = :question_id AND user_id = :user_id RETURNING question_id

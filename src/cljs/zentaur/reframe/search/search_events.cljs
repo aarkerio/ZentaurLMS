@@ -13,11 +13,7 @@
     (let [post-data  (:load_search data)
           subjects   (:subjects post-data)
           levels     (:levels post-data)
-          langs      (:langs post-data)
-          _          (.log js/console (str ">>> SUBJECTS >>>>> " subjects))
-          _          (.log js/console (str ">>> LEVELS >>>>> " levels))
-          _          (.log js/console (str ">>> LANGS >>>>> " langs))
-          ]
+          langs      (:langs post-data)]
      (-> db
          (assoc-in [:search-fields :subjects] subjects)
          (assoc-in [:search-fields :levels]   levels)
@@ -70,34 +66,25 @@
 (rf/reg-event-db
  :add-question-response
   []
-  (fn [db [_ question]]
-    (.log js/console (str " >>>>> DB selected-qstios >>> "  (:selected-qstios db) " >>> QUESTION *** >>>>> " question ))
-    (let [qid (:question_id question)
-          checkbox  (gdom/getElement (str "qst_" qid))
-          checked   (.. checkbox -checked)]
+  (fn [db [_ {:keys [data errors]}]]
+    (.log js/console (str "  >>> DATA *** >>>>> " data ))
+    (let [qid     (-> data :hold_question :id)
+          checked (.. (gdom/getElement (str "qst_" qid)) -checked)]
       (if checked
-        (assoc-in  db [:selected-qstios qid] question)
+        (assoc-in  db [:selected-qstios qid] {qid "question"})
         (update-in db [:selected-qstios] dissoc qid)))))
-
 
 (rf/reg-event-fx
   :add-question
   (fn [cfx [_ updates]]
-    (let [{:keys [question-id]} updates
-          _         (.log js/console (str ">>> UPDATES >>>>> " updates ))
-          mutation  (gstring/format "{hold_question(user-uurlid: \"%s\", question_id: %i)
-                                        { questions { id question }}}"
-                                    user-uurlid question-id)]
-      (.log js/console (str ">>> QUERRRY  >>>>> " query ))
-      (rf/dispatch [::re-graph/mutate mutation {} [:add-question-response]])
+    (let [question-id (:question_id updates)
+          user-uuid   (.-innerHTML (gdom/getElement "user-uuid"))
+          checked     (.. (gdom/getElement (str "qst_" question-id)) -checked)
+          _           (.log js/console (str "> checked >> " checked " >>> user-uuid  >>>>> " user-uuid "  question-id >>>> " question-id))
+          remove      (if checked "{" "{remove_")
+          mutation    (gstring/format (str remove "hold_question(user_uuid: \"%s\", question_id: %i)
+                                        { id question }}")
+                                      user-uuid question-id)]
+      (.log js/console (str ">>> MUTATION >>>>> " mutation ))
+      (rf/dispatch [::re-graph/mutate mutation {} [:add-question-response]]))))
 
-(rf/reg-event-fx
- :create-test
- (fn [cfx [_ updates]]
-   (.log js/console (str " >>>>> DB selected-qstios >>> "  (:selected-qstios db) " >>> QUESTION *** >>>>> " question ))
-   (let [qid (:question_id question)
-         checkbox  (gdom/getElement (str "qst_" qid))
-         checked   (.. checkbox -checked)]
-      (if checked
-        (assoc-in  db [:selected-qstios qid] question)
-        (update-in db [:selected-qstios] dissoc qid)))))

@@ -180,8 +180,13 @@
                              :resolve :delete-answer}
              :hold_question {:type :question
                              :description "Save a selected question"
-                             :args {:question_id  {:type (non-null Int)}
-                                    :user_uurlid  {:type (non-null String)}}
+                             :args {:question_id {:type (non-null Int)}
+                                    :user_uuid   {:type (non-null String)}}
                              :resolve :hold-question}
+             :remove_hold_question {:type :question
+                                    :description "Save a selected question"
+                                    :args {:question_id {:type (non-null Int)}
+                                           :user_uuid   {:type (non-null String)}}
+                                    :resolve :remove-hold-question}
              }
- }
+}

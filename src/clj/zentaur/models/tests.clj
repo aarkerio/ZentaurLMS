@@ -240,3 +240,17 @@
         ilevels   (str-to-v levels)
         ilangs    (str-to-v langs)]
     (db/full-search-questions { :subjects isubjects :levels ilevels :langs ilangs  :terms terms :offset offset :limit limit})))
+
+(defn hold-question
+  "Save a selected question"
+  [{:keys [question_id user_uuid]}]
+  (let [user    (db/get-user {:id 0 :email "" :uuid user_uuid})
+        user_id (:id user)]
+    (db/create-keep-question {:question_id question_id :user_id user_id})))
+
+(defn remove-hold-question
+  "Remove a selected question"
+  [{:keys [question_id user_uuid]}]
+  (let [user    (db/get-user {:id 0 :email "" :uuid user_uuid})
+        user_id (:id user)]
+    (db/remove-keep-question {:question_id question_id :user_id user_id})))
