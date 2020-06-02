@@ -164,8 +164,7 @@ WHERE id = :id RETURNING *
 
 -- :name random-questions :? :raw
 -- :select random questions
-SELECT id, question, qtype, hint, explanation, user_id, points, subject_id, level_id, lang_id FROM questions
-WHERE subject_id = :subject_id AND level_id = :level_id AND lang_id = :lang_id  ORDER BY RANDOM() LIMIT :limit
+SELECT id FROM questions WHERE subject_id = :subject_id AND level_id = :level_id AND lang_id = :lang_id ORDER BY RANDOM() LIMIT :limit
 
 -- :name search-questions :? :raw
 -- :select questions

@@ -6,7 +6,6 @@
    [buddy.auth.backends.session :refer [session-backend]]
    [cheshire.generate :as cheshire]
    [clojure.tools.logging :as log]
-   [cognitect.transit :as transit]
    [immutant.web.middleware :refer [wrap-session]]
    [muuntaja.middleware :refer [wrap-format wrap-params]]
    [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]

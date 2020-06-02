@@ -3,7 +3,8 @@
   (:require [clojure.tools.logging :as log]
             [mount.core :as mount]
             [zentaur.db.core :as db]
-            [zentaur.models.tests :as mt]))
+            [zentaur.models.tests :as mt]
+            [zentaur.models.users :as mu]))
 
 (def question-txt ["Condimentum mattis pellentesque id nibh tortor id aliquet lectus. "
                    "Convallis a cras semper auctor neque vitae tempus quam pellentesque. Aliquam sem fringilla ut morbi."
@@ -38,6 +39,7 @@
 
 (defn main []
   (let [_        (start)
+        user     (mu/create-user {:fname "Rigoberto" :lname "Menchaca" :prepassword "som3p4ssw0rd" :email "loo@gmail.com" :role_id "2"})
         subjects (mt/get-subjects)
         levels   (mt/get-levels)
         langs    (mt/get-langs)

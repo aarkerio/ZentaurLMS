@@ -73,3 +73,28 @@ INSERT INTO keep_questions (question_id, user_id) VALUES (:question_id, :user_id
 -- :name remove-keep-question :<! :1
 -- :doc removes a new keep_question record
 DELETE FROM keep_questions WHERE question_id = :question_id AND user_id = :user_id RETURNING question_id
+
+-- :name get-last-question-by-user-id :? :1
+-- :doc retrieve one question by user_id.
+SELECT q.subject_id, q.lang_id, q.level_id
+FROM keep_questions kp INNER JOIN questions q
+ON kp.question_id = q.id
+WHERE kp.user_id = :user-id LIMIT 1
+
+-- :name get-all-questions-by-user-id :? :*
+-- :doc retrieve all questions by user_id.
+SELECT question_id AS id FROM keep_questions WHERE user_id = :user-id
+
+-- :name remove-all-user-keep-questions :<! :1
+-- :doc removes all keep_question records from a user
+DELETE FROM keep_questions WHERE user_id = :user-id RETURNING true
+
+-- :name clone-question :<! :1
+-- :doc clone a question to a new user
+INSERT INTO questions (origin, subject_id, level_id, lang_id, question, qtype, hint, points,
+                       explanation, fulfill, reviewed_lang, reviewed_fact, reviewed_cr, user_id)
+(SELECT id, subject_id, level_id, lang_id, question, qtype, hint, points,
+                       explanation, fulfill, reviewed_lang, reviewed_fact, reviewed_cr, :user-id
+FROM questions WHERE id = :id) RETURNING id
+
+

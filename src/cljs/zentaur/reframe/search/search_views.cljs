@@ -45,11 +45,13 @@
                                                                :limit 50}])}]])))
 
 (defn show-selected-questions []
-  (let [selected-qstios (rf/subscribe [:selected-qstios])]
+  (let [selected-qstios (rf/subscribe [:selected-qstios])
+        csrf-field      (.-innerHTML (gdom/getElement "csrf-field"))]
     (fn []
       (when (> (count @selected-qstios) 0)
         [:div {:class "div-create-test"} (str "You have selected: " (count @selected-qstios) " questions.") [:br]
          [:form {:action "/vclass/tests/build" :method "post" :class "css-class-form"}
+          [:input {:type "hidden" :value csrf-field :name "__anti-forgery-token"}]
           [:input.btn {:class "btn btn-outline-primary-green" :type "submit" :value "Create Test"}]]]))))
 
 (defn offered-questions []
