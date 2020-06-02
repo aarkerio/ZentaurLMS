@@ -40,7 +40,6 @@
         langs    (db/get-langs)]
     (assoc {} :subjects subjects :levels levels :langs langs)))
 
-;;  End with ! functions that change state for atoms, metadata, vars, transients, agents and io as well.
 (defn create-test! [params user-id]
   (let [uurlid      (sh/gen-uuid)
         pre-params  (if (int? (:subject_id params)) params (sh/str-to-int params :subject_id :level_id :lang_id))
@@ -90,11 +89,11 @@
 
 (defn clone-question [question uurlid]
   (let [test          (get-one-test uurlid)
-        old-quest-id  (:id question)
-        params        (assoc question :user_id (:user_id test) :origin old-quest-id)
-        qnew          (db/create-question! params)
-        _             (link-test-question! (:id qnew) (:id test))]
-    (clone-answers old-quest-id (:id qnew))))
+        previous-id   (:id question)
+        params        (assoc {} :user-id (:user_id test) :id previous-id)
+        qnew-id       (db/clone-question params)
+        _             (link-test-question! (:id qnew-id) (:id test))]
+    (clone-answers previous-id (:id qnew-id))))
 
 (defn generate-questions [params uurlid]
   (let [questions (db/random-questions params)]
@@ -109,16 +108,22 @@
         _           (generate-questions pre-params (:uurlid test))]
     (:uurlid test)))
 
-(defn link-test-questions [params uurlid]
-  (let [questions (db/random-questions params)]
+(defn link-test-questions [uurlid user-id]
+  (let [questions (db/get-all-questions-by-user-id {:user-id user-id})]
     (doseq [q questions]
       (clone-question q uurlid))))
 
-(defn build-test [user-id]
-  (let [full-params (assoc {} :subject_id 1 :title "Your new test" :tags "list of tags")
+(defn build-test
+  "Build a test after search and select questions"
+  [user-id]
+  (let [user-map    {:user-id user-id}
+        question    (db/get-last-question-by-user-id user-map)
+        full-params (assoc question :title "Your new test" :tags "list of tags")
         new-test    (create-test! full-params user-id)
-        uurlid      (:uurlid new-test)]
-    (link-test-questions uurlid user-id)))
+        uurlid      (:uurlid new-test)
+        _           (link-test-questions uurlid user-id)]
+    (db/remove-all-user-keep-questions user-map)
+    uurlid))
 
 ;;;;; TEST BUILD SECTION STARTS
 

@@ -52,22 +52,18 @@
   (fn [cfx [_ updates]]
     (let [{:keys [search-text offset limit]} updates
           selected-fields (-> cfx :db :selected-fields)
-          _            (.log js/console (str ">>> selected-fields >>>>> " selected-fields ))
           subjects     (str/join " " (get selected-fields "subjects"))
           levels       (str/join " " (get selected-fields "levels"))
           langs        (str/join " " (get selected-fields "langs"))
-          _            (.log js/console (str ">>> SQQQQQ >>>>> " updates " >> " subjects " >>> levels >> " levels "  langs >> " langs))
           query        (gstring/format "{search_fullq(subjects: \"%s\", levels: \"%s\", langs: \"%s\", terms: \"%s\", offset: %i, limit: %i)
                                         { questions { id question qtype }}}"
                                        subjects levels langs search-text offset limit)]
-      (.log js/console (str ">>> QUERRRY  >>>>> " query ))
       (rf/dispatch [::re-graph/query query {} [:search-question-response]]))))
 
 (rf/reg-event-db
  :add-question-response
   []
   (fn [db [_ {:keys [data errors]}]]
-    (.log js/console (str "  >>> DATA *** >>>>> " data ))
     (let [qid     (-> data :hold_question :id)
           checked (.. (gdom/getElement (str "qst_" qid)) -checked)]
       (if checked
@@ -80,11 +76,9 @@
     (let [question-id (:question_id updates)
           user-uuid   (.-innerHTML (gdom/getElement "user-uuid"))
           checked     (.. (gdom/getElement (str "qst_" question-id)) -checked)
-          _           (.log js/console (str "> checked >> " checked " >>> user-uuid  >>>>> " user-uuid "  question-id >>>> " question-id))
           remove      (if checked "{" "{remove_")
           mutation    (gstring/format (str remove "hold_question(user_uuid: \"%s\", question_id: %i)
                                         { id question }}")
                                       user-uuid question-id)]
-      (.log js/console (str ">>> MUTATION >>>>> " mutation ))
       (rf/dispatch [::re-graph/mutate mutation {} [:add-question-response]]))))
 

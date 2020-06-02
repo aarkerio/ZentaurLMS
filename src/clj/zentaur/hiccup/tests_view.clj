@@ -88,4 +88,5 @@
     [:div
      [:h1 "Search and select Questions to create a new test"]
      [:div {:id "search-root-app"}]
+     [:div.hidden-div {:id "csrf-field"} csrf-field]
      [:div.hidden-div {:id "user-uuid"} user-uuid]]))

@@ -20,6 +20,7 @@
         admin        (contains? user :preadmin)
         clean-user   (dissoc user :prepassword :preadmin)
         final-data   (assoc clean-user :password password :admin admin :active true :role_id role_id :uuid uuid)
+        _            (log/info (str ">>> final-data >>>>> " final-data))
         validation   (vu/validate-user final-data)]
     (if (nil? validation)
       (db/create-user! final-data)
@@ -28,7 +29,7 @@
 (defn create [user]
   (let [email       (:email user)
         chk-user    (db/get-user {:id 0 :email email})]
-     (log/info (str ">>> Whole User chk-userchk-user data:  %s " chk-user))
+     (log/info (str ">>> Whole User chk-user data: " chk-user))
      (if (nil? chk-user)
        (create-user user)
        (format "The email  %s already exists." email))))
