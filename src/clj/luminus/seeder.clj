@@ -38,7 +38,7 @@
         (map (mt/create-answer! {:question_id (:id new-question) :answer (rand-nth question-txt) :correct (rand-nth corr)}) (range 4))))
 
 (defn main []
-  (let [_        (start)
+  (let [_        (start)  ;; necessary for testing
         user     (mu/create-user {:fname "Rigoberto" :lname "Menchaca" :prepassword "som3p4ssw0rd" :email "loo@gmail.com" :role_id "2"})
         subjects (mt/get-subjects)
         levels   (mt/get-levels)
