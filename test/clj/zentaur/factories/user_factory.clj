@@ -1,32 +1,18 @@
 (ns zentaur.factories.user-factory
- (:require [factory-time.core :refer :all]))
+  (:require [factory-time.core :refer :all]
+            [talltale.core :as tac]
+            [zentaur.factories.shared :as sh]))
 
-(defn fixed-length-password
-  ([] (fixed-length-password 8))
-  ([n]
-   (let [chars-between #(map char (range (int %1) (inc (int %2))))
-         chars (concat (chars-between \0 \9)
-                       (chars-between \a \z)
-                       (chars-between \A \Z)
-                       [\_])
-         password (take n (repeatedly #(rand-nth chars)))]
-     (reduce str password))))
+(def person (tac/person))
 
-(def sites ["net" "com" "mx" "com.mx" "org" "travel"])
+(deffactory :user {:fname (:first-name person) :lname (:last-name person) :uname "77samdddl" :email (sh/random-email) :prepassword "s0m3p4ss" :role_id "1"})
 
-(defn rand-str
-  ([] (rand-str 8))
-  ([len]
-   (clojure.string/lower-case (apply str (take len (repeatedly #(char (+ (rand 26) 65))))))))
-
-(deffactory :user {:fname "Pedro" :lname "Quentin" :uname "77samdddl" :email "77samu@gmail.com" :prepassword "s0m3p4ss" :role_id "1"})
-
-(deffactory :admin {:fname "Ludwig" :preadmin "1"}
+(deffactory :admin {:fname "Ludwig" :preadmin "true"}
   :extends-factory :user
-  :generators {:uname (fn [n] (rand-str 5)) ; n starts at 1 and will increase by 1 every time build is called
-               :email (fn [n] (str (rand-str 5) "@" (fixed-length-password 5) n "." (rand-nth sites)))
-               :fname (fn [n] (rand-str 9))
-               :lname (fn [n] (rand-str 9))
+  :generators {:uname (fn [n] (sh/rand-str 5)) ; n starts at 1 and will increase by 1 every time build is called
+               :email (sh/random-email)
+               :fname (fn [n] (sh/rand-str 9))
+               :lname (fn [n] (sh/rand-str 9))
                })
 
 (deffactory :teacher {:fname "Ludwig"}
