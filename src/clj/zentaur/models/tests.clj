@@ -62,6 +62,7 @@
     (assoc created-question :ordnen ordnen)))
 
 (defn create-question!
+  "Validates -> Creates -> Links"
   [params]
   (let [test         (get-one-test (:uurlid params))
         test-id      (:id test)

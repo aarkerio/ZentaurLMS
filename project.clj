@@ -1,4 +1,4 @@
-(defproject zentaur "0.0.36"
+(defproject zentaur "0.0.41"
   :description "Zentaur. Clojure and ClojureScript LMS."
   :url "http://xalisco-labs.com/"
   :dependencies [[buddy "2.0.0"]                         ;; Security library for Clojure (sessions)
@@ -91,6 +91,7 @@
                                            [talltale "0.4.3"]]    ;; fake data for test
                             :resource-paths ["env/test/resources"]
                             :source-paths ["env/test/clj" "test/clj"]
+                            :repl-options {:init-ns zentaur.run-all :timeout 120000}
                             :test-selectors {:default (complement :integration)
                                              :integration :integration
                                              :business-logic :business-logic}}

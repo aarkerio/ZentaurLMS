@@ -44,7 +44,6 @@
    [:origin     st/required st/integer]
    [:subject_id st/required st/integer]
    [:level_id   st/required st/integer]
-   [:active     st/required st/boolean]
    [:question   st/required st/string
     {:title "Question field must contain at least 2 characters"
      :validate #(> (count %) 2)}]])

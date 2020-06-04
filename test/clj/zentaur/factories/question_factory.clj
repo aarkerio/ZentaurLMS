@@ -12,9 +12,3 @@
                :hint        (fn [n] (sh/rand-str 9))
                :fulfill     (fn [n] (sh/rand-str 9))
                })
-
-(ft/deffactory :teacher {:fname "Ludwig"}
-  :extends-factory :user
-  :generators {:annoying (fn [n] (even? n))})
-
-(ft/deffactory :test {:title "Test title" :hint "Some hint" :tags "tags" :user_id 1 :subject_id "3"})
