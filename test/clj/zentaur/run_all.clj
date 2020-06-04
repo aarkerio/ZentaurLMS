@@ -7,6 +7,11 @@
             [zentaur.models.tests-test :as zmt]
             [zentaur.models.users-test :as umt]))
 
+(defn load-db []
+    (mount/start #'zentaur.config/env
+                 #'zentaur.handler/app-routes
+                 #'zentaur.routes.services.graphql/compiled-schema
+                 #'zentaur.db.core/*db*))
 
 (use-fixtures
   :once
@@ -17,5 +22,3 @@
                  #'zentaur.db.core/*db*)
     (f)))
 
-(defn run-all []
-  (zmt/run-tests))

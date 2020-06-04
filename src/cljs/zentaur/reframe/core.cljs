@@ -2,7 +2,7 @@
   (:require [cljs.loader :as loader]
             [goog.dom :as gdom]
             [reagent.dom :as rd]
-            [re-frame.core :as re-frame]
+            [re-frame.core :as rf]
             [re-graph.core :as re-graph]
             [zentaur.reframe.comments.comments-views :as cviews]    ;; Blog Comments component
             [zentaur.reframe.libs.events :as events]
@@ -14,7 +14,7 @@
             [zentaur.reframe.tests.tests-events :as myevents]       ;; Tests component
             [zentaur.reframe.tests.test-views :as tviews]))
 
-(re-frame/dispatch
+(rf/dispatch
   [::re-graph/init
     {:ws-url                  nil                                 ;; override the websocket url (defaults to /graphql-ws, nil to disable)
      :http-url                "http://localhost:3000/api/graphql" ;; override the http url (defaults to /graphql)
@@ -29,21 +29,21 @@
 
 ;; Put an initial value into app-db.
 ;; The event handler for `:initialise-db` can be found in `events.cljs`
-(re-frame/dispatch-sync [:initialise-db])
+(rf/dispatch-sync [:initialise-db])
 
 (defn ^:export main
   []
   (when-let [root-app (gdom/getElement "test-root-app")]
-    (re-frame/dispatch-sync [:test-load])
+    (rf/dispatch-sync [:test-load])
     (rd/render [tviews/test-app] root-app))
   (when-let [quotes-root-app (gdom/getElement "quotes-root-app")]
-    (re-frame/dispatch-sync [:load-quotes])
+    (rf/dispatch-sync [:load-quotes])
     (rd/render [qviews/quotes-app] quotes-root-app))
   (when-let [search-root-app (gdom/getElement "search-root-app")]
-    (re-frame/dispatch-sync [:load-search])
+    (rf/dispatch-sync [:load-search])
     (rd/render [seaviews/search-app] search-root-app))
   (when-let [comments-root-app (gdom/getElement "comments-root-app")]
-    (re-frame/dispatch-sync [:load-comments])
+    (rf/dispatch-sync [:load-comments])
     (rd/render [cviews/comments-root-app] comments-root-app)))
 
 (main)

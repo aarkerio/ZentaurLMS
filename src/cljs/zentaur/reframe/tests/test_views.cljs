@@ -264,15 +264,14 @@
         (for [row-level @(rf/subscribe [:levels])]
           ^{:key (:id row-level)} [:option {:value (:id row-level)} (:level row-level)])
         ]]
-
       [:div
        [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"
-                :on-click #(rf/dispatch [:update-test {:title @title
+                :on-click #(rf/dispatch [:update-test {:title       @title
                                                        :description @description
-                                                       :tags @tags
-                                                       :level_id @level-id
-                                                       :subject_id @subject-id
-                                                       :uurlid (:uurlid test)}])}]]]
+                                                       :tags        @tags
+                                                       :level_id    @level-id
+                                                       :subject_id  @subject-id
+                                                       :uurlid      (:uurlid test)}])}]]]
       [:div
        [:h1 @title]
        [:div.div-simple-separator [:span {:class "bold-font"} "Tags: "] @tags [:span {:class "bold-font"} " Created:"] (:created_at test)]
@@ -282,17 +281,19 @@
 (defn test-editor-view
   []
   (let [test        (rf/subscribe [:test])
-        title       (r/atom nil)
-        subject-id  (r/atom nil)
-        level-id    (r/atom nil)
-        description (r/atom nil)
-        tags        (r/atom nil)]
+        title       (r/atom "")
+        subject-id  (r/atom 1)
+        level-id    (r/atom 1)
+        lang-id     (r/atom 1)
+        description (r/atom "")
+        tags        (r/atom "")]
     (fn []
-      (reset! title (:title @test))
-      (reset! subject-id (:subject_id @test))
-      (reset! level-id (:level_id @test))
+      (.log js/console (str ">>> SUBJECT ID >>>>> " @subject-id))
+      (reset! title       (:title @test))
+      (reset! subject-id  (:subject_id @test))
+      (reset! level-id    (:level_id @test))
       (reset! description (:description @test))
-      (reset! tags (:tags @test))
+      (reset! tags        (:tags @test))
       [:div
        [test-editor-form @test title description tags subject-id level-id]
        [:img {:src "/img/icon_add_question.png" :alt "Fragen hinzüfugen" :title "Fragen hinzüfugen"

@@ -11,14 +11,14 @@
             [zentaur.handler :as zh]
             [zentaur.config-test :as ct]))
 
-(use-fixtures
-  :once
-  (fn [f]
-    (mount/start #'zentaur.config/env
-                 #'zentaur.handler/app-routes
-                 #'zentaur.routes.services.graphql/compiled-schema
-                 #'zentaur.db.core/*db*)
-    (f)))
+;; (use-fixtures
+;;   :once
+;;   (fn [f]
+;;     (mount/start #'zentaur.config/env
+;;                  #'zentaur.handler/app-routes
+;;                  #'zentaur.routes.services.graphql/compiled-schema
+;;                  #'zentaur.db.core/*db*)
+;;     (f)))
 
 (defn get-session
   "Given a response, grab out just the key=value of the ring session"

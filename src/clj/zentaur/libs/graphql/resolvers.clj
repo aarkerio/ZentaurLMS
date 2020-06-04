@@ -20,9 +20,8 @@
   "Resolver to get and convert to map keyed"
   [context args value]
   (let [uurlid     (:uurlid args)
-        archived   (:archived args)
-        full-test  (mt/build-test-structure uurlid archived)]
-    (update full-test :id str))) ;; Graphql needs string IDs
+        archived   (:archived args)]
+    (mt/build-test-structure uurlid archived)))
 
 (defn- ^:private create-question
   [context args value]

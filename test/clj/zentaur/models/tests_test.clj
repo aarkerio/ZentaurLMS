@@ -43,7 +43,8 @@
   (testing "Creates a new question"
     (let [test     (mt/get-tests (:id @first-test))
           uurlid   (:uurlid @first-test)
-          params   {:question "Some cool Question" :explanation "Explanation" :active true :points 2 :hint "Some hint" :qtype 2 :user_id 1 :uurlid uurlid :subject_id 3 :level_id 1 :lang_id 1}
+          params   {:question "Some cool Question" :explanation "Explanation" :active true :points 2 :hint "Some hint"
+                    :qtype 2 :user_id 1 :uurlid uurlid :subject_id 3 :level_id 1 :lang_id 1}
           question (mt/create-question! params)]
       (reset! first-question question)
       (is (not (nil? (:id @first-question))))
@@ -65,16 +66,15 @@
 
   (testing "It clones a set of questions"
     (let [user-id   (:id @first-user)
-          params    {:title "Test title" :hint "Some hint" :tags "tags" :user_id user-id :subject_id 3 :level_id 1 :lang_id 1}
+          params    {:title "Test title" :hint "Some hint" :tags "tags"
+                     :user_id user-id :subject_id 3 :level_id 1 :lang_id 1}
           test      (mt/create-test! params user-id)
           uurlid    (:uurlid test)
           numquesti 6
           questions (doall (for [n (range 0 numquesti)]
                              (mt/create-question! (ft/build :question { :uurlid uurlid }))))
-          _         (log/info (str ">>> **** DOALL QS ** >>>>> " (prn-str questions)))
           cloned    (doall (for [q questions]
                              (mt/clone-question q uurlid)))]
-      ;; (is (not (nil? cloned)))
       (is (= (count cloned) numquesti)))))
 
 (run-tests)

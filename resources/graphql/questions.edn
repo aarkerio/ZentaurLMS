@@ -54,7 +54,7 @@
            :answer {
                     :description "Answer type."
                     :fields {
-                             :id          {:type (non-null ID)}
+                             :id          {:type (non-null Int)}
                              :answer      {:type (non-null String)}
                              :question_id {:type (non-null Int)}
                              :ordnen      {:type Int}

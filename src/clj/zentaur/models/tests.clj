@@ -129,10 +129,8 @@
 ;;;;; TEST BUILD SECTION STARTS
 
 (defn- ^:private get-answers [{:keys [id] :as question}]
-  (let [answers          (db/get-answers {:question_id id})
-        answers-graphql  (map #(update % :id str) answers)
-        question-graphql (update question :id str)]
-    (assoc question-graphql :answers answers-graphql)))
+  (let [answers          (db/get-answers {:question_id id})]
+    (assoc question :answers answers)))
 
 (defn- ^:private get-questions
   "Get questions and convert to map keyed"
@@ -150,7 +148,7 @@
         levels        (db/get-levels)]
     (try
       (assoc test :questions questions :subjects subjects :levels levels)
-      (catch Exception e (str "******** >>> Caught exception: " (.getMessage e)))
+      (catch Exception e (str "******** >>> Caught Build Test Exception: " (.getMessage e)))
       (finally (assoc {} :error "function get-test-nodes in model error")))))
 
 ;;;;; TEST BUILD SECTION ENDS

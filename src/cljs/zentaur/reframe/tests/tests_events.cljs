@@ -46,7 +46,8 @@
 (rf/reg-event-db
  :test-load-process
   []
-  (fn [db [{:keys [data errors]}]]
+  (fn [db [{:keys [data errors]} as full]]
+    (.log js/console (str ">>> FULL DATA >>>>> " full ))
     (let [test          (:test_by_uurlid data)
           questions     (:questions test)
           subjects      (:subjects test)
@@ -63,6 +64,7 @@
          (assoc :levels    levels)
          (assoc :questions questions)))))
 
+;; -- POST graphql/ load test and initial data -----------------------
 (rf/reg-event-fx
   :test-load
   (fn [cfx _]
