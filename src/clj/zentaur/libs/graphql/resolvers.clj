@@ -8,10 +8,6 @@
             [zentaur.models.quotes :as mq]
             [zentaur.models.tests :as mt]))
 
-(defn- ^:private id-to-string
-  [my-map]
-  (update my-map :id str))
-
 (defn create-test! [params user-id]
   (let [full-params  (assoc params :user-id user-id)]
     (mt/create-test! full-params user-id)))
@@ -19,9 +15,11 @@
 (defn- ^:private test-by-uurlid
   "Resolver to get and convert to map keyed"
   [context args value]
-  (let [uurlid     (:uurlid args)
-        archived   (:archived args)]
-    (mt/build-test-structure uurlid archived)))
+  (let [uurlid    (:uurlid args)
+        archived  (:archived args)
+        test      (mt/build-test-structure uurlid archived)]
+    (log/info (str ">>> TESTS ****  >>>>> " test))
+    test))
 
 (defn- ^:private create-question
   [context args value]

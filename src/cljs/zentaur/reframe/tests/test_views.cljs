@@ -2,7 +2,8 @@
   (:require [goog.dom :as gdom]
             [reagent.core  :as r]
             [re-frame.core :as rf]
-            [zentaur.reframe.libs.commons :as cms]))
+            [zentaur.reframe.libs.commons :as cms]
+            [zentaur.reframe.libs.forms :as forms]))
 
 (defn edit-question [{:keys [id question hint explanation qtype points]}]
   (let [aquestion     (r/atom question)
@@ -181,6 +182,7 @@
 (defn question-item
   "Display any type of question"
   [{:keys [question explanation hint qtype id ordnen points counter uurlid qcount] :as q}]
+  (.log js/console (str ">>> question >>>>> " question ))
   (let [editing-question (r/atom false)]
     (.log js/console (str ">>> VALUE qcounter >>>>> " qcount " >>>> counter >>> " counter  " >>>> uurlid >>>> " uurlid " >>>> " q "  >>>> " question))
     (fn []
@@ -221,14 +223,16 @@
 
 (defn display-questions-list
   [uurlid question-count]
-  (let [questions (rf/subscribe [:questions])]
+  (let [questions @(rf/subscribe [:questions])]
     (fn [uurlid question-count]
       [:div
-       (for [{:keys [idx question]} (cms/indexado @questions)]
+       (for [{:keys [idx question]} (cms/indexado questions)]
          ^{:key (hash question)}
          [question-item (assoc question :counter idx :uurlid uurlid :qcount question-count)])])))
 
 (defn test-editor-form [test title description tags subject-id level-id]
+  (let [label-field-path [:label]
+        label-field-value @(rf/subscribe [::forms/field-value subject-id label-field-path])]
     [:div {:id "test-whole-display"}
      [:div.edit-icon-div
       (if @(rf/subscribe [:toggle-testform])
@@ -238,10 +242,21 @@
                                :on-click #(rf/dispatch [:toggle-testform])}])]
      [:div {:id "hidden-form" :class (if @(rf/subscribe [:toggle-testform]) "visible-div" "hidden-div")}
       [:h3.class "Bearbeit test"]
-      [:div.div-separator
-       [:label {:class "tiny-label"} "Title"]
-       [:input {:type  "text" :value @title :placeholder "Title" :title "Title" :maxLength 100
-                :on-change #(reset! title (-> % .-target .-value)) :size  100}]]
+
+
+
+   [:div.ui.form
+     [:div.required.field
+      [:label "Title"]
+      [:input {:type "text" :value label-field-value
+               :on-change #(rf/dispatch [::forms/set-field-value subject-id label-field-path (-> % .-target .-value)])}]]]
+
+
+
+
+
+
+
       [:div.div-separator
        [:label {:class "tiny-label"} "Description"]
        [:input {:type "text" :value @description :on-change #(reset! description (-> % .-target .-value))
@@ -250,20 +265,20 @@
        [:label {:class "tiny-label"} "Tags"]
        [:input {:type "text" :value @tags :on-change #(reset! tags (-> % .-target .-value))
                 :placeholder "Tags" :title "Tags" :maxLength 100 :size 100}]]
-      [:div.div-separator
-       [:select.form-control.mr-sm-2 {:name      "subject-id"
-                                      :value     @subject-id
-                                      :on-change #(reset! subject-id (-> % .-target .-value))}
-        (for [row-subject @(rf/subscribe [:subjects])]
-          ^{:key (:id row-subject)} [:option {:value (:id row-subject)} (:subject row-subject)])
-        ]]
-      [:div.div-separator
-       [:select.form-control.mr-sm-2 {:name      "level-id"
-                                      :value     @level-id
-                                      :on-change #(reset! level-id (-> % .-target .-value))}
-        (for [row-level @(rf/subscribe [:levels])]
-          ^{:key (:id row-level)} [:option {:value (:id row-level)} (:level row-level)])
-        ]]
+      ;; [:div.div-separator
+      ;;  [:select.form-control.mr-sm-2 {:name      "subject-id"
+      ;;                                 :value     @subject-id
+      ;;                                 :on-change #(reset! subject-id (-> % .-target .-value))}
+      ;;   (for [row-subject @(rf/subscribe [:subjects])]
+      ;;     ^{:key (:id row-subject)} [:option {:value (:id row-subject)} (:subject row-subject)])
+      ;;   ]]
+      ;; [:div.div-separator
+      ;;  [:select.form-control.mr-sm-2 {:name      "level-id"
+      ;;                                 :value     @level-id
+      ;;                                 :on-change #(reset! level-id (-> % .-target .-value))}
+      ;;   (for [row-level @(rf/subscribe [:levels])]
+      ;;     ^{:key (:id row-level)} [:option {:value (:id row-level)} (:level row-level)])
+      ;;   ]]
       [:div
        [:input {:class "btn btn-outline-primary-green" :type "button" :value "Speichern"
                 :on-click #(rf/dispatch [:update-test {:title       @title
@@ -276,7 +291,7 @@
        [:h1 @title]
        [:div.div-simple-separator [:span {:class "bold-font"} "Tags: "] @tags [:span {:class "bold-font"} " Created:"] (:created_at test)]
        [:div.div-simple-separator [:span {:class "bold-font"}  "Description: "] @description [:span {:class "bold-font"}  " Subject:  "] (:subject test)
-        [:span {:class "bold-font"}  "  Level: "] (:level test) ]]])
+        [:span {:class "bold-font"}  "  Level: "] (:level test) ]]]))
 
 (defn test-editor-view
   []

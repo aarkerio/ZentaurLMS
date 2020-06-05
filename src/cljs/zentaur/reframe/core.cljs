@@ -6,6 +6,7 @@
             [re-graph.core :as re-graph]
             [zentaur.reframe.comments.comments-views :as cviews]    ;; Blog Comments component
             [zentaur.reframe.libs.events :as events]
+            [zentaur.reframe.libs.forms :as zfms]
             [zentaur.reframe.libs.subs :as mysubs]                  ;; Global subscriptions
             [zentaur.reframe.quotes.quotes-events :as qevents]      ;; Quotes component
             [zentaur.reframe.quotes.quotes-views :as qviews]

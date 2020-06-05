@@ -46,9 +46,8 @@
 (rf/reg-event-db
  :test-load-process
   []
-  (fn [db [{:keys [data errors]} as full]]
-    (.log js/console (str ">>> FULL DATA >>>>> " full ))
-    (let [test          (:test_by_uurlid data)
+  (fn [db [_ response]]
+    (let [test          (-> response :data :test_by_uurlid)
           questions     (:questions test)
           subjects      (:subjects test)
           levels        (:levels test)
@@ -58,7 +57,7 @@
           _             (.log js/console (str ">>> TEST >>>>> " only-test))
           ]
      (-> db
-         (assoc :loading?  false)     ;; take away that "Loading ..." UI element
+         (assoc :loading?  false)
          (assoc :test      only-test)
          (assoc :subjects  subjects)
          (assoc :levels    levels)
@@ -276,4 +275,3 @@
                                     { id question hint qtype fulfill answers { id answer correct ordnen question_id }}}"
                                   ordnen question-id direction)]
        (rf/dispatch [::re-graph/mutate mutation {} [:process-after-reorder-answer]]))))
-

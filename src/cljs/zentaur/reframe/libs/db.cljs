@@ -3,6 +3,18 @@
             [re-frame.core :as rf]))
 
 ;;;;;      SPECIFICATIONS SECTION    ;;;;;;;;;;;;;;;;;;;;
+;; spec for test type
+(def supported-types #{"multihomed" "stub" "transit" "ixp"})
+(s/def ::type supported-types)
+(s/def ::subject-id int?)
+(s/def ::level-id int?)
+(s/def ::title  (s/and string? #(<= 1 (count %) 10)))
+(s/def ::description string?)
+(s/def ::tags   (s/coll-of string?))
+(s/def ::uurlid (s/and string? #(<= 1 (count %) 10)))
+(s/def ::test   (s/keys :req-un [::uurlid ::title ::subject-id ::level-id]
+                        :opt-un [::tags ::description]))
+
 ;; spec for question type
 (s/def ::mapkey int?)
 (s/def ::id int?)
@@ -15,11 +27,6 @@
 
 (s/def ::questions (s/map-of ::mapkey (s/keys :req-un [::id ::question ::qtype ::points]
                                               :opt-un [::hint ::explanation])))  ;; :req-un and :opt-un for "required" and "optional" unqualified keys
-
-(s/def ::test (s/and                                        ;; should use the :kind kw to s/map-of (not supported yet)
-                 (s/map-of ::id ::question)                 ;; in this map, each todo is keyed by its :id
-                 #(instance? PersistentTreeMap %)           ;; is a sorted-map (not just a map)
-                 ))
 
 ;; spec for Quote type
 (s/def ::id     (s/and int? pos?))
