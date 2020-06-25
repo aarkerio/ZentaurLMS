@@ -385,8 +385,8 @@
         uurlid         (rf/subscribe [:test-uurlid])]
     [:div {:id "page-container"}
      [test-editor-view]
-     [create-question-form]
-     [display-questions-list @uurlid @question-count]
+    ;; [create-question-form]
+    ;; [display-questions-list @uurlid @question-count]
      [:div {:class "footer"}
       [:p "Ziehen Sie die Fragen per Drag & Drop in eine andere Reihenfolge."]]]))
 

@@ -4,8 +4,7 @@
  :main zentaur.app
  :optimizations :none
  :source-map true
- :asset-path "/js/dev"
- :output-to "resources/public/js/dev.js"
+ :output-to "resources/public/js/dev-main.js"
  :output-dir "resources/public/js/dev"
  ;; :closure-defines {"re_frame.trace.trace_enabled_QMARK_" true}
  ;; :preloads [devtools.preload day8.re-frame-10x.preload]

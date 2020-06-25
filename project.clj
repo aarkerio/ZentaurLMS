@@ -74,7 +74,7 @@
                            :dependencies [[binaryage/devtools "0.9.11"]              ;; CLJS DevTools
                                           [cider/piggieback "0.4.2"]                 ;; nREPL support for ClojureScript REPLs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
-                                          [com.bhauman/figwheel-main "0.2.4" :exclusions [joda-time clj-time]]  ;; Hot Reload cljs
+                                          [com.bhauman/figwheel-main "0.2.7"]  ;; Hot Reload cljs
                                           [day8.re-frame/re-frame-10x "0.6.5"]       ;; debugging re-frame applications.
                                           [factory-time "0.1.2"]                     ;; Factory-bot like library for tests
                                           [nrepl "0.7.0"]
