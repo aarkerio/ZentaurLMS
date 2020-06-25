@@ -16,7 +16,7 @@
     (throw (ex-info (str "Die Spezifikationsprüfung ist fehlgeschlagen: " (s/explain-str a-spec db)) {}))))
 
 ;; now we create an interceptor using `after`
-(def check-spec-interceptor (rf/after (partial check-and-throw :zentaur.reframe.tests.db/db)))  ;; PARTIAL: a way to currying
+(def check-spec-interceptor (rf/after (partial check-and-throw :zentaur.reframe.libs.db/db)))  ;; PARTIAL: a way to currying
 
 ;; We now create the interceptor chain shared by all event handlers which manipulate todos.
 ;; A chain of interceptors is a vector of interceptors. Explanation of the `path` Interceptor is given further below.

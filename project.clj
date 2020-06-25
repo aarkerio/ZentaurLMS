@@ -28,7 +28,7 @@
                  [org.clojure/clojure "1.10.1"]          ;; The sweet core!!
                  [org.clojure/clojurescript "1.10.597"]
                  [org.clojure/tools.cli "1.0.194"]       ;; parses command line arguments and stuff like that
-                 [org.clojure/tools.logging "1.0.0"]     ;; Logs duh!
+                 [org.clojure/tools.logging "1.1.0"]     ;; Logs duh!
                  [org.immutant/web "2.1.10" :exclusions [joda-time]] ;; Serve web requests using Ring handlers, Servlets, or Undertow HttpHandlers
                  [org.odftoolkit/simple-odf "0.9.0-RC1"] ;; Open Document libraries
                  [org.postgresql/postgresql "42.2.12"]   ;; PostgreSQL rulez!
@@ -74,7 +74,7 @@
                            :dependencies [[binaryage/devtools "0.9.11"]              ;; CLJS DevTools
                                           [cider/piggieback "0.4.2"]                 ;; nREPL support for ClojureScript REPLs
                                           [com.bhauman/rebel-readline-cljs "0.1.4"]  ;; Terminal readline library for Clojure dialects
-                                          [com.bhauman/figwheel-main "0.2.7"]  ;; Hot Reload cljs
+                                          [com.bhauman/figwheel-main "0.2.7"]        ;; Hot Reload cljs
                                           [day8.re-frame/re-frame-10x "0.6.5"]       ;; debugging re-frame applications.
                                           [factory-time "0.1.2"]                     ;; Factory-bot like library for tests
                                           [nrepl "0.7.0"]
