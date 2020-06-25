@@ -67,5 +67,5 @@
              [:a {:href "https://clojure.org" :target "_blank"} [:img {:src "/img/warning_clojure.png" :alt "Clojure" :title "Clojure"}]]
              [:p "Chipotle Software &copy; 2018-2020. MIT License."]
              [:p [:a {:href "#"} "Back to top"]]]
-            (include-js "js/dev-main.js")
+            (include-js "/js/dev-main.js")
             [:div {:id "root-app"} ""]])))
