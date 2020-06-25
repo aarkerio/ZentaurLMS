@@ -13,7 +13,8 @@
 (rf/reg-sub
   ::field-value
   :<- [::values]
-  (fn [forms-data [_ form-id field-path]]
+  (fn [forms-data [_ form-id field-path :as glo]]
+    (log/info (str ">>> GLO >>>>> " glo))
     (get-in forms-data (vec (cons form-id field-path)))))
 
 (rf/reg-event-db
