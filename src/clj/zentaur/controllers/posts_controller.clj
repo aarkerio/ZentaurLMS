@@ -2,6 +2,7 @@
   (:require [clojure.tools.logging :as log]
             [ring.util.http-response :as response]
             [zentaur.controllers.base-controller :as basec]
+            [zentaur.febe.shared :refer [desp]]
             [zentaur.hiccup.admin.posts-view :as admin-posts-view]
             [zentaur.hiccup.layouts.application-layout :as layout]
             [zentaur.hiccup.posts-view :as posts-view]
